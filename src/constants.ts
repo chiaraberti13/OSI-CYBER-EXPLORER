@@ -2526,7 +2526,7 @@ export const GLOSSARY_TERMS = [
   }
 ];
 
-// Step-by-step "kill chains" for the Attack Theater: how each attack unfolds and
+// Step-by-step "kill chains" for the Attack & Defense Lab: how each attack unfolds and
 // exactly where/how the recommended countermeasure neutralizes it.
 export const ATTACK_WALKTHROUGHS: AttackWalkthrough[] = [
   {
@@ -2850,5 +2850,253 @@ export const ATTACK_WALKTHROUGHS: AttackWalkthrough[] = [
     },
     outcomeSuccess: { en: 'The attacker gets an interactive shell on the server.', it: 'L\'attaccante ottiene una shell interattiva sul server.' },
     outcomeBlocked: { en: 'Guessing is futile against keys and the attacker IP is quickly banned.', it: 'Indovinare è inutile contro le chiavi e l\'IP dell\'attaccante è bannato in fretta.' }
+  },
+  {
+    scenarioId: 'l1-jamming',
+    layer: 1,
+    severity: 'high',
+    goal: {
+      en: 'Knock a wireless network offline by saturating its radio band with noise.',
+      it: 'Mettere offline una rete wireless saturando la sua banda radio con del rumore.'
+    },
+    steps: [
+      { actor: 'attacker', title: { en: 'Emit high-power RF noise', it: 'Emette rumore RF ad alta potenza' }, detail: { en: 'A transmitter floods the target frequency with random radio energy.', it: 'Un trasmettitore inonda la frequenza bersaglio con energia radio casuale.' }, packet: 'RF noise @ 2.4 GHz' },
+      { actor: 'network', title: { en: 'Signal-to-noise collapses', it: 'Il rapporto segnale/rumore crolla' }, detail: { en: 'Legitimate frames can no longer be told apart from the noise.', it: 'I frame legittimi non si distinguono più dal rumore.' } },
+      { actor: 'victim', title: { en: 'Devices lose the link', it: 'I dispositivi perdono il collegamento' }, detail: { en: 'Wi-Fi clients disconnect; no data gets through.', it: 'I client Wi-Fi si disconnettono; nessun dato passa.' } }
+    ],
+    neutralizeAtStep: 1,
+    defense: {
+      name: { en: 'Frequency hopping + directional antennas', it: 'Frequency hopping + antenne direzionali' },
+      action: { en: 'The link constantly changes channel and focuses the beam, dodging the jammed band.', it: 'Il collegamento cambia continuamente canale e concentra il fascio, evitando la banda disturbata.' },
+      mechanism: { en: 'The jammer cannot cover every frequency at once, so the signal keeps getting through.', it: 'Il jammer non può coprire tutte le frequenze insieme, quindi il segnale continua a passare.' }
+    },
+    outcomeSuccess: { en: 'The wireless network is knocked offline for everyone in range.', it: 'La rete wireless va offline per tutti nel raggio d\'azione.' },
+    outcomeBlocked: { en: 'The link hops around the noise and stays up.', it: 'Il collegamento aggira il rumore e resta attivo.' }
+  },
+  {
+    scenarioId: 'l2-dhcp-starve',
+    layer: 2,
+    severity: 'medium',
+    goal: {
+      en: 'Exhaust the DHCP address pool so no new device can obtain an IP.',
+      it: 'Esaurire il pool di indirizzi DHCP così che nessun nuovo dispositivo ottenga un IP.'
+    },
+    steps: [
+      { actor: 'attacker', title: { en: 'Flood DHCP with spoofed MACs', it: 'Inonda il DHCP con MAC falsi' }, detail: { en: 'Thousands of DISCOVER requests, each with a different fake MAC.', it: 'Migliaia di richieste DISCOVER, ognuna con un MAC falso diverso.' }, packet: 'DHCPDISCOVER × N (fake MACs)' },
+      { actor: 'victim', title: { en: 'Server leases every address', it: 'Il server assegna ogni indirizzo' }, detail: { en: 'The DHCP server hands out its whole pool to the fake clients.', it: 'Il server DHCP distribuisce tutto il pool ai client fasulli.' } },
+      { actor: 'network', title: { en: 'The pool is exhausted', it: 'Il pool è esaurito' }, detail: { en: 'No addresses are left to assign.', it: 'Non restano indirizzi da assegnare.' } },
+      { actor: 'victim', title: { en: 'Real clients get no IP', it: 'I client veri non ottengono IP' }, detail: { en: 'Legitimate devices cannot join the network.', it: 'I dispositivi legittimi non possono collegarsi alla rete.' } }
+    ],
+    neutralizeAtStep: 1,
+    defense: {
+      name: { en: 'DHCP Snooping + Port Security', it: 'DHCP Snooping + Port Security' },
+      action: { en: 'The switch limits how many MACs/requests a port may send and trusts only the real DHCP server.', it: 'Lo switch limita quanti MAC/richieste può inviare una porta e si fida solo del vero server DHCP.' },
+      mechanism: { en: 'The flood of fake requests is dropped before it can drain the pool.', it: 'La raffica di richieste fasulle viene scartata prima di svuotare il pool.' }
+    },
+    outcomeSuccess: { en: 'New devices are denied network access.', it: 'Ai nuovi dispositivi è negato l\'accesso alla rete.' },
+    outcomeBlocked: { en: 'Fake requests are throttled; the pool stays available.', it: 'Le richieste fasulle sono limitate; il pool resta disponibile.' }
+  },
+  {
+    scenarioId: 'l3-smurf',
+    layer: 3,
+    severity: 'high',
+    goal: {
+      en: 'Amplify a DoS by making an entire network flood the victim with ICMP replies.',
+      it: 'Amplificare un DoS facendo inondare la vittima di risposte ICMP da un\'intera rete.'
+    },
+    steps: [
+      { actor: 'attacker', title: { en: 'Ping the broadcast, spoofing the victim', it: 'Ping al broadcast, fingendosi la vittima' }, detail: { en: 'Sends an ICMP echo to a network broadcast address with the victim\'s IP as source.', it: 'Invia un echo ICMP a un indirizzo di broadcast con l\'IP della vittima come sorgente.' }, packet: 'ICMP echo → 10.0.0.255, src=victim' },
+      { actor: 'network', title: { en: 'Every host answers the victim', it: 'Ogni host risponde alla vittima' }, detail: { en: 'All hosts reply to the spoofed source — the victim.', it: 'Tutti gli host rispondono alla sorgente falsificata — la vittima.' } },
+      { actor: 'victim', title: { en: 'Flooded by amplified replies', it: 'Sommersa dalle risposte amplificate' }, detail: { en: 'One packet becomes hundreds of echo-replies hitting the victim.', it: 'Un pacchetto diventa centinaia di echo-reply che colpiscono la vittima.' } }
+    ],
+    neutralizeAtStep: 1,
+    defense: {
+      name: { en: 'Disable directed broadcasts', it: 'Disabilita i broadcast diretti' },
+      action: { en: 'Routers no longer forward packets addressed to a network broadcast.', it: 'I router non inoltrano più i pacchetti diretti a un broadcast di rete.' },
+      mechanism: { en: 'With no broadcast to amplify it, the single ping cannot multiply.', it: 'Senza un broadcast che lo amplifichi, il singolo ping non può moltiplicarsi.' }
+    },
+    outcomeSuccess: { en: 'The victim\'s link is saturated by amplified traffic.', it: 'Il collegamento della vittima è saturato dal traffico amplificato.' },
+    outcomeBlocked: { en: 'The directed broadcast is dropped; no amplification happens.', it: 'Il broadcast diretto viene scartato; nessuna amplificazione.' }
+  },
+  {
+    scenarioId: 'l3-frag',
+    layer: 3,
+    severity: 'high',
+    goal: {
+      en: 'Sneak a malicious payload past a firewall using overlapping IP fragments.',
+      it: 'Far passare un payload malevolo oltre un firewall usando frammenti IP sovrapposti.'
+    },
+    steps: [
+      { actor: 'attacker', title: { en: 'Split the payload into fragments', it: 'Divide il payload in frammenti' }, detail: { en: 'The attack is chopped into overlapping pieces, each looking harmless.', it: 'L\'attacco è spezzato in parti sovrapposte, ognuna apparentemente innocua.' }, packet: 'frag1 | frag2 (overlapping offsets)' },
+      { actor: 'network', title: { en: 'Stateless filter checks each fragment', it: 'Il filtro stateless controlla ogni frammento' }, detail: { en: 'A simple firewall inspects fragments in isolation and sees nothing wrong.', it: 'Un firewall semplice ispeziona i frammenti isolati e non nota nulla.' } },
+      { actor: 'victim', title: { en: 'Target reassembles the attack', it: 'Il bersaglio riassembla l\'attacco' }, detail: { en: 'The host stitches the overlapping fragments back into the malicious payload.', it: 'L\'host ricompone i frammenti sovrapposti nel payload malevolo.' } }
+    ],
+    neutralizeAtStep: 1,
+    defense: {
+      name: { en: 'Stateful firewall with reassembly', it: 'Firewall stateful con riassemblaggio' },
+      action: { en: 'The firewall reassembles the full packet first, then inspects it as a whole.', it: 'Il firewall riassembla prima il pacchetto completo, poi lo ispeziona nell\'insieme.' },
+      mechanism: { en: 'The hidden payload becomes visible before it reaches the target and is blocked.', it: 'Il payload nascosto diventa visibile prima di arrivare al bersaglio e viene bloccato.' }
+    },
+    outcomeSuccess: { en: 'The malicious payload bypasses the filter and hits the host.', it: 'Il payload malevolo aggira il filtro e colpisce l\'host.' },
+    outcomeBlocked: { en: 'Reassembled and inspected, the attack is caught at the firewall.', it: 'Riassemblato e ispezionato, l\'attacco viene fermato al firewall.' }
+  },
+  {
+    scenarioId: 'l4-udp-flood',
+    layer: 4,
+    severity: 'high',
+    goal: {
+      en: 'Overwhelm a target with a high volume of UDP packets.',
+      it: 'Travolgere un bersaglio con un alto volume di pacchetti UDP.'
+    },
+    steps: [
+      { actor: 'attacker', title: { en: 'Blast UDP at random ports', it: 'Spara UDP su porte casuali' }, detail: { en: 'A huge stream of UDP datagrams is sent to the target.', it: 'Un enorme flusso di datagrammi UDP viene inviato al bersaglio.' }, packet: 'UDP flood → random ports' },
+      { actor: 'victim', title: { en: 'Host answers each closed port', it: 'L\'host risponde a ogni porta chiusa' }, detail: { en: 'For every packet on a closed port it generates an ICMP "unreachable".', it: 'Per ogni pacchetto su porta chiusa genera un ICMP "unreachable".' } },
+      { actor: 'network', title: { en: 'Bandwidth and resources exhausted', it: 'Banda e risorse esaurite' }, detail: { en: 'Both the flood and the replies saturate the link.', it: 'Sia la raffica sia le risposte saturano il collegamento.' } },
+      { actor: 'victim', title: { en: 'Service becomes unreachable', it: 'Il servizio diventa irraggiungibile' }, detail: { en: 'Legitimate traffic can no longer get through.', it: 'Il traffico legittimo non riesce più a passare.' } }
+    ],
+    neutralizeAtStep: 2,
+    defense: {
+      name: { en: 'Upstream rate-limiting / DDoS scrubbing', it: 'Rate-limiting a monte / scrubbing DDoS' },
+      action: { en: 'A scrubbing center or edge rate-limit absorbs and filters the flood before the server.', it: 'Un centro di scrubbing o un rate-limit di bordo assorbe e filtra la raffica prima del server.' },
+      mechanism: { en: 'Only legitimate-rate traffic reaches the host, which stays responsive.', it: 'Solo il traffico a rate legittimo raggiunge l\'host, che resta reattivo.' }
+    },
+    outcomeSuccess: { en: 'The service is saturated and drops offline.', it: 'Il servizio è saturato e va offline.' },
+    outcomeBlocked: { en: 'The flood is scrubbed upstream; the service stays up.', it: 'La raffica è filtrata a monte; il servizio resta attivo.' }
+  },
+  {
+    scenarioId: 'l4-scan',
+    layer: 4,
+    severity: 'medium',
+    goal: {
+      en: 'Map which ports and services are open on a target before attacking.',
+      it: 'Mappare quali porte e servizi sono aperti sul bersaglio prima di attaccare.'
+    },
+    steps: [
+      { actor: 'attacker', title: { en: 'Probe many ports', it: 'Sonda molte porte' }, detail: { en: 'Sends SYN packets to a range of TCP ports.', it: 'Invia pacchetti SYN a un intervallo di porte TCP.' }, packet: 'SYN → ports 1-1024' },
+      { actor: 'victim', title: { en: 'Open ports reply SYN-ACK', it: 'Le porte aperte rispondono SYN-ACK' }, detail: { en: 'Closed ports send RST; open ones answer, revealing services.', it: 'Le porte chiuse inviano RST; quelle aperte rispondono, rivelando i servizi.' } },
+      { actor: 'attacker', title: { en: 'Build a service map', it: 'Costruisce una mappa dei servizi' }, detail: { en: 'The attacker learns what is running (SSH 22, HTTP 80…) to target next.', it: 'L\'attaccante scopre cosa gira (SSH 22, HTTP 80…) per il prossimo bersaglio.' } }
+    ],
+    neutralizeAtStep: 1,
+    defense: {
+      name: { en: 'Default-deny firewall + IPS scan detection', it: 'Firewall default-deny + rilevamento scansioni IPS' },
+      action: { en: 'Unsolicited ports are silently dropped and the burst of probes trips a scan signature.', it: 'Le porte non richieste vengono scartate in silenzio e la raffica di probe fa scattare una firma di scansione.' },
+      mechanism: { en: 'Ports appear "filtered" (no reply) and the scanner is flagged or blocked.', it: 'Le porte appaiono "filtered" (nessuna risposta) e lo scanner viene segnalato o bloccato.' }
+    },
+    outcomeSuccess: { en: 'The attacker gets a full map of exposed services.', it: 'L\'attaccante ottiene una mappa completa dei servizi esposti.' },
+    outcomeBlocked: { en: 'Ports look closed/filtered and the scan is detected.', it: 'Le porte sembrano chiuse/filtrate e la scansione viene rilevata.' }
+  },
+  {
+    scenarioId: 'l3-pod',
+    layer: 3,
+    severity: 'medium',
+    goal: {
+      en: 'Crash a host with a malformed, oversized ICMP packet (Ping of Death).',
+      it: 'Mandare in crash un host con un pacchetto ICMP malformato e sovradimensionato (Ping of Death).'
+    },
+    steps: [
+      { actor: 'attacker', title: { en: 'Send oversized fragmented ICMP', it: 'Invia ICMP frammentato e sovradimensionato' }, detail: { en: 'Fragments that reassemble beyond the 65,535-byte limit.', it: 'Frammenti che, riassemblati, superano il limite di 65.535 byte.' }, packet: 'ICMP reassembled > 65535 bytes' },
+      { actor: 'victim', title: { en: 'Host reassembles the fragments', it: 'L\'host riassembla i frammenti' }, detail: { en: 'A vulnerable network stack overflows its buffer.', it: 'Uno stack di rete vulnerabile fa traboccare il buffer.' } },
+      { actor: 'victim', title: { en: 'System crashes or reboots', it: 'Il sistema va in crash o si riavvia' }, detail: { en: 'The oversized packet corrupts memory.', it: 'Il pacchetto sovradimensionato corrompe la memoria.' } }
+    ],
+    neutralizeAtStep: 1,
+    defense: {
+      name: { en: 'Modern OS patches + ICMP size filtering', it: 'Patch OS moderne + filtraggio dimensione ICMP' },
+      action: { en: 'The stack validates the reassembled size and routers drop malformed/oversized ICMP.', it: 'Lo stack valida la dimensione riassemblata e i router scartano ICMP malformati/sovradimensionati.' },
+      mechanism: { en: 'The illegal packet is discarded instead of overflowing a buffer.', it: 'Il pacchetto illegale viene scartato invece di far traboccare un buffer.' }
+    },
+    outcomeSuccess: { en: 'The target crashes, causing a denial of service.', it: 'Il bersaglio va in crash, causando un denial of service.' },
+    outcomeBlocked: { en: 'The malformed packet is rejected; the host stays stable.', it: 'Il pacchetto malformato viene rifiutato; l\'host resta stabile.' }
+  },
+  {
+    scenarioId: 'l7-homograph',
+    layer: 7,
+    severity: 'high',
+    goal: {
+      en: 'Trick a user with a lookalike domain to steal their credentials.',
+      it: 'Ingannare un utente con un dominio-sosia per rubargli le credenziali.'
+    },
+    steps: [
+      { actor: 'attacker', title: { en: 'Register a lookalike domain', it: 'Registra un dominio-sosia' }, detail: { en: 'Uses Unicode characters identical to Latin ones (e.g. Cyrillic "а").', it: 'Usa caratteri Unicode identici a quelli latini (es. la "а" cirillica).' }, packet: 'аpple.com → xn--pple-43d.com' },
+      { actor: 'attacker', title: { en: 'Send a convincing link', it: 'Invia un link convincente' }, detail: { en: 'An email or message points to the fake domain.', it: 'Un\'email o un messaggio rimanda al dominio falso.' } },
+      { actor: 'victim', title: { en: 'User sees a trusted name', it: 'L\'utente vede un nome fidato' }, detail: { en: 'The address looks legitimate at a glance.', it: 'L\'indirizzo sembra legittimo a colpo d\'occhio.' } },
+      { actor: 'victim', title: { en: 'Credentials entered on fake site', it: 'Credenziali inserite sul sito falso' }, detail: { en: 'The user logs in and hands over their password.', it: 'L\'utente accede e consegna la sua password.' } }
+    ],
+    neutralizeAtStep: 2,
+    defense: {
+      name: { en: 'Browser punycode display + awareness', it: 'Visualizzazione punycode nel browser + consapevolezza' },
+      action: { en: 'The browser shows the real "xn--" punycode form and warns about mixed scripts.', it: 'Il browser mostra la vera forma punycode "xn--" e avvisa sugli alfabeti misti.' },
+      mechanism: { en: 'The disguise is exposed, so the user recognises the fake domain.', it: 'Il travestimento viene svelato, così l\'utente riconosce il dominio falso.' }
+    },
+    outcomeSuccess: { en: 'The victim\'s credentials are handed to the attacker.', it: 'Le credenziali della vittima finiscono all\'attaccante.' },
+    outcomeBlocked: { en: 'The lookalike is revealed and the user avoids the trap.', it: 'L\'imitazione viene svelata e l\'utente evita la trappola.' }
+  },
+  {
+    scenarioId: 'l7-slowloris',
+    layer: 7,
+    severity: 'high',
+    goal: {
+      en: 'Take down a web server by holding its connections open with slow, partial requests.',
+      it: 'Abbattere un web server tenendone aperte le connessioni con richieste lente e parziali.'
+    },
+    steps: [
+      { actor: 'attacker', title: { en: 'Open many connections', it: 'Apre molte connessioni' }, detail: { en: 'Starts hundreds of HTTP requests at once.', it: 'Avvia centinaia di richieste HTTP contemporaneamente.' }, packet: 'GET / HTTP/1.1 (headers a goccia…)' },
+      { actor: 'attacker', title: { en: 'Send headers very slowly', it: 'Invia gli header lentissimamente' }, detail: { en: 'Each request is kept incomplete on purpose, never finishing.', it: 'Ogni richiesta è tenuta incompleta di proposito, senza mai concludersi.' } },
+      { actor: 'victim', title: { en: 'Server keeps sockets waiting', it: 'Il server tiene i socket in attesa' }, detail: { en: 'It holds every connection open expecting the rest.', it: 'Mantiene ogni connessione aperta aspettando il resto.' } },
+      { actor: 'victim', title: { en: 'Connection pool exhausted', it: 'Pool di connessioni esaurito' }, detail: { en: 'With all slots busy, real users are refused.', it: 'Con tutti gli slot occupati, gli utenti veri vengono rifiutati.' } }
+    ],
+    neutralizeAtStep: 1,
+    defense: {
+      name: { en: 'Reverse proxy + connection/timeout limits', it: 'Reverse proxy + limiti di connessione/timeout' },
+      action: { en: 'A proxy buffers the full request and enforces per-client timeouts and connection caps.', it: 'Un proxy attende la richiesta completa e impone timeout per client e limiti di connessioni.' },
+      mechanism: { en: 'Slow, incomplete requests are dropped before they can tie up the server.', it: 'Le richieste lente e incomplete vengono chiuse prima di impegnare il server.' }
+    },
+    outcomeSuccess: { en: 'The web server stops answering legitimate users.', it: 'Il web server smette di rispondere agli utenti legittimi.' },
+    outcomeBlocked: { en: 'Stalled connections are timed out; the server stays available.', it: 'Le connessioni bloccate vanno in timeout; il server resta disponibile.' }
+  },
+  {
+    scenarioId: 'l7-smtp-relay',
+    layer: 7,
+    severity: 'medium',
+    goal: {
+      en: 'Abuse a misconfigured mail server to send spam/spoofed email as someone else.',
+      it: 'Sfruttare un server di posta mal configurato per inviare spam/email contraffatte a nome altrui.'
+    },
+    steps: [
+      { actor: 'attacker', title: { en: 'Connect to an open relay', it: 'Si collega a un open relay' }, detail: { en: 'Finds a mail server that accepts mail for any domain.', it: 'Trova un server di posta che accetta mail per qualsiasi dominio.' }, packet: 'MAIL FROM:<ceo@bank.com>' },
+      { actor: 'victim', title: { en: 'Server accepts foreign mail', it: 'Il server accetta posta esterna' }, detail: { en: 'With no restrictions, it relays mail it should not.', it: 'Senza restrizioni, inoltra posta che non dovrebbe.' } },
+      { actor: 'network', title: { en: 'Spam/spoofed mail goes out', it: 'Parte spam/posta contraffatta' }, detail: { en: 'Messages appear to come from a trusted sender.', it: 'I messaggi sembrano provenire da un mittente fidato.' } },
+      { actor: 'victim', title: { en: 'Recipients deceived / IP blacklisted', it: 'Destinatari ingannati / IP in blacklist' }, detail: { en: 'Targets get phishing and the server\'s IP gets blacklisted.', it: 'I bersagli ricevono phishing e l\'IP del server finisce in blacklist.' } }
+    ],
+    neutralizeAtStep: 1,
+    defense: {
+      name: { en: 'Close the relay + SPF/DKIM/DMARC', it: 'Chiudi il relay + SPF/DKIM/DMARC' },
+      action: { en: 'The server relays only for authenticated/local users, and SPF/DKIM verify the sender.', it: 'Il server inoltra solo per utenti autenticati/locali, e SPF/DKIM verificano il mittente.' },
+      mechanism: { en: 'Unauthorized relaying is refused and forged senders fail authentication.', it: 'L\'inoltro non autorizzato è rifiutato e i mittenti falsi non superano l\'autenticazione.' }
+    },
+    outcomeSuccess: { en: 'The server becomes a spam cannon for spoofed email.', it: 'Il server diventa un cannone di spam per email contraffatte.' },
+    outcomeBlocked: { en: 'Relaying is refused; spoofed mail is rejected.', it: 'L\'inoltro è rifiutato; la posta contraffatta viene respinta.' }
+  },
+  {
+    scenarioId: 'l7-ftp-sniffing',
+    layer: 7,
+    severity: 'high',
+    goal: {
+      en: 'Steal login credentials by capturing unencrypted FTP traffic.',
+      it: 'Rubare le credenziali di accesso catturando traffico FTP non cifrato.'
+    },
+    steps: [
+      { actor: 'victim', title: { en: 'User logs into FTP', it: 'L\'utente accede a FTP' }, detail: { en: 'The client sends its username and password to the server.', it: 'Il client invia username e password al server.' } },
+      { actor: 'network', title: { en: 'Credentials travel in cleartext', it: 'Le credenziali viaggiano in chiaro' }, detail: { en: 'FTP has no encryption at all.', it: 'FTP non ha alcuna cifratura.' }, packet: 'USER admin / PASS s3cr3t (plain)' },
+      { actor: 'attacker', title: { en: 'Sniff the packets', it: 'Sniffa i pacchetti' }, detail: { en: 'Anyone on the path reads the credentials directly.', it: 'Chiunque sul percorso legge le credenziali direttamente.' } },
+      { actor: 'attacker', title: { en: 'Reuse the stolen login', it: 'Riusa il login rubato' }, detail: { en: 'The attacker logs in as the victim.', it: 'L\'attaccante accede come la vittima.' } }
+    ],
+    neutralizeAtStep: 1,
+    defense: {
+      name: { en: 'Use SFTP / FTPS (encrypted transfer)', it: 'Usa SFTP / FTPS (trasferimento cifrato)' },
+      action: { en: 'The whole session is encrypted with SSH (SFTP) or TLS (FTPS).', it: 'L\'intera sessione è cifrata con SSH (SFTP) o TLS (FTPS).' },
+      mechanism: { en: 'Sniffed packets are ciphertext, so the credentials stay secret.', it: 'I pacchetti intercettati sono testo cifrato, quindi le credenziali restano segrete.' }
+    },
+    outcomeSuccess: { en: 'The attacker captures working credentials in plain sight.', it: 'L\'attaccante cattura credenziali valide in chiaro.' },
+    outcomeBlocked: { en: 'Only encrypted traffic is captured; credentials are safe.', it: 'Viene catturato solo traffico cifrato; le credenziali sono al sicuro.' }
   }
 ];

@@ -62,7 +62,7 @@ export type AttackType = 'mitm' | 'dos' | 'injection' | 'spoofing' | 'replay' | 
 
 export type Bilingual = { it: string; en: string };
 
-// One step in an attack's "kill chain" — used by the step-by-step Attack Theater
+// One step in an attack's "kill chain" — used by the step-by-step Attack & Defense Lab
 // to show HOW an attack unfolds and, when a defense is active, WHERE it is stopped.
 export type StepActor = 'attacker' | 'victim' | 'network' | 'defense';
 
