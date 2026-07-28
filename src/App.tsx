@@ -16,6 +16,7 @@ import GlossaryModal from './components/GlossaryModal';
 import PortsModal from './components/PortsModal';
 import QuizModal from './components/QuizModal';
 import SecurityDashboard from './components/SecurityDashboard';
+import AttackLab from './components/AttackLab';
 import { useStore } from './store';
 
 export default function App() {
@@ -23,9 +24,7 @@ export default function App() {
     isGuideOpen,
     setIsGuideOpen,
     activeView,
-    language,
-    hasSeenGuide,
-    setHasSeenGuide
+    language
   } = useStore();
 
   // Keep the document language + title in sync with the selected UI language.
@@ -36,18 +35,6 @@ export default function App() {
       ? 'OSI Cyber Explorer — Laboratorio interattivo di reti e cybersecurity'
       : 'OSI Cyber Explorer — Interactive networking & cybersecurity lab';
   }, [language]);
-
-  // First-visit onboarding: open the Lab Guide automatically the very first time.
-  useEffect(() => {
-    if (!hasSeenGuide) {
-      setIsGuideOpen(true);
-    }
-  }, [hasSeenGuide, setIsGuideOpen]);
-
-  const closeGuide = () => {
-    setIsGuideOpen(false);
-    if (!hasSeenGuide) setHasSeenGuide(true);
-  };
 
   return (
     <div className="min-h-screen bg-white text-slate-800 selection:bg-blue-500/10">
@@ -106,6 +93,18 @@ export default function App() {
                 <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] px-2">Layer_Intelligence</h3>
                 <LayerDetails />
               </section>
+            </motion.div>
+          )}
+
+          {activeView === 'attacklab' && (
+            <motion.div
+              key="attacklab"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.2 }}
+            >
+              <AttackLab />
             </motion.div>
           )}
 
@@ -169,7 +168,7 @@ export default function App() {
       {/* Global Modals */}
       <GuideModal
         isOpen={isGuideOpen}
-        onClose={closeGuide}
+        onClose={() => setIsGuideOpen(false)}
         language={language}
       />
     </div>

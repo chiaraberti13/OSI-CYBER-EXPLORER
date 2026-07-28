@@ -1,4 +1,4 @@
-import { LayerData, AttackScenario } from './types';
+import { LayerData, AttackScenario, AttackWalkthrough } from './types';
 
 export const OSI_LAYERS: LayerData[] = [
   {
@@ -2523,5 +2523,332 @@ export const GLOSSARY_TERMS = [
       en: 'Authenticated Encryption with Associated Data - Encryption modes (like AES-GCM) that guarantee both data confidentiality and cryptographic payload integrity simultaneously, blocking padding tampering.',
       it: 'Authenticated Encryption with Associated Data - Modalità cifrate (es. AES-GCM) che garantiscono contemporaneamente la riservatezza e l\'integrità del payload, prevenendo la manipolazione delle eccezioni di padding.'
     }
+  }
+];
+
+// Step-by-step "kill chains" for the Attack Theater: how each attack unfolds and
+// exactly where/how the recommended countermeasure neutralizes it.
+export const ATTACK_WALKTHROUGHS: AttackWalkthrough[] = [
+  {
+    scenarioId: 'l1-tapping',
+    layer: 1,
+    severity: 'high',
+    goal: {
+      en: 'Silently copy every bit travelling on the physical medium without being on the network logically.',
+      it: 'Copiare di nascosto ogni bit che viaggia sul mezzo fisico, senza comparire logicamente sulla rete.'
+    },
+    steps: [
+      { actor: 'attacker', title: { en: 'Physical access to the cable', it: 'Accesso fisico al cavo' }, detail: { en: 'The attacker reaches an exposed copper run or bends a fiber to leak light.', it: "L'attaccante raggiunge un tratto di rame esposto o piega una fibra per farne uscire luce." } },
+      { actor: 'attacker', title: { en: 'Install a passive tap', it: 'Installa un tap passivo' }, detail: { en: 'A splitter/vampire-tap mirrors the signal to the attacker with no logical footprint.', it: 'Uno splitter/vampire-tap specchia il segnale verso l\'attaccante senza traccia logica.' }, packet: 'TAP → mirror(RX/TX)' },
+      { actor: 'network', title: { en: 'Raw bits are cloned', it: 'I bit grezzi vengono clonati' }, detail: { en: 'Frames flow normally, but a full copy is now captured off-band.', it: 'I frame scorrono normalmente, ma una copia completa viene ora catturata fuori banda.' } },
+      { actor: 'victim', title: { en: 'Cleartext is reconstructed', it: 'Il testo in chiaro è ricostruito' }, detail: { en: 'Anything unencrypted (HTTP, FTP, Telnet) is readable in the capture.', it: 'Tutto ciò che non è cifrato (HTTP, FTP, Telnet) è leggibile nella cattura.' } }
+    ],
+    neutralizeAtStep: 3,
+    defense: {
+      name: { en: 'Link encryption + fiber monitoring', it: 'Cifratura di linea + monitoraggio fibra' },
+      action: { en: 'MACsec/TLS encrypts the payload while OTDR sensors flag the light-level drop of a tap.', it: 'MACsec/TLS cifra il payload mentre sensori OTDR segnalano il calo di luce del tap.' },
+      mechanism: { en: 'The captured bits are ciphertext without the key, and the physical intrusion raises an alarm.', it: 'I bit catturati sono testo cifrato senza la chiave, e l\'intrusione fisica genera un allarme.' }
+    },
+    outcomeSuccess: { en: 'Credentials and sensitive data are exfiltrated with zero network alerts.', it: 'Credenziali e dati sensibili vengono esfiltrati senza alcun allarme di rete.' },
+    outcomeBlocked: { en: 'The tap only yields useless ciphertext and its insertion is detected.', it: 'Il tap ottiene solo testo cifrato inutile e il suo inserimento viene rilevato.' }
+  },
+  {
+    scenarioId: 'l2-mitm',
+    layer: 2,
+    severity: 'critical',
+    goal: {
+      en: 'Sit between two hosts on the LAN to read and alter their traffic (Man-in-the-Middle).',
+      it: 'Mettersi in mezzo a due host della LAN per leggere e alterare il loro traffico (Man-in-the-Middle).'
+    },
+    steps: [
+      { actor: 'attacker', title: { en: 'Forge gratuitous ARP replies', it: 'Falsifica risposte ARP gratuite' }, detail: { en: 'The attacker claims "the gateway IP is at MY MAC" to the victim, and vice-versa.', it: 'L\'attaccante dichiara alla vittima "l\'IP del gateway è al MIO MAC", e viceversa.' }, packet: 'ARP reply: 192.168.1.1 is-at AA:AA:AA' },
+      { actor: 'victim', title: { en: 'ARP cache is poisoned', it: 'La cache ARP viene avvelenata' }, detail: { en: 'ARP has no authentication, so the victim overwrites the correct entry.', it: 'ARP non ha autenticazione, quindi la vittima sovrascrive la voce corretta.' } },
+      { actor: 'network', title: { en: 'Traffic reroutes through attacker', it: 'Il traffico passa dall\'attaccante' }, detail: { en: 'Every packet to the gateway is delivered to the attacker first.', it: 'Ogni pacchetto verso il gateway arriva prima all\'attaccante.' } },
+      { actor: 'attacker', title: { en: 'Read, modify, forward', it: 'Legge, modifica, inoltra' }, detail: { en: 'The attacker relays traffic transparently while capturing or tampering with it.', it: 'L\'attaccante inoltra il traffico in modo trasparente catturandolo o manomettendolo.' } }
+    ],
+    neutralizeAtStep: 1,
+    defense: {
+      name: { en: 'Dynamic ARP Inspection (DAI)', it: 'Dynamic ARP Inspection (DAI)' },
+      action: { en: 'The switch validates each ARP reply against the DHCP snooping binding table.', it: 'Lo switch valida ogni risposta ARP con la tabella di binding del DHCP snooping.' },
+      mechanism: { en: 'ARP replies that do not match a legitimate IP↔MAC binding are dropped at the port.', it: 'Le risposte ARP che non corrispondono a un binding IP↔MAC legittimo vengono scartate sulla porta.' }
+    },
+    outcomeSuccess: { en: 'The attacker fully intercepts and can rewrite LAN traffic in real time.', it: 'L\'attaccante intercetta completamente e può riscrivere il traffico della LAN in tempo reale.' },
+    outcomeBlocked: { en: 'The forged ARP never reaches the victim; the cache stays clean.', it: 'L\'ARP falsificato non raggiunge mai la vittima; la cache resta pulita.' }
+  },
+  {
+    scenarioId: 'l2-mac-flood',
+    layer: 2,
+    severity: 'high',
+    goal: {
+      en: 'Turn a switch into a hub so all frames are broadcast and can be sniffed.',
+      it: 'Trasformare uno switch in un hub così che tutti i frame siano in broadcast e sniffabili.'
+    },
+    steps: [
+      { actor: 'attacker', title: { en: 'Flood random source MACs', it: 'Inonda con MAC sorgente casuali' }, detail: { en: 'Thousands of frames with bogus source MACs are blasted at the switch.', it: 'Migliaia di frame con MAC sorgente fasulli vengono sparati verso lo switch.' }, packet: 'src=RANDOM_MAC x10000/s' },
+      { actor: 'network', title: { en: 'CAM table fills up', it: 'La tabella CAM si riempie' }, detail: { en: 'The switch memory that maps MAC→port is exhausted.', it: 'La memoria dello switch che mappa MAC→porta si esaurisce.' } },
+      { actor: 'network', title: { en: 'Switch fails open', it: 'Lo switch va in fail-open' }, detail: { en: 'Unable to learn new MACs, it broadcasts every frame to all ports.', it: 'Non potendo apprendere nuovi MAC, invia ogni frame in broadcast a tutte le porte.' } },
+      { actor: 'attacker', title: { en: 'Sniff all LAN traffic', it: 'Sniffa tutto il traffico LAN' }, detail: { en: 'The attacker now receives copies of frames meant for other hosts.', it: 'L\'attaccante ora riceve copie dei frame destinati agli altri host.' } }
+    ],
+    neutralizeAtStep: 0,
+    defense: {
+      name: { en: 'Port Security', it: 'Port Security' },
+      action: { en: 'The switch caps the number of MAC addresses learned per port.', it: 'Lo switch limita il numero di indirizzi MAC appresi per porta.' },
+      mechanism: { en: 'When the limit is exceeded the offending port is shut down before the CAM can overflow.', it: 'Superato il limite, la porta colpevole viene disattivata prima che la CAM trabocchi.' }
+    },
+    outcomeSuccess: { en: 'The entire segment is exposed to passive sniffing.', it: 'L\'intero segmento è esposto allo sniffing passivo.' },
+    outcomeBlocked: { en: 'The flooding port is disabled instantly; the CAM table stays intact.', it: 'La porta che inonda viene disabilitata all\'istante; la tabella CAM resta integra.' }
+  },
+  {
+    scenarioId: 'l3-spoofing',
+    layer: 3,
+    severity: 'high',
+    goal: {
+      en: 'Impersonate a trusted host by forging the source IP address of packets.',
+      it: 'Impersonare un host fidato falsificando l\'indirizzo IP sorgente dei pacchetti.'
+    },
+    steps: [
+      { actor: 'attacker', title: { en: 'Craft packets with a fake source IP', it: 'Crea pacchetti con IP sorgente falso' }, detail: { en: 'The IP header source field is set to a trusted internal address.', it: 'Il campo sorgente dell\'header IP è impostato a un indirizzo interno fidato.' }, packet: 'src=10.0.0.5 (spoofed) → dst=server' },
+      { actor: 'network', title: { en: 'Router forwards blindly', it: 'Il router inoltra alla cieca' }, detail: { en: 'Basic routing only looks at the destination, not whether the source is plausible.', it: 'Il routing di base guarda solo la destinazione, non se la sorgente sia plausibile.' } },
+      { actor: 'victim', title: { en: 'Server trusts the source', it: 'Il server si fida della sorgente' }, detail: { en: 'IP-based access rules accept the packet as if from the real host.', it: 'Le regole di accesso basate su IP accettano il pacchetto come dall\'host reale.' } },
+      { actor: 'attacker', title: { en: 'Bypass filters / poison sessions', it: 'Aggira i filtri / avvelena sessioni' }, detail: { en: 'The attacker abuses the trust to inject data or launch reflected DoS.', it: 'L\'attaccante sfrutta la fiducia per iniettare dati o lanciare DoS riflessi.' } }
+    ],
+    neutralizeAtStep: 1,
+    defense: {
+      name: { en: 'Unicast Reverse Path Forwarding (uRPF)', it: 'Unicast Reverse Path Forwarding (uRPF)' },
+      action: { en: 'The router checks that the source IP would return via the same interface it arrived on.', it: 'Il router verifica che l\'IP sorgente tornerebbe dalla stessa interfaccia da cui è arrivato.' },
+      mechanism: { en: 'Packets whose source is unreachable via that path (spoofed) are dropped.', it: 'I pacchetti la cui sorgente non è raggiungibile da quel percorso (spoofati) vengono scartati.' }
+    },
+    outcomeSuccess: { en: 'The attacker is treated as a trusted host and slips past IP ACLs.', it: 'L\'attaccante è trattato come host fidato e supera le ACL basate su IP.' },
+    outcomeBlocked: { en: 'The spoofed packet is discarded at the first router hop.', it: 'Il pacchetto spoofato viene scartato al primo hop del router.' }
+  },
+  {
+    scenarioId: 'l3-bgp-hijack',
+    layer: 3,
+    severity: 'critical',
+    goal: {
+      en: 'Divert global Internet traffic by announcing IP prefixes you do not own.',
+      it: 'Dirottare il traffico Internet globale annunciando prefissi IP che non ti appartengono.'
+    },
+    steps: [
+      { actor: 'attacker', title: { en: 'Announce a false prefix', it: 'Annuncia un prefisso falso' }, detail: { en: 'A malicious AS advertises a more specific route for a victim\'s network.', it: 'Un AS malevolo pubblicizza una rotta più specifica per la rete della vittima.' }, packet: 'BGP UPDATE: 203.0.113.0/24 via AS666' },
+      { actor: 'network', title: { en: 'Peers prefer the specific route', it: 'I peer preferiscono la rotta specifica' }, detail: { en: 'BGP favors longer prefixes, so neighbors accept and propagate the hijack.', it: 'BGP preferisce i prefissi più lunghi, quindi i vicini accettano e propagano il dirottamento.' } },
+      { actor: 'network', title: { en: 'Traffic flows to the attacker', it: 'Il traffico va all\'attaccante' }, detail: { en: 'Whole regions route the victim\'s traffic through the rogue AS.', it: 'Intere regioni instradano il traffico della vittima attraverso l\'AS canaglia.' } },
+      { actor: 'attacker', title: { en: 'Inspect, drop or relay', it: 'Ispeziona, scarta o rilancia' }, detail: { en: 'The attacker blackholes or transparently proxies the diverted traffic.', it: 'L\'attaccante fa blackhole o proxy trasparente del traffico dirottato.' } }
+    ],
+    neutralizeAtStep: 1,
+    defense: {
+      name: { en: 'RPKI Route Origin Validation', it: 'Validazione dell\'Origine (RPKI)' },
+      action: { en: 'Routers check a signed ROA proving which AS may originate each prefix.', it: 'I router verificano una ROA firmata che prova quale AS può originare ciascun prefisso.' },
+      mechanism: { en: 'Announcements from an unauthorized AS are marked Invalid and rejected.', it: 'Gli annunci da un AS non autorizzato sono marcati Invalid e rifiutati.' }
+    },
+    outcomeSuccess: { en: 'Global traffic is silently rerouted and can be intercepted or dropped.', it: 'Il traffico globale è reinstradato silenziosamente e può essere intercettato o scartato.' },
+    outcomeBlocked: { en: 'The invalid announcement is rejected before it can propagate.', it: 'L\'annuncio non valido è rifiutato prima di potersi propagare.' }
+  },
+  {
+    scenarioId: 'l4-dos',
+    layer: 4,
+    severity: 'high',
+    goal: {
+      en: 'Exhaust a server\'s connection table so legitimate users cannot connect (SYN Flood).',
+      it: 'Esaurire la tabella delle connessioni di un server così che gli utenti legittimi non possano connettersi (SYN Flood).'
+    },
+    steps: [
+      { actor: 'attacker', title: { en: 'Send a storm of SYN packets', it: 'Invia una tempesta di pacchetti SYN' }, detail: { en: 'Each SYN opens the first step of the TCP 3-way handshake.', it: 'Ogni SYN apre il primo passo dell\'handshake TCP a 3 vie.' }, packet: 'SYN seq=x (spoofed src) ×flood' },
+      { actor: 'victim', title: { en: 'Server allocates half-open sockets', it: 'Il server alloca socket semi-aperti' }, detail: { en: 'It replies SYN-ACK and reserves memory waiting for an ACK that never comes.', it: 'Risponde SYN-ACK e riserva memoria aspettando un ACK che non arriva mai.' } },
+      { actor: 'network', title: { en: 'SYN backlog fills up', it: 'Il backlog SYN si riempie' }, detail: { en: 'The half-open connection queue reaches its limit.', it: 'La coda delle connessioni semi-aperte raggiunge il limite.' } },
+      { actor: 'victim', title: { en: 'Legitimate clients are refused', it: 'I client legittimi sono rifiutati' }, detail: { en: 'With no free slots, real users get connection timeouts.', it: 'Senza slot liberi, gli utenti reali ricevono timeout di connessione.' } }
+    ],
+    neutralizeAtStep: 1,
+    defense: {
+      name: { en: 'SYN Cookies', it: 'SYN Cookies' },
+      action: { en: 'The server encodes connection state into the SYN-ACK sequence number instead of storing it.', it: 'Il server codifica lo stato della connessione nel sequence number del SYN-ACK invece di memorizzarlo.' },
+      mechanism: { en: 'No memory is reserved until a valid ACK returns, so the backlog cannot be exhausted.', it: 'Nessuna memoria è riservata finché non torna un ACK valido, quindi il backlog non si esaurisce.' }
+    },
+    outcomeSuccess: { en: 'The service becomes unreachable for everyone.', it: 'Il servizio diventa irraggiungibile per tutti.' },
+    outcomeBlocked: { en: 'The flood consumes no server memory and real users keep connecting.', it: 'L\'inondazione non consuma memoria del server e gli utenti reali continuano a connettersi.' }
+  },
+  {
+    scenarioId: 'l4-tcp-reset',
+    layer: 4,
+    severity: 'medium',
+    goal: {
+      en: 'Tear down an active TCP session by injecting a forged RST packet.',
+      it: 'Interrompere una sessione TCP attiva iniettando un pacchetto RST contraffatto.'
+    },
+    steps: [
+      { actor: 'attacker', title: { en: 'Observe or guess the session', it: 'Osserva o indovina la sessione' }, detail: { en: 'The attacker learns the 4-tuple and a plausible sequence number.', it: 'L\'attaccante ricava la 4-tupla e un sequence number plausibile.' } },
+      { actor: 'attacker', title: { en: 'Forge a RST packet', it: 'Falsifica un pacchetto RST' }, detail: { en: 'A spoofed RST with an in-window sequence number is injected.', it: 'Viene iniettato un RST spoofato con sequence number dentro la finestra.' }, packet: 'RST seq=in-window src=peer' },
+      { actor: 'victim', title: { en: 'Endpoint accepts the RST', it: 'L\'endpoint accetta il RST' }, detail: { en: 'TCP treats an in-window RST as a legitimate abort.', it: 'TCP tratta un RST dentro la finestra come un\'interruzione legittima.' } },
+      { actor: 'network', title: { en: 'Session is dropped', it: 'La sessione viene abbattuta' }, detail: { en: 'The connection is torn down mid-transfer.', it: 'La connessione viene chiusa a metà trasferimento.' } }
+    ],
+    neutralizeAtStep: 2,
+    defense: {
+      name: { en: 'TLS + randomized sequence numbers', it: 'TLS + sequence number randomizzati' },
+      action: { en: 'Encryption authenticates the channel and ISN randomization makes sequence numbers unguessable.', it: 'La cifratura autentica il canale e la randomizzazione dell\'ISN rende i sequence number imprevedibili.' },
+      mechanism: { en: 'The attacker cannot forge an in-window, authenticated RST.', it: 'L\'attaccante non può falsificare un RST autenticato e dentro la finestra.' }
+    },
+    outcomeSuccess: { en: 'The session is killed, disrupting transfers or long-lived connections (e.g. BGP).', it: 'La sessione viene uccisa, interrompendo trasferimenti o connessioni durature (es. BGP).' },
+    outcomeBlocked: { en: 'The forged RST is ignored and the session survives.', it: 'Il RST falsificato viene ignorato e la sessione sopravvive.' }
+  },
+  {
+    scenarioId: 'l5-hijacking',
+    layer: 5,
+    severity: 'critical',
+    goal: {
+      en: 'Take over an authenticated user session by stealing its session token.',
+      it: 'Impossessarsi di una sessione utente autenticata rubandone il token.'
+    },
+    steps: [
+      { actor: 'attacker', title: { en: 'Capture the session token', it: 'Cattura il token di sessione' }, detail: { en: 'A cookie is sniffed on an open network or leaked via XSS.', it: 'Un cookie viene sniffato su una rete aperta o trafugato via XSS.' }, packet: 'Cookie: SESSION=4f8s9a...' },
+      { actor: 'attacker', title: { en: 'Replay the token', it: 'Riusa il token' }, detail: { en: 'The attacker sends requests carrying the victim\'s valid cookie.', it: 'L\'attaccante invia richieste con il cookie valido della vittima.' } },
+      { actor: 'victim', title: { en: 'Server accepts the session', it: 'Il server accetta la sessione' }, detail: { en: 'Without extra checks, the token alone proves identity.', it: 'Senza controlli aggiuntivi, il solo token prova l\'identità.' } },
+      { actor: 'attacker', title: { en: 'Act as the victim', it: 'Agisce come la vittima' }, detail: { en: 'Full access to the account without ever knowing the password.', it: 'Accesso completo all\'account senza mai conoscere la password.' } }
+    ],
+    neutralizeAtStep: 0,
+    defense: {
+      name: { en: 'HSTS + Secure/HttpOnly cookies + MFA', it: 'HSTS + cookie Secure/HttpOnly + MFA' },
+      action: { en: 'TLS everywhere stops sniffing; HttpOnly blocks script theft; MFA re-checks identity.', it: 'TLS ovunque blocca lo sniffing; HttpOnly impedisce il furto via script; MFA riverifica l\'identità.' },
+      mechanism: { en: 'The token never travels in clear and a stolen cookie alone is not enough to log in.', it: 'Il token non viaggia mai in chiaro e un cookie rubato da solo non basta ad autenticarsi.' }
+    },
+    outcomeSuccess: { en: 'The attacker fully impersonates the user.', it: 'L\'attaccante impersona completamente l\'utente.' },
+    outcomeBlocked: { en: 'The token cannot be captured, and even if it were, MFA blocks reuse.', it: 'Il token non può essere catturato e, anche se lo fosse, l\'MFA ne blocca il riuso.' }
+  },
+  {
+    scenarioId: 'l5-replay',
+    layer: 5,
+    severity: 'high',
+    goal: {
+      en: 'Re-send a captured valid message to trigger an action twice (e.g. a payment).',
+      it: 'Reinviare un messaggio valido catturato per far eseguire un\'azione due volte (es. un pagamento).'
+    },
+    steps: [
+      { actor: 'attacker', title: { en: 'Record a legitimate request', it: 'Registra una richiesta legittima' }, detail: { en: 'A signed/authenticated message is captured off the wire.', it: 'Un messaggio firmato/autenticato viene catturato dalla rete.' } },
+      { actor: 'attacker', title: { en: 'Replay it later', it: 'Lo riproduce più tardi' }, detail: { en: 'The exact same bytes are re-sent to the server.', it: 'Gli stessi identici byte vengono reinviati al server.' }, packet: 'REPLAY: signed_txn(id=A) again' },
+      { actor: 'victim', title: { en: 'Server re-processes it', it: 'Il server lo rielabora' }, detail: { en: 'The message is still validly signed, so it is accepted again.', it: 'Il messaggio è ancora firmato validamente, quindi viene accettato di nuovo.' } },
+      { actor: 'attacker', title: { en: 'Duplicate effect achieved', it: 'Effetto duplicato ottenuto' }, detail: { en: 'The action executes twice — a double charge, a repeated unlock.', it: 'L\'azione si esegue due volte — un doppio addebito, uno sblocco ripetuto.' } }
+    ],
+    neutralizeAtStep: 2,
+    defense: {
+      name: { en: 'Nonces + timestamps (anti-replay)', it: 'Nonce + timestamp (anti-replay)' },
+      action: { en: 'Each request carries a one-time nonce and a timestamp the server remembers.', it: 'Ogni richiesta porta un nonce usa-e-getta e un timestamp che il server ricorda.' },
+      mechanism: { en: 'A message whose nonce was already seen (or is expired) is rejected as a replay.', it: 'Un messaggio con nonce già visto (o scaduto) è rifiutato come replay.' }
+    },
+    outcomeSuccess: { en: 'The duplicated action causes financial or state damage.', it: 'L\'azione duplicata causa un danno economico o di stato.' },
+    outcomeBlocked: { en: 'The replayed message is recognised and discarded.', it: 'Il messaggio riprodotto viene riconosciuto e scartato.' }
+  },
+  {
+    scenarioId: 'l6-oracle',
+    layer: 6,
+    severity: 'high',
+    goal: {
+      en: 'Decrypt ciphertext one byte at a time by abusing padding error responses.',
+      it: 'Decifrare il testo cifrato un byte alla volta sfruttando le risposte di errore sul padding.'
+    },
+    steps: [
+      { actor: 'attacker', title: { en: 'Send tampered ciphertext', it: 'Invia testo cifrato manomesso' }, detail: { en: 'The attacker modifies a block and submits it to the server.', it: 'L\'attaccante modifica un blocco e lo invia al server.' }, packet: 'C\' = flip(last block bytes)' },
+      { actor: 'victim', title: { en: 'Server leaks padding validity', it: 'Il server rivela la validità del padding' }, detail: { en: 'Different errors for "bad padding" vs "bad content" reveal one bit of info.', it: 'Errori diversi per "padding errato" vs "contenuto errato" rivelano un bit di informazione.' } },
+      { actor: 'attacker', title: { en: 'Iterate byte by byte', it: 'Itera byte per byte' }, detail: { en: 'Using the oracle, each plaintext byte is recovered without the key.', it: 'Usando l\'oracolo, ogni byte del testo in chiaro è recuperato senza la chiave.' } },
+      { actor: 'attacker', title: { en: 'Full plaintext recovered', it: 'Testo in chiaro recuperato' }, detail: { en: 'The entire encrypted message is decrypted.', it: 'L\'intero messaggio cifrato viene decifrato.' } }
+    ],
+    neutralizeAtStep: 1,
+    defense: {
+      name: { en: 'Authenticated encryption (AES-GCM)', it: 'Crittografia autenticata (AES-GCM)' },
+      action: { en: 'An integrity tag is verified before any decryption/padding logic runs.', it: 'Un tag di integrità è verificato prima di qualsiasi logica di decifratura/padding.' },
+      mechanism: { en: 'Tampered ciphertext fails the tag check and is rejected uniformly — no oracle to leak.', it: 'Il testo manomesso fallisce il controllo del tag ed è rifiutato in modo uniforme — nessun oracolo che trapeli.' }
+    },
+    outcomeSuccess: { en: 'Confidential data is fully decrypted without the key.', it: 'I dati riservati sono decifrati completamente senza la chiave.' },
+    outcomeBlocked: { en: 'Every tampered block is rejected identically, giving the attacker nothing.', it: 'Ogni blocco manomesso è rifiutato in modo identico, senza dare nulla all\'attaccante.' }
+  },
+  {
+    scenarioId: 'l7-injection',
+    layer: 7,
+    severity: 'critical',
+    goal: {
+      en: 'Read or modify the database by injecting SQL through a web input.',
+      it: 'Leggere o modificare il database iniettando SQL tramite un input web.'
+    },
+    steps: [
+      { actor: 'attacker', title: { en: 'Submit a crafted input', it: 'Invia un input manipolato' }, detail: { en: "A form field contains SQL meta-characters instead of data.", it: 'Un campo del form contiene meta-caratteri SQL invece di dati.' }, packet: "user: ' OR '1'='1' -- " },
+      { actor: 'victim', title: { en: 'App concatenates it into a query', it: "L'app la concatena nella query" }, detail: { en: 'The input is glued directly into the SQL string, changing its logic.', it: "L'input viene incollato direttamente nella stringa SQL, cambiandone la logica." } },
+      { actor: 'network', title: { en: 'Database executes attacker logic', it: "Il DB esegue la logica dell'attaccante" }, detail: { en: 'The tampered query returns all rows or dumps other tables.', it: 'La query alterata restituisce tutte le righe o estrae altre tabelle.' } },
+      { actor: 'attacker', title: { en: 'Exfiltrate or alter data', it: 'Esfiltra o altera i dati' }, detail: { en: 'Credentials and records are stolen, or data is modified.', it: 'Credenziali e record vengono rubati, o i dati modificati.' } }
+    ],
+    neutralizeAtStep: 1,
+    defense: {
+      name: { en: 'Parameterized queries + WAF', it: 'Query parametrizzate + WAF' },
+      action: { en: 'Inputs are bound as data parameters, never concatenated as code; a WAF screens payloads.', it: 'Gli input sono legati come parametri dato, mai concatenati come codice; un WAF filtra i payload.' },
+      mechanism: { en: 'The database treats the input purely as a value, so the injected SQL never executes.', it: "Il database tratta l'input solo come valore, quindi l'SQL iniettato non viene mai eseguito." }
+    },
+    outcomeSuccess: { en: 'The whole database is exposed or corrupted.', it: 'L\'intero database è esposto o corrotto.' },
+    outcomeBlocked: { en: 'The payload is stored as harmless text; the query logic is unchanged.', it: 'Il payload è salvato come testo innocuo; la logica della query è invariata.' }
+  },
+  {
+    scenarioId: 'l7-xss',
+    layer: 7,
+    severity: 'high',
+    goal: {
+      en: 'Run attacker JavaScript in other users\' browsers to steal sessions or data.',
+      it: 'Eseguire JavaScript dell\'attaccante nei browser di altri utenti per rubare sessioni o dati.'
+    },
+    steps: [
+      { actor: 'attacker', title: { en: 'Inject a script payload', it: 'Inietta un payload script' }, detail: { en: 'A comment or profile field contains a <script> tag.', it: 'Un commento o un campo profilo contiene un tag <script>.' }, packet: '<script>steal(document.cookie)</script>' },
+      { actor: 'victim', title: { en: 'Server stores & reflects it', it: 'Il server lo salva e lo restituisce' }, detail: { en: 'The page renders the payload as HTML instead of text.', it: 'La pagina rende il payload come HTML invece che come testo.' } },
+      { actor: 'network', title: { en: 'Other users load the page', it: 'Altri utenti caricano la pagina' }, detail: { en: 'Every visitor\'s browser executes the injected script.', it: 'Il browser di ogni visitatore esegue lo script iniettato.' } },
+      { actor: 'attacker', title: { en: 'Sessions/keystrokes stolen', it: 'Sessioni/tasti rubati' }, detail: { en: 'Cookies are exfiltrated or actions performed on the victim\'s behalf.', it: 'I cookie vengono esfiltrati o azioni compiute a nome della vittima.' } }
+    ],
+    neutralizeAtStep: 1,
+    defense: {
+      name: { en: 'Output encoding + Content Security Policy', it: 'Output encoding + Content Security Policy' },
+      action: { en: 'User content is HTML-escaped and a CSP forbids inline/foreign scripts.', it: 'Il contenuto utente è HTML-escaped e una CSP vieta script inline/esterni.' },
+      mechanism: { en: 'The payload renders as inert text and the browser refuses to run injected scripts.', it: 'Il payload appare come testo inerte e il browser rifiuta di eseguire script iniettati.' }
+    },
+    outcomeSuccess: { en: 'Any visitor can be compromised through the trusted site.', it: 'Ogni visitatore può essere compromesso tramite il sito fidato.' },
+    outcomeBlocked: { en: 'The script is shown as plain text and never executes.', it: 'Lo script è mostrato come testo semplice e non viene mai eseguito.' }
+  },
+  {
+    scenarioId: 'l7-dns-poison',
+    layer: 7,
+    severity: 'critical',
+    goal: {
+      en: 'Redirect users to a malicious server by corrupting a DNS resolver\'s cache.',
+      it: 'Reindirizzare gli utenti verso un server malevolo corrompendo la cache di un resolver DNS.'
+    },
+    steps: [
+      { actor: 'attacker', title: { en: 'Trigger a resolution', it: 'Innesca una risoluzione' }, detail: { en: 'The attacker makes the resolver query a domain it doesn\'t have cached.', it: 'L\'attaccante fa interrogare al resolver un dominio non in cache.' } },
+      { actor: 'attacker', title: { en: 'Race a forged response', it: 'Anticipa con una risposta falsa' }, detail: { en: 'A spoofed answer with the attacker\'s IP is sent before the real one, guessing the query ID.', it: 'Una risposta spoofata con l\'IP dell\'attaccante è inviata prima di quella vera, indovinando l\'ID della query.' }, packet: 'A bank.com → 6.6.6.6 (spoofed)' },
+      { actor: 'victim', title: { en: 'Resolver caches the lie', it: 'Il resolver mette in cache la bugia' }, detail: { en: 'The fake mapping is stored and served to every client.', it: 'La mappatura falsa è memorizzata e servita a ogni client.' } },
+      { actor: 'network', title: { en: 'Users routed to attacker', it: 'Utenti instradati all\'attaccante' }, detail: { en: 'Everyone visiting the domain lands on the malicious server.', it: 'Chiunque visiti il dominio finisce sul server malevolo.' } }
+    ],
+    neutralizeAtStep: 2,
+    defense: {
+      name: { en: 'DNSSEC', it: 'DNSSEC' },
+      action: { en: 'Each DNS record is cryptographically signed and the resolver validates the signature.', it: 'Ogni record DNS è firmato crittograficamente e il resolver valida la firma.' },
+      mechanism: { en: 'A forged answer lacks a valid signature chain and is refused before caching.', it: 'Una risposta falsa non ha una catena di firme valida ed è rifiutata prima della cache.' }
+    },
+    outcomeSuccess: { en: 'A whole user base is silently sent to a phishing/malware site.', it: 'Un\'intera base utenti è inviata silenziosamente a un sito di phishing/malware.' },
+    outcomeBlocked: { en: 'The unsigned forgery is rejected; the cache stays honest.', it: 'La falsificazione non firmata è rifiutata; la cache resta onesta.' }
+  },
+  {
+    scenarioId: 'l7-ssh-brute',
+    layer: 7,
+    severity: 'medium',
+    goal: {
+      en: 'Gain remote shell access by trying huge numbers of password guesses.',
+      it: 'Ottenere una shell remota provando un enorme numero di password.'
+    },
+    steps: [
+      { actor: 'attacker', title: { en: 'Find an exposed SSH port', it: 'Trova una porta SSH esposta' }, detail: { en: 'Port 22 is reachable from the Internet.', it: 'La porta 22 è raggiungibile da Internet.' }, packet: 'connect tcp/22' },
+      { actor: 'attacker', title: { en: 'Automate login attempts', it: 'Automatizza i tentativi di login' }, detail: { en: 'A bot cycles through common usernames and passwords.', it: 'Un bot scorre username e password comuni.' }, packet: 'admin:123456, root:toor, ...' },
+      { actor: 'victim', title: { en: 'Server checks each attempt', it: 'Il server verifica ogni tentativo' }, detail: { en: 'With password auth enabled, every guess gets a yes/no.', it: 'Con l\'autenticazione a password attiva, ogni tentativo riceve un sì/no.' } },
+      { actor: 'attacker', title: { en: 'A weak password falls', it: 'Una password debole cede' }, detail: { en: 'Given enough tries, a reused/weak credential is found.', it: 'Con abbastanza tentativi, si trova una credenziale debole/riutilizzata.' } }
+    ],
+    neutralizeAtStep: 1,
+    defense: {
+      name: { en: 'Key-based auth + Fail2Ban', it: 'Autenticazione a chiave + Fail2Ban' },
+      action: { en: 'Password login is disabled; repeated failures get the source IP banned.', it: 'Il login a password è disabilitato; i tentativi ripetuti fanno bannare l\'IP sorgente.' },
+      mechanism: { en: 'Without the private key there is nothing to guess, and floods are rate-limited to zero.', it: 'Senza la chiave privata non c\'è nulla da indovinare, e le raffiche sono azzerate dal rate-limit.' }
+    },
+    outcomeSuccess: { en: 'The attacker gets an interactive shell on the server.', it: 'L\'attaccante ottiene una shell interattiva sul server.' },
+    outcomeBlocked: { en: 'Guessing is futile against keys and the attacker IP is quickly banned.', it: 'Indovinare è inutile contro le chiavi e l\'IP dell\'attaccante è bannato in fretta.' }
   }
 ];
