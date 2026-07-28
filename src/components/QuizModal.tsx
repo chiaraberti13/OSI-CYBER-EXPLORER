@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, CheckCircle2, AlertCircle, Trophy, ChevronRight, RotateCcw, GraduationCap } from 'lucide-react';
+import { X, CheckCircle2, AlertCircle, Trophy, ChevronRight, RotateCcw, GraduationCap, Star } from 'lucide-react';
 import { QUIZ_QUESTIONS } from '../constants';
 import { useStore } from '../store';
 
@@ -10,7 +10,7 @@ interface QuizModalProps {
 }
 
 export default function QuizModal({ isOpen = false, onClose = () => {}, inline = false }: { isOpen?: boolean; onClose?: () => void; inline?: boolean }) {
-  const { language, quizScore, incrementQuizScore, resetQuizScore } = useStore();
+  const { language, quizScore, incrementQuizScore, resetQuizScore, quizBestScore, setQuizBestScore } = useStore();
   const [sessionQuestions, setSessionQuestions] = useState<typeof QUIZ_QUESTIONS>(() => {
     const shuffled = [...QUIZ_QUESTIONS].sort(() => 0.5 - Math.random());
     return shuffled.slice(0, 5);
@@ -35,9 +35,30 @@ export default function QuizModal({ isOpen = false, onClose = () => {}, inline =
       setSelectedOption(null);
       setShowResult(false);
     } else {
+      setQuizBestScore(quizScore);
       setQuizFinished(true);
     }
   };
+
+  // Keyboard support: 1-4 to answer, Enter / ArrowRight to advance.
+  useEffect(() => {
+    if (!inline && !isOpen) return;
+    const handleKey = (e: KeyboardEvent) => {
+      if (quizFinished) return;
+      if (!showResult) {
+        const idx = parseInt(e.key, 10) - 1;
+        if (idx >= 0 && idx < sessionQuestions[currentQuestion].options.length) {
+          e.preventDefault();
+          handleOptionSelect(idx);
+        }
+      } else if (e.key === 'Enter' || e.key === 'ArrowRight') {
+        e.preventDefault();
+        nextQuestion();
+      }
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  });
 
   const handleReset = () => {
     const shuffled = [...QUIZ_QUESTIONS].sort(() => 0.5 - Math.random());
@@ -128,15 +149,46 @@ export default function QuizModal({ isOpen = false, onClose = () => {}, inline =
                   </p>
                 </div>
               </div>
-              {!inline && (
-                <button 
-                  onClick={onClose}
-                  className="p-2 hover:bg-slate-100 rounded-xl transition-colors text-slate-400 hover:text-slate-600"
-                >
-                  <X className="w-6 h-6" />
-                </button>
-              )}
+              <div className="flex items-center gap-3">
+                {!quizFinished && (
+                  <div className="text-right">
+                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none">
+                      {language === 'en' ? 'Score' : 'Punteggio'}
+                    </p>
+                    <p className="text-lg font-black text-indigo-600 leading-tight">{quizScore}</p>
+                  </div>
+                )}
+                {quizBestScore > 0 && (
+                  <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 border border-amber-100 rounded-xl">
+                    <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-400" />
+                    <span className="text-xs font-black text-amber-700">
+                      {language === 'en' ? `Best ${quizBestScore}` : `Record ${quizBestScore}`}
+                    </span>
+                  </div>
+                )}
+                {!inline && (
+                  <button
+                    onClick={onClose}
+                    aria-label={language === 'en' ? 'Close quiz' : 'Chiudi quiz'}
+                    className="p-2 hover:bg-slate-100 rounded-xl transition-colors text-slate-400 hover:text-slate-600"
+                  >
+                    <X className="w-6 h-6" />
+                  </button>
+                )}
+              </div>
             </div>
+
+            {/* Progress bar */}
+            {!quizFinished && (
+              <div className="h-1.5 bg-slate-100 w-full" role="progressbar" aria-valuemin={0} aria-valuemax={sessionQuestions.length} aria-valuenow={currentQuestion + (showResult ? 1 : 0)}>
+                <motion.div
+                  className="h-full bg-indigo-600"
+                  initial={false}
+                  animate={{ width: `${((currentQuestion + (showResult ? 1 : 0)) / sessionQuestions.length) * 100}%` }}
+                  transition={{ type: 'spring', stiffness: 200, damping: 30 }}
+                />
+              </div>
+            )}
 
             <div className="flex-1 overflow-y-auto p-8">
               {!quizFinished ? (
@@ -162,15 +214,30 @@ export default function QuizModal({ isOpen = false, onClose = () => {}, inline =
                           key={idx}
                           disabled={showResult}
                           onClick={() => handleOptionSelect(idx)}
-                          className={`flex items-center justify-between p-5 rounded-2xl border-2 text-left transition-all group ${appearance}`}
+                          className={`flex items-center justify-between gap-4 p-5 rounded-2xl border-2 text-left transition-all group ${appearance}`}
                         >
-                          <span className="font-semibold">{option[language]}</span>
-                          {showResult && isCorrect && <CheckCircle2 className="w-5 h-5 text-emerald-600" />}
-                          {showResult && isSelected && !isCorrect && <AlertCircle className="w-5 h-5 text-red-600" />}
+                          <span className="flex items-center gap-4">
+                            <span className={`flex items-center justify-center w-7 h-7 rounded-lg text-xs font-black shrink-0 transition-colors ${
+                              showResult && isCorrect ? 'bg-emerald-600 text-white'
+                              : showResult && isSelected ? 'bg-red-500 text-white'
+                              : 'bg-slate-100 text-slate-500 group-hover:bg-indigo-100 group-hover:text-indigo-700'
+                            }`}>
+                              {idx + 1}
+                            </span>
+                            <span className="font-semibold">{option[language]}</span>
+                          </span>
+                          {showResult && isCorrect && <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />}
+                          {showResult && isSelected && !isCorrect && <AlertCircle className="w-5 h-5 text-red-600 shrink-0" />}
                         </button>
                       );
                     })}
                   </div>
+
+                  {!showResult && (
+                    <p className="text-center text-[10px] text-slate-400 font-medium uppercase tracking-widest">
+                      {language === 'en' ? 'Tap an answer or press keys 1–4' : 'Tocca una risposta o premi i tasti 1–4'}
+                    </p>
+                  )}
 
                   {showResult && (
                     <div className="space-y-4">
@@ -199,12 +266,14 @@ export default function QuizModal({ isOpen = false, onClose = () => {}, inline =
                       >
                         <button
                           onClick={nextQuestion}
+                          autoFocus
                           className="flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-xl font-bold shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition-all"
                         >
-                          {currentQuestion === sessionQuestions.length - 1 
+                          {currentQuestion === sessionQuestions.length - 1
                             ? (language === 'en' ? 'View Results' : 'Vedi Risultati')
                             : (language === 'en' ? 'Next Question' : 'Prossima Domanda')}
                           <ChevronRight className="w-5 h-5" />
+                          <kbd className="hidden sm:inline text-[9px] font-mono bg-white/20 px-1.5 py-0.5 rounded ml-1">↵</kbd>
                         </button>
                       </motion.div>
                     </div>
@@ -225,10 +294,20 @@ export default function QuizModal({ isOpen = false, onClose = () => {}, inline =
                       {language === 'en' ? 'Quiz Completed!' : 'Quiz Completato!'}
                     </h3>
                     <p className="text-slate-500 font-medium">
-                      {language === 'en' 
-                        ? `You scored ${quizScore} out of ${sessionQuestions.length}` 
+                      {language === 'en'
+                        ? `You scored ${quizScore} out of ${sessionQuestions.length}`
                         : `Hai ottenuto ${quizScore} su ${sessionQuestions.length}`}
                     </p>
+                    {quizScore >= quizBestScore && quizScore > 0 && (
+                      <motion.p
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="mt-2 inline-flex items-center gap-1.5 text-amber-600 font-black text-sm uppercase tracking-wide"
+                      >
+                        <Star className="w-4 h-4 fill-amber-400" />
+                        {language === 'en' ? 'New personal best!' : 'Nuovo record personale!'}
+                      </motion.p>
+                    )}
                   </div>
 
                   <div className="bg-slate-50 rounded-3xl p-8 border border-slate-100 max-w-sm mx-auto">

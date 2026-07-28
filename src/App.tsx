@@ -9,6 +9,7 @@ import OsiStack from './components/OsiStack';
 import LayerDetails from './components/LayerDetails';
 import PacketSimulator from './components/PacketSimulator';
 import Terminal from './components/Terminal';
+import { useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import GuideModal from './components/GuideModal';
 import GlossaryModal from './components/GlossaryModal';
@@ -18,12 +19,35 @@ import SecurityDashboard from './components/SecurityDashboard';
 import { useStore } from './store';
 
 export default function App() {
-  const { 
-    isGuideOpen, 
-    setIsGuideOpen, 
+  const {
+    isGuideOpen,
+    setIsGuideOpen,
     activeView,
-    language 
+    language,
+    hasSeenGuide,
+    setHasSeenGuide
   } = useStore();
+
+  // Keep the document language + title in sync with the selected UI language.
+  // This helps screen readers, browser hyphenation/translation and SEO.
+  useEffect(() => {
+    document.documentElement.lang = language;
+    document.title = language === 'it'
+      ? 'OSI Cyber Explorer — Laboratorio interattivo di reti e cybersecurity'
+      : 'OSI Cyber Explorer — Interactive networking & cybersecurity lab';
+  }, [language]);
+
+  // First-visit onboarding: open the Lab Guide automatically the very first time.
+  useEffect(() => {
+    if (!hasSeenGuide) {
+      setIsGuideOpen(true);
+    }
+  }, [hasSeenGuide, setIsGuideOpen]);
+
+  const closeGuide = () => {
+    setIsGuideOpen(false);
+    if (!hasSeenGuide) setHasSeenGuide(true);
+  };
 
   return (
     <div className="min-h-screen bg-white text-slate-800 selection:bg-blue-500/10">
@@ -143,10 +167,10 @@ export default function App() {
       </footer>
 
       {/* Global Modals */}
-      <GuideModal 
-        isOpen={isGuideOpen} 
-        onClose={() => setIsGuideOpen(false)} 
-        language={language} 
+      <GuideModal
+        isOpen={isGuideOpen}
+        onClose={closeGuide}
+        language={language}
       />
     </div>
   );

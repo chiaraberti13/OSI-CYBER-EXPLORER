@@ -32,8 +32,12 @@ export default function PacketSimulator() {
     isGlossaryOpen,
     setIsGlossaryOpen,
     audioEnabled,
-    setAudioEnabled
+    setAudioEnabled,
+    simSpeed,
+    setSimSpeed
   } = useStore();
+
+  const stepInterval = Math.round(1000 / simSpeed);
 
   const labels = {
     en: {
@@ -362,7 +366,7 @@ export default function PacketSimulator() {
              addLog(language === 'en' ? 'Packet reaching destination. Starting decapsulation...' : 'Il pacchetto raggiunge il destinatario. Inizio decapsulamento...', 'info');
           }
         }
-      }, 1000);
+      }, stepInterval);
     } else if (simulationState === 'decapsulating' && !isPaused) {
       interval = setInterval(() => {
         if (currentStep < 7) {
@@ -377,11 +381,11 @@ export default function PacketSimulator() {
           setSimulationState('idle');
           if (audioEnabled) playAudioCue('success');
         }
-      }, 1000);
+      }, stepInterval);
     }
 
     return () => clearInterval(interval);
-  }, [simulationState, currentStep, activeAttack, defenseEnabled, isPaused, selectedProtocol, language, audioEnabled]);
+  }, [simulationState, currentStep, activeAttack, defenseEnabled, isPaused, selectedProtocol, language, audioEnabled, stepInterval]);
 
   const threatLevel = activeAttack === 'none' ? 0 : defenseEnabled ? 40 : 100;
   const threatColor = activeAttack === 'none' ? 'text-emerald-500' : defenseEnabled ? 'text-orange-500' : 'text-red-500';
@@ -444,6 +448,28 @@ export default function PacketSimulator() {
         </div>
 
         <div className="flex items-center gap-2">
+          {/* Playback Speed Control (didactic: slow down to explain, speed up to review) */}
+          <div className="flex items-center gap-1.5" role="group" aria-label={language === 'en' ? 'Simulation speed' : 'Velocità simulazione'}>
+            <span className="hidden sm:inline text-[7px] font-bold text-slate-400 uppercase tracking-widest">
+              {language === 'en' ? 'Speed' : 'Velocità'}
+            </span>
+            <div className="flex bg-slate-50 p-0.5 rounded-lg border border-slate-200">
+              {[0.5, 1, 2].map((s) => (
+                <button
+                  key={s}
+                  onClick={() => setSimSpeed(s)}
+                  aria-pressed={simSpeed === s}
+                  aria-label={language === 'en' ? `Speed ${s}x` : `Velocità ${s}x`}
+                  className={`px-2 py-1 text-[9px] font-bold rounded-md font-mono transition-all ${
+                    simSpeed === s ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-slate-600'
+                  }`}
+                >
+                  {s}x
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* Audio Feedback Cues Toggle */}
           <button
             onClick={() => {
@@ -451,8 +477,11 @@ export default function PacketSimulator() {
               setAudioEnabled(next);
               if (next) playAudioCue('start');
             }}
-            title={audioEnabled 
-              ? (language === 'en' ? 'Disable Audio Cues' : 'Disattiva Segnali Audio') 
+            aria-label={audioEnabled
+              ? (language === 'en' ? 'Disable Audio Cues' : 'Disattiva Segnali Audio')
+              : (language === 'en' ? 'Enable Audio Cues' : 'Attiva Segnali Audio')}
+            title={audioEnabled
+              ? (language === 'en' ? 'Disable Audio Cues' : 'Disattiva Segnali Audio')
               : (language === 'en' ? 'Enable Audio Cues' : 'Attiva Segnali Audio')}
             className={`flex items-center gap-1.5 text-[9px] font-bold px-2.5 py-1 rounded-lg border transition-all cursor-pointer ${
               audioEnabled 
@@ -494,6 +523,8 @@ export default function PacketSimulator() {
 
           <button
             onClick={handleReset}
+            aria-label={labels.reset}
+            title={labels.reset}
             className="flex items-center justify-center w-9 h-9 bg-white hover:bg-slate-50 text-slate-400 hover:text-slate-900 rounded-lg transition-all border border-slate-200 group"
           >
             <RotateCcw className="w-3.5 h-3.5 group-hover:rotate-180 transition-transform duration-500" />
@@ -505,9 +536,10 @@ export default function PacketSimulator() {
            <div className="flex items-center gap-3">
              <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Protocol</span>
              <div className="relative">
-               <select 
+               <select
                  value={selectedProtocol}
                  onChange={(e) => useStore.getState().setSelectedProtocol(e.target.value as any)}
+                 aria-label={language === 'en' ? 'Select protocol to simulate' : 'Seleziona il protocollo da simulare'}
                  className="appearance-none bg-white border border-slate-200 text-slate-800 text-[10px] font-bold rounded-lg px-8 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all cursor-pointer uppercase tracking-wider"
                >
                  <option value="HTTP">HTTP (Web)</option>
@@ -572,6 +604,7 @@ export default function PacketSimulator() {
                   }
                 }
               }}
+              aria-label={language === 'en' ? 'Select attack scenario to inject' : 'Seleziona lo scenario di attacco da iniettare'}
               className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-[11px] font-bold text-slate-700 outline-none focus:border-red-400 focus:ring-1 focus:ring-red-100 transition-all cursor-pointer appearance-none"
             >
               <option value="none">{language === 'en' ? '-- Select Attack Scenario --' : '-- Seleziona Scenario di Attacco --'}</option>

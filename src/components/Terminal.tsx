@@ -13,8 +13,20 @@ export default function Terminal() {
   }, [logs]);
 
   const labels = {
-    en: { clear: 'Clear', terminal: 'System Logs' },
-    it: { clear: 'Pulisci', terminal: 'Log di Sistema' }
+    en: {
+      clear: 'Clear',
+      terminal: 'System Logs',
+      emptyTitle: 'Console ready',
+      emptyBody: 'Choose a protocol and press "Start Simulation" to watch a packet travel down and up the 7 OSI layers.',
+      emptyHint: 'Tip: inject an attack and toggle the Shield to see defenses in action.'
+    },
+    it: {
+      clear: 'Pulisci',
+      terminal: 'Log di Sistema',
+      emptyTitle: 'Console pronta',
+      emptyBody: 'Scegli un protocollo e premi "Avvia Simulazione" per vedere un pacchetto scendere e risalire i 7 livelli OSI.',
+      emptyHint: 'Suggerimento: inietta un attacco e attiva lo Shield per vedere le difese in azione.'
+    }
   }[language];
 
   return (
@@ -30,18 +42,37 @@ export default function Terminal() {
             {labels.terminal}
           </span>
         </div>
-        <button 
+        <button
           onClick={clearLogs}
-          className="text-slate-400 hover:text-slate-600 transition-colors uppercase tracking-widest font-bold"
+          disabled={logs.length === 0}
+          aria-label={labels.clear}
+          className="text-slate-400 hover:text-slate-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors uppercase tracking-widest font-bold"
         >
           {labels.clear}
         </button>
       </div>
-      
-      <div 
+
+      <div
         ref={scrollRef}
+        aria-live="polite"
         className="flex-1 overflow-y-auto p-5 space-y-1.5 custom-scrollbar bg-slate-50/30"
       >
+        {logs.length === 0 && (
+          <div className="h-full flex flex-col items-center justify-center text-center px-4 select-none">
+            <div className="w-9 h-9 rounded-lg bg-emerald-50 border border-emerald-100 flex items-center justify-center mb-3">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            </div>
+            <p className="text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 not-italic">
+              {labels.emptyTitle}
+            </p>
+            <p className="text-[10px] text-slate-400 leading-relaxed max-w-[220px] normal-case tracking-normal font-sans mb-3">
+              {labels.emptyBody}
+            </p>
+            <p className="text-[9px] text-amber-600/80 leading-relaxed max-w-[220px] normal-case tracking-normal font-sans">
+              {labels.emptyHint}
+            </p>
+          </div>
+        )}
         <AnimatePresence initial={false}>
           {logs.map((log, i) => (
             <motion.div
