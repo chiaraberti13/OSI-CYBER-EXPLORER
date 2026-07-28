@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
 import { Language, LogEntry, SimulationState, AttackType, PacketHeader } from './types';
 
 interface AppState {
@@ -35,6 +36,9 @@ interface AppState {
   quizScore: number;
   incrementQuizScore: () => void;
   resetQuizScore: () => void;
+
+  quizBestScore: number;
+  setQuizBestScore: (score: number) => void;
   
   defenseEnabled: boolean;
   setDefenseEnabled: (enabled: boolean) => void;
@@ -67,9 +71,19 @@ interface AppState {
 
   audioEnabled: boolean;
   setAudioEnabled: (enabled: boolean) => void;
+
+  // Simulation playback speed multiplier (0.5x = slow tutor mode, 2x = fast review)
+  simSpeed: number;
+  setSimSpeed: (speed: number) => void;
+
+  // Onboarding: whether the user has already seen the Lab Guide
+  hasSeenGuide: boolean;
+  setHasSeenGuide: (seen: boolean) => void;
 }
 
-export const useStore = create<AppState>((set) => ({
+export const useStore = create<AppState>()(
+  persist(
+    (set) => ({
   language: 'it',
   setLanguage: (language) => set({ language }),
   
@@ -106,6 +120,11 @@ export const useStore = create<AppState>((set) => ({
   quizScore: 0,
   incrementQuizScore: () => set((state) => ({ quizScore: state.quizScore + 1 })),
   resetQuizScore: () => set({ quizScore: 0 }),
+
+  quizBestScore: 0,
+  setQuizBestScore: (quizBestScore) => set((state) => ({
+    quizBestScore: Math.max(state.quizBestScore, quizBestScore)
+  })),
   
   defenseEnabled: false,
   setDefenseEnabled: (defenseEnabled) => set({ defenseEnabled }),
@@ -145,4 +164,25 @@ export const useStore = create<AppState>((set) => ({
 
   audioEnabled: true,
   setAudioEnabled: (audioEnabled) => set({ audioEnabled }),
-}));
+
+  simSpeed: 1,
+  setSimSpeed: (simSpeed) => set({ simSpeed }),
+
+  hasSeenGuide: false,
+  setHasSeenGuide: (hasSeenGuide) => set({ hasSeenGuide }),
+    }),
+    {
+      name: 'osi-lab-preferences',
+      storage: createJSONStorage(() => localStorage),
+      // Only persist user preferences and progress — never transient session state
+      // (logs, simulation status, active attack) so a reload always starts clean.
+      partialize: (state) => ({
+        language: state.language,
+        audioEnabled: state.audioEnabled,
+        simSpeed: state.simSpeed,
+        quizBestScore: state.quizBestScore,
+        hasSeenGuide: state.hasSeenGuide,
+      }),
+    }
+  )
+);

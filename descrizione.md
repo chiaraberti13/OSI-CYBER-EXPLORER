@@ -59,6 +59,24 @@ Un motore di quiz per autovalutare le conoscenze acquisite, con punteggio.
 
 Tutti i contenuti sono disponibili sia **in italiano che in inglese**, commutabili con un click.
 
+### ✨ Esperienza didattica e UX
+Alcune scelte pensate specificamente per l'apprendimento e l'usabilità:
+
+- **Onboarding alla prima visita:** la *Guida del Lab* si apre automaticamente solo la prima volta,
+  per orientare subito chi non conosce l'app (poi non disturba più).
+- **Preferenze ricordate:** lingua, segnali audio, velocità di simulazione e *record* del quiz
+  vengono salvati nel browser (`localStorage`), così l'app riapre com'era stata lasciata.
+- **Controllo della velocità (0.5× / 1× / 2×):** si può rallentare la simulazione per spiegare
+  passo-passo in aula o accelerarla per un ripasso.
+- **Console guidata:** quando non ci sono ancora log, il terminale mostra un suggerimento su
+  come iniziare invece di restare vuoto.
+- **Quiz più interattivo:** barra di avanzamento, punteggio in tempo reale, record personale
+  e **navigazione da tastiera** (tasti 1–4 per rispondere, Invio per proseguire), con
+  *spiegazione del tutor* dopo ogni risposta.
+- **Accessibilità:** attributo `lang` del documento e titolo sincronizzati con la lingua,
+  etichette `aria-label` sui controlli a sola icona, focus da tastiera ben visibile e
+  rispetto della preferenza di sistema *"riduci animazioni"* (`prefers-reduced-motion`).
+
 ---
 
 ## 3. Come è stata sviluppata (aspetti tecnici)
@@ -84,8 +102,11 @@ Il progetto segue un'**architettura modulare e a responsabilità separate**:
   attacchi e difese in due lingue, gli scenari di attacco, i termini del glossario). Contenuto e logica
   sono tenuti separati: aggiungere un attacco o un livello significa modificare i dati, non il codice.
 - **`src/store.ts`** — lo **stato globale** con Zustand: lingua attiva, livello selezionato, stato della
-  simulazione, protocollo scelto, attacco attivo, difese, log, header generati, vista corrente, audio.
-  Tutti i componenti leggono e scrivono da qui, evitando il "prop drilling".
+  simulazione, protocollo scelto, attacco attivo, difese, log, header generati, vista corrente, audio,
+  velocità di simulazione. Tutti i componenti leggono e scrivono da qui, evitando il "prop drilling".
+  Le sole **preferenze** (lingua, audio, velocità, record del quiz, guida già vista) sono rese
+  persistenti con il middleware `persist` di Zustand su `localStorage`, mentre lo stato transitorio
+  della sessione (log, stato simulazione, attacco) riparte pulito a ogni ricarica.
 - **`src/components/`** — i **componenti UI**, ognuno con una responsabilità chiara:
   `PacketSimulator` (motore di simulazione), `OsiStack` (pila visiva dei 7 livelli),
   `Terminal` (log animati), `LayerDetails`, `SecurityDashboard`, `QuizModal`, `PortsModal`,

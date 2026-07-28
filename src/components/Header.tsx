@@ -35,15 +35,19 @@ export default function Header() {
             <span>{language === 'it' ? 'Guida del Lab' : 'Lab Guide'}</span>
           </button>
 
-          <div className="flex bg-slate-50 p-0.5 rounded-lg border border-slate-200">
+          <div className="flex bg-slate-50 p-0.5 rounded-lg border border-slate-200" role="group" aria-label={language === 'it' ? 'Lingua' : 'Language'}>
             <button
               onClick={() => setLanguage('en')}
+              aria-pressed={language === 'en'}
+              aria-label="English"
               className={`px-3 py-1 text-[9px] font-bold rounded-md transition-all ${language === 'en' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
             >
               EN
             </button>
             <button
               onClick={() => setLanguage('it')}
+              aria-pressed={language === 'it'}
+              aria-label="Italiano"
               className={`px-3 py-1 text-[9px] font-bold rounded-md transition-all ${language === 'it' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
             >
               IT
