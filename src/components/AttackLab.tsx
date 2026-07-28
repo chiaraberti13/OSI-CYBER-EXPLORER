@@ -10,8 +10,8 @@ import {
 
 const T = {
   it: {
-    title: 'Teatro degli Attacchi',
-    subtitle: 'Guarda come si svolge un attacco, passo dopo passo — e attiva la difesa per vedere dove viene neutralizzato.',
+    title: 'Laboratorio Attacco & Difesa',
+    subtitle: 'Il laboratorio pratico completo: scegli un attacco, guarda come si svolge passo dopo passo e attiva la difesa per vedere dove e come viene neutralizzato.',
     pick: 'Scegli un attacco',
     search: 'Cerca attacco, tecnica o livello...',
     goal: 'Obiettivo dell\'attaccante',
@@ -37,8 +37,8 @@ const T = {
     tip: 'Suggerimento: prova lo stesso attacco con la difesa OFF e poi ON per confrontare gli esiti.'
   },
   en: {
-    title: 'Attack Theater',
-    subtitle: 'Watch how an attack unfolds, step by step — then turn on the defense to see exactly where it gets neutralized.',
+    title: 'Attack & Defense Lab',
+    subtitle: 'The complete hands-on lab: pick an attack, watch how it unfolds step by step, then turn on the defense to see exactly where and how it gets neutralized.',
     pick: 'Choose an attack',
     search: 'Search attack, technique or layer...',
     goal: 'Attacker\'s goal',

@@ -44,29 +44,30 @@ Su questa sezione l'utente può anche:
 - **Attivare/disattivare i segnali audio:** ogni fase produce un suono sintetizzato
   (avvio, tick a ogni livello, accordo di successo, allarme in caso di attacco).
 
-### ⚔️ Teatro degli Attacchi
-La sezione pensata per **capire come avvengono gli attacchi e come vengono neutralizzati**.
+### ⚔️ Laboratorio Attacco & Difesa
+Il **laboratorio pratico unico** per capire *come avvengono gli attacchi e come vengono neutralizzati*.
 Si sceglie un attacco (organizzati per livello OSI, da L7 a L1) e se ne osserva la *kill chain*
 passo dopo passo: ogni passo indica **chi agisce** (attaccante, bersaglio, rete o difesa),
 cosa succede e — dove utile — il pacchetto/payload tecnico coinvolto. Attivando il toggle
 **Difesa** compare la contromisura consigliata (con *come agisce* e *perché funziona*) esattamente
 nel punto in cui interviene: i passi successivi dell'attacco vengono mostrati come "bloccati"
 e l'esito passa da *"Attacco riuscito"* a *"Attacco neutralizzato"*. Si può riprodurre in automatico,
-avanzare un passo alla volta o resettare. Coperti tutti e 7 i livelli con attacchi emblematici
-(ARP Poisoning, MAC Flooding, IP Spoofing, BGP Hijacking, SYN Flood, TCP Reset, Session Hijacking,
-Replay, Padding Oracle, SQL Injection, XSS, DNS Cache Poisoning, SSH Brute Force, Physical Tapping…).
+avanzare un passo alla volta o resettare. Copre **tutti i 7 livelli con ~25 attacchi** (ARP Poisoning,
+MAC Flooding, DHCP Starvation, IP Spoofing, Smurf, Frammentazione IP, BGP Hijacking, SYN/UDP Flood,
+Port Scanning, TCP Reset, Ping of Death, Session Hijacking, Replay, Padding Oracle, SQL Injection,
+XSS, Phishing Omografico, DNS Cache Poisoning, Slowloris, SSH Brute Force, SMTP Open Relay,
+FTP Sniffing, Jamming, Physical Tapping…).
 
 ### 🔢 Porte & Protocolli
 Una sezione di riferimento sulle porte di rete e i protocolli associati.
 
 ### 🛡️ Cybersecurity (IDS/IPS)
-Il **lato dei difensori**, complementare al Teatro degli Attacchi: qui non si studia *come*
-funziona un attacco, ma **con quale apparato** lo si rileva o blocca e **dove** si posiziona.
-Spiega la differenza chiave tra **IDS** (rilevamento passivo, allerta ma non ferma) e **IPS**
-(prevenzione attiva in linea, scarta il pacchetto), con la matrice dei dispositivi
-NIDS/NIPS/HIDS/HIPS/WIDS/WIPS/EDR. Il mini-lab *"Scegli la Difesa Giusta"* mette lo stesso
-attacco contro apparati diversi e mostra i tre esiti possibili: **bloccato** (IPS),
-**solo rilevato** (IDS) o **superato**.
+Sezione di **riferimento** sul lato dei difensori, complementare al Laboratorio Attacco & Difesa
+(dove si fa la pratica): qui non si studia *come* funziona un attacco, ma **con quale apparato**
+lo si rileva o blocca e **dove** si posiziona. Spiega la differenza chiave tra **IDS**
+(rilevamento passivo, allerta ma non ferma) e **IPS** (prevenzione attiva in linea, scarta il
+pacchetto), con la matrice dei dispositivi NIDS/NIPS/HIDS/HIPS/WIDS/WIPS/EDR e un rimando diretto
+al laboratorio pratico.
 
 ### 📖 Glossario di Rete
 Dizionario dei termini tecnici di networking e sicurezza.

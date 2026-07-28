@@ -17,8 +17,8 @@ export default function Navigation() {
     },
     {
       id: 'attacklab' as const,
-      en: 'Attack Theater',
-      it: 'Teatro Attacchi',
+      en: 'Attack & Defense Lab',
+      it: 'Lab Attacco & Difesa',
       icon: Swords,
       color: 'text-red-600',
       activeBg: 'bg-red-50/50 text-red-700 border-red-200'
