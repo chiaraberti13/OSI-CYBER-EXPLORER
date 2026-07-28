@@ -259,6 +259,17 @@ export default function SecurityDashboard() {
         en: 'Actively dispatches fake deauthentication packets over the air to force target disconnects from rogue routers.',
         it: 'Invia pacchetti radio di deautenticazione fasulli nell\'aria per disconnettere PC dai finti AP clonati.'
       }
+    },
+    {
+      id: 'EDR',
+      title: 'EDR',
+      fullName: 'Endpoint Detection & Response',
+      nature: 'Active Endpoint Agent',
+      color: 'bg-teal-500/10 text-teal-600 border-teal-200',
+      description: {
+        en: 'Modern agent on each device: records process behavior, spots anomalies and can isolate or kill a threat — it both detects and responds.',
+        it: 'Agente moderno su ogni dispositivo: registra il comportamento dei processi, rileva anomalie e può isolare o terminare la minaccia — rileva e risponde.'
+      }
     }
   ];
 
@@ -278,9 +289,9 @@ export default function SecurityDashboard() {
             {language === 'en' ? 'IDS & IPS Detection Center' : 'Centro di Ispezione IDS / IPS'}
           </h2>
           <p className="text-slate-300 text-[13px] leading-relaxed">
-            {language === 'en' 
-              ? 'Intrusion Detection (IDS) and Intrusion Prevention (IPS) form the pillars of packet-level auditing. They filter malware, block remote command injections, and protect systems on physical networks, end stations (Hosts) or radio waves (Wireless).'
-              : 'I sistemi IDS (Rilevamento) e IPS (Prevenzione) costituiscono i pilastri dell\'ispezione del traffico. Monitorano malware, prevengono iniezioni di codice e difendono le risorse sulla rete fisica, sui singoli server (Host) o nell\'etere (Wireless).'}
+            {language === 'en'
+              ? 'The defenders\' side: which appliances watch the network, where they sit, and the key difference between detecting an attack (IDS) and actively blocking it (IPS). To see how a single attack works step by step, use the Attack Theater.'
+              : 'Il lato dei difensori: quali apparati sorvegliano la rete, dove si posizionano e la differenza chiave tra rilevare un attacco (IDS) e bloccarlo attivamente (IPS). Per vedere come funziona un singolo attacco passo dopo passo, usa il Teatro degli Attacchi.'}
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6 pt-4 border-t border-slate-800">
@@ -291,8 +302,8 @@ export default function SecurityDashboard() {
               </div>
               <p className="text-slate-400 text-xs">
                 {language === 'en'
-                  ? 'Passive analyzer. Receives a raw mirrored copy of the traffic. Can flag, log, and alert, but cannot interrupt connections directly.'
-                  : 'Analisi passiva. Riceve log e avvisi fuori banda (TAP). Ha l\'immensa virtù di non rallentare la rete, ma non blocca l\'attacco.'}
+                  ? 'Passive, out-of-band. Reads a copy of the traffic (TAP/mirror): it can flag, log and alert, but cannot stop the attack. It adds no latency.'
+                  : 'Passivo, fuori linea. Legge una copia del traffico (TAP/mirror): può segnalare, registrare e allertare, ma non blocca l\'attacco. Non rallenta la rete.'}
               </p>
             </div>
             <div className="p-4 bg-slate-800/40 rounded-2xl border border-slate-800/60">
@@ -302,8 +313,8 @@ export default function SecurityDashboard() {
               </div>
               <p className="text-slate-400 text-xs">
                 {language === 'en'
-                  ? 'Active guard. Sits inline directly in the middle of routing pathways, inspects real frames and drops packets before reach.'
-                  : 'Filtro attivo. Collocato nell\'instradamento in-linea. Se decifra minacce scarta istantaneamente il pacchetto salvando il server.'}
+                  ? 'Active, in-line. Sits on the real data path: it inspects packets and drops the malicious ones before they reach the target.'
+                  : 'Attivo, in linea. Sta sul percorso reale dei dati: ispeziona i pacchetti e scarta quelli dannosi prima che arrivino a destinazione.'}
               </p>
             </div>
           </div>
@@ -359,13 +370,29 @@ export default function SecurityDashboard() {
           <div className="space-y-2">
             <h3 className="text-base font-extrabold text-slate-900 uppercase tracking-tighter flex items-center gap-2">
               <Settings className="w-5 h-5 text-indigo-600" />
-              {language === 'en' ? 'IPS & IDS Lab simulator' : 'Laboratorio di Esecuzione Attacchi e Difese'}
+              {language === 'en' ? 'Match the Right Defense' : 'Scegli la Difesa Giusta'}
             </h3>
             <p className="text-xs text-slate-500 leading-relaxed">
               {language === 'en'
-                ? 'Test different cyber attack scenarios against NIDS, NIPS, HIDS, HIPS, and analyze the matching consequences.'
-                : 'Seleziona una minaccia e posiziona la sonda di difesa adeguata per valutare se l\'attacco viene eseguito, registrato soltanto, o sventato.'}
+                ? 'Same attack, different appliances. Pick a threat and a defense to find out which one blocks it (IPS), which only detects it (IDS), and which misses it entirely.'
+                : 'Stesso attacco, apparati diversi. Scegli una minaccia e una difesa per scoprire quale la blocca (IPS), quale la rileva soltanto (IDS) e quale non la vede affatto.'}
             </p>
+
+            {/* Outcome legend: the three possible results of the test */}
+            <div className="flex flex-wrap gap-2 pt-1">
+              <span className="inline-flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-wider px-2 py-1 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                {language === 'en' ? 'Blocked (IPS)' : 'Bloccato (IPS)'}
+              </span>
+              <span className="inline-flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-wider px-2 py-1 rounded-md bg-amber-50 text-amber-700 border border-amber-200">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                {language === 'en' ? 'Only detected (IDS)' : 'Solo rilevato (IDS)'}
+              </span>
+              <span className="inline-flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-wider px-2 py-1 rounded-md bg-red-50 text-red-700 border border-red-200">
+                <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
+                {language === 'en' ? 'Bypassed' : 'Superato'}
+              </span>
+            </div>
           </div>
 
           <div className="space-y-4">
@@ -568,8 +595,8 @@ export default function SecurityDashboard() {
                 <strong>{language === 'en' ? 'Vulnerable Pattern Explored!' : 'Falla di Sicurezza Rilevata!'}</strong>
                 <p className="text-[11px] opacity-90 mt-1">
                   {language === 'en'
-                    ? `Because your defense of "${selectedDefense}" was not inline (IPS/HIPS) or lacked application-level hooks for this specific threat, the malicious payload completely bypassed audits.`
-                    : `Poiché il sistema "${selectedDefense === 'NONE' ? 'Nessuna/None' : selectedDefense}" non si interpone attivamente o non esegue controlli locali su questo tipo di attacco, l'attaccante ha superato incolume la rete.`}
+                    ? `The chosen appliance (${selectedDefense === 'NONE' ? 'none' : selectedDefense}) is not active on this vector: the attack slips past and reaches the target.`
+                    : `L'apparato scelto (${selectedDefense === 'NONE' ? 'nessuno' : selectedDefense}) non è attivo su questo vettore: l'attacco supera i controlli e raggiunge il bersaglio.`}
                 </p>
               </div>
             )}
@@ -579,8 +606,8 @@ export default function SecurityDashboard() {
                 <strong>{language === 'en' ? 'Intrusion Successfully Blocked!' : 'Intrusione Bloccata con Successo!'}</strong>
                 <p className="text-[11px] opacity-90 mt-1">
                   {language === 'en'
-                    ? `Great match! The chosen defense is an active filter inline or high-fidelity agent that intercepted the vulnerability in real-time, safely shutting down the attack.`
-                    : `Ottima scelta! Il sistema selezionato opera con filtraggio attivo in-linea o agente locale con facoltà di blocco in tempo reale. Il payload è stato scartato prima di recare danno.`}
+                    ? `Right choice. An active in-line system (IPS) or a blocking host/endpoint agent dropped the payload in real time, before any damage.`
+                    : `Scelta corretta. Un sistema attivo in linea (IPS) o un agente locale con blocco ha scartato il payload in tempo reale, prima di ogni danno.`}
                 </p>
               </div>
             )}
@@ -590,8 +617,8 @@ export default function SecurityDashboard() {
                 <strong>{language === 'en' ? 'Alert generated, but attack still succeeded!' : 'Registrato Alert ma Violazione Riuscita!'}</strong>
                 <p className="text-[11px] opacity-90 mt-1">
                   {language === 'en'
-                    ? `This represents a classic passive IDS behavior. It generated high-fidelity telemetry logs for SIEM analysts, but lacked active inline drop features, meaning the hacker compromised the core host.`
-                    : `Questo illustra l'azione passiva dell'IDS. Rileva la scansione o l'exploit generando un log completo che allerta la sala operativa, ma senza il potere di tagliare il filo del ladro.`}
+                    ? `Classic IDS behavior: it detects and logs the attack for the analysts, but being passive it cannot block it — the host is still compromised.`
+                    : `Comportamento tipico dell'IDS: rileva e registra l'attacco per gli analisti, ma essendo passivo non può bloccarlo — l'host resta compromesso.`}
                 </p>
               </div>
             )}

@@ -60,8 +60,13 @@ Replay, Padding Oracle, SQL Injection, XSS, DNS Cache Poisoning, SSH Brute Force
 Una sezione di riferimento sulle porte di rete e i protocolli associati.
 
 ### 🛡️ Cybersecurity (IDS/IPS)
-Una dashboard dedicata all'analisi di sicurezza: attacchi tipici per livello,
-strategie di *hardening* e contromisure.
+Il **lato dei difensori**, complementare al Teatro degli Attacchi: qui non si studia *come*
+funziona un attacco, ma **con quale apparato** lo si rileva o blocca e **dove** si posiziona.
+Spiega la differenza chiave tra **IDS** (rilevamento passivo, allerta ma non ferma) e **IPS**
+(prevenzione attiva in linea, scarta il pacchetto), con la matrice dei dispositivi
+NIDS/NIPS/HIDS/HIPS/WIDS/WIPS/EDR. Il mini-lab *"Scegli la Difesa Giusta"* mette lo stesso
+attacco contro apparati diversi e mostra i tre esiti possibili: **bloccato** (IPS),
+**solo rilevato** (IDS) o **superato**.
 
 ### 📖 Glossario di Rete
 Dizionario dei termini tecnici di networking e sicurezza.
