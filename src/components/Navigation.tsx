@@ -1,6 +1,6 @@
 import React from 'react';
 import { useStore } from '../store';
-import { Layers, Hash, Shield, BookOpen, GraduationCap, Swords } from 'lucide-react';
+import { Layers, Hash, Shield, BookOpen, Swords } from 'lucide-react';
 import { motion } from 'motion/react';
 
 export default function Navigation() {
@@ -46,14 +46,6 @@ export default function Navigation() {
       icon: BookOpen,
       color: 'text-blue-600',
       activeBg: 'bg-blue-50/50 text-blue-700 border-blue-200'
-    },
-    {
-      id: 'quiz' as const,
-      en: 'Quiz',
-      it: 'Quiz',
-      icon: GraduationCap,
-      color: 'text-rose-600',
-      activeBg: 'bg-rose-50/50 text-rose-700 border-rose-200'
     }
   ];
 

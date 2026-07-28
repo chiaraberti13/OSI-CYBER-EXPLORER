@@ -14,7 +14,6 @@ import { motion, AnimatePresence } from 'motion/react';
 import GuideModal from './components/GuideModal';
 import GlossaryModal from './components/GlossaryModal';
 import PortsModal from './components/PortsModal';
-import QuizModal from './components/QuizModal';
 import SecurityDashboard from './components/SecurityDashboard';
 import AttackLab from './components/AttackLab';
 import { useStore } from './store';
@@ -144,17 +143,6 @@ export default function App() {
             </motion.div>
           )}
 
-          {activeView === 'quiz' && (
-            <motion.div
-              key="quiz"
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              transition={{ duration: 0.2 }}
-            >
-              <QuizModal inline={true} />
-            </motion.div>
-          )}
         </AnimatePresence>
       </main>
 

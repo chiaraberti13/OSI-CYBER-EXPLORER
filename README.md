@@ -23,7 +23,7 @@
 ### Key Features
 - **Interactive OSI Stack**: Dynamic visualization of the 7 layers of networking.
 - **Protocol Analysis**: Deep-dives into core protocols (HTTP, DNS, SSH, TCP, IP, BGP).
-- **Cybersecurity Academy**: Randomized quiz engine to verify networking and security knowledge.
+- **Attack & Defense Lab**: Step-by-step walkthroughs of ~25 attacks across all 7 layers, each with the countermeasure that neutralizes it.
 - **Security Analysis Tab**: Expert technical insights and hardening roadmaps for each layer.
 
 ### Quick Start
@@ -65,7 +65,7 @@ App URL: `http://localhost:3000`
 ### Funzionalità principali
 - **Stack OSI Interattivo**: Visualizzazione dinamica dei 7 livelli del networking.
 - **Analisi dei Protocolli**: Approfondimenti sui protocolli fondamentali (HTTP, DNS, SSH, TCP, IP, BGP).
-- **Accademia Cybersecurity**: Motore quiz randomizzato per verificare le conoscenze di rete e sicurezza.
+- **Laboratorio Attacco & Difesa**: Percorsi passo-passo di ~25 attacchi su tutti i 7 livelli, ognuno con la contromisura che lo neutralizza.
 - **Tab Analisi di Sicurezza**: Insight tecnici esperti e roadmap di hardening per ogni livello.
 
 ### Avvio rapido
