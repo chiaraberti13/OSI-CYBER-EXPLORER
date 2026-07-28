@@ -19,7 +19,7 @@ in un **laboratorio visivo** che si "guarda funzionare", pensato per studenti e 
 
 ## 2. Cosa fa l'app (funzionalità per l'utente)
 
-L'applicazione è organizzata in **5 sezioni** navigabili da un menu in alto:
+L'applicazione è organizzata in **6 sezioni** navigabili da un menu in alto:
 
 ### 🧪 Lab Pila OSI (la sezione principale)
 È il cuore dell'app. Lo schermo è diviso in tre colonne:
@@ -43,6 +43,18 @@ Su questa sezione l'utente può anche:
   e la simulazione arriva a destinazione, con tanto di scheda "difesa consigliata" per ogni scenario.
 - **Attivare/disattivare i segnali audio:** ogni fase produce un suono sintetizzato
   (avvio, tick a ogni livello, accordo di successo, allarme in caso di attacco).
+
+### ⚔️ Teatro degli Attacchi
+La sezione pensata per **capire come avvengono gli attacchi e come vengono neutralizzati**.
+Si sceglie un attacco (organizzati per livello OSI, da L7 a L1) e se ne osserva la *kill chain*
+passo dopo passo: ogni passo indica **chi agisce** (attaccante, bersaglio, rete o difesa),
+cosa succede e — dove utile — il pacchetto/payload tecnico coinvolto. Attivando il toggle
+**Difesa** compare la contromisura consigliata (con *come agisce* e *perché funziona*) esattamente
+nel punto in cui interviene: i passi successivi dell'attacco vengono mostrati come "bloccati"
+e l'esito passa da *"Attacco riuscito"* a *"Attacco neutralizzato"*. Si può riprodurre in automatico,
+avanzare un passo alla volta o resettare. Coperti tutti e 7 i livelli con attacchi emblematici
+(ARP Poisoning, MAC Flooding, IP Spoofing, BGP Hijacking, SYN Flood, TCP Reset, Session Hijacking,
+Replay, Padding Oracle, SQL Injection, XSS, DNS Cache Poisoning, SSH Brute Force, Physical Tapping…).
 
 ### 🔢 Porte & Protocolli
 Una sezione di riferimento sulle porte di rete e i protocolli associati.

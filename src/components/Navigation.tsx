@@ -1,6 +1,6 @@
 import React from 'react';
 import { useStore } from '../store';
-import { Layers, Hash, Shield, BookOpen, GraduationCap } from 'lucide-react';
+import { Layers, Hash, Shield, BookOpen, GraduationCap, Swords } from 'lucide-react';
 import { motion } from 'motion/react';
 
 export default function Navigation() {
@@ -14,6 +14,14 @@ export default function Navigation() {
       icon: Layers,
       color: 'text-indigo-600',
       activeBg: 'bg-indigo-50/50 text-indigo-700 border-indigo-200'
+    },
+    {
+      id: 'attacklab' as const,
+      en: 'Attack Theater',
+      it: 'Teatro Attacchi',
+      icon: Swords,
+      color: 'text-red-600',
+      activeBg: 'bg-red-50/50 text-red-700 border-red-200'
     },
     {
       id: 'ports' as const,

@@ -60,6 +60,35 @@ export interface LogEntry {
 export type SimulationState = 'idle' | 'encapsulating' | 'decapsulating' | 'interrupted';
 export type AttackType = 'mitm' | 'dos' | 'injection' | 'spoofing' | 'replay' | 'eavesdropping' | 'bruteforce' | 'malware' | 'none';
 
+export type Bilingual = { it: string; en: string };
+
+// One step in an attack's "kill chain" — used by the step-by-step Attack Theater
+// to show HOW an attack unfolds and, when a defense is active, WHERE it is stopped.
+export type StepActor = 'attacker' | 'victim' | 'network' | 'defense';
+
+export interface AttackStep {
+  actor: StepActor;
+  title: Bilingual;
+  detail: Bilingual;
+  packet?: string; // optional raw payload / technical label shown in monospace
+}
+
+export interface AttackWalkthrough {
+  scenarioId: string; // links to an AttackScenario id
+  layer: number;
+  severity: Severity;
+  goal: Bilingual;            // what the attacker is trying to achieve
+  steps: AttackStep[];        // the attack unfolding, in order
+  neutralizeAtStep: number;   // 0-based index of the step where the defense intercepts
+  defense: {
+    name: Bilingual;
+    action: Bilingual;        // what the countermeasure does at the interception point
+    mechanism: Bilingual;     // why/how it works
+  };
+  outcomeSuccess: Bilingual;  // consequence if the attack completes unopposed
+  outcomeBlocked: Bilingual;  // consequence once the defense neutralizes it
+}
+
 export interface AttackScenario {
   id: string;
   name: { it: string; en: string };

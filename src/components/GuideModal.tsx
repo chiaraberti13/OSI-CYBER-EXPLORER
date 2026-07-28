@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'motion/react';
-import { X, BookOpen, Play, Shield, MousePointer2 } from 'lucide-react';
+import { X, Play, Shield, MousePointer2, Swords } from 'lucide-react';
 
 interface GuideModalProps {
   isOpen: boolean;
@@ -14,6 +14,7 @@ export default function GuideModal({ isOpen, onClose, language }: GuideModalProp
       steps: [
         { icon: MousePointer2, title: 'Explore Layers', desc: 'Click the OSI layers on the left to see theory, protocols, and vulnerabilities on the right.' },
         { icon: Play, title: 'Simulate Traffic', desc: 'Choose a protocol (HTTP/PING) and start. Watch headers being added (Encapsulation) and removed (Decapsulation).' },
+        { icon: Swords, title: 'Attack Theater', desc: 'Pick any attack to see its kill chain step by step, then turn on the Defense to watch exactly where and how it is neutralized.' },
         { icon: Shield, title: 'Cybersecurity Test', desc: 'Inject attacks like MitM or Spoofing. Toggle Defense to see how mitigation works in real-time.' },
       ],
       close: 'Got it!'
@@ -23,6 +24,7 @@ export default function GuideModal({ isOpen, onClose, language }: GuideModalProp
       steps: [
         { icon: MousePointer2, title: 'Esplora i Livelli', desc: 'Clicca i livelli OSI a sinistra per vedere teoria, protocolli e vulnerabilità sulla destra.' },
         { icon: Play, title: 'Simula Traffico', desc: 'Scegli un protocollo (HTTP/PING) e avvia. Osserva gli Header che vengono aggiunti e rimossi.' },
+        { icon: Swords, title: 'Teatro degli Attacchi', desc: 'Scegli un attacco per vederne la sequenza passo dopo passo, poi attiva la Difesa per vedere dove e come viene neutralizzato.' },
         { icon: Shield, title: 'Test Cybersecurity', desc: 'Inietta attacchi come MitM o Spoofing. Attiva la Difesa per vedere la mitigazione in tempo reale.' },
       ],
       close: 'Ho capito!'
