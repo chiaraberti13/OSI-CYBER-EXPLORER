@@ -19,7 +19,7 @@ in un **laboratorio visivo** che si "guarda funzionare", pensato per studenti e 
 
 ## 2. Cosa fa l'app (funzionalità per l'utente)
 
-L'applicazione è organizzata in **6 sezioni** navigabili da un menu in alto:
+L'applicazione è organizzata in **5 sezioni** navigabili da un menu in alto:
 
 ### 🧪 Lab Pila OSI (la sezione principale)
 È il cuore dell'app. Lo schermo è diviso in tre colonne:
@@ -72,25 +72,19 @@ al laboratorio pratico.
 ### 📖 Glossario di Rete
 Dizionario dei termini tecnici di networking e sicurezza.
 
-### 🎓 Quiz
-Un motore di quiz per autovalutare le conoscenze acquisite, con punteggio.
-
 Tutti i contenuti sono disponibili sia **in italiano che in inglese**, commutabili con un click.
 
 ### ✨ Esperienza didattica e UX
 Alcune scelte pensate specificamente per l'apprendimento e l'usabilità:
 
-- **Onboarding alla prima visita:** la *Guida del Lab* si apre automaticamente solo la prima volta,
-  per orientare subito chi non conosce l'app (poi non disturba più).
-- **Preferenze ricordate:** lingua, segnali audio, velocità di simulazione e *record* del quiz
-  vengono salvati nel browser (`localStorage`), così l'app riapre com'era stata lasciata.
+- **Guida su richiesta:** la *Guida del Lab* è disponibile dal pulsante in alto per orientare
+  chi non conosce l'app.
+- **Preferenze ricordate:** lingua, segnali audio e velocità di simulazione vengono salvati
+  nel browser (`localStorage`), così l'app riapre com'era stata lasciata.
 - **Controllo della velocità (0.5× / 1× / 2×):** si può rallentare la simulazione per spiegare
   passo-passo in aula o accelerarla per un ripasso.
 - **Console guidata:** quando non ci sono ancora log, il terminale mostra un suggerimento su
   come iniziare invece di restare vuoto.
-- **Quiz più interattivo:** barra di avanzamento, punteggio in tempo reale, record personale
-  e **navigazione da tastiera** (tasti 1–4 per rispondere, Invio per proseguire), con
-  *spiegazione del tutor* dopo ogni risposta.
 - **Accessibilità:** attributo `lang` del documento e titolo sincronizzati con la lingua,
   etichette `aria-label` sui controlli a sola icona, focus da tastiera ben visibile e
   rispetto della preferenza di sistema *"riduci animazioni"* (`prefers-reduced-motion`).
@@ -122,12 +116,12 @@ Il progetto segue un'**architettura modulare e a responsabilità separate**:
 - **`src/store.ts`** — lo **stato globale** con Zustand: lingua attiva, livello selezionato, stato della
   simulazione, protocollo scelto, attacco attivo, difese, log, header generati, vista corrente, audio,
   velocità di simulazione. Tutti i componenti leggono e scrivono da qui, evitando il "prop drilling".
-  Le sole **preferenze** (lingua, audio, velocità, record del quiz, guida già vista) sono rese
-  persistenti con il middleware `persist` di Zustand su `localStorage`, mentre lo stato transitorio
-  della sessione (log, stato simulazione, attacco) riparte pulito a ogni ricarica.
+  Le sole **preferenze** (lingua, audio, velocità) sono rese persistenti con il middleware
+  `persist` di Zustand su `localStorage`, mentre lo stato transitorio della sessione
+  (log, stato simulazione, attacco) riparte pulito a ogni ricarica.
 - **`src/components/`** — i **componenti UI**, ognuno con una responsabilità chiara:
   `PacketSimulator` (motore di simulazione), `OsiStack` (pila visiva dei 7 livelli),
-  `Terminal` (log animati), `LayerDetails`, `SecurityDashboard`, `QuizModal`, `PortsModal`,
+  `Terminal` (log animati), `LayerDetails`, `SecurityDashboard`, `AttackLab`, `PortsModal`,
   `GlossaryModal`, `Header`, `Navigation`.
 - **`src/utils/audio.ts`** — un piccolo **synth** basato su Web Audio API che genera i segnali
   sonori (oscillatori, inviluppi di gain) senza dipendere da asset esterni.
@@ -173,7 +167,7 @@ Nel progetto ho:
   incapsulamento/decapsulamento livello per livello, la generazione degli header realistici per ogni
   protocollo e la sincronizzazione tra stato, interfaccia, log e feedback audio.
 - **Modellato lo stato globale** con Zustand, definendo un unico store reattivo che coordina tutte
-  le sezioni dell'app (simulazione, attacchi, difese, lingua, viste, quiz).
+  le sezioni dell'app (simulazione, attacchi, difese, lingua, viste).
 - **Curato l'esperienza utente e le micro-interazioni**: transizioni animate tra le viste,
   "threat meter" visivo, terminale con log colorati e segnali audio sintetizzati in tempo reale.
 - **Implementato il bilinguismo (IT/EN)** con un sistema di dizionari senza dipendenze esterne.

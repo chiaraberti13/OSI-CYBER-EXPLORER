@@ -30,16 +30,6 @@ interface AppState {
   isGuideOpen: boolean;
   setIsGuideOpen: (open: boolean) => void;
 
-  isQuizOpen: boolean;
-  setIsQuizOpen: (open: boolean) => void;
-  
-  quizScore: number;
-  incrementQuizScore: () => void;
-  resetQuizScore: () => void;
-
-  quizBestScore: number;
-  setQuizBestScore: (score: number) => void;
-  
   defenseEnabled: boolean;
   setDefenseEnabled: (enabled: boolean) => void;
   
@@ -66,8 +56,8 @@ interface AppState {
   isPaused: boolean;
   setIsPaused: (isPaused: boolean) => void;
 
-  activeView: 'osi' | 'attacklab' | 'ports' | 'security' | 'glossary' | 'quiz';
-  setActiveView: (view: 'osi' | 'attacklab' | 'ports' | 'security' | 'glossary' | 'quiz') => void;
+  activeView: 'osi' | 'attacklab' | 'ports' | 'security' | 'glossary';
+  setActiveView: (view: 'osi' | 'attacklab' | 'ports' | 'security' | 'glossary') => void;
 
   audioEnabled: boolean;
   setAudioEnabled: (enabled: boolean) => void;
@@ -114,18 +104,6 @@ export const useStore = create<AppState>()(
   isGuideOpen: false,
   setIsGuideOpen: (isGuideOpen) => set({ isGuideOpen }),
 
-  isQuizOpen: false,
-  setIsQuizOpen: (isQuizOpen) => set({ isQuizOpen }),
-  
-  quizScore: 0,
-  incrementQuizScore: () => set((state) => ({ quizScore: state.quizScore + 1 })),
-  resetQuizScore: () => set({ quizScore: 0 }),
-
-  quizBestScore: 0,
-  setQuizBestScore: (quizBestScore) => set((state) => ({
-    quizBestScore: Math.max(state.quizBestScore, quizBestScore)
-  })),
-  
   defenseEnabled: false,
   setDefenseEnabled: (defenseEnabled) => set({ defenseEnabled }),
   
@@ -180,7 +158,6 @@ export const useStore = create<AppState>()(
         language: state.language,
         audioEnabled: state.audioEnabled,
         simSpeed: state.simSpeed,
-        quizBestScore: state.quizBestScore,
         hasSeenGuide: state.hasSeenGuide,
       }),
     }
