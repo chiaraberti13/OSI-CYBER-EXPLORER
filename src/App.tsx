@@ -9,6 +9,7 @@ import OsiStack from './components/OsiStack';
 import LayerDetails from './components/LayerDetails';
 import PacketSimulator from './components/PacketSimulator';
 import Terminal from './components/Terminal';
+import PacketInspector from './components/PacketInspector';
 import { useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import GuideModal from './components/GuideModal';
@@ -51,15 +52,21 @@ export default function App() {
               transition={{ duration: 0.2 }}
               className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start"
             >
-              {/* Left: Terminal & Simulator Controls */}
-              <section className="lg:col-span-3 xl:col-span-3 flex flex-col gap-8 lg:sticky lg:top-36">
+              {/* Left: Console log + Packet Inspector */}
+              <section className="lg:col-span-3 xl:col-span-3 flex flex-col gap-6">
                 <div className="space-y-3">
                   <h3 className="text-xs font-semibold text-slate-500 px-1">
                     {language === 'it' ? 'Console' : 'Console'}
                   </h3>
-                  <div className="h-[400px]">
+                  <div className="h-[320px]">
                     <Terminal />
                   </div>
+                </div>
+                <div className="space-y-3">
+                  <h3 className="text-xs font-semibold text-slate-500 px-1">
+                    {language === 'it' ? 'Pacchetto' : 'Packet'}
+                  </h3>
+                  <PacketInspector />
                 </div>
               </section>
 

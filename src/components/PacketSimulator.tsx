@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { OSI_LAYERS, ATTACK_SCENARIOS, GLOSSARY_TERMS } from '../constants';
 import { Zap, Skull, ShieldCheck, Play, RotateCcw, Info, Pause, ChevronDown, Volume2, VolumeX } from 'lucide-react';
 import { playAudioCue } from '../utils/audio';
+import { pduNameForLayer, l4ProtocolFor } from '../lib/osi';
 
 export default function PacketSimulator() {
   const { 
@@ -107,32 +108,13 @@ export default function PacketSimulator() {
     addLog(language === 'en' ? 'Simulation reset.' : 'Simulazione resettata.', 'warning');
   };
 
-  const getPduName = (layerId: number) => {
-    if (layerId >= 5) return 'Data';
-    if (layerId === 4) return selectedProtocol === 'HTTP' ? 'Segment' : 'Datagram';
-    if (layerId === 3) return 'Packet';
-    if (layerId === 2) return 'Frame';
-    if (layerId === 1) return 'Bits';
-    return 'Data';
-  };
+  const getPduName = (layerId: number) => pduNameForLayer(layerId, selectedProtocol);
 
   const getHeaderForLayer = (layerId: number) => {
     const layer = OSI_LAYERS.find(l => l.id === layerId);
     if (!layer) return 'Data';
-    // Use specific protocol for L3/L4 based on selection
-    if (selectedProtocol === 'HTTP') {
-      if (layerId === 4) return 'TCP';
-      if (layerId === 3) return 'IP';
-    } else if (selectedProtocol === 'SSH' || selectedProtocol === 'SMTP' || selectedProtocol === 'BGP') {
-      if (layerId === 4) return 'TCP';
-      if (layerId === 3) return 'IP';
-    } else if (selectedProtocol === 'FTP') {
-      if (layerId === 4) return 'TCP';
-      if (layerId === 3) return 'IP';
-    } else if (selectedProtocol === 'DNS') {
-      if (layerId === 4) return 'UDP';
-      if (layerId === 3) return 'IP';
-    }
+    if (layerId === 4) return l4ProtocolFor(selectedProtocol); // TCP / UDP
+    if (layerId === 3) return 'IP';
     return layer.translations[language].protocols?.[0] || 'Header';
   };
 
