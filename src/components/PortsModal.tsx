@@ -2127,7 +2127,7 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
   const renderWrapper = (children: React.ReactNode) => {
     if (inline) {
       return (
-        <div className="relative bg-white rounded-3xl border border-slate-200 flex flex-col overflow-hidden w-full h-[82vh] min-h-[600px] shadow-sm">
+        <div className="relative bg-white rounded-xl border border-slate-200 flex flex-col overflow-hidden w-full h-[82vh] min-h-[600px]">
           {children}
         </div>
       );
@@ -2148,7 +2148,7 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative bg-white rounded-3xl shadow-2xl z-[101] flex flex-col overflow-hidden w-full max-w-4xl h-auto max-h-[85vh] border border-slate-100"
+              className="relative bg-white rounded-xl shadow-lg z-[101] flex flex-col overflow-hidden w-full max-w-4xl h-auto max-h-[85vh] border border-slate-100"
             >
               {children}
             </motion.div>
@@ -2167,7 +2167,7 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                   <Hash className="w-5 h-5 text-indigo-600" />
                 </div>
                 <div>
-                  <h2 className="text-lg font-black text-slate-900 uppercase tracking-tighter">
+                  <h2 className="text-lg font-semibold text-slate-900 uppercase tracking-tighter">
                     {language === 'en' ? 'Network Ports & Protocols' : 'Porte & Protocolli di Rete'}
                   </h2>
                   <p className="text-xs text-slate-400 font-medium">
@@ -2184,7 +2184,7 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                   onClick={() => setActiveTab('ports')}
                   className={`px-2.5 py-1.5 rounded-lg text-xs font-bold uppercase transition-all flex items-center gap-1 ${
                     activeTab === 'ports' 
-                      ? 'bg-white text-slate-900 shadow-sm' 
+                      ? 'bg-white text-slate-900' 
                       : 'text-slate-500 hover:text-slate-800'
                   }`}
                 >
@@ -2195,7 +2195,7 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                   onClick={() => setActiveTab('protocols')}
                   className={`px-2.5 py-1.5 rounded-lg text-xs font-bold uppercase transition-all flex items-center gap-1 ${
                     activeTab === 'protocols' 
-                      ? 'bg-white text-slate-900 shadow-sm' 
+                      ? 'bg-white text-slate-900' 
                       : 'text-slate-500 hover:text-slate-800'
                   }`}
                 >
@@ -2206,7 +2206,7 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                   onClick={() => setActiveTab('devices')}
                   className={`px-2.5 py-1.5 rounded-lg text-xs font-bold uppercase transition-all flex items-center gap-1 ${
                     activeTab === 'devices' 
-                      ? 'bg-white text-slate-900 shadow-sm' 
+                      ? 'bg-white text-slate-900' 
                       : 'text-slate-500 hover:text-slate-800'
                   }`}
                 >
@@ -2217,7 +2217,7 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                   onClick={() => setActiveTab('secure-access')}
                   className={`px-2.5 py-1.5 rounded-lg text-xs font-bold uppercase transition-all flex items-center gap-1 ${
                     activeTab === 'secure-access' 
-                      ? 'bg-white text-slate-900 shadow-sm' 
+                      ? 'bg-white text-slate-900' 
                       : 'text-slate-500 hover:text-slate-800'
                   }`}
                 >
@@ -2231,7 +2231,7 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                   }}
                   className={`px-2.5 py-1.5 rounded-lg text-xs font-bold uppercase flex items-center gap-1 transition-all ${
                     activeTab === 'trainer' 
-                      ? 'bg-indigo-600 text-white shadow-md font-extrabold' 
+                      ? 'bg-indigo-600 text-white font-extrabold' 
                       : 'text-slate-500 hover:text-slate-800'
                   }`}
                 >
@@ -2258,14 +2258,14 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3 p-6 bg-slate-50/70 border-b border-slate-100">
                     <div 
                       onClick={() => setSelectedRange('well-known')}
-                      className={`cursor-pointer p-4 rounded-2xl border transition-all ${
+                      className={`cursor-pointer p-4 rounded-lg border transition-all ${
                         selectedRange === 'well-known' 
-                          ? 'bg-amber-50/50 border-amber-300 shadow-sm' 
+                          ? 'bg-amber-50/50 border-amber-300' 
                           : 'bg-white border-slate-100 hover:border-slate-300'
                       }`}
                     >
                       <div className="flex justify-between items-center mb-1">
-                        <span className="text-[10px] font-bold text-amber-600 uppercase tracking-widest leading-none">
+                        <span className="text-[10px] font-bold text-amber-600 uppercase tracking-wider leading-none">
                           {language === 'en' ? 'Well-Known' : 'Porte Ben Note'}
                         </span>
                         <Lock className="w-3.5 h-3.5 text-amber-500" />
@@ -2280,14 +2280,14 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
 
                     <div 
                       onClick={() => setSelectedRange('registered')}
-                      className={`cursor-pointer p-4 rounded-2xl border transition-all ${
+                      className={`cursor-pointer p-4 rounded-lg border transition-all ${
                         selectedRange === 'registered' 
-                          ? 'bg-blue-50/50 border-blue-300 shadow-sm' 
+                          ? 'bg-blue-50/50 border-blue-300' 
                           : 'bg-white border-slate-100 hover:border-slate-300'
                       }`}
                     >
                       <div className="flex justify-between items-center mb-1">
-                        <span className="text-[10px] font-bold text-blue-600 uppercase tracking-widest leading-none">
+                        <span className="text-[10px] font-bold text-blue-600 uppercase tracking-wider leading-none">
                           {language === 'en' ? 'Registered' : 'Porte Registrate'}
                         </span>
                         <Unlock className="w-3.5 h-3.5 text-blue-500" />
@@ -2302,14 +2302,14 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
 
                     <div 
                       onClick={() => setSelectedRange('dynamic')}
-                      className={`cursor-pointer p-4 rounded-2xl border transition-all ${
+                      className={`cursor-pointer p-4 rounded-lg border transition-all ${
                         selectedRange === 'dynamic' 
-                          ? 'bg-emerald-50/50 border-emerald-300 shadow-sm' 
+                          ? 'bg-emerald-50/50 border-emerald-300' 
                           : 'bg-white border-slate-100 hover:border-slate-300'
                       }`}
                     >
                       <div className="flex justify-between items-center mb-1">
-                        <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest leading-none">
+                        <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider leading-none">
                           {language === 'en' ? 'Dynamic / Private' : 'Porte Dinamiche'}
                         </span>
                         <Activity className="w-3.5 h-3.5 text-emerald-500" />
@@ -2351,7 +2351,7 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                         onClick={() => setSelectedRange('well-known')}
                         className={`px-3.5 py-1.5 rounded-lg text-[10px] font-bold uppercase border tracking-tight transition-all ${
                           selectedRange === 'well-known' 
-                            ? 'bg-amber-500 border-amber-500 text-white shadow-sm' 
+                            ? 'bg-amber-500 border-amber-500 text-white' 
                             : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300'
                         }`}
                       >
@@ -2361,7 +2361,7 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                         onClick={() => setSelectedRange('registered')}
                         className={`px-3.5 py-1.5 rounded-lg text-[10px] font-bold uppercase border tracking-tight transition-all ${
                           selectedRange === 'registered' 
-                            ? 'bg-blue-500 border-blue-500 text-white shadow-sm' 
+                            ? 'bg-blue-500 border-blue-500 text-white' 
                             : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300'
                         }`}
                       >
@@ -2371,7 +2371,7 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                         onClick={() => setSelectedRange('dynamic')}
                         className={`px-3.5 py-1.5 rounded-lg text-[10px] font-bold uppercase border tracking-tight transition-all ${
                           selectedRange === 'dynamic' 
-                            ? 'bg-emerald-500 border-emerald-500 text-white shadow-sm' 
+                            ? 'bg-emerald-500 border-emerald-500 text-white' 
                             : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300'
                         }`}
                       >
@@ -2383,7 +2383,7 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                   {/* Port Rows Grid */}
                   <div className="flex-1 p-6 space-y-4">
                     {selectedRange === 'dynamic' && (
-                      <div className="bg-emerald-50/50 border border-emerald-100 rounded-2xl p-4 flex gap-4 items-start mb-4">
+                      <div className="bg-emerald-50/50 border border-emerald-100 rounded-lg p-4 flex gap-4 items-start mb-4">
                         <Activity className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
                         <div>
                           <h5 className="font-bold text-xs text-emerald-800 uppercase tracking-wider">
@@ -2406,22 +2406,22 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: Math.min(idx * 0.02, 0.2) }}
-                            className="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm hover:shadow-md hover:border-indigo-100 transition-all group flex flex-col justify-between"
+                            className="bg-white border border-slate-100 rounded-lg p-4 hover:shadow-md hover:border-indigo-100 transition-all group flex flex-col justify-between"
                           >
                             <div>
                               {/* Header segment of port row */}
                               <div className="flex justify-between items-start gap-2 mb-2">
                                 <span className="flex items-center gap-1.5">
-                                  <span className="px-2.5 py-1 bg-slate-900 text-white font-mono font-black text-xs rounded-lg select-all">
+                                  <span className="px-2.5 py-1 bg-slate-900 text-white font-mono font-semibold text-xs rounded-lg select-all">
                                     PORT {item.port}
                                   </span>
-                                  <span className="text-xs font-black text-slate-800 tracking-tight">
+                                  <span className="text-xs font-semibold text-slate-800 tracking-tight">
                                     {item.service}
                                   </span>
                                 </span>
 
                                 <span className="flex items-center gap-1">
-                                  <span className="text-[9px] font-mono font-black px-1.5 py-0.5 bg-slate-100 text-slate-500 rounded uppercase">
+                                  <span className="text-[9px] font-mono font-semibold px-1.5 py-0.5 bg-slate-100 text-slate-500 rounded uppercase">
                                     {item.type}
                                   </span>
                                   <span className={`text-[9.5px] font-bold px-1.5 py-0.5 rounded uppercase flex items-center gap-0.5 ${
@@ -2436,7 +2436,7 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                                 </span>
                               </div>
 
-                              <div className="text-slate-800 text-xs font-black mb-1 group-hover:text-indigo-600 transition-colors">
+                              <div className="text-slate-800 text-xs font-semibold mb-1 group-hover:text-indigo-600 transition-colors">
                                 {item.name}
                               </div>
                               <p className="text-[11px] text-slate-500 leading-normal">
@@ -2452,7 +2452,7 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                                 <ShieldAlert className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
                               )}
                               <p className={`leading-snug font-medium ${item.isSecure ? 'text-slate-500' : 'text-slate-500'}`}>
-                                <strong className="text-[10px] uppercase font-black tracking-wider block mb-0.5">
+                                <strong className="text-[10px] uppercase font-semibold tracking-wider block mb-0.5">
                                   {language === 'en' ? 'Security Review' : 'Profilo di Sicurezza'}:
                                 </strong>
                                 {item.security[language]}
@@ -2462,7 +2462,7 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                         ))}
                       </div>
                     ) : (
-                      <div className="text-center py-20 bg-white rounded-3xl border border-dashed border-slate-200">
+                      <div className="text-center py-20 bg-white rounded-xl border border-dashed border-slate-200">
                         <Hash className="w-12 h-12 text-slate-200 mx-auto mb-3" />
                         <h4 className="font-bold text-slate-700 text-sm">
                           {language === 'en' ? 'No ports match your search' : 'Nessuna corrispondenza trovata'}
@@ -2486,31 +2486,31 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                 <>
                   {/* Category cards explaining OSI / TCP-IP Layers summary */}
                   <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 p-6 bg-slate-50/70 border-b border-slate-100">
-                    <div className="p-3 bg-white rounded-xl border border-slate-100 shadow-sm flex flex-col justify-between">
+                    <div className="p-3 bg-white rounded-xl border border-slate-100 flex flex-col justify-between">
                       <div>
                         <span className="text-[9px] font-bold text-rose-600 uppercase tracking-wider block">Layer 7</span>
-                        <span className="text-xs font-black text-slate-800">Application</span>
+                        <span className="text-xs font-semibold text-slate-800">Application</span>
                       </div>
                       <p className="text-[10px] text-slate-400 mt-2 leading-tight">HTTP, DNS, SSH, SMTP, SNMP</p>
                     </div>
-                    <div className="p-3 bg-white rounded-xl border border-slate-100 shadow-sm flex flex-col justify-between">
+                    <div className="p-3 bg-white rounded-xl border border-slate-100 flex flex-col justify-between">
                       <div>
                         <span className="text-[9px] font-bold text-indigo-600 uppercase tracking-wider block">Layer 4</span>
-                        <span className="text-xs font-black text-slate-800">Transport</span>
+                        <span className="text-xs font-semibold text-slate-800">Transport</span>
                       </div>
                       <p className="text-[10px] text-slate-400 mt-2 leading-tight">TCP (Reliable), UDP (Fast)</p>
                     </div>
-                    <div className="p-3 bg-white rounded-xl border border-slate-100 shadow-sm flex flex-col justify-between">
+                    <div className="p-3 bg-white rounded-xl border border-slate-100 flex flex-col justify-between">
                       <div>
                         <span className="text-[9px] font-bold text-emerald-600 uppercase tracking-wider block">Layer 3</span>
-                        <span className="text-xs font-black text-slate-800">Network</span>
+                        <span className="text-xs font-semibold text-slate-800">Network</span>
                       </div>
                       <p className="text-[10px] text-slate-400 mt-2 leading-tight">IP (Routing), ICMP (Ping)</p>
                     </div>
-                    <div className="p-3 bg-white rounded-xl border border-slate-100 shadow-sm flex flex-col justify-between">
+                    <div className="p-3 bg-white rounded-xl border border-slate-100 flex flex-col justify-between">
                       <div>
                         <span className="text-[9px] font-bold text-amber-600 uppercase tracking-wider block">Layer 2</span>
-                        <span className="text-xs font-black text-slate-800">Data Link</span>
+                        <span className="text-xs font-semibold text-slate-800">Data Link</span>
                       </div>
                       <p className="text-[10px] text-slate-400 mt-2 leading-tight">ARP (Local Resolution)</p>
                     </div>
@@ -2555,15 +2555,15 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                               initial={{ opacity: 0, y: 10 }}
                               animate={{ opacity: 1, y: 0 }}
                               transition={{ delay: Math.min(idx * 0.02, 0.2) }}
-                              className="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm hover:shadow-md hover:border-indigo-100 transition-all group flex flex-col justify-between"
+                              className="bg-white border border-slate-100 rounded-lg p-4 hover:shadow-md hover:border-indigo-100 transition-all group flex flex-col justify-between"
                             >
                               <div>
                                 <div className="flex justify-between items-start gap-2 mb-2">
                                   <span className="flex items-center gap-1.5">
-                                    <span className="px-2.5 py-1 bg-indigo-600 text-white font-black text-xs rounded-lg select-all font-mono">
+                                    <span className="px-2.5 py-1 bg-indigo-600 text-white font-semibold text-xs rounded-lg select-all font-mono">
                                       {item.name}
                                     </span>
-                                    <span className={`text-[9.5px] font-mono font-black px-2 py-0.5 rounded-lg border uppercase ${layerColor}`}>
+                                    <span className={`text-[9.5px] font-mono font-semibold px-2 py-0.5 rounded-lg border uppercase ${layerColor}`}>
                                       Layer {item.layer} ({item.type})
                                     </span>
                                   </span>
@@ -2574,7 +2574,7 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                                   ) : null}
                                 </div>
 
-                                <div className="text-slate-800 text-xs font-black mb-1 group-hover:text-indigo-600 transition-colors">
+                                <div className="text-slate-800 text-xs font-semibold mb-1 group-hover:text-indigo-600 transition-colors">
                                   {item.fullName}
                                 </div>
                                 <p className="text-[11px] text-slate-500 leading-normal">
@@ -2582,7 +2582,7 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                                 </p>
 
                                 <div className="mt-3 bg-slate-50 p-2.5 rounded-xl border border-slate-150">
-                                  <strong className="text-[9.5px] text-slate-400 uppercase tracking-widest block mb-0.5">
+                                  <strong className="text-[9.5px] text-slate-400 uppercase tracking-wider block mb-0.5">
                                     {language === 'en' ? 'Core Use Case' : 'Caso d\'Uso Principale'}
                                   </strong>
                                   <p className="text-[11px] text-slate-600 leading-normal">
@@ -2598,7 +2598,7 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                                   <ShieldAlert className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
                                 )}
                                 <p className="leading-snug font-medium text-slate-500">
-                                  <strong className="text-[9.5px] uppercase font-black tracking-wider block mb-0.5 text-slate-400">
+                                  <strong className="text-[9.5px] uppercase font-semibold tracking-wider block mb-0.5 text-slate-400">
                                     {language === 'en' ? 'Security Review' : 'Profilo di Sicurezza'}:
                                   </strong>
                                   {item.security[language]}
@@ -2609,7 +2609,7 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                         })}
                       </div>
                     ) : (
-                      <div className="text-center py-20 bg-white rounded-3xl border border-dashed border-slate-200">
+                      <div className="text-center py-20 bg-white rounded-xl border border-dashed border-slate-200">
                         <Layers className="w-12 h-12 text-slate-200 mx-auto mb-3" />
                         <h4 className="font-bold text-slate-700 text-sm">
                           {language === 'en' ? 'No protocols match your search' : 'Nessun protocollo trovato'}
@@ -2633,31 +2633,31 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                 <>
                   {/* Category cards explaining Network Hardware level */}
                   <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 p-6 bg-slate-50/70 border-b border-slate-100">
-                    <div className="p-3 bg-white rounded-xl border border-slate-100 shadow-sm flex flex-col justify-between">
+                    <div className="p-3 bg-white rounded-xl border border-slate-100 flex flex-col justify-between">
                       <div>
                         <span className="text-[9px] font-bold text-rose-600 uppercase tracking-wider block">Layer 3, 4, 7</span>
-                        <span className="text-xs font-black text-slate-800">Security Gateways</span>
+                        <span className="text-xs font-semibold text-slate-800">Security Gateways</span>
                       </div>
                       <p className="text-[10px] text-slate-400 mt-2 leading-tight">Firewall, Gateway Applicativo</p>
                     </div>
-                    <div className="p-3 bg-white rounded-xl border border-slate-100 shadow-sm flex flex-col justify-between">
+                    <div className="p-3 bg-white rounded-xl border border-slate-100 flex flex-col justify-between">
                       <div>
                         <span className="text-[9px] font-bold text-indigo-600 uppercase tracking-wider block">Layer 3</span>
-                        <span className="text-xs font-black text-slate-800">Network Layer</span>
+                        <span className="text-xs font-semibold text-slate-800">Network Layer</span>
                       </div>
                       <p className="text-[10px] text-slate-400 mt-2 leading-tight">Router, Switch Layer 3</p>
                     </div>
-                    <div className="p-3 bg-white rounded-xl border border-slate-100 shadow-sm flex flex-col justify-between">
+                    <div className="p-3 bg-white rounded-xl border border-slate-100 flex flex-col justify-between">
                       <div>
                         <span className="text-[9px] font-bold text-blue-600 uppercase tracking-wider block">Layer 2</span>
-                        <span className="text-xs font-black text-slate-800">Data Link</span>
+                        <span className="text-xs font-semibold text-slate-800">Data Link</span>
                       </div>
                       <p className="text-[10px] text-slate-400 mt-2 leading-tight">Switch Ethernet, Wireless AP, Bridge</p>
                     </div>
-                    <div className="p-3 bg-white rounded-xl border border-slate-100 shadow-sm flex flex-col justify-between">
+                    <div className="p-3 bg-white rounded-xl border border-slate-100 flex flex-col justify-between">
                       <div>
                         <span className="text-[9px] font-bold text-amber-600 uppercase tracking-wider block">Layer 1</span>
-                        <span className="text-xs font-black text-slate-800">Physical Layer</span>
+                        <span className="text-xs font-semibold text-slate-800">Physical Layer</span>
                       </div>
                       <p className="text-[10px] text-slate-400 mt-2 leading-tight">Hub Passivo, Cavi, Ripetitore</p>
                     </div>
@@ -2694,14 +2694,14 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
 
                     {/* Category Filter Pills */}
                     <div className="flex flex-wrap items-center gap-2 pt-1 font-sans">
-                      <span className="text-[10px] uppercase font-black text-slate-400 tracking-wider mr-1 self-center font-mono">
+                      <span className="text-[10px] uppercase font-semibold text-slate-400 tracking-wider mr-1 self-center font-mono">
                         {language === 'en' ? 'Filter by Type:' : 'Filtra per Tipologia:'}
                       </span>
                       <button
                         onClick={() => setDeviceCategory('all')}
                         className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
                           deviceCategory === 'all'
-                            ? 'bg-slate-900 border border-slate-900 text-white shadow-sm'
+                            ? 'bg-slate-900 border border-slate-900 text-white'
                             : 'bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-600'
                         }`}
                       >
@@ -2713,7 +2713,7 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                         onClick={() => setDeviceCategory('security')}
                         className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
                           deviceCategory === 'security'
-                            ? 'bg-rose-600 border border-rose-600 text-white shadow-sm'
+                            ? 'bg-rose-600 border border-rose-600 text-white'
                             : 'bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-600'
                         }`}
                       >
@@ -2725,7 +2725,7 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                         onClick={() => setDeviceCategory('networking')}
                         className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
                           deviceCategory === 'networking'
-                            ? 'bg-indigo-600 border border-indigo-600 text-white shadow-sm'
+                            ? 'bg-indigo-600 border border-indigo-600 text-white'
                             : 'bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-600'
                         }`}
                       >
@@ -2737,7 +2737,7 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                         onClick={() => setDeviceCategory('infrastructure')}
                         className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
                           deviceCategory === 'infrastructure'
-                            ? 'bg-amber-600 border border-amber-600 text-white shadow-sm'
+                            ? 'bg-amber-600 border border-amber-600 text-white'
                             : 'bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-600'
                         }`}
                       >
@@ -2782,7 +2782,7 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                               initial={{ opacity: 0, y: 10 }}
                               animate={{ opacity: 1, y: 0 }}
                               transition={{ delay: Math.min(idx * 0.02, 0.2) }}
-                              className="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-indigo-100 transition-all group flex flex-col justify-between"
+                              className="bg-white border border-slate-100 rounded-lg p-5 hover:shadow-md hover:border-indigo-100 transition-all group flex flex-col justify-between"
                             >
                               <div className="space-y-3">
                                 <div className="flex justify-between items-start gap-2">
@@ -2790,17 +2790,17 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                                     <div className="p-1.5 bg-slate-50 rounded-lg border border-slate-100">
                                       {getDeviceIcon(item.iconName)}
                                     </div>
-                                    <span className="text-sm font-black text-slate-800 tracking-tight">
+                                    <span className="text-sm font-semibold text-slate-800 tracking-tight">
                                       {item.name}
                                     </span>
                                   </span>
-                                  <span className={`text-[9.5px] font-mono font-black px-2 py-0.5 rounded-lg border uppercase ${layerColor}`}>
+                                  <span className={`text-[9.5px] font-mono font-semibold px-2 py-0.5 rounded-lg border uppercase ${layerColor}`}>
                                     {item.layer}
                                   </span>
                                 </div>
 
                                 <div>
-                                  <div className="text-slate-800 text-xs font-black mb-1">
+                                  <div className="text-slate-800 text-xs font-semibold mb-1">
                                     {item.fullName}
                                   </div>
                                   <p className="text-[11px] text-slate-500 leading-normal mb-3 font-medium">
@@ -2840,7 +2840,7 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                               <div className="mt-4 pt-3 border-t border-slate-50 flex items-start gap-2 text-[11px]">
                                 <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
                                 <div className="leading-snug text-slate-500 font-medium">
-                                  <strong className="text-[9px] uppercase font-black tracking-wider block mb-0.5 text-slate-400">
+                                  <strong className="text-[9px] uppercase font-semibold tracking-wider block mb-0.5 text-slate-400">
                                     {language === 'en' ? 'Strategic Mitigation' : 'Mitigazione & Difesa'}:
                                   </strong>
                                   {language === 'en' ? item.mitigation.en : item.mitigation.it}
@@ -2851,7 +2851,7 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                         })}
                       </div>
                     ) : (
-                      <div className="text-center py-20 bg-white rounded-3xl border border-dashed border-slate-200">
+                      <div className="text-center py-20 bg-white rounded-xl border border-dashed border-slate-200">
                         <Network className="w-12 h-12 text-slate-200 mx-auto mb-3" />
                         <h4 className="font-bold text-slate-700 text-sm">
                           {language === 'en' ? 'No devices match your search' : 'Nessun apparato trovato'}
@@ -2875,16 +2875,16 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                 /* AAA & VPN Secure Access Interface */
                 <div className="flex-1 p-6 space-y-6 max-w-6xl mx-auto w-full">
                   {/* Top Intro Card */}
-                  <div className="bg-slate-900 text-white rounded-3xl p-6 sm:p-8 relative overflow-hidden shadow-lg border border-slate-950">
+                  <div className="bg-slate-900 text-white rounded-xl p-6 sm:p-8 relative overflow-hidden border border-slate-950">
                     <div className="absolute right-0 bottom-0 opacity-10 pointer-events-none translate-x-8 translate-y-8">
                       <Lock className="w-64 h-64" />
                     </div>
                     <div className="max-w-2xl relative z-10 space-y-3">
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-500/20 text-emerald-300 rounded-full text-[10px] font-bold uppercase tracking-widest border border-emerald-500/30">
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-500/20 text-emerald-300 rounded-full text-[10px] font-bold uppercase tracking-wider border border-emerald-500/30">
                         <Lock className="w-3 h-3" />
                         {language === 'en' ? 'Enterprise Access Integrity' : 'Integrità degli Accessi Aziendali'}
                       </span>
-                      <h3 className="text-2xl font-black uppercase tracking-tight leading-none text-white">
+                      <h3 className="text-2xl font-semibold uppercase tracking-tight leading-none text-white">
                         {language === 'en' ? 'AAA Secure Framework & Virtual Tunneling' : 'Framework Sicuro AAA & Tunneling Virtuale'}
                       </h3>
                       <p className="text-slate-300 text-[12.5px] leading-relaxed">
@@ -2900,7 +2900,7 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                     <button
                       id="subtab-eap"
                       onClick={() => setSecureSubTab('eap')}
-                      className={`px-4 py-2 text-xs font-black uppercase border-b-2 transition-all flex items-center gap-2 whitespace-nowrap ${
+                      className={`px-4 py-2 text-xs font-semibold uppercase border-b-2 transition-all flex items-center gap-2 whitespace-nowrap ${
                         secureSubTab === 'eap'
                           ? 'border-emerald-500 text-emerald-600 font-extrabold'
                           : 'border-transparent text-slate-500 hover:text-slate-800'
@@ -2912,7 +2912,7 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                     <button
                       id="subtab-aaa"
                       onClick={() => setSecureSubTab('aaa')}
-                      className={`px-4 py-2 text-xs font-black uppercase border-b-2 transition-all flex items-center gap-2 whitespace-nowrap ${
+                      className={`px-4 py-2 text-xs font-semibold uppercase border-b-2 transition-all flex items-center gap-2 whitespace-nowrap ${
                         secureSubTab === 'aaa'
                           ? 'border-emerald-500 text-emerald-600 font-extrabold'
                           : 'border-transparent text-slate-500 hover:text-slate-800'
@@ -2924,7 +2924,7 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                     <button
                       id="subtab-vpn"
                       onClick={() => setSecureSubTab('vpn')}
-                      className={`px-4 py-2 text-xs font-black uppercase border-b-2 transition-all flex items-center gap-2 whitespace-nowrap ${
+                      className={`px-4 py-2 text-xs font-semibold uppercase border-b-2 transition-all flex items-center gap-2 whitespace-nowrap ${
                         secureSubTab === 'vpn'
                           ? 'border-emerald-500 text-emerald-600 font-extrabold'
                           : 'border-transparent text-slate-500 hover:text-slate-800'
@@ -2946,7 +2946,7 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                         className="space-y-6"
                       >
                         {/* EAP Overview */}
-                        <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm space-y-3">
+                        <div className="bg-white border border-slate-200/80 rounded-lg p-5 space-y-3">
                           <h4 className="font-extrabold text-slate-800 text-sm uppercase tracking-tight">
                             {language === 'en' ? 'Extensible Authentication Protocol (EAP)' : 'Extensible Authentication Protocol (EAP)'}
                           </h4>
@@ -2961,7 +2961,7 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                         <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
                           {/* Method Selector buttons - Left Col */}
                           <div className="md:col-span-4 space-y-2">
-                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">
+                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
                               {language === 'en' ? 'Select EAP Method' : 'Seleziona Metodo EAP'}
                             </span>
                             {[
@@ -2982,7 +2982,7 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                                 }`}
                               >
                                 <div>
-                                  <div className="font-black">{met.name}</div>
+                                  <div className="font-semibold">{met.name}</div>
                                   <div className={`text-[10px] font-normal leading-tight ${selectedEap === met.id ? 'text-emerald-100' : 'text-slate-400'}`}>
                                     {met.full}
                                   </div>
@@ -3001,11 +3001,11 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                           </div>
 
                           {/* Detail of selected method - Right Col */}
-                          <div id="eap-detail-card" className="md:col-span-8 bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm space-y-6">
+                          <div id="eap-detail-card" className="md:col-span-8 bg-white border border-slate-200/80 rounded-lg p-5 space-y-6">
                             {/* Detailed explanation */}
                             <div className="space-y-3">
                               <div className="flex items-center justify-between">
-                                <h5 className="font-black text-slate-800 text-md uppercase">
+                                <h5 className="font-semibold text-slate-800 text-md uppercase">
                                   {selectedEap === 'tls' && 'EAP-TLS (Certificates Verified)'}
                                   {selectedEap === 'peap' && 'EAP-PEAP (Protected EAP)'}
                                   {selectedEap === 'ttls' && 'EAP-TTLS (Tunneled TLS)'}
@@ -3176,7 +3176,7 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                         className="space-y-6"
                       >
                         {/* AAA Overview info */}
-                        <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm space-y-3">
+                        <div className="bg-white border border-slate-200/80 rounded-lg p-5 space-y-3">
                           <h4 className="font-extrabold text-slate-800 text-sm uppercase tracking-tight">
                             {language === 'en' ? 'Centralized Network Control: RADIUS vs TACACS+' : 'Controllo Centralizzato degli Accessi: RADIUS vs TACACS+'}
                           </h4>
@@ -3190,8 +3190,8 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                         {/* Comparative Grid Table */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
                           {/* RADIUS Features Card */}
-                          <div className="bg-white border-t-4 border-t-blue-500 border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4">
-                            <span className="text-xs font-black text-blue-600 font-mono tracking-widest block uppercase">RADIUS</span>
+                          <div className="bg-white border-t-4 border-t-blue-500 border border-slate-200 rounded-lg p-5 space-y-4">
+                            <span className="text-xs font-semibold text-blue-600 font-mono tracking-wider block uppercase">RADIUS</span>
                             <h5 className="font-extrabold text-slate-800 text-sm">Remote Authentication Dial-In User Service</h5>
                             
                             <ul className="space-y-2.5 text-xs text-slate-600">
@@ -3215,8 +3215,8 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                           </div>
 
                           {/* TACACS+ Features Card */}
-                          <div className="bg-white border-t-4 border-t-emerald-500 border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4">
-                            <span className="text-xs font-black text-emerald-600 font-mono tracking-widest block uppercase">TACACS+</span>
+                          <div className="bg-white border-t-4 border-t-emerald-500 border border-slate-200 rounded-lg p-5 space-y-4">
+                            <span className="text-xs font-semibold text-emerald-600 font-mono tracking-wider block uppercase">TACACS+</span>
                             <h5 className="font-extrabold text-slate-800 text-sm">Terminal Access Controller Access-Control System Plus</h5>
                             
                             <ul className="space-y-2.5 text-xs text-slate-600">
@@ -3241,9 +3241,9 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                         </div>
 
                         {/* Interactive Diagnostic AAA Console simulator */}
-                        <div className="bg-slate-900 border border-slate-950 rounded-2xl p-5 text-slate-300 space-y-4">
+                        <div className="bg-slate-900 border border-slate-950 rounded-lg p-5 text-slate-300 space-y-4">
                           <div className="flex justify-between items-center border-b border-slate-800 pb-2">
-                            <h5 className="font-mono text-[11px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5 animate-pulse">
+                            <h5 className="font-mono text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5 animate-pulse">
                               <Activity className="w-4 h-4 text-emerald-400" />
                               {language === 'en' ? 'AAA Active Protocol Logger' : 'Analizzatore Real-Time Auditing AAA'}
                             </h5>
@@ -3323,7 +3323,7 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                         className="space-y-6"
                       >
                         {/* VPN Overview card */}
-                        <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm space-y-3">
+                        <div className="bg-white border border-slate-200/80 rounded-lg p-5 space-y-3">
                           <h4 className="font-extrabold text-slate-800 text-sm uppercase tracking-tight">
                             {language === 'en' ? 'Overlay Tunneling Security: VPN, IPsec & DTLS' : 'La Sicurezza dell\'Overlay Tunneling: VPN, IPsec & DTLS'}
                           </h4>
@@ -3338,7 +3338,7 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
                           {/* Left menu selection */}
                           <div className="lg:col-span-4 space-y-2">
-                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">
+                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
                               {language === 'en' ? 'Select Tunnel Technology' : 'Scegli la Tecnologia Minerale'}
                             </span>
                             {[
@@ -3358,7 +3358,7 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                                 }`}
                               >
                                 <div>
-                                  <div className="font-black">{vMode.name}</div>
+                                  <div className="font-semibold">{vMode.name}</div>
                                   <div className={`text-[10px] font-normal leading-tight ${selectedVpnMode === vMode.id ? 'text-emerald-100' : 'text-slate-400'}`}>
                                     {vMode.desc}
                                   </div>
@@ -3369,10 +3369,10 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                           </div>
 
                           {/* Right detail area */}
-                          <div id="vpn-detail-card" className="lg:col-span-8 bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm space-y-5">
+                          <div id="vpn-detail-card" className="lg:col-span-8 bg-white border border-slate-200/80 rounded-lg p-5 space-y-5">
                             {/* Header description */}
                             <div className="space-y-2">
-                              <h5 className="font-black text-slate-800 text-sm uppercase">
+                              <h5 className="font-semibold text-slate-800 text-sm uppercase">
                                 {selectedVpnMode === 'vpn-overview' && (language === 'en' ? 'VPN Overview & Cryptographic Tunneling' : 'Panoramica VPN & Tunnel Crittografati')}
                                 {selectedVpnMode === 'ipsec-tunnel' && 'IPsec Tunnel Mode (Gateway-to-Gateway)'}
                                 {selectedVpnMode === 'ipsec-transport' && 'IPsec Transport Mode (Host-to-Host)'}
@@ -3404,7 +3404,7 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
 
                             {/* Packet visualizer grid */}
                             <div className="space-y-2 shrink-0">
-                              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block font-mono">
+                              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block font-mono">
                                 {language === 'en' ? 'Packet Frame Structure Visualizer' : 'Visualizzatore del Pacchetto e dei Suoi Strati'}
                               </span>
 
@@ -3477,7 +3477,7 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                         className="space-y-6"
                       >
                         <div className="text-center space-y-2">
-                          <h3 className="text-xl font-black text-slate-900 uppercase tracking-tight">
+                          <h3 className="text-xl font-semibold text-slate-900 uppercase tracking-tight">
                             {language === 'en' ? 'Networking Study & Training' : 'Studio & Addestramento di Rete'}
                           </h3>
                           <p className="text-xs text-slate-500 max-w-md mx-auto leading-relaxed">
@@ -3489,9 +3489,9 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           {/* Card 1: Port Quiz Challenge */}
-                          <div className="bg-white border border-slate-100 p-6 rounded-2xl shadow-sm hover:shadow-md hover:border-indigo-150 transition-all flex flex-col justify-between space-y-4">
+                          <div className="bg-white border border-slate-100 p-6 rounded-lg hover:shadow-md hover:border-indigo-150 transition-all flex flex-col justify-between space-y-4">
                             <div className="space-y-3">
-                              <div className="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center shadow-sm">
+                              <div className="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center">
                                 <Trophy className="w-6 h-6" />
                               </div>
                               <div>
@@ -3515,9 +3515,9 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                           </div>
 
                           {/* Card 2: Interactive Study Flashcards */}
-                          <div className="bg-white border border-slate-100 p-6 rounded-2xl shadow-sm hover:shadow-md hover:border-indigo-150 transition-all flex flex-col justify-between space-y-4">
+                          <div className="bg-white border border-slate-100 p-6 rounded-lg hover:shadow-md hover:border-indigo-150 transition-all flex flex-col justify-between space-y-4">
                             <div className="space-y-3">
-                              <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center shadow-sm">
+                              <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center">
                                 <Layers className="w-6 h-6" />
                               </div>
                               <div>
@@ -3555,7 +3555,7 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                         className="w-full"
                       >
                         {gameState === 'playing' ? (
-                          <div className="bg-white rounded-3xl border border-slate-100 p-6 md:p-8 shadow-sm space-y-6">
+                          <div className="bg-white rounded-xl border border-slate-100 p-6 md:p-8 space-y-6">
                             {/* Game Status Header */}
                             <div className="flex justify-between items-center text-xs pb-4 border-b border-slate-100">
                               <span className="font-bold text-slate-400 uppercase tracking-wider">
@@ -3568,13 +3568,13 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
 
                             {/* Trivia Question card */}
                             <div className="text-center space-y-3">
-                              <span className="inline-block px-3 py-1.5 bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest rounded-lg">
+                              <span className="inline-block px-3 py-1.5 bg-slate-900 text-white text-[10px] font-semibold uppercase tracking-wider rounded-lg">
                                 {language === 'en' ? 'Determine Target Port' : 'Individua la Porta Target'}
                               </span>
-                              <h4 className="text-2xl font-black text-slate-900 tracking-tight leading-tight">
+                              <h4 className="text-2xl font-semibold text-slate-900 tracking-tight leading-tight">
                                 {language === 'en' ? 'Which port corresponds to:' : 'Quale porta corrisponde al servizio:'}
                               </h4>
-                              <div className="text-3xl font-black text-indigo-600 bg-indigo-50/50 py-4 px-6 rounded-2xl max-w-xs mx-auto border border-indigo-100 shadow-inner">
+                              <div className="text-3xl font-semibold text-indigo-600 bg-indigo-50/50 py-4 px-6 rounded-lg max-w-xs mx-auto border border-indigo-100">
                                 {gameQuestions[currentQuestionIdx]?.service}
                               </div>
                             </div>
@@ -3589,9 +3589,9 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                                 
                                 if (answerEvaluated) {
                                   if (isCorrect) {
-                                    btnStyle = "bg-emerald-500 border-emerald-600 text-white shadow-md shadow-emerald-100";
+                                    btnStyle = "bg-emerald-500 border-emerald-600 text-white shadow-emerald-100";
                                   } else if (isSelected) {
-                                    btnStyle = "bg-rose-500 border-rose-600 text-white shadow-md shadow-rose-100";
+                                    btnStyle = "bg-rose-500 border-rose-600 text-white shadow-rose-100";
                                   } else {
                                     btnStyle = "bg-slate-50 border-slate-100 text-slate-300 pointer-events-none opacity-40";
                                   }
@@ -3602,7 +3602,7 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                                     key={idx}
                                     disabled={answerEvaluated}
                                     onClick={() => handleSelectAnswer(option)}
-                                    className={`py-4 px-6 border rounded-2xl font-mono text-lg font-black transition-all ${btnStyle}`}
+                                    className={`py-4 px-6 border rounded-lg font-mono text-lg font-semibold transition-all ${btnStyle}`}
                                   >
                                     {option}
                                   </button>
@@ -3615,7 +3615,7 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                               <motion.div 
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-2xl bg-indigo-50/60 border border-indigo-100"
+                                className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-lg bg-indigo-50/60 border border-indigo-100"
                               >
                                 <span className="text-xs font-semibold text-indigo-900">
                                   {selectedAnswer === gameQuestions[currentQuestionIdx].port ? (
@@ -3648,8 +3648,8 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                           </div>
                         ) : (
                           /* End Game Results screen */
-                          <div className="bg-white rounded-3xl border border-slate-100 p-8 shadow-sm space-y-6 text-center">
-                            <div className="w-20 h-20 bg-amber-50 rounded-full flex items-center justify-center mx-auto shadow-inner relative">
+                          <div className="bg-white rounded-xl border border-slate-100 p-8 space-y-6 text-center">
+                            <div className="w-20 h-20 bg-amber-50 rounded-full flex items-center justify-center mx-auto relative">
                               <Trophy className="w-10 h-10 text-amber-500" />
                               <motion.div
                                 animate={{ rotate: 360 }}
@@ -3659,7 +3659,7 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                             </div>
 
                             <div className="space-y-1">
-                              <h3 className="text-2xl font-black text-slate-900 uppercase tracking-tight">
+                              <h3 className="text-2xl font-semibold text-slate-900 uppercase tracking-tight">
                                 {language === 'en' ? 'Training session completed!' : 'Sessione completata!'}
                               </h3>
                               <p className="text-slate-500 text-sm">
@@ -3668,14 +3668,14 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                             </div>
 
                             {/* Final score display */}
-                            <div className="bg-slate-50 py-4 px-6 rounded-2xl max-w-sm mx-auto border border-slate-100 flex justify-around items-center divide-x divide-slate-200">
+                            <div className="bg-slate-50 py-4 px-6 rounded-lg max-w-sm mx-auto border border-slate-100 flex justify-around items-center divide-x divide-slate-200">
                               <div>
                                 <span className="block text-[10px] uppercase font-bold text-slate-400">{language === 'en' ? 'Correct answers' : 'Risposte esatte'}</span>
-                                <span className="text-2xl font-black text-slate-800">{gameScore} / 5</span>
+                                <span className="text-2xl font-semibold text-slate-800">{gameScore} / 5</span>
                               </div>
                               <div className="pl-6 text-left">
                                 <span className="block text-[10px] uppercase font-bold text-slate-400">{language === 'en' ? 'Precision Rate' : 'Precisione'}</span>
-                                <span className="text-2xl font-black text-indigo-600">{(gameScore/5)*100}%</span>
+                                <span className="text-2xl font-semibold text-indigo-600">{(gameScore/5)*100}%</span>
                               </div>
                             </div>
 
@@ -3751,10 +3751,10 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                                 animate={{ rotateY: 0, opacity: 1 }}
                                 exit={{ rotateY: 90, opacity: 0 }}
                                 transition={{ duration: 0.2 }}
-                                className="absolute inset-0 bg-gradient-to-br from-indigo-500 to-indigo-700 rounded-3xl p-8 flex flex-col justify-between text-white shadow-xl shadow-indigo-100/40 min-h-[290px]"
+                                className="absolute inset-0 bg-slate-900 rounded-xl p-8 flex flex-col justify-between text-white min-h-[290px]"
                               >
                                 <div className="flex justify-between items-start">
-                                  <span className="font-black text-xs uppercase tracking-widest bg-white/20 px-3 py-1 rounded-full text-indigo-100 font-mono">
+                                  <span className="font-semibold text-xs uppercase tracking-wider bg-white/20 px-3 py-1 rounded-full text-indigo-100 font-mono">
                                     {(flashcardsList[currentFlashcardIdx]?.range || 'well-known').toUpperCase()}
                                   </span>
                                   <span className="text-white/40 text-xs font-mono font-bold uppercase">
@@ -3763,15 +3763,15 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                                 </div>
 
                                 <div className="text-center py-4 space-y-1">
-                                  <div className="text-6xl font-black font-mono tracking-tight select-all">
+                                  <div className="text-6xl font-semibold font-mono tracking-tight select-all">
                                     {flashcardsList[currentFlashcardIdx]?.port}
                                   </div>
-                                  <div className="text-indigo-200 text-xs uppercase font-extrabold tracking-widest leading-loose">
+                                  <div className="text-indigo-200 text-xs uppercase font-extrabold tracking-wider leading-loose">
                                     {language === 'en' ? 'Protocol Service' : 'Servizio di Rete'}
                                   </div>
                                 </div>
 
-                                <div className="text-center text-[10px] text-indigo-200 uppercase font-black tracking-widest bg-indigo-800/20 py-1 rounded-lg">
+                                <div className="text-center text-[10px] text-indigo-200 uppercase font-semibold tracking-wider bg-indigo-800/20 py-1 rounded-lg">
                                   {language === 'en' ? 'Click / Tap to reveal details' : 'Clicca / Tocca per girare'}
                                 </div>
                               </motion.div>
@@ -3783,12 +3783,12 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                                 animate={{ rotateY: 0, opacity: 1 }}
                                 exit={{ rotateY: -90, opacity: 0 }}
                                 transition={{ duration: 0.2 }}
-                                className="absolute inset-0 bg-white border border-slate-200 rounded-3xl p-6 flex flex-col justify-between shadow-xl min-h-[290px]"
+                                className="absolute inset-0 bg-white border border-slate-200 rounded-xl p-6 flex flex-col justify-between min-h-[290px]"
                               >
                                 <div className="space-y-3">
                                   <div className="flex justify-between items-start border-b border-slate-100 pb-2">
                                     <span className="flex items-center gap-1.5">
-                                      <span className="px-2.5 py-1 bg-indigo-600 text-white font-mono font-black text-xs rounded-lg select-all">
+                                      <span className="px-2.5 py-1 bg-indigo-600 text-white font-mono font-semibold text-xs rounded-lg select-all">
                                         Port {flashcardsList[currentFlashcardIdx]?.port}
                                       </span>
                                       <span className="px-2 py-0.5 bg-indigo-50 border border-indigo-100 text-indigo-700 font-mono text-[10px] uppercase font-bold rounded-lg">
@@ -3798,11 +3798,11 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                                     
                                     <span className="flex items-center gap-1">
                                       {flashcardsList[currentFlashcardIdx]?.isSecure ? (
-                                        <span className="text-[9px] font-black text-emerald-600 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-lg uppercase">
+                                        <span className="text-[9px] font-semibold text-emerald-600 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-lg uppercase">
                                           {language === 'en' ? 'Secure' : 'Sicuro'}
                                         </span>
                                       ) : (
-                                        <span className="text-[9px] font-black text-amber-600 bg-amber-50 border border-amber-100 px-2 py-0.5 rounded-lg uppercase">
+                                        <span className="text-[9px] font-semibold text-amber-600 bg-amber-50 border border-amber-100 px-2 py-0.5 rounded-lg uppercase">
                                           {language === 'en' ? 'Insecure' : 'Insicuro'}
                                         </span>
                                       )}
@@ -3811,16 +3811,16 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
 
                                   <div className="space-y-2 text-left">
                                     <div>
-                                      <h4 className="text-[9px] font-black text-slate-400 uppercase tracking-widest block">
+                                      <h4 className="text-[9px] font-semibold text-slate-400 uppercase tracking-wider block">
                                         {language === 'en' ? 'Service Name' : 'Nome Servizio'}
                                       </h4>
-                                      <p className="text-xs font-black text-slate-800 leading-tight">
+                                      <p className="text-xs font-semibold text-slate-800 leading-tight">
                                         {flashcardsList[currentFlashcardIdx]?.service} &bull; <span className="text-slate-400 text-[11px] font-medium font-sans">{flashcardsList[currentFlashcardIdx]?.name}</span>
                                       </p>
                                     </div>
 
                                     <div>
-                                      <h4 className="text-[9px] font-black text-slate-400 uppercase tracking-widest block">
+                                      <h4 className="text-[9px] font-semibold text-slate-400 uppercase tracking-wider block">
                                         {language === 'en' ? 'Base Description' : 'Descrizione di Base'}
                                       </h4>
                                       <p className="text-[11px] text-slate-600 leading-normal font-semibold">
@@ -3846,7 +3846,7 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                                   </div>
                                 </div>
 
-                                <div className="text-center text-[9px] text-slate-300 font-bold uppercase tracking-widest mt-2 border-t border-slate-50 pt-1.5">
+                                <div className="text-center text-[9px] text-slate-300 font-bold uppercase tracking-wider mt-2 border-t border-slate-50 pt-1.5">
                                   {language === 'en' ? 'Click / Tap card to flip back' : 'Clicca / Tocca per girare di nuovo'}
                                 </div>
                               </motion.div>
@@ -3863,7 +3863,7 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                               setCurrentFlashcardIdx(prev => prev - 1);
                               setIsFlipped(false);
                             }}
-                            className="py-2.5 px-3 bg-slate-50 border border-slate-200 text-slate-700 hover:bg-slate-100 hover:border-slate-300 disabled:opacity-40 disabled:pointer-events-none text-xs font-black uppercase rounded-xl transition flex items-center justify-center gap-1"
+                            className="py-2.5 px-3 bg-slate-50 border border-slate-200 text-slate-700 hover:bg-slate-100 hover:border-slate-300 disabled:opacity-40 disabled:pointer-events-none text-xs font-semibold uppercase rounded-xl transition flex items-center justify-center gap-1"
                           >
                             &larr; <span className="hidden sm:inline">{language === 'en' ? 'Prev' : 'Prec'}</span>
                           </button>
@@ -3873,7 +3873,7 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                               e.stopPropagation();
                               setIsFlipped(prev => !prev);
                             }}
-                            className="py-2.5 px-4 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-black uppercase rounded-xl transition"
+                            className="py-2.5 px-4 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-semibold uppercase rounded-xl transition"
                           >
                             {language === 'en' ? 'Flip' : 'Gira'}
                           </button>
@@ -3888,7 +3888,7 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                               }
                               setIsFlipped(false);
                             }}
-                            className="py-2.5 px-3 bg-slate-900 text-white hover:bg-slate-800 text-xs font-black uppercase rounded-xl transition flex items-center justify-center gap-1"
+                            className="py-2.5 px-3 bg-slate-900 text-white hover:bg-slate-800 text-xs font-semibold uppercase rounded-xl transition flex items-center justify-center gap-1"
                           >
                             <span className="hidden sm:inline">{language === 'en' ? 'Next' : 'Socc'}</span> &rarr;
                           </button>
@@ -3912,7 +3912,7 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
 
             {/* Modal Footer */}
             <div className="p-4 border-t border-slate-100 text-center bg-slate-50/30">
-              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
                 {language === 'en' ? 'IANA Bandwidth Classification • Standard Protocol Mappings' : 'Classificazione Bande IANA • Monitor di Sicurezza Standard'}
               </p>
             </div>

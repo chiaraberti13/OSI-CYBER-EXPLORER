@@ -30,15 +30,11 @@ export default function Terminal() {
   }[language];
 
   return (
-    <div className="bg-white border border-slate-100 rounded-xl overflow-hidden flex flex-col h-full font-mono text-[10px] shadow-sm">
-      <div className="bg-slate-50 px-3 py-2.5 flex justify-between items-center border-b border-slate-100">
-        <div className="flex items-center gap-3">
-          <div className="flex gap-1.5 opacity-40">
-            <div className="w-2 h-2 rounded-full bg-slate-300" />
-            <div className="w-2 h-2 rounded-full bg-slate-300" />
-            <div className="w-2 h-2 rounded-full bg-slate-300" />
-          </div>
-          <span className="text-slate-600 font-medium font-sans text-xs">
+    <div className="bg-white border border-slate-200/70 rounded-lg overflow-hidden flex flex-col h-full font-mono text-[10px]">
+      <div className="px-3 py-2 flex justify-between items-center border-b border-slate-100">
+        <div className="flex items-center gap-2.5">
+          <span className="text-slate-300 font-mono text-xs select-none">$_</span>
+          <span className="text-slate-500 font-medium font-sans text-xs">
             {labels.terminal}
           </span>
         </div>
@@ -55,12 +51,12 @@ export default function Terminal() {
       <div
         ref={scrollRef}
         aria-live="polite"
-        className="flex-1 overflow-y-auto p-5 space-y-1.5 custom-scrollbar bg-slate-50/30"
+        className="flex-1 overflow-y-auto p-4 space-y-1.5 custom-scrollbar bg-slate-50/20"
       >
         {logs.length === 0 && (
           <div className="h-full flex flex-col items-center justify-center text-center px-4 select-none">
-            <div className="w-9 h-9 rounded-lg bg-emerald-50 border border-emerald-100 flex items-center justify-center mb-3">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <div className="w-8 h-8 rounded-md border border-slate-200 flex items-center justify-center mb-3">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
             </div>
             <p className="text-xs font-semibold text-slate-500 mb-1.5 not-italic font-sans">
               {labels.emptyTitle}
