@@ -352,7 +352,7 @@ function AttackCard({ attack }: { attack: Attack }) {
   return (
     <motion.div
       layout
-      className={`rounded-xl border ${sev.border} ${sev.bg} shadow-sm overflow-hidden`}
+      className={`rounded-lg border ${sev.border} ${sev.bg} overflow-hidden`}
     >
       <button
         onClick={() => setExpanded(!expanded)}
@@ -360,7 +360,7 @@ function AttackCard({ attack }: { attack: Attack }) {
       >
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap mb-1">
-            <span className="text-[9px] font-black px-1.5 py-0.5 rounded border" style={{ color: sev.color, borderColor: sev.color + '50', backgroundColor: sev.color + '15' }}>
+            <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded border" style={{ color: sev.color, borderColor: sev.color + '50', backgroundColor: sev.color + '15' }}>
               {sev.label}
             </span>
             <h4 className="text-[11px] font-bold text-slate-800 uppercase tracking-tight">{attack.name}</h4>
@@ -386,7 +386,7 @@ function AttackCard({ attack }: { attack: Attack }) {
               <div>
                 <div className="flex items-center gap-1.5 mb-2">
                   <Zap className="w-3 h-3 text-amber-600" />
-                  <span className="text-[8px] font-black text-amber-600 uppercase tracking-widest">Come funziona / How it works</span>
+                  <span className="text-[10px] font-semibold text-amber-600 uppercase tracking-wider">Come funziona / How it works</span>
                 </div>
                 <div className="bg-white rounded-lg border border-slate-200 p-3">
                   <pre className="text-[9px] text-slate-600 leading-relaxed whitespace-pre-wrap font-mono">{attack.howItWorks}</pre>
@@ -395,7 +395,7 @@ function AttackCard({ attack }: { attack: Attack }) {
 
               {/* Impact */}
               <div>
-                <span className="text-[8px] font-black text-red-600 uppercase tracking-widest block mb-1">Impatto / Impact</span>
+                <span className="text-[10px] font-semibold text-red-600 uppercase tracking-wider block mb-1">Impatto / Impact</span>
                 <p className="text-[10px] text-red-700/80 leading-snug">{attack.impact}</p>
               </div>
 
@@ -403,7 +403,7 @@ function AttackCard({ attack }: { attack: Attack }) {
               <div className="pt-2 border-t border-slate-200/40">
                 <div className="flex items-center gap-1.5 mb-1.5">
                   <ShieldCheck className="w-3 h-3 text-emerald-600" />
-                  <span className="text-[8px] font-black text-emerald-600 uppercase tracking-widest">Mitigazione</span>
+                  <span className="text-[10px] font-semibold text-emerald-600 uppercase tracking-wider">Mitigazione</span>
                 </div>
                 <p className="text-[10px] text-emerald-700/70 leading-snug italic">{attack.mitigation_strategy}</p>
               </div>
@@ -417,22 +417,22 @@ function AttackCard({ attack }: { attack: Attack }) {
 
 function DefenseCard({ defense }: { defense: Defense }) {
   return (
-    <div className="p-4 bg-emerald-50 border border-emerald-100 shadow-sm rounded-xl space-y-2">
+    <div className="p-4 bg-emerald-50 border border-emerald-100 rounded-lg space-y-2">
       <div className="flex items-start gap-2">
         <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0 mt-0.5" />
         <div className="flex-1 min-w-0">
           <h4 className="text-[11px] font-bold text-slate-800 uppercase tracking-tight mb-1">{defense.name}</h4>
           <p className="text-[10px] text-slate-500 leading-snug mb-2">{defense.description}</p>
-          <div className="bg-white rounded-lg border border-emerald-100 p-2 shadow-sm">
-            <span className="text-[7px] font-black text-emerald-800 uppercase tracking-widest block mb-1">Metodo / Method</span>
+          <div className="bg-white rounded-lg border border-emerald-100 p-2">
+            <span className="text-[10px] font-semibold text-emerald-800 uppercase tracking-wider block mb-1">Metodo / Method</span>
             <p className="text-[9px] text-emerald-900/70 font-mono leading-relaxed">{defense.method}</p>
           </div>
           {defense.counters && defense.counters.length > 0 && (
             <div className="mt-2">
-              <span className="text-[7px] font-black text-emerald-600/60 uppercase tracking-widest block mb-1.5">Contrastare / Counters</span>
+              <span className="text-[10px] font-semibold text-emerald-600/60 uppercase tracking-wider block mb-1.5">Contrastare / Counters</span>
               <div className="flex flex-wrap gap-1">
                 {defense.counters.map(c => (
-                  <span key={c} className="text-[8px] px-1.5 py-0.5 bg-red-50 border border-red-100 text-red-600 rounded font-mono uppercase">
+                  <span key={c} className="text-[10px] px-1.5 py-0.5 bg-red-50 border border-red-100 text-red-600 rounded font-mono uppercase">
                     {c}
                   </span>
                 ))}
@@ -466,7 +466,7 @@ export default function LayerDetails() {
 
   if (!layer && viewMode === 'theory') {
     return (
-      <div className="h-full flex flex-col items-center justify-center text-slate-400 border-2 border-dashed border-slate-100 rounded-2xl p-8 text-center uppercase tracking-widest text-xs bg-white">
+      <div className="h-full flex flex-col items-center justify-center text-slate-400 border border-dashed border-slate-200 rounded-lg p-8 text-center uppercase tracking-wider text-xs bg-white">
         <Network className="w-12 h-12 mb-4 opacity-20" />
         {language === 'en' ? 'Select a layer to inspect' : 'Seleziona un livello da ispezionare'}
       </div>
@@ -523,33 +523,33 @@ export default function LayerDetails() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="h-full bg-white border border-slate-100 rounded-xl flex flex-col overflow-hidden shadow-sm"
+        className="h-full bg-white border border-slate-200/70 rounded-lg flex flex-col overflow-hidden"
       >
         {viewMode === 'packet' ? (
           <>
-            <div className="flex items-center justify-between border-b border-slate-50 p-5 bg-slate-50/30">
+            <div className="flex items-center justify-between border-b border-slate-100 p-4 bg-slate-50/30">
               <div className="flex items-center gap-3">
-                 <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-slate-900">
-                   <Box className="w-5 h-5 text-white" />
+                 <div className="w-8 h-8 rounded-md flex items-center justify-center border border-slate-200 bg-white">
+                   <Box className="w-4 h-4 text-slate-500" />
                  </div>
                  <div>
-                   <h2 className="text-xs font-bold text-slate-900 uppercase tracking-[0.2em]">Packet_Inspect</h2>
-                   <p className="text-[10px] text-emerald-600 font-mono mt-0.5">PROTO_{selectedProtocol}_ACTIVE</p>
+                   <h2 className="text-[13px] font-medium text-slate-900">Packet inspect</h2>
+                   <p className="text-[10px] text-slate-400 font-mono mt-0.5">proto:{selectedProtocol.toLowerCase()} · active</p>
                  </div>
               </div>
               <button
                 onClick={() => setViewMode('theory')}
-                className="text-[9px] font-bold text-slate-400 hover:text-slate-800 uppercase tracking-widest px-2 py-1 bg-white rounded border border-slate-200 transition-all shadow-sm"
+                className="text-[11px] font-medium text-slate-400 hover:text-slate-700 px-2.5 py-1 bg-white rounded-md border border-slate-200 transition-all"
               >
-                Close
+                {language === 'it' ? 'Chiudi' : 'Close'}
               </button>
             </div>
 
             <div className="flex-1 overflow-y-auto p-5 custom-scrollbar space-y-6 bg-white">
-              <section className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
+              <section className="p-4 bg-slate-50 border border-slate-100 rounded-lg">
                  <div className="flex items-center gap-2 mb-2">
                     <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: layer?.color }} />
-                    <h3 className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Layer_Mission</h3>
+                    <h3 className="eyebrow">Layer_Mission</h3>
                  </div>
                  <p className="text-[11px] text-slate-700 leading-relaxed">{info?.description}</p>
               </section>
@@ -558,13 +558,13 @@ export default function LayerDetails() {
                 <motion.div
                   initial={{ scale: 0.9, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
-                  className="p-4 bg-red-50 border border-red-200 rounded-xl flex items-start gap-4 shadow-sm"
+                  className="p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-4"
                 >
                    <div className="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center flex-shrink-0 animate-pulse">
                       <ShieldAlert className="w-4 h-4 text-white" />
                    </div>
                    <div>
-                      <h4 className="text-[10px] font-black text-red-600 uppercase tracking-widest">Security_Violation_Detected</h4>
+                      <h4 className="text-[10px] font-semibold text-red-600 uppercase tracking-wider">Security_Violation_Detected</h4>
                       <p className="text-[10px] text-red-700/70 font-mono mt-1 italic">
                         {activeAttack === 'mitm' ? 'Man-in-the-Middle detected at Data Link / Network bridge.' :
                          activeAttack === 'dos' ? 'Resource exhaustion detected. Network stack saturated.' :
@@ -577,14 +577,14 @@ export default function LayerDetails() {
               )}
 
               <section>
-                 <h3 className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-3">Runtime Payload</h3>
-                 <div className="p-3 bg-slate-900 rounded-lg border border-black/5 font-mono text-[10px] text-slate-200 break-all leading-relaxed shadow-lg">
+                 <h3 className="eyebrow mb-3">Runtime Payload</h3>
+                 <div className="p-3 bg-slate-900 rounded-lg border border-black/5 font-mono text-[10px] text-slate-200 break-all leading-relaxed">
                    {"{ \"msg\": \"NetLab_Simulator\", \"proto\": \"" + selectedProtocol + "\", \"bytes\": 1500, \"payload\": \"Secure\" }"}
                  </div>
               </section>
 
               <section>
-                <h3 className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-3">Protocol Header Breakdown</h3>
+                <h3 className="eyebrow mb-3">Protocol Header Breakdown</h3>
                 <div className="space-y-4">
                   {[...packetHeaders].reverse().map((h, idx) => {
                     const l = OSI_LAYERS.find(layer => layer.id === h.layer);
@@ -601,46 +601,46 @@ export default function LayerDetails() {
                       }[h.layer as keyof typeof headerFields] || []);
 
                     return (
-                      <div key={`${h.layer}-${idx}`} className="p-3 rounded-lg border border-slate-100 bg-slate-50/50 group hover:shadow-sm transition-all shadow-none">
+                      <div key={`${h.layer}-${idx}`} className="p-3 rounded-md border border-slate-200/70 bg-white group transition-all">
                         <div className="flex justify-between items-center mb-3">
-                          <span className="text-[10px] font-black uppercase flex items-center gap-2" style={{ color: l?.color }}>
+                          <span className="text-[11px] font-medium flex items-center gap-2 text-slate-600">
                             <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: l?.color }} />
                             L{h.layer} {l?.translations[language].name}
                           </span>
                           <div className="flex items-center gap-2">
-                             <span className="text-[8px] font-black text-slate-400 bg-white px-1 py-0.5 rounded border border-slate-200 uppercase">{h.pduName}</span>
-                             <span className="text-[9px] text-slate-500 font-mono bg-white px-1.5 py-0.5 rounded border border-slate-200">{h.protocol}</span>
+                             <span className="text-[9px] font-mono text-slate-400 px-1 py-0.5 rounded border border-slate-200">{h.pduName}</span>
+                             <span className="text-[9px] text-slate-500 font-mono px-1.5 py-0.5 rounded border border-slate-200">{h.protocol}</span>
                           </div>
                         </div>
                         <div className="grid grid-cols-3 gap-2 mb-3">
                            {headerFields.map(f => (
-                             <div key={f.key} className={`p-1.5 border rounded-md transition-colors ${simulationState !== 'idle' && h.layer === selectedLayerId ? 'bg-emerald-50 border-emerald-200' : 'bg-white border-slate-100 shadow-sm'}`}>
+                             <div key={f.key} className={`p-1.5 border rounded transition-colors ${simulationState !== 'idle' && h.layer === selectedLayerId ? 'bg-emerald-50 border-emerald-200' : 'bg-slate-50/50 border-slate-100'}`}>
                                 <div className="flex items-center justify-between mb-1">
-                                   <span className="text-[6px] text-slate-400 uppercase leading-none">{f.key}</span>
+                                   <span className="text-[10px] font-mono text-slate-400 leading-none truncate">{f.key}</span>
                                    {simulationState !== 'idle' && h.layer === selectedLayerId && (
-                                     <div className="w-1 h-1 bg-emerald-500 rounded-full animate-pulse" />
+                                     <div className="w-1 h-1 bg-emerald-500 rounded-full" />
                                    )}
                                 </div>
-                                <span className={`text-[8px] font-mono truncate block ${simulationState !== 'idle' && h.layer === selectedLayerId ? 'text-emerald-600' : 'text-slate-700'}`}>{f.value}</span>
+                                <span className={`text-[9px] font-mono truncate block ${simulationState !== 'idle' && h.layer === selectedLayerId ? 'text-emerald-600' : 'text-slate-700'}`}>{f.value}</span>
                              </div>
                            ))}
                         </div>
-                        <p className="text-[9px] text-slate-500 font-mono leading-relaxed opacity-80 group-hover:opacity-100 transition-opacity">
+                        <p className="text-[9px] text-slate-400 font-mono leading-relaxed">
                           {h.details}
                         </p>
                       </div>
                     );
                   })}
                   {packetHeaders.length === 0 && (
-                    <div className="text-center py-12 flex flex-col items-center gap-3 border border-dashed border-slate-100 rounded-xl bg-slate-50/50">
-                      <span className="text-[9px] text-slate-400 font-mono uppercase tracking-widest">Awaiting_Transmission_Init</span>
+                    <div className="text-center py-12 flex flex-col items-center gap-3 border border-dashed border-slate-200 rounded-lg bg-slate-50/30">
+                      <span className="text-[10px] text-slate-400 font-mono">awaiting transmission…</span>
                     </div>
                   )}
                 </div>
               </section>
 
-              <section className="bg-slate-50 border border-slate-100 p-4 rounded-xl">
-                 <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Encapsulation Logic</h4>
+              <section className="bg-slate-50/50 border border-slate-200/70 p-4 rounded-lg">
+                 <h4 className="eyebrow mb-2">{language === 'it' ? 'Logica di incapsulamento' : 'Encapsulation logic'}</h4>
                  <p className="text-[10px] text-slate-500 leading-relaxed italic">
                     {language === 'it'
                       ? 'Per ogni livello dello stack, viene aggiunto un header specifico che contiene le istruzioni per il livello corrispondente sul destinatario. Solo il livello fisico (L1) trasmette segnali elettrici/ottici.'
@@ -652,24 +652,24 @@ export default function LayerDetails() {
         ) : (
           <>
             {/* Header */}
-            <div className="flex items-center justify-between border-b border-slate-50 p-5 flex-shrink-0 bg-slate-50/20">
+            <div className="flex items-center justify-between border-b border-slate-100 p-4 flex-shrink-0 bg-slate-50/20">
               <div className="flex items-center gap-3">
                  <div
-                   className="w-10 h-10 rounded-lg flex items-center justify-center text-white font-black text-sm shadow-sm"
-                   style={{ backgroundColor: layer?.color }}
+                   className="w-8 h-8 rounded-md flex items-center justify-center font-mono font-medium text-sm border"
+                   style={{ color: layer?.color, borderColor: (layer?.color ?? '#64748b') + '40', backgroundColor: (layer?.color ?? '#64748b') + '0d' }}
                  >
                    {layer?.id}
                  </div>
                  <div>
-                   <h2 className="text-xs font-bold text-slate-900 uppercase tracking-[0.2em]">{info?.name}</h2>
-                   <p className="text-[10px] text-slate-400 font-mono mt-0.5">PDU: {layer?.pdu} · LVL_{layer?.id}</p>
+                   <h2 className="text-[13px] font-medium text-slate-900">{info?.name}</h2>
+                   <p className="text-[10px] text-slate-400 font-mono mt-0.5">pdu:{layer?.pdu.toLowerCase()} · L{layer?.id}</p>
                  </div>
               </div>
               <Network className="w-4 h-4 text-slate-200" />
             </div>
 
             {/* Tab Bar */}
-            <div className="flex border-b border-slate-50 flex-shrink-0 px-2 pt-2 gap-1 bg-white">
+            <div className="flex border-b border-slate-100 flex-shrink-0 px-2 gap-0.5 bg-white">
               {tabs.map(tab => {
                 const Icon = tab.icon;
                 const isActive = detailTab === tab.id;
@@ -677,23 +677,23 @@ export default function LayerDetails() {
                    <button
                     key={tab.id}
                     onClick={() => setDetailTab(tab.id)}
-                    className={`flex items-center gap-1.5 px-3 py-2 rounded-t-lg text-[9px] font-bold uppercase tracking-widest transition-all border-b-2 ${
+                    className={`flex items-center gap-1.5 px-2.5 py-2.5 text-[11px] font-medium transition-all border-b-2 -mb-px ${
                       isActive
                         ? tab.id === 'attacks'
-                          ? 'border-red-600 text-red-600 bg-red-50'
+                          ? 'border-red-500 text-red-600'
                           : tab.id === 'defenses'
-                          ? 'border-emerald-600 text-emerald-600 bg-emerald-50'
-                          : 'border-slate-900 text-slate-900 bg-slate-50/50'
+                          ? 'border-emerald-500 text-emerald-600'
+                          : 'border-slate-900 text-slate-900'
                         : 'border-transparent text-slate-400 hover:text-slate-600'
                     }`}
                   >
-                    <Icon className="w-3 h-3" />
+                    <Icon className="w-3.5 h-3.5" />
                     {tab.label}
                     {tab.count !== undefined && (
-                      <span className={`ml-0.5 px-1 py-0.5 rounded text-[7px] font-black ${
-                        isActive && tab.id === 'attacks' ? 'bg-red-200 text-red-700' :
-                        isActive && tab.id === 'defenses' ? 'bg-emerald-200 text-emerald-700' :
-                        'bg-slate-100 text-slate-400'
+                      <span className={`ml-0.5 px-1 rounded text-[10px] font-mono ${
+                        isActive && tab.id === 'attacks' ? 'text-red-500' :
+                        isActive && tab.id === 'defenses' ? 'text-emerald-500' :
+                        'text-slate-400'
                       }`}>
                         {tab.count}
                       </span>
@@ -716,14 +716,14 @@ export default function LayerDetails() {
                   >
                     {/* Simulation Result / Insight Section */}
                     {hasSimulated && activeAttack !== 'none' && (
-                      <section className={`p-4 rounded-xl border animate-in fade-in slide-in-from-bottom-4 duration-500 ${simulationState === 'interrupted' && !defenseEnabled ? 'bg-red-50 border-red-200' : 'bg-emerald-50 border-emerald-200'}`}>
+                      <section className={`p-4 rounded-lg border animate-in fade-in slide-in-from-bottom-4 duration-500 ${simulationState === 'interrupted' && !defenseEnabled ? 'bg-red-50 border-red-200' : 'bg-emerald-50 border-emerald-200'}`}>
                         <div className="flex items-center gap-2 mb-3">
                           {simulationState === 'interrupted' && !defenseEnabled ? (
                             <Skull className="w-4 h-4 text-red-600" />
                           ) : (
                             <ShieldCheck className="w-4 h-4 text-emerald-600" />
                           )}
-                          <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-900">
+                          <h4 className="text-[10px] font-semibold uppercase tracking-wider text-slate-900">
                             {language === 'it' ? 'Esecuzione Analisi L' : 'Execution Insight L'}{selectedLayerId}
                           </h4>
                         </div>
@@ -772,7 +772,7 @@ export default function LayerDetails() {
                     )}
 
                     <section>
-                      <h3 className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-3">
+                      <h3 className="eyebrow mb-3">
                         {language === 'it' ? 'Descrizione' : 'Description'}
                       </h3>
                       <p className="text-xs text-slate-700 leading-relaxed">{info?.description}</p>
@@ -780,7 +780,7 @@ export default function LayerDetails() {
 
                     {info?.responsibilities && info.responsibilities.length > 0 && (
                       <section>
-                        <h3 className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-3">
+                        <h3 className="eyebrow mb-3">
                           {language === 'it' ? 'Responsabilità Primarie' : 'Primary Responsibilities'}
                         </h3>
                         <div className="space-y-2">
@@ -796,13 +796,13 @@ export default function LayerDetails() {
 
                     {info?.useCases && info.useCases.length > 0 && (
                       <section>
-                        <h3 className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-3">
+                        <h3 className="eyebrow mb-3">
                           {language === 'it' ? 'Casi d\'Uso Comuni' : 'Common Use Cases'}
                         </h3>
                         <div className="grid grid-cols-1 gap-2">
                           {info.useCases.map((useCase, i) => (
                             <div key={i} className="px-3 py-2 bg-slate-50 border border-slate-100 rounded-lg flex items-center gap-2">
-                              <div className="w-1.5 h-1.5 rounded-full bg-slate-900/10 flex items-center justify-center text-[7px] font-bold text-slate-400">
+                              <div className="w-1.5 h-1.5 rounded-full bg-slate-900/10 flex items-center justify-center text-[10px] font-bold text-slate-400">
                                 {i + 1}
                               </div>
                               <p className="text-[10px] text-slate-700 font-medium">{useCase}</p>
@@ -816,14 +816,14 @@ export default function LayerDetails() {
                       <section>
                         <div className="flex items-center gap-2 mb-3">
                           <Lightbulb className="w-3.5 h-3.5 text-amber-500" />
-                          <h3 className="text-[9px] font-bold text-amber-600 uppercase tracking-widest">
+                          <h3 className="text-[9px] font-bold text-amber-600 uppercase tracking-wider">
                             {language === 'it' ? 'Fatti Chiave' : 'Key Facts'}
                           </h3>
                         </div>
                         <div className="space-y-2">
                           {info.keyFacts.map((fact, i) => (
-                            <div key={i} className="flex gap-3 p-3 bg-amber-50 border border-amber-100 rounded-lg shadow-sm">
-                              <span className="text-[8px] font-black text-amber-500/40 mt-0.5 flex-shrink-0">0{i + 1}</span>
+                            <div key={i} className="flex gap-3 p-3 bg-amber-50 border border-amber-100 rounded-lg">
+                              <span className="text-[10px] font-semibold text-amber-500/40 mt-0.5 flex-shrink-0">0{i + 1}</span>
                               <p className="text-[10px] text-slate-700 leading-relaxed">{fact}</p>
                             </div>
                           ))}
@@ -832,12 +832,12 @@ export default function LayerDetails() {
                     )}
 
                     <section>
-                      <h3 className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-3">
+                      <h3 className="eyebrow mb-3">
                         {language === 'it' ? 'Protocolli Standard' : 'Standard Protocols'}
                       </h3>
                       <div className="flex flex-wrap gap-1.5">
                         {info?.protocols?.map(p => (
-                          <span key={p} className="px-2 py-1 bg-white border border-slate-200 text-slate-700 rounded-md text-[9px] font-mono shadow-sm">
+                          <span key={p} className="px-2 py-1 bg-white border border-slate-200 text-slate-700 rounded-md text-[9px] font-mono">
                             {p}
                           </span>
                         ))}
@@ -845,19 +845,19 @@ export default function LayerDetails() {
                     </section>
 
                     <section>
-                      <h3 className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-3">
+                      <h3 className="eyebrow mb-3">
                         {language === 'it' ? 'Statistiche di Sicurezza' : 'Security Stats'}
                       </h3>
                       <div className="grid grid-cols-2 gap-2">
-                        <div className="p-3 bg-red-50 border border-red-100 rounded-lg text-center shadow-sm">
-                          <span className="block text-2xl font-black text-red-600">{protocolAttacks.length}</span>
-                          <span className="text-[8px] text-slate-500 uppercase tracking-widest">
+                        <div className="p-3 bg-red-50 border border-red-100 rounded-lg text-center">
+                          <span className="block text-2xl font-semibold text-red-600">{protocolAttacks.length}</span>
+                          <span className="text-[10px] text-slate-500 uppercase tracking-wider">
                             {language === 'it' ? 'Attacchi Noti' : 'Known Attacks'}
                           </span>
                         </div>
-                        <div className="p-3 bg-emerald-50 border border-emerald-100 rounded-lg text-center shadow-sm">
-                          <span className="block text-2xl font-black text-emerald-600">{protocolDefenses.length}</span>
-                          <span className="text-[8px] text-slate-500 uppercase tracking-widest">
+                        <div className="p-3 bg-emerald-50 border border-emerald-100 rounded-lg text-center">
+                          <span className="block text-2xl font-semibold text-emerald-600">{protocolDefenses.length}</span>
+                          <span className="text-[10px] text-slate-500 uppercase tracking-wider">
                             {language === 'it' ? 'Contromisure' : 'Countermeasures'}
                           </span>
                         </div>
@@ -865,18 +865,18 @@ export default function LayerDetails() {
                     </section>
 
                     {selectedLayerId && TUTOR_CORNER[selectedLayerId] && (
-                      <section className="p-4 bg-indigo-50/30 border border-indigo-100 rounded-2xl space-y-4 animate-in fade-in duration-300">
+                      <section className="p-4 bg-indigo-50/30 border border-indigo-100 rounded-lg space-y-4 animate-in fade-in duration-300">
                         <div className="flex items-center gap-2">
-                          <div className="w-6 h-6 rounded-full bg-indigo-600 text-white font-mono text-[10px] font-black flex items-center justify-center shadow-md shadow-indigo-100">
+                          <div className="w-6 h-6 rounded-full bg-indigo-600 text-white font-mono text-[10px] font-semibold flex items-center justify-center shadow-indigo-100">
                             T
                           </div>
-                          <h4 className="text-[10px] font-black text-indigo-700 uppercase tracking-wider">
+                          <h4 className="text-[10px] font-semibold text-indigo-700 uppercase tracking-wider">
                             {language === 'it' ? "L'Angolo del Tutor" : "Tutor's Corner"}
                           </h4>
                         </div>
                         
                         <div className="space-y-1">
-                          <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest block">
+                          <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">
                             {language === 'it' ? "Analogia Pratica" : "Practical Analogy"}
                           </span>
                           <p className="text-[11px] text-slate-600 leading-relaxed italic pr-2">
@@ -885,14 +885,14 @@ export default function LayerDetails() {
                         </div>
 
                         <div className="space-y-2 border-t border-indigo-100/40 pt-3">
-                          <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest block">
+                          <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">
                             {language === 'it' ? "Diagnostica Reale / Comandi Consigliati" : "Field Diagnostics / CLI Commands"}
                           </span>
                           <div className="space-y-2">
                             {TUTOR_CORNER[selectedLayerId].commands.map((cmd, i) => (
                               <div key={i} className="space-y-1">
                                 <span className="text-[9px] text-slate-500 font-semibold block">{cmd.description}</span>
-                                <div className="p-2.5 bg-slate-900 border border-slate-950 rounded-xl text-indigo-300 font-mono text-[10px] select-all break-all shadow-md">
+                                <div className="p-2.5 bg-slate-900 border border-slate-950 rounded-lg text-indigo-300 font-mono text-[10px] select-all break-all">
                                   {cmd.code}
                                 </div>
                               </div>
@@ -913,10 +913,10 @@ export default function LayerDetails() {
                     className="p-5 space-y-3"
                   >
                     {!hasSimulated ? (
-                      <div className="text-center py-12 flex flex-col items-center gap-4 border-2 border-dashed border-slate-100 rounded-2xl bg-slate-50/30">
+                      <div className="text-center py-12 flex flex-col items-center gap-4 border border-dashed border-slate-200 rounded-lg bg-slate-50/30">
                         <Box className="w-8 h-8 text-slate-200" />
                         <div className="space-y-1 px-6">
-                           <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Modulo_Bloccato</p>
+                           <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Modulo_Bloccato</p>
                            <p className="text-[10px] text-slate-400 leading-relaxed italic">
                              {language === 'it' 
                                ? 'Esegui una simulazione per identificare le minacce specifiche a questo livello.' 
@@ -925,10 +925,10 @@ export default function LayerDetails() {
                         </div>
                       </div>
                     ) : attacksForView.length === 0 ? (
-                      <div className="text-center py-12 flex flex-col items-center gap-4 border-2 border-dashed border-slate-100 rounded-2xl bg-slate-50/30">
+                      <div className="text-center py-12 flex flex-col items-center gap-4 border border-dashed border-slate-200 rounded-lg bg-slate-50/30">
                         <ShieldCheck className="w-8 h-8 text-emerald-200" />
                         <div className="space-y-1 px-6">
-                           <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Nessuna Minaccia Attiva</p>
+                           <p className="text-[10px] font-semibold text-emerald-600 uppercase tracking-wider">Nessuna Minaccia Attiva</p>
                            <p className="text-[10px] text-slate-400 leading-relaxed italic">
                              {language === 'it' 
                                ? 'L\'attacco selezionato non colpisce questo livello direttamente.' 
@@ -965,10 +965,10 @@ export default function LayerDetails() {
                     className="p-5 space-y-3"
                   >
                     {!hasSimulated ? (
-                      <div className="text-center py-12 flex flex-col items-center gap-4 border-2 border-dashed border-slate-100 rounded-2xl bg-slate-50/30">
+                      <div className="text-center py-12 flex flex-col items-center gap-4 border border-dashed border-slate-200 rounded-lg bg-slate-50/30">
                         <Box className="w-8 h-8 text-slate-200" />
                         <div className="space-y-1 px-6">
-                           <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Modulo_Bloccato</p>
+                           <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Modulo_Bloccato</p>
                            <p className="text-[10px] text-slate-400 leading-relaxed italic">
                              {language === 'it' 
                                ? 'Esegui una simulazione per scoprire le contromisure appropriate.' 
@@ -977,10 +977,10 @@ export default function LayerDetails() {
                         </div>
                       </div>
                     ) : defensesForView.length === 0 ? (
-                      <div className="text-center py-12 flex flex-col items-center gap-4 border-2 border-dashed border-slate-100 rounded-2xl bg-slate-50/30">
+                      <div className="text-center py-12 flex flex-col items-center gap-4 border border-dashed border-slate-200 rounded-lg bg-slate-50/30">
                         <Box className="w-8 h-8 text-slate-200" />
                         <div className="space-y-1 px-6">
-                           <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Nessuna Difesa Rilevante</p>
+                           <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Nessuna Difesa Rilevante</p>
                            <p className="text-[10px] text-slate-400 leading-relaxed italic">
                              {language === 'it' 
                                ? 'Non ci sono difese attive necessarie per l\'attuale scenario su questo livello.' 
@@ -1016,10 +1016,10 @@ export default function LayerDetails() {
                     className="p-5 space-y-6"
                   >
                     {!hasSimulated ? (
-                      <div className="text-center py-12 flex flex-col items-center gap-4 border-2 border-dashed border-slate-100 rounded-2xl bg-slate-50/30">
+                      <div className="text-center py-12 flex flex-col items-center gap-4 border border-dashed border-slate-200 rounded-lg bg-slate-50/30">
                         <Search className="w-8 h-8 text-slate-200" />
                         <div className="space-y-1 px-6">
-                           <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Analisi Disattiva</p>
+                           <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Analisi Disattiva</p>
                            <p className="text-[10px] text-slate-400 leading-relaxed italic">
                              {language === 'it' 
                                ? 'Attiva una simulazione per analizzare la vulnerabilità di questo livello.' 
@@ -1029,16 +1029,16 @@ export default function LayerDetails() {
                       </div>
                     ) : (
                       <>
-                        <section className="bg-slate-900 rounded-2xl p-6 text-white overflow-hidden relative">
+                        <section className="bg-slate-900 rounded-lg p-6 text-white overflow-hidden relative">
                           <div className="absolute top-0 right-0 p-4 opacity-10">
                             <Zap className="w-20 h-20" />
                           </div>
-                          <h4 className="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-4">Expert_Technical_Insight</h4>
+                          <h4 className="text-[10px] font-semibold text-indigo-400 uppercase tracking-wider mb-4">Expert_Technical_Insight</h4>
                           
                           <div className="space-y-4 relative z-10">
                             <div>
-                               <span className="text-[8px] font-black text-slate-400 uppercase tracking-[0.2em] block mb-1">Vulnerability Vector</span>
-                               <p className="text-xs font-mono text-blue-100">
+                               <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em] block mb-1">Vulnerability Vector</span>
+                               <p className="text-xs font-mono text-indigo-100">
                                  {selectedLayerId === 7 ? 'APP_LOGIC_EXPLOIT' : 
                                   selectedLayerId === 4 ? 'PROTOCOL_HANDSHAKE_SATURATION' :
                                   selectedLayerId === 3 ? 'ROUTING_TABLE_CORRUPTION' :
@@ -1049,7 +1049,7 @@ export default function LayerDetails() {
                             <div className="h-px bg-white/10" />
                             
                             <div>
-                               <span className="text-[8px] font-black text-slate-400 uppercase tracking-[0.2em] block mb-2">Recommended Controls</span>
+                               <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em] block mb-2">Recommended Controls</span>
                                <ul className="space-y-2">
                                  {[
                                    language === 'en' ? 'Implement strict input validation' : 'Implementa validazione input severa',
@@ -1057,7 +1057,7 @@ export default function LayerDetails() {
                                    language === 'en' ? 'Enforce mutual TLS (mTLS)' : 'Applica mutual TLS (mTLS)'
                                  ].map((item, i) => (
                                    <li key={i} className="flex items-center gap-2 text-[10px] text-slate-300">
-                                     <div className="w-1 h-1 bg-blue-500 rounded-full" />
+                                     <div className="w-1 h-1 bg-indigo-500 rounded-full" />
                                      {item}
                                    </li>
                                  ))}
@@ -1067,18 +1067,18 @@ export default function LayerDetails() {
                         </section>
 
                         <section className="space-y-4">
-                           <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Hardening Roadmap</h4>
+                           <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Hardening Roadmap</h4>
                            <div className="grid gap-3">
-                              <div className="p-3 bg-white border border-slate-100 rounded-xl shadow-sm">
-                                 <span className="text-[8px] font-black text-indigo-600 uppercase tracking-widest block mb-1">Short Term</span>
+                              <div className="p-3 bg-white border border-slate-100 rounded-lg">
+                                 <span className="text-[10px] font-semibold text-indigo-600 uppercase tracking-wider block mb-1">Short Term</span>
                                  <p className="text-[10px] text-slate-600">
                                    {language === 'en' 
                                      ? 'Configure IDS signatures for common attack patterns at this layer.' 
                                      : 'Configura le firme IDS per i pattern di attacco comuni a questo livello.'}
                                  </p>
                               </div>
-                              <div className="p-3 bg-white border border-slate-100 rounded-xl shadow-sm">
-                                 <span className="text-[8px] font-black text-indigo-600 uppercase tracking-widest block mb-1">Infrastructure</span>
+                              <div className="p-3 bg-white border border-slate-100 rounded-lg">
+                                 <span className="text-[10px] font-semibold text-indigo-600 uppercase tracking-wider block mb-1">Infrastructure</span>
                                  <p className="text-[10px] text-slate-600">
                                    {language === 'en' 
                                      ? 'Migrate to automated orchestration with Zero Trust network policies.' 

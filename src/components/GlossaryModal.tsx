@@ -21,7 +21,7 @@ export default function GlossaryModal({ isOpen = false, onClose = () => {}, inli
   const renderWrapper = (children: React.ReactNode) => {
     if (inline) {
       return (
-        <div className="relative bg-white rounded-3xl border border-slate-200 flex flex-col overflow-hidden w-full h-[82vh] min-h-[600px] shadow-sm">
+        <div className="relative bg-white rounded-xl border border-slate-200 flex flex-col overflow-hidden w-full h-[82vh] min-h-[600px]">
           {children}
         </div>
       );
@@ -41,7 +41,7 @@ export default function GlossaryModal({ isOpen = false, onClose = () => {}, inli
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative bg-white rounded-3xl shadow-2xl z-[101] flex flex-col overflow-hidden w-full max-w-2xl h-auto max-h-[85vh] border border-slate-100"
+              className="relative bg-white rounded-xl shadow-lg z-[101] flex flex-col overflow-hidden w-full max-w-2xl h-auto max-h-[85vh] border border-slate-100"
             >
               {children}
             </motion.div>
@@ -60,7 +60,7 @@ export default function GlossaryModal({ isOpen = false, onClose = () => {}, inli
                   <BookOpen className="w-5 h-5 text-blue-600" />
                 </div>
                 <div>
-                  <h2 className="text-lg font-black text-slate-900 uppercase tracking-tighter">
+                  <h2 className="text-lg font-semibold text-slate-900 uppercase tracking-tighter">
                     {language === 'en' ? 'Network Glossary' : 'Glossario di Rete'}
                   </h2>
                   <p className="text-xs text-slate-400 font-medium italic">
@@ -104,7 +104,7 @@ export default function GlossaryModal({ isOpen = false, onClose = () => {}, inli
                     transition={{ delay: idx * 0.03 }}
                     className="group"
                   >
-                    <div className="text-sm font-black text-blue-600 mb-1 group-hover:translate-x-1 transition-transform">
+                    <div className="text-sm font-semibold text-blue-600 mb-1 group-hover:translate-x-1 transition-transform">
                       {item.term}
                     </div>
                     <div className="text-[13px] text-slate-600 leading-relaxed bg-slate-50/50 p-3 rounded-lg border border-slate-100 group-hover:border-blue-100 group-hover:bg-blue-50/30 transition-all">
@@ -122,7 +122,7 @@ export default function GlossaryModal({ isOpen = false, onClose = () => {}, inli
 
             {/* Footer */}
             <div className="p-4 border-t border-slate-100 text-center bg-slate-50/30">
-              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
                 OSI Model Educational Tool • 2024
               </p>
             </div>

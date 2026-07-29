@@ -26,11 +26,11 @@ export default function PacketInspector() {
   }[language];
 
   return (
-    <div className="bg-white border border-slate-100 rounded-xl overflow-hidden flex flex-col">
-      <div className="px-3 py-2.5 flex justify-between items-center border-b border-slate-100 bg-slate-50">
+    <div className="bg-white border border-slate-200/70 rounded-lg overflow-hidden flex flex-col">
+      <div className="px-3 py-2 flex justify-between items-center border-b border-slate-100">
         <div className="flex items-center gap-2">
           <Layers className="w-3.5 h-3.5 text-slate-400" />
-          <span className="text-xs font-medium text-slate-600">{t.title}</span>
+          <span className="text-xs font-medium text-slate-500">{t.title}</span>
         </div>
         {packetHeaders.length > 0 && (
           <span className="text-[10px] font-mono text-slate-400">
@@ -63,19 +63,17 @@ export default function PacketInspector() {
                     <motion.div
                       initial={{ opacity: 0, y: -4 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className={`rounded-lg border px-3 py-2 ${
-                        isCurrent ? 'border-emerald-300 bg-emerald-50/50' : 'border-slate-200 bg-white'
+                      className={`rounded-md border px-3 py-2 ${
+                        isCurrent ? 'border-emerald-200 bg-emerald-50/40' : 'border-slate-200/70 bg-white'
                       }`}
                     >
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span
-                          className="text-[10px] font-bold text-white px-1.5 py-0.5 rounded"
-                          style={{ backgroundColor: color }}
-                        >
+                        <span className="inline-flex items-center gap-1.5 text-[10px] font-mono text-slate-500">
+                          <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: color }} />
                           L{h.layer}
                         </span>
-                        <span className="text-xs font-semibold text-slate-800">{h.protocol}</span>
-                        <span className="text-[9px] font-medium text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">
+                        <span className="text-xs font-medium text-slate-800">{h.protocol}</span>
+                        <span className="text-[9px] font-mono text-slate-400 border border-slate-200/70 px-1.5 py-0.5 rounded">
                           {h.pduName}
                         </span>
                       </div>

@@ -177,7 +177,7 @@ export default function AttackLab() {
   const nameOf = (id: string) => ATTACK_SCENARIOS.find(s => s.id === id)?.name[language] || id;
 
   return (
-    <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+    <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
       {/* Header */}
       <div className="relative px-6 md:px-8 py-7 bg-slate-950 text-white overflow-hidden">
         <div className="absolute -right-8 -top-10 opacity-[0.06] pointer-events-none">
@@ -186,11 +186,11 @@ export default function AttackLab() {
         <div className="relative">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/10 mb-3">
             <Target className="w-3.5 h-3.5 text-red-400" />
-            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-200">
+            <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-200">
               {language === 'it' ? 'Attacco → Difesa' : 'Attack → Defense'}
             </span>
           </div>
-          <h1 className="text-2xl md:text-3xl font-black tracking-tight uppercase">{t.title}</h1>
+          <h1 className="text-2xl md:text-3xl font-semibold tracking-tight uppercase">{t.title}</h1>
           <p className="text-slate-400 text-sm mt-2 max-w-2xl leading-relaxed">{t.subtitle}</p>
         </div>
       </div>
@@ -199,7 +199,7 @@ export default function AttackLab() {
         {/* Left: attack picker */}
         <aside className="lg:col-span-4 xl:col-span-3 border-b lg:border-b-0 lg:border-r border-slate-100 bg-slate-50/40">
           <div className="p-4 border-b border-slate-100">
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 px-1">{t.pick}</p>
+            <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-2 px-1">{t.pick}</p>
             <div className="relative">
               <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
@@ -216,7 +216,7 @@ export default function AttackLab() {
               <div key={group.layer}>
                 <div className="flex items-center gap-2 px-1 mb-1.5">
                   <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: OSI_LAYERS.find(l => l.id === group.layer)?.color }} />
-                  <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">
+                  <span className="text-[9px] font-semibold text-slate-500 uppercase tracking-wider">
                     L{group.layer} · {group.name}
                   </span>
                 </div>
@@ -230,12 +230,12 @@ export default function AttackLab() {
                         aria-pressed={active}
                         className={`w-full text-left px-3 py-2 rounded-lg border text-xs font-semibold transition-all flex items-center justify-between gap-2 ${
                           active
-                            ? 'bg-white border-indigo-300 text-slate-900 shadow-sm'
+                            ? 'bg-white border-indigo-300 text-slate-900'
                             : 'bg-transparent border-transparent text-slate-500 hover:bg-white hover:border-slate-200'
                         }`}
                       >
                         <span className="truncate">{nameOf(w.scenarioId)}</span>
-                        <span className={`text-[8px] font-black uppercase px-1.5 py-0.5 rounded border shrink-0 ${SEVERITY_STYLE[w.severity]}`}>
+                        <span className={`text-[8px] font-semibold uppercase px-1.5 py-0.5 rounded border shrink-0 ${SEVERITY_STYLE[w.severity]}`}>
                           {w.severity}
                         </span>
                       </button>
@@ -254,16 +254,16 @@ export default function AttackLab() {
             <div>
               <div className="flex items-center gap-2 flex-wrap mb-2">
                 <span
-                  className="text-[10px] font-black uppercase px-2 py-1 rounded-md text-white"
+                  className="text-[10px] font-semibold uppercase px-2 py-1 rounded-md text-white"
                   style={{ backgroundColor: layerColor }}
                 >
                   {t.layer} {wt.layer}
                 </span>
-                <span className={`text-[10px] font-black uppercase px-2 py-1 rounded-md border ${SEVERITY_STYLE[wt.severity]}`}>
+                <span className={`text-[10px] font-semibold uppercase px-2 py-1 rounded-md border ${SEVERITY_STYLE[wt.severity]}`}>
                   {t.severity}: {wt.severity}
                 </span>
               </div>
-              <h2 className="text-2xl font-black text-slate-900 tracking-tight">{nameOf(wt.scenarioId)}</h2>
+              <h2 className="text-2xl font-semibold text-slate-900 tracking-tight">{nameOf(wt.scenarioId)}</h2>
               <div className="mt-2 flex items-start gap-2 max-w-xl">
                 <Crosshair className="w-3.5 h-3.5 text-red-500 mt-0.5 shrink-0" />
                 <p className="text-sm text-slate-600 leading-relaxed">
@@ -276,7 +276,7 @@ export default function AttackLab() {
             <button
               onClick={() => setDefenseOn(v => !v)}
               aria-pressed={defenseOn}
-              className={`flex items-center gap-2.5 px-4 py-3 rounded-2xl border-2 font-black text-sm uppercase tracking-wide transition-all shadow-sm ${
+              className={`flex items-center gap-2.5 px-4 py-3 rounded-lg border-2 font-semibold text-sm uppercase tracking-wide transition-all ${
                 defenseOn
                   ? 'bg-emerald-600 border-emerald-700 text-white shadow-emerald-500/20'
                   : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300'
@@ -288,7 +288,7 @@ export default function AttackLab() {
           </div>
 
           {/* Stage: attacker → target with shield */}
-          <div className={`relative rounded-2xl border p-5 mb-5 overflow-hidden transition-colors ${
+          <div className={`relative rounded-lg border p-5 mb-5 overflow-hidden transition-colors ${
             atEnd && !defenseOn ? 'border-red-200 bg-red-50/40'
             : atEnd && defenseOn ? 'border-emerald-200 bg-emerald-50/40'
             : 'border-slate-200 bg-slate-50/60'
@@ -296,10 +296,10 @@ export default function AttackLab() {
             <div className="flex items-center justify-between gap-3">
               {/* Attacker */}
               <div className="flex flex-col items-center gap-1.5 w-24">
-                <div className="w-12 h-12 rounded-xl bg-red-600 text-white flex items-center justify-center shadow-md shadow-red-500/20">
+                <div className="w-12 h-12 rounded-xl bg-red-600 text-white flex items-center justify-center shadow-red-500/20">
                   <Skull className="w-6 h-6" />
                 </div>
-                <span className="text-[9px] font-black uppercase tracking-widest text-slate-500">{t.attacker}</span>
+                <span className="text-[9px] font-semibold uppercase tracking-wider text-slate-500">{t.attacker}</span>
               </div>
 
               {/* Path */}
@@ -328,13 +328,13 @@ export default function AttackLab() {
 
               {/* Target */}
               <div className="flex flex-col items-center gap-1.5 w-24">
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center shadow-md transition-colors ${
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors ${
                   atEnd && !defenseOn ? 'bg-red-600 text-white shadow-red-500/20'
                   : 'bg-slate-800 text-white'
                 }`}>
                   <Server className="w-6 h-6" />
                 </div>
-                <span className="text-[9px] font-black uppercase tracking-widest text-slate-500">{t.target}</span>
+                <span className="text-[9px] font-semibold uppercase tracking-wider text-slate-500">{t.target}</span>
               </div>
             </div>
           </div>
@@ -368,7 +368,7 @@ export default function AttackLab() {
           </div>
 
           {/* Kill chain */}
-          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">{t.killchain}</p>
+          <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-3">{t.killchain}</p>
 
           {revealed === 0 && (
             <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50/50 p-6 text-center">
@@ -392,16 +392,16 @@ export default function AttackLab() {
                         <div className="w-7 h-7 rounded-lg bg-emerald-600 text-white flex items-center justify-center">
                           <ShieldCheck className="w-4 h-4" />
                         </div>
-                        <span className="text-[10px] font-black uppercase tracking-widest text-emerald-700">{t.defenseCard}</span>
-                        <span className="text-sm font-black text-emerald-900">· {wt.defense.name[language]}</span>
+                        <span className="text-[10px] font-semibold uppercase tracking-wider text-emerald-700">{t.defenseCard}</span>
+                        <span className="text-sm font-semibold text-emerald-900">· {wt.defense.name[language]}</span>
                       </div>
                       <div className="grid sm:grid-cols-2 gap-3 pl-9">
                         <div>
-                          <p className="text-[9px] font-black uppercase tracking-wider text-emerald-600 mb-0.5">{t.how}</p>
+                          <p className="text-[9px] font-semibold uppercase tracking-wider text-emerald-600 mb-0.5">{t.how}</p>
                           <p className="text-xs text-slate-700 leading-relaxed">{wt.defense.action[language]}</p>
                         </div>
                         <div>
-                          <p className="text-[9px] font-black uppercase tracking-wider text-emerald-600 mb-0.5">{t.why}</p>
+                          <p className="text-[9px] font-semibold uppercase tracking-wider text-emerald-600 mb-0.5">{t.why}</p>
                           <p className="text-xs text-slate-700 leading-relaxed">{wt.defense.mechanism[language]}</p>
                         </div>
                       </div>
@@ -424,7 +424,7 @@ export default function AttackLab() {
                         {ok ? <CheckCircle2 className="w-5 h-5" /> : <AlertTriangle className="w-5 h-5" />}
                       </div>
                       <div>
-                        <p className={`text-sm font-black uppercase tracking-wide ${ok ? 'text-emerald-700' : 'text-red-700'}`}>
+                        <p className={`text-sm font-semibold uppercase tracking-wide ${ok ? 'text-emerald-700' : 'text-red-700'}`}>
                           {ok ? t.outcomeOK : t.outcomeKO}
                         </p>
                         <p className="text-xs text-slate-700 leading-relaxed mt-0.5">
@@ -455,14 +455,14 @@ export default function AttackLab() {
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className={`text-[8px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded border ${actor.badge}`}>
+                        <span className={`text-[8px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded border ${actor.badge}`}>
                           {actor.label[language]}
                         </span>
                         <h4 className={`text-sm font-bold ${entry.blocked ? 'text-slate-500 line-through decoration-red-300' : 'text-slate-900'}`}>
                           {entry.step.title[language]}
                         </h4>
                         {entry.blocked && (
-                          <span className="inline-flex items-center gap-1 text-[8px] font-black uppercase tracking-wider text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded">
+                          <span className="inline-flex items-center gap-1 text-[8px] font-semibold uppercase tracking-wider text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded">
                             <Ban className="w-2.5 h-2.5" />{t.blocked}
                           </span>
                         )}
