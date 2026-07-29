@@ -1,8 +1,0 @@
-{
-  "name": "OSI Cyber Explorer2",
-  "description": "An interactive bilingual application for studying the OSI model, packet encapsulation, and layer-specific cybersecurity attacks and defenses.",
-  "requestFramePermissions": [],
-  "majorCapabilities": [
-    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
-  ]
-}

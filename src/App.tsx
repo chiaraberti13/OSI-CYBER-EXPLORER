@@ -9,6 +9,7 @@ import OsiStack from './components/OsiStack';
 import LayerDetails from './components/LayerDetails';
 import PacketSimulator from './components/PacketSimulator';
 import Terminal from './components/Terminal';
+import PacketInspector from './components/PacketInspector';
 import { useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import GuideModal from './components/GuideModal';
@@ -51,45 +52,50 @@ export default function App() {
               transition={{ duration: 0.2 }}
               className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start"
             >
-              {/* Left: Terminal & Simulator Controls */}
-              <section className="lg:col-span-3 xl:col-span-3 flex flex-col gap-8 lg:sticky lg:top-36">
-                <div className="space-y-4">
-                  <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] px-2 flex items-center justify-between">
-                    Console_Output
-                    <span className="w-2 h-2 rounded-full bg-emerald-500/20" />
+              {/* Left: Console log + Packet Inspector */}
+              <section className="lg:col-span-3 xl:col-span-3 flex flex-col gap-6">
+                <div className="space-y-3">
+                  <h3 className="text-xs font-semibold text-slate-500 px-1">
+                    {language === 'it' ? 'Console' : 'Console'}
                   </h3>
-                  <div className="h-[400px]">
+                  <div className="h-[320px]">
                     <Terminal />
                   </div>
+                </div>
+                <div className="space-y-3">
+                  <h3 className="text-xs font-semibold text-slate-500 px-1">
+                    {language === 'it' ? 'Pacchetto' : 'Packet'}
+                  </h3>
+                  <PacketInspector />
                 </div>
               </section>
 
               {/* Center: OSI Stack Hub & Controls */}
               <section className="lg:col-span-5 xl:col-span-5 space-y-6">
-                <div className="space-y-4">
-                   <div className="flex items-center justify-between px-4 pb-2 border-b border-slate-100">
-                     <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Simulation_Engine</h3>
-                     <span className="text-[8px] font-mono text-slate-300">DRIVE_UNIT_v1.4</span>
-                   </div>
+                <div className="space-y-3">
+                   <h3 className="text-xs font-semibold text-slate-500 px-1">
+                     {language === 'it' ? 'Simulatore' : 'Simulator'}
+                   </h3>
                    <PacketSimulator />
                 </div>
 
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="space-y-4"
+                  className="space-y-3"
                 >
-                  <div className="flex items-center justify-between px-4 pb-2 border-b border-slate-100">
-                    <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Architecture_Stack</h3>
-                    <span className="text-[8px] font-mono text-slate-300">SYSTEM_CORE_PILA_OSI</span>
-                  </div>
+                  <h3 className="text-xs font-semibold text-slate-500 px-1">
+                    {language === 'it' ? 'Pila OSI' : 'OSI Stack'}
+                  </h3>
                   <OsiStack />
                 </motion.div>
               </section>
 
               {/* Right: Technical Intelligence */}
-              <section className="lg:col-span-4 xl:col-span-4 space-y-4">
-                <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] px-2">Layer_Intelligence</h3>
+              <section className="lg:col-span-4 xl:col-span-4 space-y-3">
+                <h3 className="text-xs font-semibold text-slate-500 px-1">
+                  {language === 'it' ? 'Dettagli del livello' : 'Layer details'}
+                </h3>
                 <LayerDetails />
               </section>
             </motion.div>
@@ -147,10 +153,13 @@ export default function App() {
       </main>
 
       {/* Footer */}
-      <footer className="max-w-7xl mx-auto px-6 py-12 flex justify-between border-t border-slate-100 mt-12 text-[9px] font-mono font-bold text-slate-300 uppercase tracking-[0.3em]">
-         <span>Node_ID: ais-pre-quhymgvpx</span>
-         <span>© 2026 OSI_LAB_SYSTEMS</span>
-         <span>Link_Status: Active</span>
+      <footer className="max-w-7xl mx-auto px-6 py-10 flex flex-col sm:flex-row items-center justify-between gap-2 border-t border-slate-100 mt-12 text-xs text-slate-400">
+         <span className="font-semibold text-slate-500">OSI Cyber Explorer</span>
+         <span>
+           {language === 'it'
+             ? 'App didattica · © 2026 Chiara Berti'
+             : 'Educational app · © 2026 Chiara Berti'}
+         </span>
       </footer>
 
       {/* Global Modals */}

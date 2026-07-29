@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react';
 import { useStore } from '../store';
 import { motion, AnimatePresence } from 'motion/react';
 import { OSI_LAYERS, ATTACK_SCENARIOS, GLOSSARY_TERMS } from '../constants';
-import { Box, ArrowDown, ArrowUp, Zap, Skull, ShieldCheck, Play, RotateCcw, Info, Pause, Target, BookOpen, Search, Activity, AlertTriangle, Languages, ChevronDown, Volume2, VolumeX } from 'lucide-react';
+import { Zap, Skull, ShieldCheck, Play, RotateCcw, Info, Pause, ChevronDown, Volume2, VolumeX } from 'lucide-react';
 import { playAudioCue } from '../utils/audio';
+import { pduNameForLayer, l4ProtocolFor } from '../lib/osi';
 
 export default function PacketSimulator() {
   const { 
@@ -107,32 +108,13 @@ export default function PacketSimulator() {
     addLog(language === 'en' ? 'Simulation reset.' : 'Simulazione resettata.', 'warning');
   };
 
-  const getPduName = (layerId: number) => {
-    if (layerId >= 5) return 'Data';
-    if (layerId === 4) return selectedProtocol === 'HTTP' ? 'Segment' : 'Datagram';
-    if (layerId === 3) return 'Packet';
-    if (layerId === 2) return 'Frame';
-    if (layerId === 1) return 'Bits';
-    return 'Data';
-  };
+  const getPduName = (layerId: number) => pduNameForLayer(layerId, selectedProtocol);
 
   const getHeaderForLayer = (layerId: number) => {
     const layer = OSI_LAYERS.find(l => l.id === layerId);
     if (!layer) return 'Data';
-    // Use specific protocol for L3/L4 based on selection
-    if (selectedProtocol === 'HTTP') {
-      if (layerId === 4) return 'TCP';
-      if (layerId === 3) return 'IP';
-    } else if (selectedProtocol === 'SSH' || selectedProtocol === 'SMTP' || selectedProtocol === 'BGP') {
-      if (layerId === 4) return 'TCP';
-      if (layerId === 3) return 'IP';
-    } else if (selectedProtocol === 'FTP') {
-      if (layerId === 4) return 'TCP';
-      if (layerId === 3) return 'IP';
-    } else if (selectedProtocol === 'DNS') {
-      if (layerId === 4) return 'UDP';
-      if (layerId === 3) return 'IP';
-    }
+    if (layerId === 4) return l4ProtocolFor(selectedProtocol); // TCP / UDP
+    if (layerId === 3) return 'IP';
     return layer.translations[language].protocols?.[0] || 'Header';
   };
 
@@ -388,7 +370,6 @@ export default function PacketSimulator() {
   }, [simulationState, currentStep, activeAttack, defenseEnabled, isPaused, selectedProtocol, language, audioEnabled, stepInterval]);
 
   const threatLevel = activeAttack === 'none' ? 0 : defenseEnabled ? 40 : 100;
-  const threatColor = activeAttack === 'none' ? 'text-emerald-500' : defenseEnabled ? 'text-orange-500' : 'text-red-500';
   const threatBg = activeAttack === 'none' ? 'bg-emerald-500' : defenseEnabled ? 'bg-orange-500' : 'bg-red-500';
 
   return (
@@ -416,51 +397,27 @@ export default function PacketSimulator() {
 
       {/* Simulation Controls Header */}
       <div className="flex flex-wrap items-center justify-between gap-4 p-4 border-b border-slate-50 bg-white relative z-10">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <div className={`w-2 h-2 rounded-full animate-pulse ${activeAttack === 'none' ? 'bg-emerald-500' : 'bg-red-500'}`} />
-            <h1 className="text-[10px] font-black tracking-tighter text-slate-900 uppercase">
-              OSI_SIMULATOR <span className="text-slate-300 font-medium">v2.0</span>
-            </h1>
-          </div>
-
-          <div className="h-6 w-px bg-slate-100 hidden sm:block" />
-
-          {/* Threat Meter (Visual Feedback) */}
-          <div className="hidden md:flex items-center gap-3">
-            <Activity className={`w-3 h-3 ${threatColor}`} />
-            <div className="flex flex-col">
-              <span className="text-[7px] font-bold text-slate-400 uppercase tracking-widest">
-                {language === 'en' ? 'Risk Level' : 'Livello Rischio'}
-              </span>
-              <div className="flex gap-0.5 mt-0.5">
-                {[1, 2, 3, 4, 5].map(i => (
-                  <div 
-                    key={i} 
-                    className={`h-1 w-3 rounded-full transition-colors ${
-                      i * 20 <= threatLevel ? threatBg : 'bg-slate-100'
-                    }`} 
-                  />
-                ))}
-              </div>
-            </div>
-          </div>
+        <div className="flex items-center gap-2.5">
+          <div className={`w-2 h-2 rounded-full ${activeAttack === 'none' ? 'bg-emerald-500' : 'bg-red-500'}`} />
+          <h2 className="text-sm font-semibold text-slate-700">
+            {language === 'en' ? 'Packet simulator' : 'Simulatore di pacchetti'}
+          </h2>
         </div>
 
         <div className="flex items-center gap-2">
           {/* Playback Speed Control (didactic: slow down to explain, speed up to review) */}
           <div className="flex items-center gap-1.5" role="group" aria-label={language === 'en' ? 'Simulation speed' : 'Velocità simulazione'}>
-            <span className="hidden sm:inline text-[7px] font-bold text-slate-400 uppercase tracking-widest">
+            <span className="hidden sm:inline text-[10px] font-medium text-slate-400">
               {language === 'en' ? 'Speed' : 'Velocità'}
             </span>
-            <div className="flex bg-slate-50 p-0.5 rounded-lg border border-slate-200">
+            <div className="flex bg-slate-100 p-0.5 rounded-lg">
               {[0.5, 1, 2].map((s) => (
                 <button
                   key={s}
                   onClick={() => setSimSpeed(s)}
                   aria-pressed={simSpeed === s}
                   aria-label={language === 'en' ? `Speed ${s}x` : `Velocità ${s}x`}
-                  className={`px-2 py-1 text-[9px] font-bold rounded-md font-mono transition-all ${
+                  className={`px-2 py-1 text-[10px] font-medium rounded-md font-mono transition-all ${
                     simSpeed === s ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-slate-600'
                   }`}
                 >
@@ -483,18 +440,13 @@ export default function PacketSimulator() {
             title={audioEnabled
               ? (language === 'en' ? 'Disable Audio Cues' : 'Disattiva Segnali Audio')
               : (language === 'en' ? 'Enable Audio Cues' : 'Attiva Segnali Audio')}
-            className={`flex items-center gap-1.5 text-[9px] font-bold px-2.5 py-1 rounded-lg border transition-all cursor-pointer ${
-              audioEnabled 
-                ? 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100 shadow-xs' 
-                : 'bg-slate-50 text-slate-400 border-slate-200 hover:bg-slate-100'
+            className={`flex items-center justify-center w-8 h-8 rounded-lg transition-colors cursor-pointer ${
+              audioEnabled
+                ? 'text-blue-600 hover:bg-blue-50'
+                : 'text-slate-400 hover:bg-slate-100'
             }`}
           >
-            {audioEnabled ? <Volume2 className="w-3.5 h-3.5 text-blue-600" /> : <VolumeX className="w-3.5 h-3.5 text-slate-400" />}
-            <span className="font-mono uppercase tracking-wider">
-              {audioEnabled 
-                ? (language === 'en' ? 'AUDIO: ON' : 'AUDIO: ON') 
-                : (language === 'en' ? 'AUDIO: OFF' : 'AUDIO: OFF')}
-            </span>
+            {audioEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
           </button>
         </div>
       </div>
@@ -533,8 +485,8 @@ export default function PacketSimulator() {
 
         <div className="flex flex-wrap items-center gap-6">
            {/* Protocol Selection */}
-           <div className="flex items-center gap-3">
-             <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Protocol</span>
+           <div className="flex items-center gap-2">
+             <span className="text-xs font-medium text-slate-500">{language === 'en' ? 'Protocol' : 'Protocollo'}</span>
              <div className="relative">
                <select
                  value={selectedProtocol}
@@ -555,28 +507,30 @@ export default function PacketSimulator() {
              </div>
            </div>
 
-           <div className="flex items-center gap-4">
-             <button
-               onClick={() => setDefenseEnabled(!defenseEnabled)}
-               className={`text-[9px] font-bold border rounded-lg px-3 py-1.5 transition-all shadow-sm ${defenseEnabled ? 'bg-emerald-600 text-white border-emerald-700 shadow-emerald-500/20' : 'bg-white text-slate-400 border-slate-200'}`}
-             >
-               {defenseEnabled ? 'SHIELD_ACTIVE' : 'DEFS_OFFLINE'}
-             </button>
-           </div>
+           <button
+             onClick={() => setDefenseEnabled(!defenseEnabled)}
+             aria-pressed={defenseEnabled}
+             className={`flex items-center gap-1.5 text-xs font-medium rounded-lg px-3 py-1.5 transition-colors ${defenseEnabled ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-500 hover:text-slate-700'}`}
+           >
+             <ShieldCheck className="w-3.5 h-3.5" />
+             {defenseEnabled
+               ? (language === 'en' ? 'Defense on' : 'Difesa attiva')
+               : (language === 'en' ? 'Defense off' : 'Difesa spenta')}
+           </button>
         </div>
       </div>
 
       <div className="px-4 py-4 bg-slate-50/50 border-b border-slate-100 flex flex-col gap-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Skull className="w-3.5 h-3.5 text-red-600" />
-            <span className="text-[10px] font-black text-slate-900 uppercase tracking-widest">
+            <Skull className="w-4 h-4 text-red-500" />
+            <span className="text-sm font-medium text-slate-700">
               {labels.attack}
             </span>
           </div>
           {activeAttack !== 'none' && (
-            <span className="text-[10px] font-mono text-red-600 bg-red-50 px-2 py-0.5 rounded border border-red-100">
-              [THREAT: {activeAttack.toUpperCase()}]
+            <span className="text-xs font-medium text-red-600 bg-red-50 px-2 py-0.5 rounded-md">
+              {activeAttack.toUpperCase()}
             </span>
           )}
         </div>
@@ -666,41 +620,27 @@ export default function PacketSimulator() {
         </div>
       </div>
 
-      {/* Simple Status & Logic Controls */}
-      <div className="bg-slate-50/50 rounded-xl border border-slate-100 p-4 space-y-4">
-        <div className="flex items-center justify-between">
-           <div className="flex items-center gap-2">
-             <div className={`w-1.5 h-1.5 rounded-full shadow-[0_0_8px_currentColor] transition-colors ${simulationState !== 'idle' ? 'bg-emerald-500 text-emerald-500' : 'bg-slate-200 text-transparent'}`} />
-             <span className="text-[10px] font-black text-slate-900 uppercase tracking-widest">Logic_Processor</span>
-           </div>
-           <div className="flex items-center gap-6">
-             <div className="flex items-center gap-1.5 transition-opacity duration-300" style={{ opacity: simulationState === 'encapsulating' ? 1 : 0.3 }}>
-               <span className="w-1 h-1 bg-emerald-500 rounded-full animate-ping" />
-               <span className="text-[8px] font-mono text-slate-400">[TX_EN]</span>
-             </div>
-             <div className="flex items-center gap-1.5 transition-opacity duration-300" style={{ opacity: simulationState === 'decapsulating' ? 1 : 0.3 }}>
-               <span className="w-1 h-1 bg-blue-500 rounded-full animate-ping" />
-               <span className="text-[8px] font-mono text-slate-400">[RX_DE]</span>
-             </div>
-           </div>
+      {/* Current status line */}
+      <div className="flex items-center justify-between px-4 py-3 bg-slate-50/60 border-t border-slate-100">
+        <div className="flex items-center gap-2">
+          <div className={`w-2 h-2 rounded-full ${
+            simulationState === 'encapsulating' ? 'bg-emerald-500'
+            : simulationState === 'decapsulating' ? 'bg-blue-500'
+            : simulationState === 'interrupted' ? 'bg-red-500'
+            : 'bg-slate-300'
+          }`} />
+          <span className="text-sm font-medium text-slate-600">
+            {simulationState === 'encapsulating' && (language === 'en' ? 'Encapsulating…' : 'Incapsulamento…')}
+            {simulationState === 'decapsulating' && (language === 'en' ? 'Decapsulating…' : 'Decapsulamento…')}
+            {simulationState === 'idle' && (language === 'en' ? 'Ready' : 'Pronto')}
+            {simulationState === 'interrupted' && (language === 'en' ? 'Flow compromised' : 'Flusso compromesso')}
+          </span>
         </div>
-
-        <div className="bg-white border border-slate-100 p-3 rounded-lg flex items-center justify-between shadow-sm">
-          <div className="flex flex-col gap-1">
-            <span className="text-[8px] text-slate-400 uppercase tracking-tighter">Current Transformer</span>
-            <span className="text-[10px] font-mono text-emerald-600">
-               {simulationState === 'encapsulating' && 'PACKET_FORMATION_v1'}
-               {simulationState === 'decapsulating' && 'PACKET_STRIPPING_v1'}
-               {simulationState === 'idle' && 'WAITING_FOR_DATA'}
-               {simulationState === 'interrupted' && `FLOW_COMPROMISED [${activeAttack.toUpperCase()}]`}
-            </span>
-          </div>
-          {simulationState !== 'idle' && (
-            <div className="px-3 py-1 bg-slate-900 border border-black/5 rounded text-[10px] font-black text-white uppercase italic">
-              {packetHeaders[packetHeaders.length - 1]?.pduName || 'DATA'}
-            </div>
-          )}
-        </div>
+        {simulationState !== 'idle' && (
+          <span className="px-2.5 py-1 bg-slate-900 text-white rounded-md text-xs font-semibold">
+            {packetHeaders[packetHeaders.length - 1]?.pduName || 'Data'}
+          </span>
+        )}
       </div>
     </div>
   );

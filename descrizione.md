@@ -24,9 +24,11 @@ L'applicazione è organizzata in **5 sezioni** navigabili da un menu in alto:
 ### 🧪 Lab Pila OSI (la sezione principale)
 È il cuore dell'app. Lo schermo è diviso in tre colonne:
 
-- **A sinistra — Terminale di log:** una console che scrive in tempo reale ogni operazione
-  della simulazione (es. *"L4 incapsulato (TCP)"*, *"Attacco DoS riuscito! Connessione interrotta"*),
-  con colori diversi in base alla gravità (info, warning, pericolo, successo).
+- **A sinistra — Console + Ispettore Pacchetto:** una console che scrive in tempo reale ogni
+  operazione della simulazione (con colori per gravità: info, warning, pericolo, successo) e,
+  sotto, l'**Ispettore Pacchetto** che mostra gli header man mano che si accumulano dal L7 al L1,
+  ognuno con i suoi campi reali (IP, porte, MAC, flag…): è la rappresentazione visiva diretta
+  dell'incapsulamento.
 - **Al centro — Motore di simulazione + Pila OSI:** l'utente sceglie un **protocollo**
   (HTTP, DNS, BGP, SSH, FTP, SMTP), preme *Avvia Simulazione* e vede il pacchetto scendere
   dal Livello 7 (Applicazione) al Livello 1 (Fisico), aggiungendo a ogni passo un'**intestazione (header)**
@@ -120,11 +122,16 @@ Il progetto segue un'**architettura modulare e a responsabilità separate**:
   `persist` di Zustand su `localStorage`, mentre lo stato transitorio della sessione
   (log, stato simulazione, attacco) riparte pulito a ogni ricarica.
 - **`src/components/`** — i **componenti UI**, ognuno con una responsabilità chiara:
-  `PacketSimulator` (motore di simulazione), `OsiStack` (pila visiva dei 7 livelli),
-  `Terminal` (log animati), `LayerDetails`, `SecurityDashboard`, `AttackLab`, `PortsModal`,
-  `GlossaryModal`, `Header`, `Navigation`.
+  `PacketSimulator` (motore di simulazione), `PacketInspector` (header incapsulati),
+  `OsiStack` (pila visiva dei 7 livelli), `Terminal` (log animati), `LayerDetails`,
+  `SecurityDashboard`, `AttackLab`, `PortsModal`, `GlossaryModal`, `Header`, `Navigation`.
+- **`src/lib/osi.ts`** — la **logica pura** dell'incapsulamento (nome della PDU e protocollo di
+  trasporto per livello), separata dai componenti così da poterla testare in isolamento
+  (`src/lib/osi.test.ts`).
 - **`src/utils/audio.ts`** — un piccolo **synth** basato su Web Audio API che genera i segnali
   sonori (oscillatori, inviluppi di gain) senza dipendere da asset esterni.
+- **`src/lib/content.test.ts`** — test di **integrità dei contenuti** didattici: verifica che ogni
+  attacco abbia il suo scenario, che i campi bilingui siano completi, che i 7 livelli siano coperti.
 
 ### Il motore di simulazione (la "pipeline")
 Il componente `PacketSimulator` gestisce l'intero ciclo di vita del pacchetto:
@@ -145,11 +152,13 @@ Il bilinguismo non usa librerie esterne: i testi sono strutturati come dizionari
 nei tipi e nelle costanti, e i componenti scelgono la stringa in base alla lingua nello store.
 Questo rende immediato aggiungere o correggere una traduzione.
 
-### Nota tecnica onesta
-Il `package.json` include la dipendenza `@google/genai` e il `metadata.json` menziona una capability
-Gemini: sono un residuo dell'ambiente di scaffolding iniziale. **La logica dell'app attuale non usa
-alcun modello di AI**: la simulazione è interamente deterministica e lato client. È bene dichiararlo
-così com'è, per non attribuire al progetto funzionalità che non implementa.
+### Qualità del progetto (test e CI)
+La logica pura dell'incapsulamento è coperta da **test unitari** (`Vitest`) e un test di **integrità
+dei contenuti** garantisce che i dati didattici restino coerenti (ogni attacco ha il suo scenario,
+campi bilingui completi, tutti e 7 i livelli coperti). Una **pipeline CI** su GitHub Actions esegue a
+ogni push type-check, test e build. Le dipendenze di scaffolding iniziale non utilizzate
+(`@google/genai`, `express`, `dotenv`) e i file residui di AI Studio sono stati rimossi: **l'app non
+usa alcun modello di AI né backend**, la simulazione è interamente deterministica e lato client.
 
 ---
 
@@ -190,7 +199,8 @@ Nel progetto ho:
 - Architettura modulare e separazione dei livelli (dati / tipi / stato / UI)
 - Progettazione di una macchina a stati per il ciclo di vita della simulazione
 - Internazionalizzazione (i18n) senza dipendenze
-- Configurazione di toolchain moderna (Vite, TypeScript, `tsc --noEmit` come lint)
+- Configurazione di toolchain moderna (Vite, TypeScript, `tsc --noEmit`)
+- Test unitari con **Vitest** e **CI** (GitHub Actions: type-check + test + build)
 
 **Dominio: reti e cybersecurity**
 - Modello OSI e incapsulamento/decapsulamento delle PDU
@@ -208,10 +218,11 @@ Nel progetto ho:
 
 ```bash
 # Requisiti: Node.js 18+
-npm install      # installa le dipendenze
-npm run dev      # avvia in sviluppo su http://localhost:3000
-npm run build    # crea la build di produzione
-npm run lint     # controllo dei tipi TypeScript (tsc --noEmit)
+npm install       # installa le dipendenze
+npm run dev       # avvia in sviluppo su http://localhost:3000
+npm run build     # crea la build di produzione
+npm test          # esegue i test (Vitest)
+npm run typecheck # controllo dei tipi TypeScript (tsc --noEmit)
 ```
 
 ---

@@ -1,7 +1,7 @@
 import { OSI_LAYERS } from '../constants';
 import { useStore } from '../store';
 import { motion } from 'motion/react';
-import { ShieldCheck, ShieldAlert, Cpu, ArrowDown, Skull } from 'lucide-react';
+import { ShieldCheck, Skull } from 'lucide-react';
 
 export default function OsiStack() {
   const { 
@@ -16,31 +16,7 @@ export default function OsiStack() {
   } = useStore();
 
   return (
-    <div className="flex flex-col gap-1 w-full p-2 bg-white rounded-xl border border-slate-100 shadow-sm">
-     <div className="px-5 py-3 mb-2 border-b border-slate-50">
-         <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-               <Cpu className="w-3 h-3 text-emerald-500" />
-               <span className="text-[10px] font-black text-slate-900 uppercase tracking-widest">Main_Pila_Logic</span>
-            </div>
-            <span className="text-[8px] font-mono text-slate-400 animate-pulse">CORE_v1.3</span>
-         </div>
-         
-         <div className="flex items-center gap-4 px-2 py-1.5 bg-slate-50 rounded border border-slate-100">
-            <div className="flex items-center gap-1.5">
-               <div className="w-1.5 h-1.5 rounded-full bg-slate-300" />
-               <span className="text-[7px] font-bold text-slate-500 uppercase">PDU_Lifecycle</span>
-            </div>
-            <div className="flex items-center gap-2 opacity-50">
-               {['Data', 'Seg', 'Pack', 'Frame', 'Bit'].map((p, i) => (
-                 <div key={p} className="flex items-center gap-1">
-                   <span className="text-[6px] font-mono text-slate-400">{p}</span>
-                   {i < 4 && <ArrowDown className="w-1.5 h-1.5 text-slate-300" />}
-                 </div>
-               ))}
-            </div>
-         </div>
-      </div>
+    <div className="flex flex-col gap-1 w-full p-2 bg-white rounded-xl border border-slate-100">
       {OSI_LAYERS.map((layer) => {
         const isSelected = selectedLayerId === layer.id;
         const isActive = (simulationState === 'encapsulating' || simulationState === 'decapsulating') && currentStep === layer.id;
@@ -98,11 +74,6 @@ export default function OsiStack() {
               />
             )}
 
-            {/* Background ID */}
-            <div className="absolute right-10 top-1/2 -translate-y-1/2 text-5xl font-black opacity-[0.03] group-hover:opacity-[0.06] transition-opacity pointer-events-none text-slate-900">
-              0{layer.id}
-            </div>
-
             <div className="flex items-center gap-5 relative z-10">
               <div className="flex flex-col items-center">
                 <span className={`text-[10px] font-mono font-bold leading-none ${isSelected ? 'text-slate-900' : isTargeted ? 'text-red-500' : 'text-slate-400'}`}>
@@ -158,16 +129,9 @@ export default function OsiStack() {
                   <ShieldCheck className="w-3 h-3 text-emerald-600" />
                 </motion.div>
               )}
-              <div className="flex flex-col items-end opacity-20 group-hover:opacity-40 transition-opacity">
-                 <div className="flex gap-0.5">
-                    {[1, 2, 3].map(bit => (
-                      <div key={bit} className={`w-0.5 h-2 rounded-full ${isSelected ? 'bg-slate-400' : isTargeted ? 'bg-red-400' : 'bg-slate-300'}`} />
-                    ))}
-                 </div>
-              </div>
-              <div 
-                className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${isSelected ? 'shadow-[0_0_10px_currentColor] scale-110' : 'scale-90 opacity-60 shadow-none'} ${isTargeted ? 'bg-red-500' : ''}`} 
-                style={{ backgroundColor: isTargeted ? undefined : layer.color, color: isTargeted ? undefined : layer.color }} 
+              <div
+                className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${isSelected ? 'scale-110' : 'scale-90 opacity-60'} ${isTargeted ? 'bg-red-500' : ''}`}
+                style={{ backgroundColor: isTargeted ? undefined : layer.color }}
               />
             </div>
 
