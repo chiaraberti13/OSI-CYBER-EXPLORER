@@ -1,7 +1,5 @@
-import React from 'react';
 import { useStore } from '../store';
 import { Layers, Hash, Shield, BookOpen, Swords } from 'lucide-react';
-import { motion } from 'motion/react';
 
 export default function Navigation() {
   const { language, activeView, setActiveView } = useStore();
@@ -61,21 +59,13 @@ export default function Navigation() {
               <button
                 key={tab.id}
                 onClick={() => setActiveView(tab.id)}
-                className={`relative flex items-center gap-2 px-4 py-2 border rounded-xl text-xs font-bold uppercase tracking-wider transition-all select-none whitespace-nowrap ${
+                className={`relative flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium transition-colors select-none whitespace-nowrap ${
                   isActive
-                    ? tab.activeBg
-                    : 'bg-white border-slate-100 text-slate-500 hover:text-slate-800 hover:border-slate-200/80'
+                    ? 'bg-slate-100 text-slate-900'
+                    : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100/60'
                 }`}
               >
-                {/* Active Indicator Micro-Motion */}
-                {isActive && (
-                  <motion.div
-                    layoutId="activeTabOutline"
-                    className="absolute inset-0 rounded-xl border-2 border-indigo-600 pointer-events-none"
-                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                  />
-                )}
-                <Icon className={`w-4 h-4 shrink-0 ${tab.color}`} />
+                <Icon className={`w-4 h-4 shrink-0 ${isActive ? tab.color : 'text-slate-400'}`} />
                 <span>{language === 'en' ? tab.en : tab.it}</span>
               </button>
             );

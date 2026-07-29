@@ -32,13 +32,13 @@ export default function Terminal() {
   return (
     <div className="bg-white border border-slate-100 rounded-xl overflow-hidden flex flex-col h-full font-mono text-[10px] shadow-sm">
       <div className="bg-slate-50 px-3 py-2.5 flex justify-between items-center border-b border-slate-100">
-        <div className="flex items-center gap-4">
-          <div className="flex gap-1.5 opacity-30">
-            <div className="w-2 h-2 rounded-full bg-slate-400" />
-            <div className="w-2 h-2 rounded-full bg-slate-400" />
-            <div className="w-2 h-2 rounded-full bg-slate-400" />
+        <div className="flex items-center gap-3">
+          <div className="flex gap-1.5 opacity-40">
+            <div className="w-2 h-2 rounded-full bg-slate-300" />
+            <div className="w-2 h-2 rounded-full bg-slate-300" />
+            <div className="w-2 h-2 rounded-full bg-slate-300" />
           </div>
-          <span className="text-slate-900 uppercase tracking-[0.2em] font-bold">
+          <span className="text-slate-600 font-medium font-sans text-xs">
             {labels.terminal}
           </span>
         </div>
@@ -46,7 +46,7 @@ export default function Terminal() {
           onClick={clearLogs}
           disabled={logs.length === 0}
           aria-label={labels.clear}
-          className="text-slate-400 hover:text-slate-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors uppercase tracking-widest font-bold"
+          className="text-slate-400 hover:text-slate-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors font-medium font-sans text-xs"
         >
           {labels.clear}
         </button>
@@ -62,7 +62,7 @@ export default function Terminal() {
             <div className="w-9 h-9 rounded-lg bg-emerald-50 border border-emerald-100 flex items-center justify-center mb-3">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
             </div>
-            <p className="text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 not-italic">
+            <p className="text-xs font-semibold text-slate-500 mb-1.5 not-italic font-sans">
               {labels.emptyTitle}
             </p>
             <p className="text-[10px] text-slate-400 leading-relaxed max-w-[220px] normal-case tracking-normal font-sans mb-3">

@@ -11,36 +11,30 @@ export default function Header() {
   return (
     <header className="border-b border-slate-100 bg-white/80 backdrop-blur-xl sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-slate-900 flex items-center justify-center rounded-lg shadow-sm animate-pulse">
-            <div className="w-4 h-4 border-2 border-white rotate-45" />
+        <div className="flex items-center gap-2.5">
+          <div className="w-7 h-7 bg-slate-900 flex items-center justify-center rounded-lg">
+            <div className="w-3.5 h-3.5 border-2 border-white rotate-45" />
           </div>
-          <div>
-            <h1 className="font-bold text-slate-900 uppercase tracking-[0.2em] text-xs">
-              OSI_LAB <span className="text-slate-400">v2.5</span>
-            </h1>
-            <div className="flex items-center gap-2 mt-0.5">
-               <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-               <span className="text-[9px] text-slate-400 font-bold uppercase tracking-widest leading-none">Status: Optimized</span>
-            </div>
-          </div>
+          <h1 className="font-semibold text-slate-900 text-sm tracking-tight">
+            OSI Cyber Explorer
+          </h1>
         </div>
 
-        <div className="flex items-center gap-3 md:gap-4">
+        <div className="flex items-center gap-3">
           <button
             onClick={() => setIsGuideOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 text-white rounded-lg text-[9px] font-bold uppercase tracking-wider hover:bg-slate-800 active:scale-[0.98] transition-all shadow-sm"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-slate-600 rounded-lg text-xs font-medium hover:bg-slate-100 transition-colors"
           >
-            <BookOpen className="w-3.5 h-3.5" />
-            <span>{language === 'it' ? 'Guida del Lab' : 'Lab Guide'}</span>
+            <BookOpen className="w-4 h-4" />
+            <span className="hidden sm:inline">{language === 'it' ? 'Guida' : 'Guide'}</span>
           </button>
 
-          <div className="flex bg-slate-50 p-0.5 rounded-lg border border-slate-200" role="group" aria-label={language === 'it' ? 'Lingua' : 'Language'}>
+          <div className="flex bg-slate-100 p-0.5 rounded-lg" role="group" aria-label={language === 'it' ? 'Lingua' : 'Language'}>
             <button
               onClick={() => setLanguage('en')}
               aria-pressed={language === 'en'}
               aria-label="English"
-              className={`px-3 py-1 text-[9px] font-bold rounded-md transition-all ${language === 'en' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+              className={`px-2.5 py-1 text-xs font-medium rounded-md transition-all ${language === 'en' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
             >
               EN
             </button>
@@ -48,7 +42,7 @@ export default function Header() {
               onClick={() => setLanguage('it')}
               aria-pressed={language === 'it'}
               aria-label="Italiano"
-              className={`px-3 py-1 text-[9px] font-bold rounded-md transition-all ${language === 'it' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+              className={`px-2.5 py-1 text-xs font-medium rounded-md transition-all ${language === 'it' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
             >
               IT
             </button>
