@@ -68,8 +68,8 @@ npm run typecheck # TypeScript type-check
 - Solid networking & security domain knowledge across all 7 OSI layers.
 
 ### License & terms of use
-Free-distribution license for **educational** purposes: use and share freely.
-**No derivative works** — you may not modify the source or content without explicit permission.
+Released under the [MIT License](LICENSE). You may use, study, modify and
+redistribute the project while preserving the copyright and licence notice.
 
 ---
 
@@ -109,8 +109,8 @@ npm run typecheck # controllo dei tipi TypeScript
 - Solide conoscenze di rete e sicurezza su tutti i 7 livelli OSI.
 
 ### Licenza e termini d'uso
-Licenza di libera diffusione a scopo **educativo**: uso e distribuzione liberi.
-**Divieto di opere derivate** — non è consentito modificare codice o contenuti senza esplicita autorizzazione.
+Distribuito con [licenza MIT](LICENSE). Il progetto può essere utilizzato,
+studiato, modificato e ridistribuito mantenendo l'avviso di copyright e licenza.
 
 ---
 
