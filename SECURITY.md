@@ -1,41 +1,23 @@
-# Security Policy
+<p align="center"><img src="assets/banner.svg" alt="OSI Cyber Explorer" width="100%"></p>
 
-## Supported versions
+<p align="center"><a href="#-english">🇬🇧 English</a> · <a href="#-italiano">🇮🇹 Italiano</a></p>
 
-Security fixes are applied to the latest version on the default branch. Older
-commits, forks and unofficial builds are not supported unless explicitly
-documented.
+<p align="center"><img src="https://img.shields.io/badge/security-responsible%20disclosure-22D3EE?style=flat-square" alt="Responsible disclosure"></p>
 
-## Reporting a vulnerability
+<p align="center"><a href="README.md">Project README</a> · <a href="LICENSE">MIT Licence</a></p>
 
-Please report suspected vulnerabilities privately through
-[GitHub Security Advisories](https://github.com/chiaraberti13/OSI-Cyber-Explorer/security/advisories/new).
+---
 
-Do not open a public issue for an unpatched vulnerability. Include, when
-possible:
+## 🇬🇧 English
 
-- the affected version or commit;
-- a clear description of the impact;
-- reproducible steps or a minimal proof of concept;
-- suggested mitigations, if known;
-- any relevant logs with credentials and personal data removed.
+Report suspected vulnerabilities privately through [GitHub Security Advisories](https://github.com/chiaraberti13/OSI-Cyber-Explorer/security/advisories/new). Include the affected commit, browser, reproducible steps and sanitized console output. Do not publish unpatched vulnerabilities in issues.
 
-Please allow reasonable time for investigation and remediation before public
-disclosure.
+The laboratory is educational and client-side. Test attack concepts only in controlled environments you own or are explicitly authorized to use.
 
-## Scope
+---
 
-This policy covers vulnerabilities in OSI Cyber Explorer. Vulnerabilities in external
-dependencies or third-party services should also be reported to their
-maintainers. A dependency report may still be submitted here when it directly
-affects this project.
+## 🇮🇹 Italiano
 
-Testing must be performed only on systems and data you own or are explicitly
-authorized to test. Do not perform denial-of-service testing, access third-party
-data, degrade services, or use social engineering.
+Segnala privatamente le vulnerabilità sospette tramite [GitHub Security Advisories](https://github.com/chiaraberti13/OSI-Cyber-Explorer/security/advisories/new). Indica commit, browser, passaggi riproducibili e output della console privo di dati sensibili. Non pubblicare vulnerabilità non corrette nelle issue.
 
-## Responsible use
-
-This policy does not grant authorization to test third-party infrastructure.
-Users remain responsible for complying with applicable laws, licences and
-written scopes of authorization.
+Il laboratorio è didattico e funziona lato client. Sperimenta i concetti di attacco esclusivamente in ambienti controllati di tua proprietà o per i quali possiedi un’autorizzazione esplicita.
