@@ -110,6 +110,15 @@ export default function CurriculumView() {
                   {language === 'it' ? 'Apri il laboratorio IP Services' : 'Open the IP Services lab'}
                 </button>
               ) : null}
+              {domain.id === 'security-fundamentals' ? (
+                <button
+                  type="button"
+                  onClick={() => setActiveView('securitycore')}
+                  className="mt-4 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-800 transition-colors hover:bg-rose-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400"
+                >
+                  {language === 'it' ? 'Apri il laboratorio Security Fundamentals' : 'Open the Security Fundamentals lab'}
+                </button>
+              ) : null}
             </article>
           ))}
         </div>
