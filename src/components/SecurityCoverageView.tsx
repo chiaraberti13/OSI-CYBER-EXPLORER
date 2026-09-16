@@ -5,6 +5,7 @@ import { SECURITY_TECHNIQUES, type CcnaDomainId } from '../content/securityCover
 import { ATTACK_FAMILIES, type SecurityPlane } from '../content/securityTaxonomy';
 import { useStore } from '../store';
 import SecurityCoverageMatrix, { DOMAIN_LAB_VIEWS } from './SecurityCoverageMatrix';
+import SecurityResponsePlaybooks from './SecurityResponsePlaybooks';
 
 const PLANES: SecurityPlane[] = ['physical', 'data', 'control', 'management', 'application', 'identity'];
 const DOMAIN_BY_ID = new Map(CCNA_DOMAINS.map(domain => [domain.id, domain]));
@@ -65,6 +66,16 @@ export default function SecurityCoverageView() {
     setActiveView(DOMAIN_LAB_VIEWS[selectedDomain]);
   }, [setActiveView]);
 
+  const selectTechnique = useCallback((techniqueId: string) => {
+    const technique = SECURITY_TECHNIQUES.find(item => item.id === techniqueId);
+    if (!technique) return;
+    setDomain('all');
+    setFamily('all');
+    setPlane('all');
+    setQuery(technique.name[language]);
+    document.getElementById('coverage-filters')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, [language]);
+
   return (
     <div className="space-y-6">
       <header className="rounded-xl border border-slate-200 bg-white p-6 md:p-8">
@@ -108,6 +119,12 @@ export default function SecurityCoverageView() {
         language={language}
         onOpenLab={openDomainLab}
         onSelect={selectCoverage}
+      />
+
+      <SecurityResponsePlaybooks
+        language={language}
+        onOpenDomain={openDomainLab}
+        onTechniqueSelect={selectTechnique}
       />
 
       <section aria-labelledby="coverage-filters" className="rounded-xl border border-slate-200 bg-white p-4">
