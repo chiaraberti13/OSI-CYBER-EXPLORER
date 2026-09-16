@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { CCNA_DOMAINS } from '../content/ccna';
 import { SECURITY_TECHNIQUES, type CcnaDomainId } from '../content/securityCoverage';
-import { ATTACK_FAMILIES } from '../content/securityTaxonomy';
+import { ATTACK_FAMILIES, type SecurityPlane } from '../content/securityTaxonomy';
 
 describe('integrated security coverage catalog', () => {
   it('contains a broad set of unique techniques', () => {
-    expect(SECURITY_TECHNIQUES.length).toBeGreaterThanOrEqual(28);
+    expect(SECURITY_TECHNIQUES.length).toBeGreaterThanOrEqual(44);
     expect(new Set(SECURITY_TECHNIQUES.map(item => item.id)).size).toBe(SECURITY_TECHNIQUES.length);
   });
 
@@ -20,13 +20,21 @@ describe('integrated security coverage catalog', () => {
 
   it('covers every CCNA domain with attack and defense content', () => {
     CCNA_DOMAINS.forEach(domain => {
-      expect(SECURITY_TECHNIQUES.some(item => item.domains.includes(domain.id as CcnaDomainId))).toBe(true);
+      const techniques = SECURITY_TECHNIQUES.filter(item => item.domains.includes(domain.id as CcnaDomainId));
+      expect(techniques.length).toBeGreaterThanOrEqual(4);
     });
   });
 
   it('covers every declared attack family', () => {
     ATTACK_FAMILIES.forEach(family => {
-      expect(SECURITY_TECHNIQUES.some(item => item.familyId === family.id)).toBe(true);
+      expect(SECURITY_TECHNIQUES.filter(item => item.familyId === family.id).length).toBeGreaterThanOrEqual(2);
+    });
+  });
+
+  it('covers every security plane', () => {
+    const planes: SecurityPlane[] = ['physical', 'data', 'control', 'management', 'application', 'identity'];
+    planes.forEach(plane => {
+      expect(SECURITY_TECHNIQUES.some(item => item.planes.includes(plane))).toBe(true);
     });
   });
 
