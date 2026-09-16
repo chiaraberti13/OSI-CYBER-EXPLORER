@@ -83,6 +83,15 @@ export default function CurriculumView() {
                   {language === 'it' ? 'Apri il laboratorio IPv4' : 'Open the IPv4 lab'}
                 </button>
               ) : null}
+              {domain.id === 'network-access' ? (
+                <button
+                  type="button"
+                  onClick={() => setActiveView('access')}
+                  className="mt-4 rounded-lg border border-violet-200 bg-violet-50 px-3 py-2 text-xs font-semibold text-violet-700 transition-colors hover:bg-violet-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
+                >
+                  {language === 'it' ? 'Apri il laboratorio Network Access' : 'Open the Network Access lab'}
+                </button>
+              ) : null}
             </article>
           ))}
         </div>

@@ -1,80 +1,74 @@
 import { useStore } from '../store';
-import { Layers, Hash, Shield, BookOpen, Swords, Map, Calculator } from 'lucide-react';
+import { Layers, Hash, Shield, BookOpen, Swords, Map, Calculator, Cable } from 'lucide-react';
 
-export default function Navigation() {
-  const { language, activeView, setActiveView } = useStore();
-
-  const tabs = [
+const TABS = [
     {
       id: 'curriculum' as const,
       en: 'CCNA Map',
       it: 'Mappa CCNA',
-      icon: Map,
-      color: 'text-sky-600',
-      activeBg: 'bg-sky-50/50 text-sky-700 border-sky-200'
+      icon: Map
     },
     {
       id: 'fundamentals' as const,
       en: 'IPv4 Lab',
       it: 'Lab IPv4',
-      icon: Calculator,
-      color: 'text-cyan-600',
-      activeBg: 'bg-cyan-50/50 text-cyan-700 border-cyan-200'
+      icon: Calculator
+    },
+    {
+      id: 'access' as const,
+      en: 'Network Access',
+      it: 'Accesso alla rete',
+      icon: Cable
     },
     {
       id: 'osi' as const,
       en: 'OSI Stack Lab',
       it: 'Lab Pila OSI',
-      icon: Layers,
-      color: 'text-indigo-600',
-      activeBg: 'bg-indigo-50/50 text-indigo-700 border-indigo-200'
+      icon: Layers
     },
     {
       id: 'attacklab' as const,
       en: 'Attack & Defense Lab',
       it: 'Lab Attacco & Difesa',
-      icon: Swords,
-      color: 'text-red-600',
-      activeBg: 'bg-red-50/50 text-red-700 border-red-200'
+      icon: Swords
     },
     {
       id: 'ports' as const,
       en: 'Ports & Protocols',
       it: 'Porte & Protocolli',
-      icon: Hash,
-      color: 'text-purple-600',
-      activeBg: 'bg-purple-50/50 text-purple-700 border-purple-200'
+      icon: Hash
     },
     {
       id: 'security' as const,
       en: 'Cybersecurity (IDS/IPS)',
       it: 'Cybersecurity (IDS/IPS)',
-      icon: Shield,
-      color: 'text-emerald-600',
-      activeBg: 'bg-emerald-50/50 text-emerald-700 border-emerald-200'
+      icon: Shield
     },
     {
       id: 'glossary' as const,
       en: 'Network Glossary',
       it: 'Glossario di Rete',
-      icon: BookOpen,
-      color: 'text-blue-600',
-      activeBg: 'bg-blue-50/50 text-blue-700 border-blue-200'
+      icon: BookOpen
     }
-  ];
+  ] as const;
+
+export default function Navigation() {
+  const { language, activeView, setActiveView } = useStore();
 
   return (
     <div className="w-full bg-[#fafafa]/70 border-b border-slate-200/60 py-2.5 sticky top-14 z-40 backdrop-blur-md">
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex items-center overflow-x-auto gap-0.5 sm:gap-1 no-scrollbar pb-1.5 sm:pb-0">
-          {tabs.map((tab) => {
+          {TABS.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeView === tab.id;
 
             return (
               <button
+                type="button"
                 key={tab.id}
                 onClick={() => setActiveView(tab.id)}
+                aria-current={isActive ? 'page' : undefined}
                 className={`relative flex items-center gap-2 px-3 py-1.5 rounded-md text-[13px] font-medium transition-colors select-none whitespace-nowrap ${
                   isActive
                     ? 'text-slate-900 bg-white border border-slate-200/70'
