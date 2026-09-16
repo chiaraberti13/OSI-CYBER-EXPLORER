@@ -20,6 +20,7 @@ const NetworkFundamentalsLab = lazy(() => import('./components/NetworkFundamenta
 const NetworkAccessLab = lazy(() => import('./components/NetworkAccessLab'));
 const IpConnectivityLab = lazy(() => import('./components/IpConnectivityLab'));
 const IpServicesLab = lazy(() => import('./components/IpServicesLab'));
+const SecurityFundamentalsLab = lazy(() => import('./components/SecurityFundamentalsLab'));
 
 function ViewFallback({ language }: { language: 'it' | 'en' }) {
   return (
@@ -123,6 +124,18 @@ export default function App() {
               transition={{ duration: 0.18 }}
             >
               <IpServicesLab />
+            </motion.div>
+          )}
+
+          {activeView === 'securitycore' && (
+            <motion.div
+              key="securitycore"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.18 }}
+            >
+              <SecurityFundamentalsLab />
             </motion.div>
           )}
 
