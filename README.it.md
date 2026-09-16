@@ -28,6 +28,7 @@
 - **IP Connectivity Lab** — Lookup interattivo della routing table, longest-prefix match, rotte statiche, costo e adiacenze OSPFv2, elezione DR/BDR e protezione del control plane.
 - **IP Services Lab** — DHCP/relay, DNS, NAT/PAT, NTP, SNMPv3, Syslog, QoS e SSH con calcoli interattivi, configurazioni IOS e matrice attacco-difesa.
 - **Security Fundamentals Lab** — Valutatore ACL IPv4, AAA, VPN/IPsec, firewall, IDS/IPS, PKI, NAC, sicurezza wireless ed endpoint con hardening IOS e limiti operativi delle difese.
+- **Automation & Programmability Lab** — Architetture controller-based, underlay/overlay/fabric, REST/CRUD, JSON, configuration management e AI/ML con sicurezza della pipeline e gestione del blast radius.
 - **Lab Pila OSI** — Scegli un protocollo (HTTP, HTTPS, DNS, BGP, SSH, FTP, SMTP) e avvia la simulazione. L'**Ispettore Pacchetto** mostra campi realistici (IP, porte, MAC, flag e sequence number), distinguendo gli header reali dalle funzioni concettuali dei livelli OSI superiori. Velocità regolabile (0.5× / 1× / 2×) e segnali audio.
 - **Lab Attacco & Difesa** — ~25 attacchi su tutti i 7 livelli (ARP poisoning, MAC flooding, spoofing IP/BGP, SYN/UDP flood, session hijacking, padding oracle, SQL injection, XSS, avvelenamento cache DNS e altri). Ognuno si svolge come una *kill chain* passo-passo; attiva la difesa per vedere **dove** e **come** viene neutralizzato.
 - **Porte & Protocolli** — Esploratore dei range IANA, dei protocolli, degli apparati e delle caratteristiche di sicurezza, senza punteggi o valutazioni.
