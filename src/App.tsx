@@ -24,6 +24,7 @@ const SecurityFundamentalsLab = lazy(() => import('./components/SecurityFundamen
 const AutomationLab = lazy(() => import('./components/AutomationLab'));
 const SecurityCoverageView = lazy(() => import('./components/SecurityCoverageView'));
 const SecurityEvidenceLab = lazy(() => import('./components/SecurityEvidenceLab'));
+const DefenseControlsLab = lazy(() => import('./components/DefenseControlsLab'));
 
 function ViewFallback({ language }: { language: 'it' | 'en' }) {
   return (
@@ -170,6 +171,10 @@ export default function App() {
             <motion.div key="evidence" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.18 }}>
               <SecurityEvidenceLab />
             </motion.div>
+          )}
+
+          {activeView === 'defense' && (
+            <motion.div key="defense" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.18 }}><DefenseControlsLab /></motion.div>
           )}
 
           {activeView === 'attacklab' && (

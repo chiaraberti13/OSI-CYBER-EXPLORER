@@ -18,6 +18,7 @@ const TAB_GROUPS = [
     id: 'cross-labs', en: 'Cross-domain labs', it: 'Laboratori trasversali',
     tabs: [
       { id: 'coverage', en: 'Attack–Defense Catalog', it: 'Catalogo Attacco–Difesa', icon: Activity },
+      { id: 'defense', en: 'Defense Lab', it: 'Lab Difese', icon: Shield },
       { id: 'evidence', en: 'Evidence Lab', it: 'Lab Evidenze', icon: FileSearch },
       { id: 'osi', en: 'OSI Stack Lab', it: 'Lab Pila OSI', icon: Layers },
       { id: 'attacklab', en: 'Attack & Defense Lab', it: 'Lab Attacco & Difesa', icon: Swords },
