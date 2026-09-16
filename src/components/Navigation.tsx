@@ -1,4 +1,4 @@
-import { Activity, BookOpen, Cable, Calculator, FileSearch, GitBranch, Hash, Layers, LockKeyhole, Map, Route, ServerCog, Shield, Swords, Workflow } from 'lucide-react';
+import { Activity, BookOpen, Cable, Calculator, FileCode2, FileSearch, GitBranch, Hash, Layers, LockKeyhole, Map, Route, ServerCog, Shield, Swords, Workflow } from 'lucide-react';
 import { useStore, type AppView } from '../store';
 
 const TAB_GROUPS = [
@@ -19,6 +19,7 @@ const TAB_GROUPS = [
     tabs: [
       { id: 'coverage', en: 'Attack–Defense Catalog', it: 'Catalogo Attacco–Difesa', icon: Activity },
       { id: 'attackpaths', en: 'Attack Paths', it: 'Percorsi d’Attacco', icon: GitBranch },
+      { id: 'hardening', en: 'Config Hardening', it: 'Hardening Config', icon: FileCode2 },
       { id: 'defense', en: 'Defense Lab', it: 'Lab Difese', icon: Shield },
       { id: 'evidence', en: 'Evidence Lab', it: 'Lab Evidenze', icon: FileSearch },
       { id: 'osi', en: 'OSI Stack Lab', it: 'Lab Pila OSI', icon: Layers },
