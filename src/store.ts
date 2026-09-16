@@ -57,8 +57,8 @@ interface AppState {
   isPaused: boolean;
   setIsPaused: (isPaused: boolean) => void;
 
-  activeView: 'curriculum' | 'osi' | 'attacklab' | 'ports' | 'security' | 'glossary';
-  setActiveView: (view: 'curriculum' | 'osi' | 'attacklab' | 'ports' | 'security' | 'glossary') => void;
+  activeView: 'curriculum' | 'fundamentals' | 'osi' | 'attacklab' | 'ports' | 'security' | 'glossary';
+  setActiveView: (view: 'curriculum' | 'fundamentals' | 'osi' | 'attacklab' | 'ports' | 'security' | 'glossary') => void;
 
   audioEnabled: boolean;
   setAudioEnabled: (enabled: boolean) => void;

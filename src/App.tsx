@@ -16,6 +16,7 @@ const SecurityDashboard = lazy(() => import('./components/SecurityDashboard'));
 const AttackLab = lazy(() => import('./components/AttackLab'));
 const CurriculumView = lazy(() => import('./components/CurriculumView'));
 const OsiLabView = lazy(() => import('./components/OsiLabView'));
+const NetworkFundamentalsLab = lazy(() => import('./components/NetworkFundamentalsLab'));
 
 function ViewFallback({ language }: { language: 'it' | 'en' }) {
   return (
@@ -71,6 +72,18 @@ export default function App() {
               transition={{ duration: 0.18 }}
             >
               <OsiLabView />
+            </motion.div>
+          )}
+
+          {activeView === 'fundamentals' && (
+            <motion.div
+              key="fundamentals"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.18 }}
+            >
+              <NetworkFundamentalsLab />
             </motion.div>
           )}
 
