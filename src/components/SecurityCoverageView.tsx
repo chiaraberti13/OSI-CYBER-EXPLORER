@@ -1,11 +1,14 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { Activity, Crosshair, Filter, Search, ShieldCheck, Wrench } from 'lucide-react';
 import { CCNA_DOMAINS } from '../content/ccna';
 import { SECURITY_TECHNIQUES, type CcnaDomainId } from '../content/securityCoverage';
 import { ATTACK_FAMILIES, type SecurityPlane } from '../content/securityTaxonomy';
 import { useStore } from '../store';
+import SecurityCoverageMatrix, { DOMAIN_LAB_VIEWS } from './SecurityCoverageMatrix';
 
 const PLANES: SecurityPlane[] = ['physical', 'data', 'control', 'management', 'application', 'identity'];
+const DOMAIN_BY_ID = new Map(CCNA_DOMAINS.map(domain => [domain.id, domain]));
+const ATTACK_FAMILY_BY_ID = new Map(ATTACK_FAMILIES.map(family => [family.id, family]));
 
 const PLANE_LABELS: Record<SecurityPlane, { it: string; en: string }> = {
   physical: { it: 'Fisico', en: 'Physical' },
@@ -24,7 +27,8 @@ const FIELD_STYLES = {
 } as const;
 
 export default function SecurityCoverageView() {
-  const { language } = useStore();
+  const language = useStore(state => state.language);
+  const setActiveView = useStore(state => state.setActiveView);
   const [query, setQuery] = useState('');
   const [domain, setDomain] = useState<'all' | CcnaDomainId>('all');
   const [family, setFamily] = useState('all');
@@ -50,6 +54,16 @@ export default function SecurityCoverageView() {
     setFamily('all');
     setPlane('all');
   };
+
+  const selectCoverage = useCallback((selectedDomain: CcnaDomainId, selectedFamily: string) => {
+    setDomain(selectedDomain);
+    setFamily(selectedFamily);
+    document.getElementById('coverage-filters')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, []);
+
+  const openDomainLab = useCallback((selectedDomain: CcnaDomainId) => {
+    setActiveView(DOMAIN_LAB_VIEWS[selectedDomain]);
+  }, [setActiveView]);
 
   return (
     <div className="space-y-6">
@@ -89,6 +103,12 @@ export default function SecurityCoverageView() {
           </div>
         ))}
       </section>
+
+      <SecurityCoverageMatrix
+        language={language}
+        onOpenLab={openDomainLab}
+        onSelect={selectCoverage}
+      />
 
       <section aria-labelledby="coverage-filters" className="rounded-xl border border-slate-200 bg-white p-4">
         <div className="mb-3 flex items-center justify-between gap-3">
@@ -140,9 +160,9 @@ export default function SecurityCoverageView() {
       {filteredTechniques.length > 0 ? (
         <section aria-label={language === 'it' ? 'Tecniche di sicurezza' : 'Security techniques'} className="grid gap-4 xl:grid-cols-2">
           {filteredTechniques.map(technique => {
-            const familyItem = ATTACK_FAMILIES.find(item => item.id === technique.familyId);
+            const familyItem = ATTACK_FAMILY_BY_ID.get(technique.familyId);
             return (
-              <article key={technique.id} className="rounded-xl border border-slate-200 bg-white p-5">
+              <article key={technique.id} className="rounded-xl border border-slate-200 bg-white p-5 [content-visibility:auto] [contain-intrinsic-size:auto_520px]">
                 <div className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 pb-4">
                   <div>
                     <p className="text-[10px] font-semibold uppercase tracking-wider text-indigo-600">{familyItem?.name[language]}</p>
@@ -165,7 +185,7 @@ export default function SecurityCoverageView() {
                   <p className="mt-1 font-mono text-xs leading-relaxed text-slate-700">{technique.verify[language]}</p>
                 </div>
                 <p className="mt-3 text-[10px] text-slate-400">
-                  {language === 'it' ? 'Domini' : 'Domains'}: {technique.domains.map(id => CCNA_DOMAINS.find(item => item.id === id)?.title[language]).join(' · ')}
+                  {language === 'it' ? 'Domini' : 'Domains'}: {technique.domains.map(id => DOMAIN_BY_ID.get(id)?.title[language]).join(' · ')}
                 </p>
               </article>
             );
