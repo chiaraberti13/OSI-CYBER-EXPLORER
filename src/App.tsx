@@ -17,6 +17,7 @@ const AttackLab = lazy(() => import('./components/AttackLab'));
 const CurriculumView = lazy(() => import('./components/CurriculumView'));
 const OsiLabView = lazy(() => import('./components/OsiLabView'));
 const NetworkFundamentalsLab = lazy(() => import('./components/NetworkFundamentalsLab'));
+const NetworkAccessLab = lazy(() => import('./components/NetworkAccessLab'));
 
 function ViewFallback({ language }: { language: 'it' | 'en' }) {
   return (
@@ -84,6 +85,18 @@ export default function App() {
               transition={{ duration: 0.18 }}
             >
               <NetworkFundamentalsLab />
+            </motion.div>
+          )}
+
+          {activeView === 'access' && (
+            <motion.div
+              key="access"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.18 }}
+            >
+              <NetworkAccessLab />
             </motion.div>
           )}
 
