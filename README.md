@@ -26,6 +26,7 @@
 - **Network Fundamentals Lab** — IPv4 and subnetting explorer with network, broadcast, hosts, subnet mask, wildcard mask, and binary representation; includes TCP/UDP comparison, interface diagnostics, and attack-defense links.
 - **Network Access Lab** — VLAN, 802.1Q trunking, STP/RSTP, EtherChannel, and wireless lab with deterministic simulations and a bilingual Layer 2 attack-defense matrix.
 - **IP Connectivity Lab** — Interactive routing-table lookup, longest-prefix match, static routes, OSPFv2 cost and adjacencies, DR/BDR election, and control-plane protection.
+- **IP Services Lab** — DHCP/relay, DNS, NAT/PAT, NTP, SNMPv3, Syslog, QoS, and SSH with interactive calculations, IOS configurations, and an attack-defense matrix.
 - **OSI Stack Lab** — Pick a protocol (HTTP, HTTPS, DNS, BGP, SSH, FTP, SMTP) and run the simulation. A live **Packet Inspector** shows realistic fields (IP, ports, MAC addresses, flags, and sequence numbers) while distinguishing real headers from conceptual upper-layer OSI functions. Adjustable playback speed (0.5× / 1× / 2×) and audio cues.
 - **Attack & Defense Lab** — ~25 attacks across all 7 layers (ARP poisoning, MAC flooding, IP/BGP spoofing, SYN/UDP floods, session hijacking, padding oracle, SQL injection, XSS, DNS cache poisoning, and more). Each one plays out as a step-by-step *kill chain*; turn the defense on to see exactly **where** and **how** it is neutralized.
 - **Ports & Protocols** — Exploratory reference for IANA ranges, protocols, appliances, and security properties, without scores or assessment.

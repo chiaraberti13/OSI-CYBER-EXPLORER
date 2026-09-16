@@ -101,6 +101,15 @@ export default function CurriculumView() {
                   {language === 'it' ? 'Apri il laboratorio IP Connectivity' : 'Open the IP Connectivity lab'}
                 </button>
               ) : null}
+              {domain.id === 'ip-services' ? (
+                <button
+                  type="button"
+                  onClick={() => setActiveView('services')}
+                  className="mt-4 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-800 transition-colors hover:bg-emerald-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"
+                >
+                  {language === 'it' ? 'Apri il laboratorio IP Services' : 'Open the IP Services lab'}
+                </button>
+              ) : null}
             </article>
           ))}
         </div>
