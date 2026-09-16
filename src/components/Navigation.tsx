@@ -1,5 +1,5 @@
 import { useStore } from '../store';
-import { Layers, Hash, Shield, BookOpen, Swords, Map, Calculator, Cable, Route } from 'lucide-react';
+import { Layers, Hash, Shield, BookOpen, Swords, Map, Calculator, Cable, Route, ServerCog } from 'lucide-react';
 
 const TABS = [
     {
@@ -25,6 +25,12 @@ const TABS = [
       en: 'IP Connectivity',
       it: 'Routing IP',
       icon: Route
+    },
+    {
+      id: 'services' as const,
+      en: 'IP Services',
+      it: 'Servizi IP',
+      icon: ServerCog
     },
     {
       id: 'osi' as const,
