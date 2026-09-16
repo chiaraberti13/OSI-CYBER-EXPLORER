@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { Language, LogEntry, SimulationState, AttackType, PacketHeader } from './types';
+import type { SimProtocol } from './lib/osi';
 
 interface AppState {
   language: Language;
@@ -44,8 +45,8 @@ interface AppState {
   currentStep: number;
   setCurrentStep: (step: number) => void;
   
-  selectedProtocol: 'HTTP' | 'DNS' | 'BGP' | 'SSH' | 'FTP' | 'SMTP';
-  setSelectedProtocol: (protocol: 'HTTP' | 'DNS' | 'BGP' | 'SSH' | 'FTP' | 'SMTP') => void;
+  selectedProtocol: SimProtocol;
+  setSelectedProtocol: (protocol: SimProtocol) => void;
 
   detailTab: 'overview' | 'attacks' | 'defenses' | 'security';
   setDetailTab: (tab: 'overview' | 'attacks' | 'defenses' | 'security') => void;
@@ -56,8 +57,8 @@ interface AppState {
   isPaused: boolean;
   setIsPaused: (isPaused: boolean) => void;
 
-  activeView: 'osi' | 'attacklab' | 'ports' | 'security' | 'glossary';
-  setActiveView: (view: 'osi' | 'attacklab' | 'ports' | 'security' | 'glossary') => void;
+  activeView: 'curriculum' | 'osi' | 'attacklab' | 'ports' | 'security' | 'glossary';
+  setActiveView: (view: 'curriculum' | 'osi' | 'attacklab' | 'ports' | 'security' | 'glossary') => void;
 
   audioEnabled: boolean;
   setAudioEnabled: (enabled: boolean) => void;

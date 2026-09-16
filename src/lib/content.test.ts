@@ -54,6 +54,16 @@ describe('ATTACK_WALKTHROUGHS', () => {
     }
   });
 
+  it('keeps each walkthrough on the same primary layer as its scenario', () => {
+    const scenarios = new Map(ATTACK_SCENARIOS.map(s => [s.id, s]));
+    for (const walkthrough of ATTACK_WALKTHROUGHS) {
+      expect(
+        walkthrough.layer,
+        `${walkthrough.scenarioId} layer differs from its scenario`
+      ).toBe(scenarios.get(walkthrough.scenarioId)?.targetLayer);
+    }
+  });
+
   it('covers all 7 OSI layers', () => {
     const layers = new Set(ATTACK_WALKTHROUGHS.map(w => w.layer));
     expect([...layers].sort((a, b) => a - b)).toEqual([1, 2, 3, 4, 5, 6, 7]);

@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { OSI_LAYERS, ATTACK_SCENARIOS, GLOSSARY_TERMS } from '../constants';
 import { Zap, Skull, ShieldCheck, Play, RotateCcw, Info, Pause, ChevronDown, Volume2, VolumeX } from 'lucide-react';
 import { playAudioCue } from '../utils/audio';
-import { pduNameForLayer, l4ProtocolFor } from '../lib/osi';
+import { pduNameForLayer, l4ProtocolFor, type SimProtocol } from '../lib/osi';
 
 export default function PacketSimulator() {
   const { 
@@ -80,7 +80,9 @@ export default function PacketSimulator() {
     setCurrentStep(7);
     
     if (selectedProtocol === 'HTTP') {
-      addLog(language === 'en' ? 'HTTP Request: Initiating TCP 3-way handshake...' : 'Richiesta HTTP: Avvio handshake TCP a 3 vie...', 'info');
+      addLog(language === 'en' ? 'HTTP: TCP session established; preparing a cleartext request.' : 'HTTP: sessione TCP stabilita; preparazione della richiesta in chiaro.', 'info');
+    } else if (selectedProtocol === 'HTTPS') {
+      addLog(language === 'en' ? 'HTTPS: TCP and TLS sessions established; preparing encrypted application data.' : 'HTTPS: sessioni TCP e TLS stabilite; preparazione dei dati applicativi cifrati.', 'info');
     } else if (selectedProtocol === 'SSH') {
       addLog(language === 'en' ? 'SSH Session: Initiating Diffie-Hellman Key Exchange...' : 'Sessione SSH: Avvio scambio chiavi Diffie-Hellman...', 'info');
     } else if (selectedProtocol === 'FTP') {
@@ -113,9 +115,13 @@ export default function PacketSimulator() {
   const getHeaderForLayer = (layerId: number) => {
     const layer = OSI_LAYERS.find(l => l.id === layerId);
     if (!layer) return 'Data';
+    if (layerId === 7) return selectedProtocol;
+    if (layerId === 6) return selectedProtocol === 'HTTPS' ? 'TLS' : (language === 'it' ? 'Rappresentazione' : 'Representation');
+    if (layerId === 5) return language === 'it' ? 'Funzioni di sessione' : 'Session functions';
     if (layerId === 4) return l4ProtocolFor(selectedProtocol); // TCP / UDP
     if (layerId === 3) return 'IP';
-    return layer.translations[language].protocols?.[0] || 'Header';
+    if (layerId === 2) return 'Ethernet II';
+    return layer.translations[language].protocols?.[0] || 'Data';
   };
 
   useEffect(() => {
@@ -130,36 +136,43 @@ export default function PacketSimulator() {
           let details = `L${currentStep} Header Added`;
           let fields: { key: string; value: string }[] = [];
 
-          if (selectedProtocol === 'HTTP') {
+          if (selectedProtocol === 'HTTP' || selectedProtocol === 'HTTPS') {
+            const secureWeb = selectedProtocol === 'HTTPS';
             if (currentStep === 7) {
               details = 'GET /index.html HTTP/1.1';
               fields = [
                 { key: 'Method', value: 'GET' },
                 { key: 'Path', value: '/index.html' },
-                { key: 'Host', value: 'ais.dev' },
+                { key: 'Host', value: 'example.com' },
                 { key: 'Agent', value: 'Mozilla/5.0' }
               ];
             } else if (currentStep === 6) {
-              details = 'Encoding: gzip | Charset: UTF-8';
-              fields = [
-                { key: 'Encoding', value: 'gzip' },
-                { key: 'Charset', value: 'UTF-8' },
-                { key: 'Crypto', value: 'TLSv1.3' }
-              ];
+              details = secureWeb
+                ? 'TLS 1.3 record: encrypted HTTP application data'
+                : 'Representation: UTF-8 content, no generic L6 header';
+              fields = secureWeb
+                ? [
+                    { key: 'Record', value: 'Application Data' },
+                    { key: 'Version', value: 'TLS 1.3' },
+                    { key: 'Content', value: 'Encrypted' }
+                  ]
+                : [
+                    { key: 'Charset', value: 'UTF-8' },
+                    { key: 'Encryption', value: 'None' }
+                  ];
             } else if (currentStep === 5) {
-              details = 'SessionID: 4f8s9... Status: Authenticated';
+              details = 'Session semantics: no universal OSI Layer 5 header';
               fields = [
-                { key: 'SessionID', value: 'SESS_4F8S9A' },
-                { key: 'Status', value: 'Authenticated' },
-                { key: 'Persistence', value: 'Keep-Alive' }
+                { key: 'Model', value: 'Conceptual OSI function' },
+                { key: 'State', value: 'Established' }
               ];
             } else if (currentStep === 4) {
-              details = 'TCP: SYN, Seq=120, Port=80';
+              details = `TCP: PSH, ACK, destination port ${secureWeb ? '443' : '80'}`;
               fields = [
                 { key: 'SrcPort', value: '54321' },
-                { key: 'DstPort', value: '80' },
+                { key: 'DstPort', value: secureWeb ? '443' : '80' },
                 { key: 'SeqNo', value: '120485' },
-                { key: 'Flags', value: 'SYN' }
+                { key: 'Flags', value: 'PSH, ACK' }
               ];
             } else if (currentStep === 3) {
               details = 'IPv4: 192.168.1.10 -> 104.22.3.14';
@@ -272,7 +285,7 @@ export default function PacketSimulator() {
             } else if (currentStep === 4) {
               details = 'TCP Port 179 (BGP)';
               fields = [
-                { key: 'SrcPort', value: '179' },
+                { key: 'SrcPort', value: '49172' },
                 { key: 'DstPort', value: '179' },
                 { key: 'Flags', value: 'PUSH, ACK' }
               ];
@@ -283,9 +296,11 @@ export default function PacketSimulator() {
                 { key: 'DstIP', value: '10.0.0.2' }
               ];
             } else if (currentStep === 2) {
-              details = 'Fiber Link: Frame tagging';
+              details = 'Ethernet II frame toward the next-hop router';
               fields = [
-                { key: 'Tag', value: 'MPLS' }
+                { key: 'SrcMAC', value: '00:1B:54:AA:10:01' },
+                { key: 'DstMAC', value: '00:1B:54:AA:10:02' },
+                { key: 'EtherType', value: '0x0800 (IPv4)' }
               ];
             } else {
               details = `L${currentStep} Routing Overhead`;
@@ -329,7 +344,12 @@ export default function PacketSimulator() {
             pduName: pduName,
             fields: fields
           });
-          addLog(`L${currentStep} encapsulated (${headerName})`, 'success');
+          addLog(
+            currentStep === 5 || currentStep === 6
+              ? `L${currentStep} processed (${headerName}; conceptual OSI function)`
+              : `L${currentStep} encapsulated (${headerName})`,
+            'success'
+          );
           setSelectedLayerId(currentStep);
           setCurrentStep(currentStep - 1);
           if (audioEnabled) playAudioCue('step');
@@ -490,11 +510,12 @@ export default function PacketSimulator() {
              <div className="relative">
                <select
                  value={selectedProtocol}
-                 onChange={(e) => useStore.getState().setSelectedProtocol(e.target.value as any)}
+                 onChange={(e) => useStore.getState().setSelectedProtocol(e.target.value as SimProtocol)}
                  aria-label={language === 'en' ? 'Select protocol to simulate' : 'Seleziona il protocollo da simulare'}
                  className="appearance-none bg-white border border-slate-200 text-slate-700 text-[11px] font-mono rounded-md px-8 py-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500/30 focus:border-indigo-400 transition-all cursor-pointer"
                >
                  <option value="HTTP">HTTP (Web)</option>
+                 <option value="HTTPS">HTTPS (TLS Web)</option>
                  <option value="DNS">DNS (Resolution)</option>
                  <option value="BGP">BGP (Routing)</option>
                  <option value="SSH">SSH (Secure Access)</option>

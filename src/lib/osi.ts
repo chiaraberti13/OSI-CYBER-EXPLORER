@@ -4,7 +4,7 @@
  * unit-tested in isolation.
  */
 
-export type SimProtocol = 'HTTP' | 'DNS' | 'BGP' | 'SSH' | 'FTP' | 'SMTP';
+export type SimProtocol = 'HTTP' | 'HTTPS' | 'DNS' | 'BGP' | 'SSH' | 'FTP' | 'SMTP';
 
 /** Protocols carried over UDP at the Transport layer. Everything else here is TCP. */
 const UDP_PROTOCOLS: ReadonlySet<SimProtocol> = new Set(['DNS']);

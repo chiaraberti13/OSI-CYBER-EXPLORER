@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { pduNameForLayer, l4ProtocolFor, type SimProtocol } from './osi';
 
-const ALL: SimProtocol[] = ['HTTP', 'DNS', 'BGP', 'SSH', 'FTP', 'SMTP'];
+const ALL: SimProtocol[] = ['HTTP', 'HTTPS', 'DNS', 'BGP', 'SSH', 'FTP', 'SMTP'];
 
 describe('l4ProtocolFor', () => {
   it('maps DNS to UDP and everything else to TCP', () => {
@@ -25,7 +25,7 @@ describe('pduNameForLayer', () => {
   });
 
   it('uses Segment for TCP protocols at L4', () => {
-    for (const p of ['HTTP', 'BGP', 'SSH', 'FTP', 'SMTP'] as SimProtocol[]) {
+    for (const p of ['HTTP', 'HTTPS', 'BGP', 'SSH', 'FTP', 'SMTP'] as SimProtocol[]) {
       expect(pduNameForLayer(4, p)).toBe('Segment');
     }
   });

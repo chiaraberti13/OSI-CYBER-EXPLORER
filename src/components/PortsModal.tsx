@@ -55,7 +55,7 @@ const PROTOCOL_REGISTRY: ProtocolInfo[] = [
     layer: 7,
     type: 'Application',
     description: {
-      en: 'Translates memorizable hostnames (like google.com) into IP addresses for packet routing.',
+      en: 'Translates human-readable hostnames (such as example.com) into IP addresses used to reach network services.',
       it: 'Traduce i nomi di host facili da ricordare (come google.com) in indirizzi IP numerici.'
     },
     useCase: {
@@ -101,8 +101,8 @@ const PROTOCOL_REGISTRY: ProtocolInfo[] = [
       it: 'Invio di nuovi messaggi di posta elettronica da client a server o inoltro tra server.'
     },
     security: {
-      en: 'Plaintext by default; relies on STARTTLS wrappers, DKIM validation and SPF filters to stop phishing.',
-      it: 'In chiaro di default; si affida a schemi STARTTLS, record SPF e firme DKIM per evitare spoofing.'
+      en: 'Plaintext without transport protection. STARTTLS protects data in transit; SPF, DKIM and DMARC help authenticate sending domains but do not eliminate phishing.',
+      it: 'Senza protezione del trasporto opera in chiaro. STARTTLS protegge i dati in transito; SPF, DKIM e DMARC aiutano ad autenticare i domini mittenti, ma non eliminano il phishing.'
     },
     isSecure: false
   },
@@ -120,8 +120,8 @@ const PROTOCOL_REGISTRY: ProtocolInfo[] = [
       it: 'Interrogazione del throughput dei router, stato degli switch e ricezione di alert fisici.'
     },
     security: {
-      en: 'SNMP v1 and v2 transmit passwords (community strings) in plaintext. SNMP v3 is secure and encrypted.',
-      it: 'SNMP v1 e v2 trasmettono password (stringhe di community) in chiaro. SNMP v3 è cifrato e sicuro.'
+      en: 'SNMPv1 and SNMPv2c expose community strings without encryption. SNMPv3 supports authentication and, with the authPriv security level, encryption.',
+      it: 'SNMPv1 e SNMPv2c espongono le community string senza cifratura. SNMPv3 supporta l’autenticazione e, con il livello di sicurezza authPriv, anche la cifratura.'
     },
     isSecure: false
   },
@@ -154,7 +154,7 @@ const PROTOCOL_REGISTRY: ProtocolInfo[] = [
       it: 'Protocollo di trasporto leggero non orientato alla connessione, focalizzato sulla velocità e latenza minima.'
     },
     useCase: {
-      en: 'Real-time media streams, online gamings packet networks, DNS queries, and NTP synchronizations.',
+      en: 'Real-time media, online gaming, DNS queries, and NTP synchronization.',
       it: 'Streaming audio/video in tempo reale, multiplayer online, query DNS e sincronizzazione NTP.'
     },
     security: {
@@ -207,7 +207,7 @@ const PROTOCOL_REGISTRY: ProtocolInfo[] = [
     layer: 2,
     type: 'Data Link',
     description: {
-      en: 'Resolves dynamic IP layer logical addresses to hardcoded local MAC hardware addresses.',
+      en: 'Resolves IPv4 addresses to Layer 2 MAC addresses on the local broadcast domain.',
       it: 'Mappa gli indirizzi IP (Livello 3) negli indirizzi hardware MAC fisici del canale locale (Livello 2).'
     },
     useCase: {
@@ -2003,7 +2003,7 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
   const [selectedVpnMode, setSelectedVpnMode] = useState<'ipsec-tunnel' | 'ipsec-transport' | 'dtls' | 'vpn-overview'>('vpn-overview');
 
   // Game/Trainer State
-  const [trainerMode, setTrainerMode] = useState<'selection' | 'quiz' | 'flashcards'>('selection');
+  const [trainerMode, setTrainerMode] = useState<'selection' | 'quiz' | 'flashcards'>('flashcards');
   const [gameState, setGameState] = useState<'idle' | 'playing' | 'ended'>('idle');
   const [currentQuestionIdx, setCurrentQuestionIdx] = useState(0);
   const [gameScore, setGameScore] = useState(0);
@@ -2227,7 +2227,7 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                 <button
                   onClick={() => {
                     setActiveTab('trainer');
-                    setTrainerMode('selection');
+                    startFlashcards();
                   }}
                   className={`px-2.5 py-1.5 rounded-lg text-xs font-bold uppercase flex items-center gap-1 transition-all ${
                     activeTab === 'trainer' 
@@ -2236,7 +2236,7 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                   }`}
                 >
                   <Sparkles className="w-3.5 h-3.5" />
-                  {language === 'en' ? 'Trainer' : 'Quiz'}
+                  {language === 'en' ? 'Port Explorer' : 'Esplora porte'}
                 </button>
               </div>
 
@@ -2952,8 +2952,8 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                           </h4>
                           <p className="text-xs text-slate-500 leading-relaxed">
                             {language === 'en'
-                              ? 'EAP is not a stand-alone protocol, but a generic container framework that supports diverse authentication methods. It negotiates credentials between client devices (supplicants), wireless access points/switches (authenticators), and back-end AAA servers (RADIUS/TACACS+).'
-                              : "EAP non è un protocollo a sé stante, ma un framework contenitore flessibile progettato per ospitare svariati metodi di autenticazione. Gestisce baratti e negoziazione di credenziali tra lo smart device (supplicant), l'Access Point o Switch di rete (authenticator) e il server d'accesso centrale (RADIUS/TACACS+)."}
+                              ? 'EAP is an authentication framework that supports multiple methods. In 802.1X, it carries authentication between the supplicant and the authenticator, which normally communicates with a back-end RADIUS server.'
+                              : "EAP è un framework di autenticazione che supporta metodi differenti. In 802.1X trasporta l'autenticazione tra il supplicant e l'authenticator, che normalmente comunica con un server RADIUS di back-end."}
                           </p>
                         </div>
 
@@ -3024,8 +3024,8 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                               <p className="text-[12.5px] text-slate-600 leading-relaxed">
                                 {selectedEap === 'tls' && (
                                   language === 'en'
-                                    ? 'EAP-TLS requires digital certificates on both the client device (supplicant) and the authentication server. Authenticating without passwords makes it immune to phishing, dictionary, and brute force attacks. It is the gold standard for enterprise-grade 802.1X secure network ports.'
-                                    : 'EAP-TLS richiede certificati digitali X.509 validi sia sul client (supplicant) sia sul server di verifica. Trattandosi di autenticazione crittografica priva di password, è immune ad attacchi di phishing, dizionario e brute force. Rappresenta la scelta eccellente e standard aureo per reti aziendali ad alta sicurezza.'
+                                    ? 'EAP-TLS uses certificates on both the supplicant and authentication server. It removes reusable passwords from the exchange and provides strong mutual authentication, provided certificates and trust validation are managed correctly.'
+                                    : 'EAP-TLS usa certificati sia sul supplicant sia sul server di autenticazione. Elimina le password riutilizzabili dallo scambio e offre una forte autenticazione reciproca, purché certificati e validazione della catena di fiducia siano gestiti correttamente.'
                                 )}
                                 {selectedEap === 'peap' && (
                                   language === 'en'
@@ -3897,10 +3897,10 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                         {/* Back home control */}
                         <div className="text-center pt-2">
                           <button
-                            onClick={() => setTrainerMode('selection')}
+                            onClick={() => setActiveTab('ports')}
                             className="text-xs text-slate-400 hover:text-slate-600 underline font-semibold transition"
                           >
-                            {language === 'en' ? 'Back to Selection Menu' : 'Torna al Menu Principale'}
+                            {language === 'en' ? 'Back to port registry' : 'Torna al registro delle porte'}
                           </button>
                         </div>
                       </motion.div>
