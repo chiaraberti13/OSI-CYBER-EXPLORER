@@ -119,6 +119,15 @@ export default function CurriculumView() {
                   {language === 'it' ? 'Apri il laboratorio Security Fundamentals' : 'Open the Security Fundamentals lab'}
                 </button>
               ) : null}
+              {domain.id === 'automation-programmability' ? (
+                <button
+                  type="button"
+                  onClick={() => setActiveView('automation')}
+                  className="mt-4 rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-xs font-semibold text-sky-800 transition-colors hover:bg-sky-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
+                >
+                  {language === 'it' ? 'Apri il laboratorio Automation' : 'Open the Automation lab'}
+                </button>
+              ) : null}
             </article>
           ))}
         </div>

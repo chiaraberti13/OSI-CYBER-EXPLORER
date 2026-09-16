@@ -1,5 +1,5 @@
 import { useStore } from '../store';
-import { Layers, Hash, Shield, BookOpen, Swords, Map, Calculator, Cable, Route, ServerCog, LockKeyhole } from 'lucide-react';
+import { Layers, Hash, Shield, BookOpen, Swords, Map, Calculator, Cable, Route, ServerCog, LockKeyhole, Workflow } from 'lucide-react';
 
 const TABS = [
     {
@@ -37,6 +37,12 @@ const TABS = [
       en: 'Security Fundamentals',
       it: 'Sicurezza CCNA',
       icon: LockKeyhole
+    },
+    {
+      id: 'automation' as const,
+      en: 'Automation',
+      it: 'Automazione',
+      icon: Workflow
     },
     {
       id: 'osi' as const,
