@@ -11,7 +11,7 @@ import { lazy, Suspense, useEffect } from 'react';
 import { useStore } from './store';
 
 const GlossaryModal = lazy(() => import('./components/GlossaryModal'));
-const PortsModal = lazy(() => import('./components/PortsModal'));
+const PortsModal = lazy(() => import('./components/PortsExplorer'));
 const SecurityDashboard = lazy(() => import('./components/SecurityDashboard'));
 const AttackLab = lazy(() => import('./components/AttackLab'));
 const CurriculumView = lazy(() => import('./components/CurriculumView'));

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   X, Search, ShieldAlert, ShieldCheck, HelpCircle, 
-  Trophy, Sparkles, Hash, Activity, Lock, Unlock, PlayCircle, RefreshCw,
+  Sparkles, Hash, Activity, Lock, Unlock, RefreshCw,
   Layers, Globe, Shield, Shuffle, Network, Radio, Cpu, Server
 } from 'lucide-react';
 import { useStore } from '../store';
@@ -1991,7 +1991,7 @@ const PORT_REGISTRY: PortInfo[] = [
   }
 ];
 
-export default function PortsModal({ isOpen = false, onClose = () => {}, inline = false }: { isOpen?: boolean; onClose?: () => void; inline?: boolean }) {
+export default function PortsExplorer({ isOpen = false, onClose = () => {}, inline = false }: { isOpen?: boolean; onClose?: () => void; inline?: boolean }) {
   const { language } = useStore();
   const [activeTab, setActiveTab] = useState<'ports' | 'protocols' | 'devices' | 'secure-access' | 'trainer'>('ports');
   const [selectedRange, setSelectedRange] = useState<'all' | 'well-known' | 'registered' | 'dynamic'>('all');
@@ -2002,17 +2002,7 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
   const [selectedAaaSim, setSelectedAaaSim] = useState<'radius' | 'tacacs'>('radius');
   const [selectedVpnMode, setSelectedVpnMode] = useState<'ipsec-tunnel' | 'ipsec-transport' | 'dtls' | 'vpn-overview'>('vpn-overview');
 
-  // Game/Trainer State
-  const [trainerMode, setTrainerMode] = useState<'selection' | 'quiz' | 'flashcards'>('flashcards');
-  const [gameState, setGameState] = useState<'idle' | 'playing' | 'ended'>('idle');
-  const [currentQuestionIdx, setCurrentQuestionIdx] = useState(0);
-  const [gameScore, setGameScore] = useState(0);
-  const [gameStreak, setGameStreak] = useState(0);
-  const [gameQuestions, setGameQuestions] = useState<{ port: number; service: string; options: number[] }[]>([]);
-  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
-  const [answerEvaluated, setAnswerEvaluated] = useState(false);
-
-  // Flashcards state
+  // Port explorer state
   const [flashcardsList, setFlashcardsList] = useState<PortInfo[]>([]);
   const [currentFlashcardIdx, setCurrentFlashcardIdx] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
@@ -2058,70 +2048,11 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
     return categoryMatch && searchMatch;
   });
 
-  // Start Port Trainer Game
-  const startNewGame = () => {
-    // Generate 5 random questions
-    const shuffled = [...PORT_REGISTRY].sort(() => 0.5 - Math.random());
-    const questions = shuffled.slice(0, 5).map(q => {
-      const correctPort = typeof q.port === 'number' ? q.port : parseInt(q.port.toString().split(' ')[0], 10) || 53;
-      
-      // Make 3 plausible decoy port options
-      const decoys = PORT_REGISTRY
-        .filter(item => {
-          const itemPort = typeof item.port === 'number' ? item.port : 9999;
-          return itemPort !== correctPort;
-        })
-        .map(item => typeof item.port === 'number' ? item.port : 80)
-        .sort(() => 0.5 - Math.random())
-        .slice(0, 3);
-
-      const options = [...decoys, correctPort].sort(() => 0.5 - Math.random());
-      
-      return {
-        port: correctPort,
-        service: q.service,
-        options
-      };
-    });
-
-    setGameQuestions(questions);
-    setCurrentQuestionIdx(0);
-    setGameScore(0);
-    setSelectedAnswer(null);
-    setAnswerEvaluated(false);
-    setGameState('playing');
-    setTrainerMode('quiz');
-  };
-
   const startFlashcards = () => {
     const shuffled = [...PORT_REGISTRY].sort(() => 0.5 - Math.random());
     setFlashcardsList(shuffled);
     setCurrentFlashcardIdx(0);
     setIsFlipped(false);
-    setTrainerMode('flashcards');
-  };
-
-  const handleSelectAnswer = (ans: number) => {
-    if (answerEvaluated) return;
-    setSelectedAnswer(ans);
-    setAnswerEvaluated(true);
-    const isCorrect = ans === gameQuestions[currentQuestionIdx].port;
-    if (isCorrect) {
-      setGameScore(prev => prev + 1);
-      setGameStreak(prev => prev + 1);
-    } else {
-      setGameStreak(0);
-    }
-  };
-
-  const handleNextQuestion = () => {
-    if (currentQuestionIdx < gameQuestions.length - 1) {
-      setCurrentQuestionIdx(prev => prev + 1);
-      setSelectedAnswer(null);
-      setAnswerEvaluated(false);
-    } else {
-      setGameState('ended');
-    }
   };
 
   const renderWrapper = (children: React.ReactNode) => {
@@ -3468,245 +3399,8 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
                 /* Interactive Port Trainer / Game Tab */
                 <div className="flex-1 p-6 flex flex-col justify-center max-w-2xl mx-auto w-full">
                   <AnimatePresence mode="wait">
-                    {trainerMode === 'selection' ? (
-                      <motion.div
-                        key="selection"
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.95 }}
-                        className="space-y-6"
-                      >
-                        <div className="text-center space-y-2">
-                          <h3 className="text-xl font-semibold text-slate-900 uppercase tracking-tight">
-                            {language === 'en' ? 'Networking Study & Training' : 'Studio & Addestramento di Rete'}
-                          </h3>
-                          <p className="text-xs text-slate-500 max-w-md mx-auto leading-relaxed">
-                            {language === 'en'
-                              ? 'Reinforce your knowledge of ports, standard connection layers, security configurations and protocols with our interactive training tools.'
-                              : 'Rafforza la tua conoscenza delle porte, dei tipi di trasporto, delle impostazioni di sicurezza e dei protocolli con i nostri strumenti interattivi.'}
-                          </p>
-                        </div>
-
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                          {/* Card 1: Port Quiz Challenge */}
-                          <div className="bg-white border border-slate-100 p-6 rounded-lg hover:shadow-md hover:border-indigo-150 transition-all flex flex-col justify-between space-y-4">
-                            <div className="space-y-3">
-                              <div className="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center">
-                                <Trophy className="w-6 h-6" />
-                              </div>
-                              <div>
-                                <h4 className="font-extrabold text-slate-800 text-sm">
-                                  {language === 'en' ? 'Port Association Quiz' : 'Quiz sulle Associazioni'}
-                                </h4>
-                                <p className="text-[11px] text-slate-400 mt-1 leading-snug">
-                                  {language === 'en'
-                                    ? 'A rapid 5-question challenge mapping services to their standard connection ports.'
-                                    : 'Una sfida veloce di 5 domande per collegare i servizi alle rispettive porte numeriche.'}
-                                </p>
-                              </div>
-                            </div>
-                            <button
-                              onClick={startNewGame}
-                              className="w-full py-2.5 bg-indigo-600 text-white font-bold text-xs rounded-xl shadow hover:bg-indigo-700 transition flex items-center justify-center gap-1.5"
-                            >
-                              <PlayCircle className="w-4 h-4" />
-                              {language === 'en' ? 'Start Quiz Challenge' : 'Avvia Quiz'}
-                            </button>
-                          </div>
-
-                          {/* Card 2: Interactive Study Flashcards */}
-                          <div className="bg-white border border-slate-100 p-6 rounded-lg hover:shadow-md hover:border-indigo-150 transition-all flex flex-col justify-between space-y-4">
-                            <div className="space-y-3">
-                              <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center">
-                                <Layers className="w-6 h-6" />
-                              </div>
-                              <div>
-                                <h4 className="font-extrabold text-slate-800 text-sm">
-                                  {language === 'en' ? 'Interactive Study Flashcards' : 'Flashcard di Studio Interattive'}
-                                </h4>
-                                <p className="text-[11px] text-slate-400 mt-1 leading-snug">
-                                  {language === 'en'
-                                    ? 'Review every system port item individually. Click to flip cards and check connection types and safety alerts.'
-                                    : 'Ripassa ogni singola porta di rete. Clicca per girarla e vederne protocollo, trasporto e sicurezza.'}
-                                </p>
-                              </div>
-                            </div>
-                            <button
-                              onClick={startFlashcards}
-                              className="w-full py-2.5 bg-emerald-600 text-white font-bold text-xs rounded-xl shadow hover:bg-emerald-700 transition flex items-center justify-center gap-1.5"
-                            >
-                              <Layers className="w-4 h-4" />
-                              {language === 'en' ? 'Practice Flashcards' : 'Pratica le Flashcard'}
-                            </button>
-                          </div>
-                        </div>
-
-                        <div className="text-center font-mono text-[10px] text-indigo-500/80 uppercase font-bold tracking-wider">
-                          {language === 'en' ? `${PORT_REGISTRY.length} registered study targets verified` : `${PORT_REGISTRY.length} porte registrate caricate nel database`}
-                        </div>
-                      </motion.div>
-                    ) : trainerMode === 'quiz' ? (
-                      /* Active Quiz Screen */
-                      <motion.div
-                        key="quiz-mode"
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.95 }}
-                        className="w-full"
-                      >
-                        {gameState === 'playing' ? (
-                          <div className="bg-white rounded-xl border border-slate-100 p-6 md:p-8 space-y-6">
-                            {/* Game Status Header */}
-                            <div className="flex justify-between items-center text-xs pb-4 border-b border-slate-100">
-                              <span className="font-bold text-slate-400 uppercase tracking-wider">
-                                {language === 'en' ? `Challenge ${currentQuestionIdx + 1} of 5` : `Sfida ${currentQuestionIdx + 1} di 5`}
-                              </span>
-                              <span className="px-3 py-1 bg-indigo-50 border border-indigo-100 text-indigo-700 font-bold rounded-full">
-                                {language === 'en' ? `Score: ${gameScore}/5` : `Punti: ${gameScore}/5`}
-                              </span>
-                            </div>
-
-                            {/* Trivia Question card */}
-                            <div className="text-center space-y-3">
-                              <span className="inline-block px-3 py-1.5 bg-slate-900 text-white text-[10px] font-semibold uppercase tracking-wider rounded-lg">
-                                {language === 'en' ? 'Determine Target Port' : 'Individua la Porta Target'}
-                              </span>
-                              <h4 className="text-2xl font-semibold text-slate-900 tracking-tight leading-tight">
-                                {language === 'en' ? 'Which port corresponds to:' : 'Quale porta corrisponde al servizio:'}
-                              </h4>
-                              <div className="text-3xl font-semibold text-indigo-600 bg-indigo-50/50 py-4 px-6 rounded-lg max-w-xs mx-auto border border-indigo-100">
-                                {gameQuestions[currentQuestionIdx]?.service}
-                              </div>
-                            </div>
-
-                            {/* Port Options Buttons Grid */}
-                            <div className="grid grid-cols-2 gap-3 pt-3">
-                              {gameQuestions[currentQuestionIdx]?.options.map((option, idx) => {
-                                const isCorrect = option === gameQuestions[currentQuestionIdx].port;
-                                const isSelected = option === selectedAnswer;
-                                
-                                let btnStyle = "bg-slate-50 border-slate-200 text-slate-800 hover:bg-slate-100 hover:border-slate-300";
-                                
-                                if (answerEvaluated) {
-                                  if (isCorrect) {
-                                    btnStyle = "bg-emerald-500 border-emerald-600 text-white shadow-emerald-100";
-                                  } else if (isSelected) {
-                                    btnStyle = "bg-rose-500 border-rose-600 text-white shadow-rose-100";
-                                  } else {
-                                    btnStyle = "bg-slate-50 border-slate-100 text-slate-300 pointer-events-none opacity-40";
-                                  }
-                                }
-
-                                return (
-                                  <button
-                                    key={idx}
-                                    disabled={answerEvaluated}
-                                    onClick={() => handleSelectAnswer(option)}
-                                    className={`py-4 px-6 border rounded-lg font-mono text-lg font-semibold transition-all ${btnStyle}`}
-                                  >
-                                    {option}
-                                  </button>
-                                );
-                              })}
-                            </div>
-
-                            {/* Feedback Banner and Control */}
-                            {answerEvaluated && (
-                              <motion.div 
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-lg bg-indigo-50/60 border border-indigo-100"
-                              >
-                                <span className="text-xs font-semibold text-indigo-900">
-                                  {selectedAnswer === gameQuestions[currentQuestionIdx].port ? (
-                                    <span className="text-emerald-700 font-bold flex items-center gap-1.5">
-                                      <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                                      {language === 'en' ? 'Correct! Strong transmission verified.' : 'Corretto! Trasmissione validata.'}
-                                    </span>
-                                  ) : (
-                                    <span className="text-rose-700 font-bold flex items-center gap-1.5 align-middle">
-                                      <ShieldAlert className="w-4 h-4 text-rose-600" />
-                                      {language === 'en' 
-                                        ? `Incorrect. Correct port was ${gameQuestions[currentQuestionIdx].port}.` 
-                                        : `Sbagliato. La porta esatta era ${gameQuestions[currentQuestionIdx].port}.`}
-                                    </span>
-                                  )}
-                                </span>
-
-                                <div className="flex gap-2 w-full sm:w-auto">
-                                  <button
-                                    onClick={handleNextQuestion}
-                                    className="w-full sm:w-auto px-5 py-2.5 bg-indigo-600 text-white text-xs font-bold uppercase rounded-xl shadow hover:bg-indigo-700 transition"
-                                  >
-                                    {currentQuestionIdx === gameQuestions.length - 1 
-                                      ? (language === 'en' ? 'See overall score' : 'Vedi punteggio finale') 
-                                      : (language === 'en' ? 'Next Protocol' : 'Prossimo Protocollo')}
-                                  </button>
-                                </div>
-                              </motion.div>
-                            )}
-                          </div>
-                        ) : (
-                          /* End Game Results screen */
-                          <div className="bg-white rounded-xl border border-slate-100 p-8 space-y-6 text-center">
-                            <div className="w-20 h-20 bg-amber-50 rounded-full flex items-center justify-center mx-auto relative">
-                              <Trophy className="w-10 h-10 text-amber-500" />
-                              <motion.div
-                                animate={{ rotate: 360 }}
-                                transition={{ repeat: Infinity, duration: 10, ease: 'linear' }}
-                                className="absolute inset-0 rounded-full border border-dashed border-amber-300"
-                              />
-                            </div>
-
-                            <div className="space-y-1">
-                              <h3 className="text-2xl font-semibold text-slate-900 uppercase tracking-tight">
-                                {language === 'en' ? 'Training session completed!' : 'Sessione completata!'}
-                              </h3>
-                              <p className="text-slate-500 text-sm">
-                                {language === 'en' ? 'Heres your certification scorecard:' : 'Ecco la scheda di valutazione del tuo addestramento:'}
-                              </p>
-                            </div>
-
-                            {/* Final score display */}
-                            <div className="bg-slate-50 py-4 px-6 rounded-lg max-w-sm mx-auto border border-slate-100 flex justify-around items-center divide-x divide-slate-200">
-                              <div>
-                                <span className="block text-[10px] uppercase font-bold text-slate-400">{language === 'en' ? 'Correct answers' : 'Risposte esatte'}</span>
-                                <span className="text-2xl font-semibold text-slate-800">{gameScore} / 5</span>
-                              </div>
-                              <div className="pl-6 text-left">
-                                <span className="block text-[10px] uppercase font-bold text-slate-400">{language === 'en' ? 'Precision Rate' : 'Precisione'}</span>
-                                <span className="text-2xl font-semibold text-indigo-600">{(gameScore/5)*100}%</span>
-                              </div>
-                            </div>
-
-                            <p className="text-xs text-slate-400 italic max-w-sm mx-auto">
-                              {gameScore === 5 
-                                ? (language === 'en' ? 'Spectacular! All core systems are protected completely. Level: Ports Architect.' : 'Spettacolare! Tutte le difese e le porte sono presidiate. Livello: Architetto delle Porte.')
-                                : gameScore >= 3
-                                ? (language === 'en' ? 'Good performance. Some minor database or SSH configuration gaps exist. Keep practicing!' : 'Buona performance. Qualche svista su database o SSH, continua ad allenarti!')
-                                : (language === 'en' ? 'Warning: Open ports detected. System is vulnerable to mapping. Try to review the Registry tab!' : 'Allerta: Rilevate troppe porte aperte. Il sistema è esposto a violazioni. Rivedi il Dizionario!')}
-                            </p>
-
-                            <div className="flex gap-3 justify-center pt-3">
-                              <button
-                                onClick={() => startNewGame()}
-                                className="px-5 py-3 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold rounded-xl text-xs transition-all flex items-center gap-1.5"
-                              >
-                                <RefreshCw className="w-4 h-4" />
-                                {language === 'en' ? 'Replay Quiz' : 'Allenati di nuovo'}
-                              </button>
-                              <button
-                                onClick={() => setTrainerMode('selection')}
-                                className="px-5 py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs transition-all"
-                              >
-                                {language === 'en' ? 'Change Game Mode' : 'Cambia Gioco'}
-                              </button>
-                            </div>
-                          </div>
-                        )}
-                      </motion.div>
-                    ) : (
-                      /* Flashcards Mode Screen */
+                    {(
+                      /* Interactive port explorer */
                       <motion.div
                         key="flashcards-mode"
                         initial={{ opacity: 0, scale: 0.95 }}
@@ -3919,3 +3613,4 @@ export default function PortsModal({ isOpen = false, onClose = () => {}, inline 
     </>
   );
 }
+
