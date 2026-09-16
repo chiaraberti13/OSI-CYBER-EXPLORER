@@ -1,5 +1,5 @@
 import { useStore } from '../store';
-import { Layers, Hash, Shield, BookOpen, Swords, Map } from 'lucide-react';
+import { Layers, Hash, Shield, BookOpen, Swords, Map, Calculator } from 'lucide-react';
 
 export default function Navigation() {
   const { language, activeView, setActiveView } = useStore();
@@ -12,6 +12,14 @@ export default function Navigation() {
       icon: Map,
       color: 'text-sky-600',
       activeBg: 'bg-sky-50/50 text-sky-700 border-sky-200'
+    },
+    {
+      id: 'fundamentals' as const,
+      en: 'IPv4 Lab',
+      it: 'Lab IPv4',
+      icon: Calculator,
+      color: 'text-cyan-600',
+      activeBg: 'bg-cyan-50/50 text-cyan-700 border-cyan-200'
     },
     {
       id: 'osi' as const,

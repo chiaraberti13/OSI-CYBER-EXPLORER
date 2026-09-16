@@ -4,7 +4,7 @@ import { ATTACK_FAMILIES } from '../content/securityTaxonomy';
 import { useStore } from '../store';
 
 export default function CurriculumView() {
-  const { language } = useStore();
+  const { language, setActiveView } = useStore();
 
   return (
     <div className="space-y-8">
@@ -74,6 +74,15 @@ export default function CurriculumView() {
               <p className="mt-4 font-mono text-[10px] text-slate-400">
                 {language === 'it' ? 'Obiettivi' : 'Objectives'}: {domain.objectiveIds.join(' · ')}
               </p>
+              {domain.id === 'network-fundamentals' ? (
+                <button
+                  type="button"
+                  onClick={() => setActiveView('fundamentals')}
+                  className="mt-4 rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-xs font-semibold text-indigo-700 transition-colors hover:bg-indigo-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
+                >
+                  {language === 'it' ? 'Apri il laboratorio IPv4' : 'Open the IPv4 lab'}
+                </button>
+              ) : null}
             </article>
           ))}
         </div>
