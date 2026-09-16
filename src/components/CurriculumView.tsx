@@ -92,6 +92,15 @@ export default function CurriculumView() {
                   {language === 'it' ? 'Apri il laboratorio Network Access' : 'Open the Network Access lab'}
                 </button>
               ) : null}
+              {domain.id === 'ip-connectivity' ? (
+                <button
+                  type="button"
+                  onClick={() => setActiveView('routing')}
+                  className="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-800 transition-colors hover:bg-amber-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
+                >
+                  {language === 'it' ? 'Apri il laboratorio IP Connectivity' : 'Open the IP Connectivity lab'}
+                </button>
+              ) : null}
             </article>
           ))}
         </div>
