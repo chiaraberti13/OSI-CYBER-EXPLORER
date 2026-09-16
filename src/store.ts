@@ -57,8 +57,8 @@ interface AppState {
   isPaused: boolean;
   setIsPaused: (isPaused: boolean) => void;
 
-  activeView: 'curriculum' | 'fundamentals' | 'access' | 'routing' | 'services' | 'securitycore' | 'automation' | 'osi' | 'attacklab' | 'ports' | 'security' | 'glossary';
-  setActiveView: (view: 'curriculum' | 'fundamentals' | 'access' | 'routing' | 'services' | 'securitycore' | 'automation' | 'osi' | 'attacklab' | 'ports' | 'security' | 'glossary') => void;
+  activeView: AppView;
+  setActiveView: (view: AppView) => void;
 
   audioEnabled: boolean;
   setAudioEnabled: (enabled: boolean) => void;
@@ -71,6 +71,8 @@ interface AppState {
   hasSeenGuide: boolean;
   setHasSeenGuide: (seen: boolean) => void;
 }
+
+export type AppView = 'curriculum' | 'fundamentals' | 'access' | 'routing' | 'services' | 'securitycore' | 'automation' | 'coverage' | 'osi' | 'attacklab' | 'ports' | 'security' | 'glossary';
 
 export const useStore = create<AppState>()(
   persist(
