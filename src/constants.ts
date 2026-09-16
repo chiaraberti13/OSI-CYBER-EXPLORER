@@ -1792,9 +1792,12 @@ export const ATTACK_SCENARIOS: AttackScenario[] = [
     id: 'l3-bgp-hijack',
     name: { en: 'BGP Hijacking', it: 'BGP Hijacking' },
     description: { en: 'Redirecting global internet traffic by announcing false IP prefixes.', it: 'Reindirizzamento del traffico internet globale annunciando prefissi IP falsi.' },
-    recommendedDefense: { en: 'Deploying RPKI and BGPsec for route validation.', it: 'Distribuzione di RPKI e BGPsec per la validazione delle rotte.' },
-    targetLayer: 7,
-    attackType: 'mitm',
+    recommendedDefense: {
+      en: 'Use RPKI route-origin validation and strict prefix and peer filters; use BGPsec where supported.',
+      it: 'Usa la validazione dell’origine delle rotte tramite RPKI e filtri rigorosi su prefissi e peer; usa BGPsec dove supportato.'
+    },
+    targetLayer: 3,
+    attackType: 'spoofing',
     defenseEnabled: false
   },
   {

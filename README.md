@@ -10,7 +10,7 @@
   <img src="https://img.shields.io/badge/licence-MIT-2EA043?style=flat-square" alt="MIT">
 </p>
 
-> An interactive laboratory for observing data across all seven OSI layers, simulating attacks and validating the corresponding defenses.
+> A bilingual networking and CCNA 200-301 lab for observing data flows, simulating attacks, and understanding the corresponding defenses.
 
 <p align="center"><a href="https://osi-cyber-explorer.vercel.app"><strong>Live demo</strong></a> · <a href="SECURITY.md">Security</a> · <a href="LICENSE">Licence</a></p>
 
@@ -19,12 +19,13 @@
 ## 🇬🇧 English
 
 ## Overview
-**OSI Cyber Explorer** turns two normally abstract topics — **packet encapsulation** and **network security** — into a visual, hands-on laboratory. You watch a packet descend the OSI stack header by header, inject real-world attacks, and toggle the matching defense to see it work. Everything is deterministic and client-side; there is no backend and no AI involved.
+**OSI Cyber Explorer** turns networking, encapsulation, and network security into a visual laboratory. It connects the six **CCNA 200-301 v1.1** domains to attack families and their defenses, while distinguishing real protocol headers from conceptual upper-layer OSI functions. Everything is deterministic and client-side; there is no backend and no AI involved.
 
 ## Features
-- **OSI Stack Lab** — Pick a protocol (HTTP, DNS, BGP, SSH, FTP, SMTP) and run the simulation. A live **Packet Inspector** shows the headers stacking up (L7 → L1) with realistic fields (IP, ports, MAC, flags, sequence numbers), a colour-coded console logs every step, and the layer panel explains theory, use cases, attacks and defenses. Adjustable playback speed (0.5× / 1× / 2×) and audio cues.
+- **CCNA Map** — The six official domains with their weights, objectives, topics, and links to attack and defense families. It is an exploratory guide with no quizzes, scores, or exam simulation.
+- **OSI Stack Lab** — Pick a protocol (HTTP, HTTPS, DNS, BGP, SSH, FTP, SMTP) and run the simulation. A live **Packet Inspector** shows realistic fields (IP, ports, MAC addresses, flags, and sequence numbers) while distinguishing real headers from conceptual upper-layer OSI functions. Adjustable playback speed (0.5× / 1× / 2×) and audio cues.
 - **Attack & Defense Lab** — ~25 attacks across all 7 layers (ARP poisoning, MAC flooding, IP/BGP spoofing, SYN/UDP floods, session hijacking, padding oracle, SQL injection, XSS, DNS cache poisoning, and more). Each one plays out as a step-by-step *kill chain*; turn the defense on to see exactly **where** and **how** it is neutralized.
-- **Ports & Protocols** — Reference for IANA port ranges, protocols, appliances and a port-association trainer.
+- **Ports & Protocols** — Exploratory reference for IANA ranges, protocols, appliances, and security properties, without scores or assessment.
 - **Cybersecurity (IDS/IPS)** — Reference on defensive appliances (NIDS/NIPS/HIDS/HIPS/WIDS/WIPS/EDR) and the key difference between **detecting** (IDS) and **blocking** (IPS).
 - **Network Glossary** — Searchable dictionary of networking & security terms.
 

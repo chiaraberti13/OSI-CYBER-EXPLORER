@@ -1,23 +1,29 @@
 /**
  * @license
- * SPDX-License-Identifier: Apache-2.0
+ * SPDX-License-Identifier: MIT
  */
 
 import Header from './components/Header';
 import Navigation from './components/Navigation';
-import OsiStack from './components/OsiStack';
-import LayerDetails from './components/LayerDetails';
-import PacketSimulator from './components/PacketSimulator';
-import Terminal from './components/Terminal';
-import PacketInspector from './components/PacketInspector';
-import { useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import GuideModal from './components/GuideModal';
-import GlossaryModal from './components/GlossaryModal';
-import PortsModal from './components/PortsModal';
-import SecurityDashboard from './components/SecurityDashboard';
-import AttackLab from './components/AttackLab';
+import { lazy, Suspense, useEffect } from 'react';
 import { useStore } from './store';
+
+const GlossaryModal = lazy(() => import('./components/GlossaryModal'));
+const PortsModal = lazy(() => import('./components/PortsExplorer'));
+const SecurityDashboard = lazy(() => import('./components/SecurityDashboard'));
+const AttackLab = lazy(() => import('./components/AttackLab'));
+const CurriculumView = lazy(() => import('./components/CurriculumView'));
+const OsiLabView = lazy(() => import('./components/OsiLabView'));
+
+function ViewFallback({ language }: { language: 'it' | 'en' }) {
+  return (
+    <div className="rounded-xl border border-slate-200 bg-white p-8 text-center text-sm text-slate-500" role="status">
+      {language === 'it' ? 'Caricamento del modulo…' : 'Loading module…'}
+    </div>
+  );
+}
 
 export default function App() {
   const {
@@ -42,7 +48,20 @@ export default function App() {
       <Navigation />
 
       <main className="max-w-7xl mx-auto p-4 md:p-6 min-h-[75vh]">
+        <Suspense fallback={<ViewFallback language={language} />}>
         <AnimatePresence mode="wait">
+          {activeView === 'curriculum' && (
+            <motion.div
+              key="curriculum"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.18 }}
+            >
+              <CurriculumView />
+            </motion.div>
+          )}
+
           {activeView === 'osi' && (
             <motion.div
               key="osi"
@@ -50,50 +69,8 @@ export default function App() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.18 }}
-              className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start"
             >
-              {/* Left: Console log + Packet Inspector */}
-              <section className="lg:col-span-3 xl:col-span-3 flex flex-col gap-6">
-                <div className="space-y-2.5">
-                  <h3 className="eyebrow px-1">
-                    {language === 'it' ? 'Console' : 'Console'}
-                  </h3>
-                  <div className="h-[320px]">
-                    <Terminal />
-                  </div>
-                </div>
-                <div className="space-y-2.5">
-                  <h3 className="eyebrow px-1">
-                    {language === 'it' ? 'Pacchetto' : 'Packet'}
-                  </h3>
-                  <PacketInspector />
-                </div>
-              </section>
-
-              {/* Center: OSI Stack Hub & Controls */}
-              <section className="lg:col-span-5 xl:col-span-5 space-y-6">
-                <div className="space-y-2.5">
-                   <h3 className="eyebrow px-1">
-                     {language === 'it' ? 'Simulatore' : 'Simulator'}
-                   </h3>
-                   <PacketSimulator />
-                </div>
-
-                <div className="space-y-2.5">
-                  <h3 className="eyebrow px-1">
-                    {language === 'it' ? 'Pila OSI' : 'OSI Stack'}
-                  </h3>
-                  <OsiStack />
-                </div>
-              </section>
-
-              {/* Right: Technical Intelligence */}
-              <section className="lg:col-span-4 xl:col-span-4 space-y-2.5">
-                <h3 className="eyebrow px-1">
-                  {language === 'it' ? 'Dettagli del livello' : 'Layer details'}
-                </h3>
-                <LayerDetails />
-              </section>
+              <OsiLabView />
             </motion.div>
           )}
 
@@ -146,6 +123,7 @@ export default function App() {
           )}
 
         </AnimatePresence>
+        </Suspense>
       </main>
 
       {/* Footer */}

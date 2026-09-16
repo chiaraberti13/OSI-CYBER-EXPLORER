@@ -1,10 +1,18 @@
 import { useStore } from '../store';
-import { Layers, Hash, Shield, BookOpen, Swords } from 'lucide-react';
+import { Layers, Hash, Shield, BookOpen, Swords, Map } from 'lucide-react';
 
 export default function Navigation() {
   const { language, activeView, setActiveView } = useStore();
 
   const tabs = [
+    {
+      id: 'curriculum' as const,
+      en: 'CCNA Map',
+      it: 'Mappa CCNA',
+      icon: Map,
+      color: 'text-sky-600',
+      activeBg: 'bg-sky-50/50 text-sky-700 border-sky-200'
+    },
     {
       id: 'osi' as const,
       en: 'OSI Stack Lab',
