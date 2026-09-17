@@ -38,6 +38,7 @@ const InspectionSecurityLab = lazy(() => import('./components/InspectionSecurity
 const ManagementTelemetryLab = lazy(() => import('./components/ManagementTelemetryLab'));
 const EndpointSecurityLab = lazy(() => import('./components/EndpointSecurityLab'));
 const ApplicationSecurityLab = lazy(() => import('./components/ApplicationSecurityLab'));
+const EmailHumanSecurityLab = lazy(() => import('./components/EmailHumanSecurityLab'));
 const SecurityEvidenceLab = lazy(() => import('./components/SecurityEvidenceLab'));
 const DefenseControlsLab = lazy(() => import('./components/DefenseControlsLab'));
 
@@ -269,6 +270,12 @@ export default function App() {
           {activeView === 'applicationsecurity' && (
             <motion.div key="applicationsecurity" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.18 }}>
               <ApplicationSecurityLab />
+            </motion.div>
+          )}
+
+          {activeView === 'emailsecurity' && (
+            <motion.div key="emailsecurity" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.18 }}>
+              <EmailHumanSecurityLab />
             </motion.div>
           )}
 
