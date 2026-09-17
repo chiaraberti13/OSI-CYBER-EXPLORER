@@ -35,6 +35,7 @@ const WirelessSecurityLab = lazy(() => import('./components/WirelessSecurityLab'
 const VpnPkiSecurityLab = lazy(() => import('./components/VpnPkiSecurityLab'));
 const AvailabilitySecurityLab = lazy(() => import('./components/AvailabilitySecurityLab'));
 const InspectionSecurityLab = lazy(() => import('./components/InspectionSecurityLab'));
+const ManagementTelemetryLab = lazy(() => import('./components/ManagementTelemetryLab'));
 const SecurityEvidenceLab = lazy(() => import('./components/SecurityEvidenceLab'));
 const DefenseControlsLab = lazy(() => import('./components/DefenseControlsLab'));
 
@@ -248,6 +249,12 @@ export default function App() {
           {activeView === 'inspection' && (
             <motion.div key="inspection" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.18 }}>
               <InspectionSecurityLab />
+            </motion.div>
+          )}
+
+          {activeView === 'managementsecurity' && (
+            <motion.div key="managementsecurity" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.18 }}>
+              <ManagementTelemetryLab />
             </motion.div>
           )}
 

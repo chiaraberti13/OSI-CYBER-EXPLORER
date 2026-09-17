@@ -30,6 +30,7 @@ const TAB_GROUPS = [
       { id: 'vpnsecurity', en: 'VPN & PKI', it: 'VPN e PKI', icon: KeyRound },
       { id: 'availability', en: 'Availability & DoS', it: 'Disponibilità e DoS', icon: Gauge },
       { id: 'inspection', en: 'Firewall & IDS/IPS', it: 'Firewall e IDS/IPS', icon: ShieldAlert },
+      { id: 'managementsecurity', en: 'Management & Telemetry', it: 'Gestione e Telemetria', icon: ServerCog },
       { id: 'defense', en: 'Defense Lab', it: 'Lab Difese', icon: Shield },
       { id: 'evidence', en: 'Evidence Lab', it: 'Lab Evidenze', icon: FileSearch },
       { id: 'osi', en: 'OSI Stack Lab', it: 'Lab Pila OSI', icon: Layers },
