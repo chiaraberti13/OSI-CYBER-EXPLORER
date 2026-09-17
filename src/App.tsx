@@ -24,6 +24,7 @@ const SecurityFundamentalsLab = lazy(() => import('./components/SecurityFundamen
 const AutomationLab = lazy(() => import('./components/AutomationLab'));
 const SecurityCoverageView = lazy(() => import('./components/SecurityCoverageView'));
 const AttackPathsLab = lazy(() => import('./components/AttackPathsLab'));
+const ConfigurationHardeningLab = lazy(() => import('./components/ConfigurationHardeningLab'));
 const SecurityEvidenceLab = lazy(() => import('./components/SecurityEvidenceLab'));
 const DefenseControlsLab = lazy(() => import('./components/DefenseControlsLab'));
 
@@ -171,6 +172,12 @@ export default function App() {
           {activeView === 'attackpaths' && (
             <motion.div key="attackpaths" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.18 }}>
               <AttackPathsLab />
+            </motion.div>
+          )}
+
+          {activeView === 'hardening' && (
+            <motion.div key="hardening" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.18 }}>
+              <ConfigurationHardeningLab />
             </motion.div>
           )}
 
