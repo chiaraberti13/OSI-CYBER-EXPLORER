@@ -1,4 +1,4 @@
-import { Activity, BookOpen, Cable, Calculator, FileCode2, FileSearch, GitBranch, Hash, HeartPulse, Layers, LockKeyhole, Map, Radar, Route, ServerCog, Shield, Swords, Workflow } from 'lucide-react';
+import { Activity, BookOpen, Cable, Calculator, FileCode2, FileSearch, GitBranch, Hash, HeartPulse, Layers, LockKeyhole, Map, Network, Radar, Route, ServerCog, Shield, Swords, Workflow } from 'lucide-react';
 import { useStore, type AppView } from '../store';
 
 const TAB_GROUPS = [
@@ -22,6 +22,7 @@ const TAB_GROUPS = [
       { id: 'hardening', en: 'Config Hardening', it: 'Hardening Config', icon: FileCode2 },
       { id: 'detection', en: 'Detection Engineering', it: 'Detection Engineering', icon: Radar },
       { id: 'recovery', en: 'Resilience & Recovery', it: 'Resilienza & Recovery', icon: HeartPulse },
+      { id: 'ipv6security', en: 'IPv6 Security', it: 'Sicurezza IPv6', icon: Network },
       { id: 'defense', en: 'Defense Lab', it: 'Lab Difese', icon: Shield },
       { id: 'evidence', en: 'Evidence Lab', it: 'Lab Evidenze', icon: FileSearch },
       { id: 'osi', en: 'OSI Stack Lab', it: 'Lab Pila OSI', icon: Layers },
