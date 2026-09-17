@@ -1,4 +1,4 @@
-import { Activity, BookOpen, Cable, Calculator, FileCode2, FileSearch, Fingerprint, Gauge, GitBranch, Hash, HeartPulse, KeyRound, Laptop, Layers, Layers3, LockKeyhole, Map, Network, Radar, Radio, Route, Router, ServerCog, Shield, ShieldAlert, Swords, Workflow } from 'lucide-react';
+import { Activity, BookOpen, Cable, Calculator, FileCode2, FileSearch, Fingerprint, Gauge, GitBranch, GlobeLock, Hash, HeartPulse, KeyRound, Laptop, Layers, Layers3, LockKeyhole, Map, Network, Radar, Radio, Route, Router, ServerCog, Shield, ShieldAlert, Swords, Workflow } from 'lucide-react';
 import { useStore, type AppView } from '../store';
 
 const TAB_GROUPS = [
@@ -32,6 +32,7 @@ const TAB_GROUPS = [
       { id: 'inspection', en: 'Firewall & IDS/IPS', it: 'Firewall e IDS/IPS', icon: ShieldAlert },
       { id: 'managementsecurity', en: 'Management & Telemetry', it: 'Gestione e Telemetria', icon: ServerCog },
       { id: 'endpointsecurity', en: 'Endpoint & Posture', it: 'Endpoint e Postura', icon: Laptop },
+      { id: 'applicationsecurity', en: 'DNS & Application', it: 'DNS e Applicazioni', icon: GlobeLock },
       { id: 'defense', en: 'Defense Lab', it: 'Lab Difese', icon: Shield },
       { id: 'evidence', en: 'Evidence Lab', it: 'Lab Evidenze', icon: FileSearch },
       { id: 'osi', en: 'OSI Stack Lab', it: 'Lab Pila OSI', icon: Layers },
