@@ -30,6 +30,7 @@ const ResilienceRecoveryLab = lazy(() => import('./components/ResilienceRecovery
 const Ipv6SecurityLab = lazy(() => import('./components/Ipv6SecurityLab'));
 const SegmentationLab = lazy(() => import('./components/SegmentationLab'));
 const IdentityTrustLab = lazy(() => import('./components/IdentityTrustLab'));
+const RoutingSecurityLab = lazy(() => import('./components/RoutingSecurityLab'));
 const SecurityEvidenceLab = lazy(() => import('./components/SecurityEvidenceLab'));
 const DefenseControlsLab = lazy(() => import('./components/DefenseControlsLab'));
 
@@ -213,6 +214,12 @@ export default function App() {
           {activeView === 'identitytrust' && (
             <motion.div key="identitytrust" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.18 }}>
               <IdentityTrustLab />
+            </motion.div>
+          )}
+
+          {activeView === 'routingsecurity' && (
+            <motion.div key="routingsecurity" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.18 }}>
+              <RoutingSecurityLab />
             </motion.div>
           )}
 
