@@ -29,6 +29,7 @@ const DetectionEngineeringLab = lazy(() => import('./components/DetectionEnginee
 const ResilienceRecoveryLab = lazy(() => import('./components/ResilienceRecoveryLab'));
 const Ipv6SecurityLab = lazy(() => import('./components/Ipv6SecurityLab'));
 const SegmentationLab = lazy(() => import('./components/SegmentationLab'));
+const IdentityTrustLab = lazy(() => import('./components/IdentityTrustLab'));
 const SecurityEvidenceLab = lazy(() => import('./components/SecurityEvidenceLab'));
 const DefenseControlsLab = lazy(() => import('./components/DefenseControlsLab'));
 
@@ -206,6 +207,12 @@ export default function App() {
           {activeView === 'segmentation' && (
             <motion.div key="segmentation" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.18 }}>
               <SegmentationLab />
+            </motion.div>
+          )}
+
+          {activeView === 'identitytrust' && (
+            <motion.div key="identitytrust" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.18 }}>
+              <IdentityTrustLab />
             </motion.div>
           )}
 
