@@ -72,7 +72,7 @@ interface AppState {
   setHasSeenGuide: (seen: boolean) => void;
 }
 
-export type AppView = 'curriculum' | 'fundamentals' | 'access' | 'routing' | 'services' | 'securitycore' | 'automation' | 'coverage' | 'attackpaths' | 'hardening' | 'detection' | 'recovery' | 'defense' | 'evidence' | 'osi' | 'attacklab' | 'ports' | 'security' | 'glossary';
+export type AppView = 'curriculum' | 'fundamentals' | 'access' | 'routing' | 'services' | 'securitycore' | 'automation' | 'coverage' | 'attackpaths' | 'hardening' | 'detection' | 'recovery' | 'ipv6security' | 'defense' | 'evidence' | 'osi' | 'attacklab' | 'ports' | 'security' | 'glossary';
 
 export const useStore = create<AppState>()(
   persist(
