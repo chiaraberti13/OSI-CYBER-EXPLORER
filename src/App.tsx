@@ -28,6 +28,7 @@ const ConfigurationHardeningLab = lazy(() => import('./components/ConfigurationH
 const DetectionEngineeringLab = lazy(() => import('./components/DetectionEngineeringLab'));
 const ResilienceRecoveryLab = lazy(() => import('./components/ResilienceRecoveryLab'));
 const Ipv6SecurityLab = lazy(() => import('./components/Ipv6SecurityLab'));
+const SegmentationLab = lazy(() => import('./components/SegmentationLab'));
 const SecurityEvidenceLab = lazy(() => import('./components/SecurityEvidenceLab'));
 const DefenseControlsLab = lazy(() => import('./components/DefenseControlsLab'));
 
@@ -199,6 +200,12 @@ export default function App() {
           {activeView === 'ipv6security' && (
             <motion.div key="ipv6security" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.18 }}>
               <Ipv6SecurityLab />
+            </motion.div>
+          )}
+
+          {activeView === 'segmentation' && (
+            <motion.div key="segmentation" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.18 }}>
+              <SegmentationLab />
             </motion.div>
           )}
 
