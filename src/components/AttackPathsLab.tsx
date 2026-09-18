@@ -57,10 +57,10 @@ export default function AttackPathsLab() {
               {ATTACK_FAMILIES.map(family => <option key={family.id} value={family.id}>{family.name[language]}</option>)}
             </select>
           </label>
-          <div className="flex min-w-0 flex-1 gap-2 overflow-x-auto pb-1" aria-label={language === 'it' ? 'Selezione percorso' : 'Path selection'}>
+          <div className="flex min-w-0 flex-1 flex-wrap gap-2" aria-label={language === 'it' ? 'Selezione percorso' : 'Path selection'}>
             {filteredPaths.map(path => {
               const active = path.id === selected?.id;
-              return <button type="button" key={path.id} onClick={() => setSelectedId(path.id)} aria-pressed={active} className={`shrink-0 rounded-lg border px-3 py-2 text-left text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 ${active ? 'border-rose-200 bg-rose-50 text-rose-800' : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'}`}>{path.title[language]}</button>;
+              return <button type="button" key={path.id} onClick={() => setSelectedId(path.id)} aria-pressed={active} className={`rounded-lg border px-3 py-2 text-left text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 ${active ? 'border-rose-200 bg-rose-50 text-rose-800' : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'}`}>{path.title[language]}</button>;
             })}
           </div>
         </div>
@@ -83,7 +83,7 @@ export default function AttackPathsLab() {
 
           <ol className="mx-auto mt-6 max-w-5xl" aria-label={language === 'it' ? 'Fasi del percorso d’attacco' : 'Attack path stages'}>
             {selected.stages.map((stage, index) => (
-              <li key={stage.id} className="[content-visibility:auto] [contain-intrinsic-size:auto_360px]">
+              <li key={stage.id} className="deferred-card [contain-intrinsic-height:auto_360px]">
                 {index > 0 ? <div className="flex h-10 items-center justify-center text-slate-300"><ArrowDown className="h-5 w-5" aria-hidden="true" /></div> : null}
                 <section className="rounded-xl border border-slate-200 bg-slate-50/50 p-4 md:p-5">
                   <div className="flex items-start gap-3">

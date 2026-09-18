@@ -100,6 +100,7 @@ npm run typecheck # TypeScript type-check
 - Front-end engineering with **React 19 + TypeScript**, centralized state (Zustand) and a clean data/logic/UI separation.
 - A deterministic **encapsulation/decapsulation state machine** and testable, framework-free logic (`src/lib`).
 - **Internationalization** (IT/EN) without external libraries, plus accessibility (focus states, `aria` labels, reduced-motion support).
+- **Responsive layout** verified at 390 px and 768 px: no horizontal page scrolling, comparison tables that become cards on narrow screens, and CLI output kept monospaced inside its own scroll area.
 - Engineering hygiene: **unit tests**, **CI** (type-check + test + build), no dead dependencies.
 - Solid networking & security domain knowledge across all 7 OSI layers.
 

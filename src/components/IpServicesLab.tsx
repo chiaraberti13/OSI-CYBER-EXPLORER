@@ -8,6 +8,7 @@ import {
   syslogSeverityName
 } from '../lib/ipServices';
 import { useStore } from '../store';
+import ResponsiveTable from './ResponsiveTable';
 
 type Language = 'it' | 'en';
 type Localized = Record<Language, string>;
@@ -201,7 +202,17 @@ export default function IpServicesLab() {
       <section className="rounded-xl border border-slate-200 bg-white p-5 md:p-6" aria-labelledby="client-roles-title">
         <SectionTitle icon={Database} title={t.clientRoles} id="client-roles-title" />
         <p className="mt-3 max-w-4xl text-xs leading-relaxed text-slate-600">{t.clientRolesNote}</p>
-        <div className="mt-4 overflow-x-auto"><table className="w-full min-w-[820px] border-collapse text-left text-xs"><thead><tr className="border-b border-slate-200 text-slate-500"><th className="p-3">{t.phase}</th><th className="p-3 text-indigo-600">DHCP</th><th className="p-3 text-emerald-700">DNS</th></tr></thead><tbody>{CLIENT_SERVICE_ROLES.map(row => <tr key={row.phase.en} className="border-b border-slate-100 align-top"><th className="p-3 font-semibold text-slate-700">{row.phase[language]}</th><td className="p-3 leading-relaxed text-slate-600">{row.dhcp[language]}</td><td className="p-3 leading-relaxed text-slate-600">{row.dns[language]}</td></tr>)}</tbody></table></div>
+        <div className="mt-4"><ResponsiveTable
+          rows={CLIENT_SERVICE_ROLES}
+          rowKey={row => row.phase.en}
+          label={t.clientRoles}
+          minWidth={820}
+          columns={[
+            { id: 'phase', header: t.phase, heading: true, cell: row => row.phase[language] },
+            { id: 'dhcp', header: 'DHCP', headerClassName: 'text-indigo-600', cell: row => row.dhcp[language] },
+            { id: 'dns', header: 'DNS', headerClassName: 'text-emerald-700', cell: row => row.dns[language] }
+          ]}
+        /></div>
       </section>
 
       <section className="rounded-xl border border-slate-200 bg-white p-5 md:p-6" aria-labelledby="nat-title"><SectionTitle icon={Network} title={t.nat} id="nat-title" /><div className="mt-5 grid gap-4 md:grid-cols-2"><label className="space-y-1.5 text-xs text-slate-600">{t.inside}<input value={insideIp} onChange={event => setInsideIp(event.target.value)} inputMode="decimal" className="block w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-sm" /></label><label className="space-y-1.5 text-xs text-slate-600">{t.port}<input type="number" min={1} max={65535} value={sourcePort} onChange={event => setSourcePort(Number(event.target.value))} className="block w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-sm" /></label></div><label className="mt-4 flex items-center gap-2 text-xs text-slate-700"><input type="checkbox" checked={simulateCollision} onChange={event => setSimulateCollision(event.target.checked)} className="h-4 w-4 rounded border-slate-300" />{t.collision}</label>{pat.error ? <p className="mt-4 flex items-center gap-2 rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700" role="alert"><TriangleAlert className="h-4 w-4" />{t.invalidNat}</p> : <dl className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4"><div className="rounded-lg bg-slate-50 p-3"><dt className="text-[10px] uppercase text-slate-400">{t.localTuple}</dt><dd className="mt-1 font-mono text-sm">{pat.value?.insideLocal}</dd></div><div className="rounded-lg bg-slate-50 p-3"><dt className="text-[10px] uppercase text-slate-400">{t.globalTuple}</dt><dd className="mt-1 font-mono text-sm">{pat.value?.insideGlobal}</dd></div><div className="rounded-lg bg-slate-50 p-3"><dt className="text-[10px] uppercase text-slate-400">{t.portRange}</dt><dd className="mt-1 font-mono text-sm">{pat.value ? `${pat.value.portRange[0]}-${pat.value.portRange[1]}` : '—'}</dd></div><div className="rounded-lg bg-slate-50 p-3"><dt className="text-[10px] uppercase text-slate-400">{t.preserved}</dt><dd className="mt-1 text-sm font-semibold">{pat.value?.preservedPort ? '✓' : '✗'}</dd></div></dl>}<p className="mt-4 text-xs leading-relaxed text-slate-600">{t.natNote}</p></section>
@@ -215,7 +226,19 @@ export default function IpServicesLab() {
 
       <section className="rounded-xl border border-slate-200 bg-white p-5 md:p-6" aria-labelledby="qos-title"><SectionTitle icon={Gauge} title={t.qos} id="qos-title" /><div className="mt-4 flex flex-wrap items-end gap-4"><label className="w-56 space-y-1.5 text-xs text-slate-600">{t.dscp}<input type="number" min={0} max={63} value={dscp} onChange={event => setDscp(Number(event.target.value))} className="block w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-sm" /></label><div className="rounded-lg bg-indigo-50 px-4 py-3"><p className="text-[10px] uppercase text-indigo-500">{t.qosName}</p><p className="mt-1 font-mono text-sm font-semibold text-indigo-800">{dscpLabel}</p></div></div><p className="mt-4 text-xs leading-relaxed text-slate-600">{t.qosText}</p><div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">{QOS_MECHANISMS.map(item => <article key={item.title} className="rounded-lg border border-slate-200 p-3"><h3 className="text-xs font-semibold text-slate-900">{item.title}</h3><p className="mt-1.5 text-xs leading-relaxed text-slate-600">{item.detail[language]}</p></article>)}</div></section>
 
-      <section className="rounded-xl border border-slate-200 bg-white p-5 md:p-6" aria-labelledby="services-security-title"><SectionTitle icon={ShieldCheck} title={t.security} id="services-security-title" /><div className="mt-4 overflow-x-auto"><table className="w-full min-w-[980px] border-collapse text-left text-xs"><thead><tr className="border-b border-slate-200 text-slate-500"><th className="p-3">{t.service}</th><th className="p-3">{t.attack}</th><th className="p-3">{t.defense}</th><th className="p-3">{t.verify}</th></tr></thead><tbody>{SECURITY_ROWS.map((row, index) => <tr key={`${row.service}-${index}`} className="border-b border-slate-100 align-top"><th className="p-3 font-semibold text-indigo-700">{row.service}</th><td className="p-3 leading-relaxed text-rose-800">{row.attack[language]}</td><td className="p-3 leading-relaxed text-emerald-800">{row.defense[language]}</td><td className="p-3"><code className="text-[11px] text-slate-700">{row.verify}</code></td></tr>)}</tbody></table></div></section>
+      <section className="rounded-xl border border-slate-200 bg-white p-5 md:p-6" aria-labelledby="services-security-title"><SectionTitle icon={ShieldCheck} title={t.security} id="services-security-title" /><div className="mt-4"><ResponsiveTable
+          rows={SECURITY_ROWS}
+          rowKey={(row, index) => `${row.service}-${index}`}
+          label={t.security}
+          breakpoint="xl"
+          minWidth={980}
+          columns={[
+            { id: 'service', header: t.service, heading: true, cellClassName: 'text-indigo-700', cell: row => row.service },
+            { id: 'attack', header: t.attack, cellClassName: 'text-rose-800', cell: row => row.attack[language] },
+            { id: 'defense', header: t.defense, cellClassName: 'text-emerald-800', cell: row => row.defense[language] },
+            { id: 'verify', header: t.verify, cell: row => <code className="text-[11px] text-slate-700">{row.verify}</code> }
+          ]}
+        /></div></section>
 
       <section className="rounded-xl border border-slate-200 bg-white p-5 md:p-6" aria-labelledby="services-config-title"><SectionTitle icon={Terminal} title={t.config} id="services-config-title" /><p className="mt-3 text-xs leading-relaxed text-slate-600">{t.configNote}</p><div className="mt-4 grid gap-4 xl:grid-cols-2"><pre className="overflow-x-auto rounded-lg bg-slate-950 p-4 text-xs leading-relaxed text-emerald-300"><code>{DHCP_NAT_CONFIG[language]}</code></pre><pre className="overflow-x-auto rounded-lg bg-slate-950 p-4 text-xs leading-relaxed text-sky-300"><code>{MANAGEMENT_CONFIG}</code></pre></div></section>
     </div>
