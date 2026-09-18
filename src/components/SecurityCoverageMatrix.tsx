@@ -49,7 +49,8 @@ function SecurityCoverageMatrix({ language, onOpenLab, onSelect }: SecurityCover
             ? 'Il numero indica quante tecniche collegano il dominio alla famiglia. Seleziona una cella per filtrare il catalogo; il pulsante del dominio apre il laboratorio CCNA corrispondente.'
             : 'The number shows how many techniques link a domain to a family. Select a cell to filter the catalog; the domain button opens the corresponding CCNA lab.'}
         </p>
-        <div className="overflow-x-auto">
+        <p className="xl:hidden mt-2 text-[11px] text-slate-400" role="note">{language === 'it' ? 'Scorri la tabella in orizzontale per vedere tutte le colonne.' : 'Scroll the table horizontally to see every column.'}</p>
+        <div className="mt-2 overflow-x-auto">
           <table className="w-full min-w-[1080px] border-separate border-spacing-1 text-center text-xs">
             <caption className="sr-only">
               {language === 'it' ? 'Copertura delle famiglie di attacco per dominio CCNA' : 'Attack-family coverage by CCNA domain'}

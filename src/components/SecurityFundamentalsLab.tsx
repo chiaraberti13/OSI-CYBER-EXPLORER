@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { Fingerprint, KeyRound, LockKeyhole, ShieldCheck, Siren, TriangleAlert, Wifi } from 'lucide-react';
 import { evaluateIpv4Acl, type AclRule, type PacketDescriptor } from '../lib/securityFundamentals';
 import { useStore } from '../store';
+import ResponsiveTable from './ResponsiveTable';
 
 type Language = 'it' | 'en';
 type Localized = Record<Language, string>;
@@ -176,7 +177,18 @@ export default function SecurityFundamentalsLab() {
 
       <section className="rounded-xl border border-slate-200 bg-white p-5 md:p-6" aria-labelledby="acl-title"><SectionTitle icon={ShieldCheck} title={t.acl} id="acl-title" /><div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4"><label className="space-y-1 text-xs text-slate-600">{t.protocol}<select value={packet.protocol} onChange={event => setPacketField('protocol', event.target.value as PacketDescriptor['protocol'])} className="block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 font-mono text-sm"><option value="tcp">TCP</option><option value="udp">UDP</option><option value="icmp">ICMP</option></select></label><label className="space-y-1 text-xs text-slate-600">{t.source}<input value={packet.sourceIp} onChange={event => setPacketField('sourceIp', event.target.value)} className="block w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-sm" /></label><label className="space-y-1 text-xs text-slate-600">{t.destination}<input value={packet.destinationIp} onChange={event => setPacketField('destinationIp', event.target.value)} className="block w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-sm" /></label><label className="space-y-1 text-xs text-slate-600">{t.port}<input type="number" min={1} max={65535} value={packet.destinationPort ?? ''} onChange={event => setPacketField('destinationPort', Number(event.target.value))} disabled={packet.protocol === 'icmp'} className="block w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-sm disabled:bg-slate-100" /></label></div><label className="mt-4 flex items-center gap-2 text-xs text-slate-700"><input type="checkbox" checked={(packet.tcpFlags ?? []).includes('ACK')} disabled={packet.protocol !== 'tcp'} onChange={event => setPacketField('tcpFlags', event.target.checked ? ['ACK'] : ['SYN'])} />{t.ack}</label><div className="mt-4 space-y-2 font-mono text-xs">{ACL_IOS.map((line, index) => <div key={line} className={`rounded-md border px-3 py-2 ${decision.value?.matchedSequence === ACL_RULES[index]?.sequence || (decision.value?.implicit && index === ACL_IOS.length - 1) ? 'border-indigo-300 bg-indigo-50 text-indigo-800' : 'border-slate-100 bg-slate-50 text-slate-600'}`}>{line}</div>)}</div>{decision.error ? <p className="mt-4 flex items-center gap-2 text-sm text-rose-700" role="alert"><TriangleAlert className="h-4 w-4" />{t.invalid}</p> : <div className={`mt-4 rounded-lg border p-4 ${decision.value?.action === 'permit' ? 'border-emerald-200 bg-emerald-50 text-emerald-800' : 'border-rose-200 bg-rose-50 text-rose-800'}`}><span className="font-semibold">{decision.value?.action === 'permit' ? t.permit : t.deny}</span><span className="ml-3 text-xs">{decision.value?.implicit ? t.implicit : `${t.matched}: ${decision.value?.matchedSequence}`}{decision.value?.logged ? ' · log' : ''}</span></div>}<p className="mt-4 text-xs leading-relaxed text-slate-600">{t.aclNote}</p></section>
 
-      <section className="rounded-xl border border-slate-200 bg-white p-5 md:p-6" aria-labelledby="aaa-title"><SectionTitle icon={Fingerprint} title={t.aaa} id="aaa-title" /><div className="mt-4 overflow-x-auto"><table className="w-full min-w-[700px] text-left text-xs"><thead><tr className="border-b border-slate-200 text-slate-500"><th className="p-3">{t.property}</th><th className="p-3">TACACS+</th><th className="p-3">RADIUS</th></tr></thead><tbody>{AAA_ROWS.map(row => <tr key={row.property.en} className="border-b border-slate-100 align-top"><th className="p-3 text-slate-800">{row.property[language]}</th><td className="p-3 leading-relaxed text-slate-600">{row.tacacs[language]}</td><td className="p-3 leading-relaxed text-slate-600">{row.radius[language]}</td></tr>)}</tbody></table></div></section>
+      <section className="rounded-xl border border-slate-200 bg-white p-5 md:p-6" aria-labelledby="aaa-title"><SectionTitle icon={Fingerprint} title={t.aaa} id="aaa-title" /><div className="mt-4"><ResponsiveTable
+          rows={AAA_ROWS}
+          rowKey={row => row.property.en}
+          label={t.aaa}
+          breakpoint="md"
+          minWidth={640}
+          columns={[
+            { id: 'property', header: t.property, heading: true, cell: row => row.property[language] },
+            { id: 'tacacs', header: 'TACACS+', cell: row => row.tacacs[language] },
+            { id: 'radius', header: 'RADIUS', cell: row => row.radius[language] }
+          ]}
+        /></div></section>
 
       <section className="rounded-xl border border-slate-200 bg-white p-5 md:p-6" aria-labelledby="vpn-title"><SectionTitle icon={LockKeyhole} title={t.vpn} id="vpn-title" /><div className="mt-4 grid gap-3 md:grid-cols-2">{VPN_ROWS.map(row => <article key={row.title} className="rounded-lg border border-slate-200 p-4"><h3 className="text-sm font-semibold text-slate-900">{row.title}</h3><p className="mt-2 text-xs leading-relaxed text-slate-600">{row.detail[language]}</p></article>)}</div></section>
 
@@ -186,13 +198,36 @@ export default function SecurityFundamentalsLab() {
 
       <section className="rounded-xl border border-slate-200 bg-white p-5 md:p-6" aria-labelledby="wlan-security-title">
         <SectionTitle icon={Wifi} title={t.wlan} id="wlan-security-title" />
-        <div className="mt-4 overflow-x-auto"><table className="w-full min-w-[900px] text-left text-xs"><thead><tr className="border-b border-slate-200 text-slate-500"><th className="p-3">{t.generation}</th><th className="p-3">{t.crypto}</th><th className="p-3">{t.authN}</th><th className="p-3">{t.weakness}</th></tr></thead><tbody>{WLAN_SECURITY_ROWS.map(row => <tr key={row.generation} className="border-b border-slate-100 align-top"><th className="p-3 font-semibold text-indigo-700">{row.generation}</th><td className="p-3 leading-relaxed text-slate-600">{row.crypto[language]}</td><td className="p-3 leading-relaxed text-slate-600">{row.authentication[language]}</td><td className="p-3 leading-relaxed text-amber-900">{row.weakness[language]}</td></tr>)}</tbody></table></div>
+        <div className="mt-4"><ResponsiveTable
+          rows={WLAN_SECURITY_ROWS}
+          rowKey={row => row.generation}
+          label={t.wlan}
+          minWidth={900}
+          columns={[
+            { id: 'generation', header: t.generation, heading: true, cellClassName: 'text-indigo-700', cell: row => row.generation },
+            { id: 'crypto', header: t.crypto, cell: row => row.crypto[language] },
+            { id: 'authn', header: t.authN, cell: row => row.authentication[language] },
+            { id: 'weakness', header: t.weakness, cellClassName: 'text-amber-900', cell: row => row.weakness[language] }
+          ]}
+        /></div>
         <h3 className="mt-6 text-xs font-semibold uppercase tracking-wide text-slate-500">{t.psk}</h3>
         <ol className="mt-2 grid gap-3 md:grid-cols-2 xl:grid-cols-3">{WPA2_PSK_STEPS.map(item => <li key={item.step.en} className="rounded-lg border border-slate-200 p-4"><h4 className="text-xs font-semibold text-slate-900">{item.step[language]}</h4><p className="mt-2 text-xs leading-relaxed text-slate-600">{item.detail[language]}</p></li>)}</ol>
         <p className="mt-4 rounded-lg border border-amber-100 bg-amber-50 p-3 text-xs leading-relaxed text-amber-900">{t.wlanNote}</p>
       </section>
 
-      <section className="rounded-xl border border-slate-200 bg-white p-5 md:p-6" aria-labelledby="security-matrix-title"><SectionTitle icon={ShieldCheck} title={t.attacks} id="security-matrix-title" /><div className="mt-4 overflow-x-auto"><table className="w-full min-w-[1040px] text-left text-xs"><thead><tr className="border-b border-slate-200 text-slate-500"><th className="p-3">{t.attack}</th><th className="p-3">{t.plane}</th><th className="p-3">{t.defense}</th><th className="p-3">{t.limit}</th></tr></thead><tbody>{ATTACK_ROWS.map(row => <tr key={row.attack.en} className="border-b border-slate-100 align-top"><th className="p-3 font-semibold text-rose-700">{row.attack[language]}</th><td className="p-3 font-mono text-indigo-700">{row.layer}</td><td className="p-3 leading-relaxed text-emerald-800">{row.defense[language]}</td><td className="p-3 leading-relaxed text-slate-600">{row.limit[language]}</td></tr>)}</tbody></table></div></section>
+      <section className="rounded-xl border border-slate-200 bg-white p-5 md:p-6" aria-labelledby="security-matrix-title"><SectionTitle icon={ShieldCheck} title={t.attacks} id="security-matrix-title" /><div className="mt-4"><ResponsiveTable
+          rows={ATTACK_ROWS}
+          rowKey={row => row.attack.en}
+          label={t.attacks}
+          breakpoint="xl"
+          minWidth={1040}
+          columns={[
+            { id: 'attack', header: t.attack, heading: true, cellClassName: 'text-rose-700', cell: row => row.attack[language] },
+            { id: 'plane', header: t.plane, cellClassName: 'font-mono text-indigo-700', cell: row => row.layer },
+            { id: 'defense', header: t.defense, cellClassName: 'text-emerald-800', cell: row => row.defense[language] },
+            { id: 'limit', header: t.limit, cell: row => row.limit[language] }
+          ]}
+        /></div></section>
 
       <section className="rounded-xl border border-slate-200 bg-white p-5 md:p-6" aria-labelledby="hardening-title"><SectionTitle icon={LockKeyhole} title={t.hardening} id="hardening-title" /><p className="mt-3 text-xs leading-relaxed text-slate-600">{t.hardeningNote}</p><pre className="mt-4 overflow-x-auto rounded-lg bg-slate-950 p-4 text-xs leading-relaxed text-emerald-300"><code>{HARDENING_CONFIG}</code></pre></section>
     </div>

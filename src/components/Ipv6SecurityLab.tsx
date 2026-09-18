@@ -40,7 +40,7 @@ export default function Ipv6SecurityLab() {
 
       <div className="flex items-center justify-between gap-4"><h2 className="text-lg font-semibold text-slate-900">{language === 'it' ? 'Scenari e verifiche' : 'Scenarios and verification'}</h2><span className="text-xs font-semibold text-slate-500" aria-live="polite">{filtered.length} {language === 'it' ? 'risultati' : 'results'}</span></div>
       {filtered.length > 0 ? <section className="grid gap-4 xl:grid-cols-2" aria-label={language === 'it' ? 'Scenari di sicurezza IPv6' : 'IPv6 security scenarios'}>{filtered.map(item => (
-        <article key={item.id} className="rounded-xl border border-slate-200 bg-white p-5 [content-visibility:auto] [contain-intrinsic-size:auto_720px]">
+        <article key={item.id} className="rounded-xl border border-slate-200 bg-white p-5 deferred-card [contain-intrinsic-height:auto_720px]">
           <div className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 pb-4"><div><p className="text-[10px] font-semibold uppercase tracking-wider text-cyan-700">{TOPIC_LABELS[item.topic][language]}</p><h3 className="mt-1 text-base font-semibold text-slate-900">{item.title[language]}</h3></div><div className="flex flex-wrap justify-end gap-1">{item.planes.map(value => <span key={value} className="rounded-full bg-indigo-50 px-2 py-1 text-[9px] font-semibold text-indigo-800">{PLANE_LABELS[value][language]}</span>)}</div></div>
           <Info icon={Waypoints} label={language === 'it' ? 'Comportamento normale' : 'Normal behavior'} tone="sky"><p>{item.normalBehavior[language]}</p></Info>
           <Info icon={AlertTriangle} label={language === 'it' ? 'Minaccia e impatto' : 'Threat and impact'} tone="rose"><p>{item.threat[language]}</p></Info>

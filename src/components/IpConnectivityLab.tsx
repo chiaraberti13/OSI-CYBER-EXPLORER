@@ -10,6 +10,7 @@ import {
   type RouteSource
 } from '../lib/ipConnectivity';
 import { useStore } from '../store';
+import ResponsiveTable from './ResponsiveTable';
 
 type Language = 'it' | 'en';
 type Localized = Record<Language, string>;
@@ -298,14 +299,24 @@ export default function IpConnectivityLab() {
         <SectionTitle icon={Route} title={t.readTable} id="route-read-title" />
         <p className="mt-3 max-w-4xl text-xs leading-relaxed text-slate-600">{t.readTableNote}</p>
         <pre className="mt-4 overflow-x-auto rounded-lg bg-slate-950 p-4 text-xs leading-relaxed text-emerald-300"><code>{ROUTE_TABLE_OUTPUT}</code></pre>
-        <div className="mt-4 overflow-x-auto"><table className="w-full min-w-[680px] border-collapse text-left text-xs"><thead><tr className="border-b border-slate-200 text-slate-500"><th className="p-3">{t.legend}</th><th className="p-3">{t.legendDetail}</th></tr></thead><tbody>{ROUTE_TABLE_LEGEND.map(item => <tr key={item.token} className="border-b border-slate-100 align-top"><th className="p-3"><code className="text-[11px] font-semibold text-indigo-700">{item.token}</code></th><td className="p-3 leading-relaxed text-slate-600">{item.detail[language]}</td></tr>)}</tbody></table></div>
+        <div className="mt-4"><ResponsiveTable
+          rows={ROUTE_TABLE_LEGEND}
+          rowKey={item => item.token}
+          label={t.readTable}
+          breakpoint="md"
+          minWidth={620}
+          columns={[
+            { id: 'token', header: t.legend, heading: true, cell: item => <code className="text-[11px] font-semibold text-indigo-700">{item.token}</code> },
+            { id: 'detail', header: t.legendDetail, cell: item => item.detail[language] }
+          ]}
+        /></div>
       </section>
 
       <section className="rounded-xl border border-slate-200 bg-white p-5 md:p-6" aria-labelledby="route-lookup-title">
         <SectionTitle icon={Route} title={t.lookup} id="route-lookup-title" />
         <label className="mt-5 block max-w-md space-y-1.5 text-xs font-medium text-slate-600">{t.destination}<input value={destination} onChange={event => setDestination(event.target.value)} inputMode="decimal" className="block w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-sm outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" /></label>
         {lookup.error ? <p className="mt-4 flex items-center gap-2 rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700" role="alert"><TriangleAlert className="h-4 w-4" />{t.invalid}</p> : (
-          <div className="mt-5 overflow-x-auto"><table className="w-full min-w-[760px] border-collapse text-left text-xs"><thead><tr className="border-b border-slate-200 text-slate-500"><th className="p-3">{t.code}</th><th className="p-3">{t.prefix}</th><th className="p-3">{t.adMetric}</th><th className="p-3">{t.nextHop}</th><th className="p-3">{t.decision}</th></tr></thead><tbody>{ROUTES.map(route => { const matches = lookup.matching.some(item => item.id === route.id); const selected = selectedIds.has(route.id); return <tr key={route.id} className={`border-b border-slate-100 ${selected ? 'bg-emerald-50' : ''}`}><td className="p-3 font-mono font-semibold text-indigo-700">{ROUTE_CODES[route.source]}</td><td className="p-3 font-mono">{route.network}/{route.prefix}</td><td className="p-3 font-mono">[{route.administrativeDistance}/{route.metric}]</td><td className="p-3 font-mono">{route.nextHop ? `${route.nextHop} → ` : ''}{route.exitInterface}</td><td className={`p-3 font-semibold ${selected ? 'text-emerald-700' : matches ? 'text-amber-700' : 'text-slate-400'}`}>{selected ? t.selected : matches ? t.candidate : t.ignored}</td></tr>; })}</tbody></table></div>
+          <><p className="lg:hidden mt-2 text-[11px] text-slate-400" role="note">{language === 'it' ? 'Scorri la tabella in orizzontale per vedere tutte le colonne.' : 'Scroll the table horizontally to see every column.'}</p><div className="mt-5 overflow-x-auto"><table className="w-full min-w-[760px] border-collapse text-left text-xs"><thead><tr className="border-b border-slate-200 text-slate-500"><th className="p-3">{t.code}</th><th className="p-3">{t.prefix}</th><th className="p-3">{t.adMetric}</th><th className="p-3">{t.nextHop}</th><th className="p-3">{t.decision}</th></tr></thead><tbody>{ROUTES.map(route => { const matches = lookup.matching.some(item => item.id === route.id); const selected = selectedIds.has(route.id); return <tr key={route.id} className={`border-b border-slate-100 ${selected ? 'bg-emerald-50' : ''}`}><td className="p-3 font-mono font-semibold text-indigo-700">{ROUTE_CODES[route.source]}</td><td className="p-3 font-mono">{route.network}/{route.prefix}</td><td className="p-3 font-mono">[{route.administrativeDistance}/{route.metric}]</td><td className="p-3 font-mono">{route.nextHop ? `${route.nextHop} → ` : ''}{route.exitInterface}</td><td className={`p-3 font-semibold ${selected ? 'text-emerald-700' : matches ? 'text-amber-700' : 'text-slate-400'}`}>{selected ? t.selected : matches ? t.candidate : t.ignored}</td></tr>; })}</tbody></table></div></>
         )}
         <div className="mt-5 grid gap-4 lg:grid-cols-2"><article className="rounded-lg border border-indigo-100 bg-indigo-50/50 p-4"><h3 className="text-sm font-semibold text-indigo-900">{t.logic}</h3><p className="mt-2 text-xs leading-relaxed text-indigo-900/80">{t.logicText}</p></article><article className="rounded-lg border border-sky-100 bg-sky-50/50 p-4"><h3 className="text-sm font-semibold text-sky-900">{t.fib}</h3><p className="mt-2 text-xs leading-relaxed text-sky-900/80">{t.fibText}</p></article></div>
       </section>
@@ -321,12 +332,34 @@ export default function IpConnectivityLab() {
 
       <section className="rounded-xl border border-slate-200 bg-white p-5 md:p-6" aria-labelledby="fhrp-title">
         <SectionTitle icon={Router} title={t.fhrp} id="fhrp-title" />
-        <div className="mt-4 overflow-x-auto"><table className="w-full min-w-[760px] border-collapse text-left text-xs"><thead><tr className="border-b border-slate-200 text-slate-500"><th className="p-3">{t.property}</th><th className="p-3 text-indigo-600">HSRP</th><th className="p-3 text-emerald-700">VRRP</th></tr></thead><tbody>{FHRP_ROWS.map(row => <tr key={row.property.en} className="border-b border-slate-100 align-top"><th className="p-3 font-semibold text-slate-700">{row.property[language]}</th><td className="p-3 leading-relaxed text-slate-600">{row.hsrp[language]}</td><td className="p-3 leading-relaxed text-slate-600">{row.vrrp[language]}</td></tr>)}</tbody></table></div>
+        <div className="mt-4"><ResponsiveTable
+          rows={FHRP_ROWS}
+          rowKey={row => row.property.en}
+          label={t.fhrp}
+          minWidth={760}
+          columns={[
+            { id: 'property', header: t.property, heading: true, cell: row => row.property[language] },
+            { id: 'hsrp', header: 'HSRP', headerClassName: 'text-indigo-600', cell: row => row.hsrp[language] },
+            { id: 'vrrp', header: 'VRRP', headerClassName: 'text-emerald-700', cell: row => row.vrrp[language] }
+          ]}
+        /></div>
         <p className="mt-4 rounded-lg border border-sky-100 bg-sky-50 p-3 text-xs leading-relaxed text-sky-900">{t.fhrpNote}</p>
         <pre className="mt-4 overflow-x-auto rounded-lg bg-slate-950 p-4 text-xs leading-relaxed text-emerald-300"><code>show standby brief{`\n`}show vrrp brief{`\n`}show track</code></pre>
       </section>
 
-      <section className="rounded-xl border border-slate-200 bg-white p-5 md:p-6" aria-labelledby="routing-security-title"><SectionTitle icon={ShieldCheck} title={t.security} id="routing-security-title" /><div className="mt-4 overflow-x-auto"><table className="w-full min-w-[960px] border-collapse text-left text-xs"><thead><tr className="border-b border-slate-200 text-slate-500"><th className="p-3">{t.attack}</th><th className="p-3">{t.effect}</th><th className="p-3">{t.defense}</th><th className="p-3">{t.evidence}</th></tr></thead><tbody>{SECURITY_ROWS.map(item => <tr key={item.attack.en} className="border-b border-slate-100 align-top"><th className="p-3 font-semibold text-rose-700">{item.attack[language]}</th><td className="p-3 leading-relaxed text-slate-600">{item.effect[language]}</td><td className="p-3 leading-relaxed text-emerald-800">{item.defense[language]}</td><td className="p-3"><code className="text-[11px] text-indigo-700">{item.evidence}</code></td></tr>)}</tbody></table></div></section>
+      <section className="rounded-xl border border-slate-200 bg-white p-5 md:p-6" aria-labelledby="routing-security-title"><SectionTitle icon={ShieldCheck} title={t.security} id="routing-security-title" /><div className="mt-4"><ResponsiveTable
+          rows={SECURITY_ROWS}
+          rowKey={item => item.attack.en}
+          label={t.security}
+          breakpoint="xl"
+          minWidth={960}
+          columns={[
+            { id: 'attack', header: t.attack, heading: true, cellClassName: 'text-rose-700', cell: item => item.attack[language] },
+            { id: 'effect', header: t.effect, cell: item => item.effect[language] },
+            { id: 'defense', header: t.defense, cellClassName: 'text-emerald-800', cell: item => item.defense[language] },
+            { id: 'evidence', header: t.evidence, cell: item => <code className="text-[11px] text-indigo-700">{item.evidence}</code> }
+          ]}
+        /></div></section>
 
       <section className="rounded-xl border border-slate-200 bg-white p-5 md:p-6" aria-labelledby="routing-config-title"><SectionTitle icon={Gauge} title={t.config} id="routing-config-title" /><p className="mt-3 text-xs leading-relaxed text-slate-600">{t.configNote}</p><div className="mt-4 grid gap-4 xl:grid-cols-2"><pre className="overflow-x-auto rounded-lg bg-slate-950 p-4 text-xs leading-relaxed text-emerald-300"><code>{STATIC_CONFIG[language]}</code></pre><pre className="overflow-x-auto rounded-lg bg-slate-950 p-4 text-xs leading-relaxed text-sky-300"><code>{OSPF_CONFIG}</code></pre></div></section>
     </div>

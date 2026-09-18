@@ -39,11 +39,11 @@ export default function SecurityEvidenceLab() {
         </div>
       </header>
 
-      <section aria-label={language === 'it' ? 'Casi di evidenza' : 'Evidence cases'} className="flex gap-2 overflow-x-auto pb-2">
+      <section aria-label={language === 'it' ? 'Casi di evidenza' : 'Evidence cases'} className="flex flex-wrap gap-2">
         {SECURITY_EVIDENCE_CASES.map(item => {
           const active = item.id === selected.id;
           return (
-            <button type="button" key={item.id} onClick={() => setSelectedId(item.id)} aria-pressed={active} className={`shrink-0 rounded-lg border px-3 py-2 text-left text-xs font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 ${active ? 'border-sky-200 bg-sky-50 text-sky-800' : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'}`}>
+            <button type="button" key={item.id} onClick={() => setSelectedId(item.id)} aria-pressed={active} className={`rounded-lg border px-3 py-2 text-left text-xs font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 ${active ? 'border-sky-200 bg-sky-50 text-sky-800' : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'}`}>
               {item.title[language]}
             </button>
           );

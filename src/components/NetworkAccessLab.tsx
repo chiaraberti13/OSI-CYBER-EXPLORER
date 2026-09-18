@@ -11,6 +11,7 @@ import {
   type EtherChannelMode
 } from '../lib/networkAccess';
 import { useStore } from '../store';
+import ResponsiveTable from './ResponsiveTable';
 
 type Language = 'it' | 'en';
 type Localized = Record<Language, string>;
@@ -384,7 +385,17 @@ export default function NetworkAccessLab() {
 
       <section className="rounded-xl border border-slate-200 bg-white p-5 md:p-6" aria-labelledby="mgmt-access-title">
         <SectionTitle icon={ShieldCheck} title={t.mgmtTitle} id="mgmt-access-title" />
-        <div className="mt-4 overflow-x-auto"><table className="w-full min-w-[820px] border-collapse text-left text-xs"><thead><tr className="border-b border-slate-200 text-slate-500"><th className="p-3">{t.method}</th><th className="p-3">{t.mgmtDetail}</th><th className="p-3">{t.mgmtVerdict}</th></tr></thead><tbody>{MGMT_ACCESS_ROWS.map(row => { const label = typeof row.method === 'string' ? row.method : row.method[language]; return <tr key={row.detail.en} className="border-b border-slate-100 align-top"><th className="p-3 font-mono text-[11px] font-semibold text-indigo-700">{label}</th><td className="p-3 leading-relaxed text-slate-600">{row.detail[language]}</td><td className="p-3 leading-relaxed text-emerald-800">{row.verdict[language]}</td></tr>; })}</tbody></table></div>
+        <div className="mt-4"><ResponsiveTable
+          rows={MGMT_ACCESS_ROWS}
+          rowKey={row => row.detail.en}
+          label={t.mgmtTitle}
+          minWidth={820}
+          columns={[
+            { id: 'method', header: t.method, heading: true, cellClassName: 'font-mono text-[11px] text-indigo-700', cell: row => (typeof row.method === 'string' ? row.method : row.method[language]) },
+            { id: 'detail', header: t.mgmtDetail, cell: row => row.detail[language] },
+            { id: 'verdict', header: t.mgmtVerdict, cellClassName: 'text-emerald-800', cell: row => row.verdict[language] }
+          ]}
+        /></div>
       </section>
 
       <section className="rounded-xl border border-slate-200 bg-white p-5 md:p-6" aria-labelledby="wlan-gui-title">
@@ -401,7 +412,18 @@ export default function NetworkAccessLab() {
 
       <section className="rounded-xl border border-slate-200 bg-white p-5 md:p-6" aria-labelledby="access-security-title">
         <SectionTitle icon={ShieldCheck} title={t.securityTitle} id="access-security-title" />
-        <div className="mt-4 overflow-x-auto"><table className="w-full min-w-[900px] border-collapse text-left text-xs"><thead><tr className="border-b border-slate-200 text-slate-500"><th className="p-3">{t.attack}</th><th className="p-3">{t.mechanism}</th><th className="p-3">{t.defense}</th><th className="p-3">{t.verify}</th></tr></thead><tbody>{SECURITY_CONTROLS.map(item => <tr key={item.attack.en} className="border-b border-slate-100 align-top"><th className="p-3 font-semibold text-rose-700">{item.attack[language]}</th><td className="p-3 leading-relaxed text-slate-600">{item.mechanism[language]}</td><td className="p-3 leading-relaxed text-emerald-800">{item.defense[language]}</td><td className="p-3"><code className="text-[11px] text-indigo-700">{item.verify}</code></td></tr>)}</tbody></table></div>
+        <div className="mt-4"><ResponsiveTable
+          rows={SECURITY_CONTROLS}
+          rowKey={item => item.attack.en}
+          label={t.securityTitle}
+          minWidth={900}
+          columns={[
+            { id: 'attack', header: t.attack, heading: true, cellClassName: 'text-rose-700', cell: item => item.attack[language] },
+            { id: 'mechanism', header: t.mechanism, cell: item => item.mechanism[language] },
+            { id: 'defense', header: t.defense, cellClassName: 'text-emerald-800', cell: item => item.defense[language] },
+            { id: 'verify', header: t.verify, cell: item => <code className="text-[11px] text-indigo-700">{item.verify}</code> }
+          ]}
+        /></div>
       </section>
 
       <section className="rounded-xl border border-slate-200 bg-white p-5 md:p-6" aria-labelledby="config-title">

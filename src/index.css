@@ -45,6 +45,16 @@ body {
   background: #cbd5e1;
 }
 
+/* Cards rendered off-screen are skipped with content-visibility, which needs a
+   placeholder size. That placeholder must constrain the HEIGHT ONLY: a single
+   contain-intrinsic-size length applies to both axes, and a fixed width pushed the
+   page wider than the viewport on phones and tablets. Each card sets its own
+   expected height with [contain-intrinsic-height:auto_NNNpx]. */
+.deferred-card {
+  content-visibility: auto;
+  contain-intrinsic-width: none;
+}
+
 /* Horizontal scroll containers (e.g. the main navigation tabs) without a visible bar */
 .no-scrollbar {
   -ms-overflow-style: none;

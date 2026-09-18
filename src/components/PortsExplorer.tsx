@@ -2092,7 +2092,7 @@ export default function PortsExplorer({ isOpen = false, onClose = () => {}, inli
   return renderWrapper(
     <>
             {/* Modal Header */}
-            <div className="p-6 border-b border-slate-100 bg-white flex items-center justify-between sticky top-0 z-10">
+            <div className="p-4 sm:p-6 border-b border-slate-100 bg-white flex flex-wrap items-center justify-between gap-3 sticky top-0 z-10">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-indigo-50 rounded-lg">
                   <Hash className="w-5 h-5 text-indigo-600" />
@@ -2110,7 +2110,7 @@ export default function PortsExplorer({ isOpen = false, onClose = () => {}, inli
               </div>
 
               {/* Sub-Tabs Selector */}
-              <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl mr-3 select-none">
+              <div className="flex flex-wrap items-center gap-1 bg-slate-100 p-1 rounded-xl select-none sm:mr-3">
                 <button
                   onClick={() => setActiveTab('ports')}
                   className={`px-2.5 py-1.5 rounded-lg text-xs font-bold uppercase transition-all flex items-center gap-1 ${

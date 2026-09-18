@@ -3,6 +3,7 @@ import { AlertTriangle, Binary, Cable, Calculator, Laptop, Network, Server, Shie
 import { calculateIpv4Subnet, type Ipv4AddressKind } from '../lib/ipv4';
 import { inspectIpv6, macToModifiedEui64, type Ipv6AddressKind } from '../lib/ipv6';
 import { useStore } from '../store';
+import ResponsiveTable from './ResponsiveTable';
 
 type Language = 'it' | 'en';
 
@@ -424,11 +425,19 @@ export default function NetworkFundamentalsLab() {
 
       <section className="rounded-xl border border-slate-200 bg-white p-5 md:p-6" aria-labelledby="transport-title">
         <h2 id="transport-title" className="text-lg font-semibold text-slate-900">{labels.transport}</h2>
-        <div className="mt-4 overflow-x-auto">
-          <table className="w-full min-w-[620px] border-collapse text-left text-xs">
-            <thead><tr className="border-b border-slate-200 text-slate-400"><th className="p-3">{language === 'it' ? 'Proprietà' : 'Property'}</th><th className="p-3 text-indigo-600">TCP</th><th className="p-3 text-amber-600">UDP</th></tr></thead>
-            <tbody>{TRANSPORT_ROWS.map(row => <tr key={row.property.en} className="border-b border-slate-100 align-top"><th className="p-3 font-semibold text-slate-700">{row.property[language]}</th><td className="p-3 leading-relaxed text-slate-600">{row.tcp[language]}</td><td className="p-3 leading-relaxed text-slate-600">{row.udp[language]}</td></tr>)}</tbody>
-          </table>
+        <div className="mt-4">
+          <ResponsiveTable
+            rows={TRANSPORT_ROWS}
+            rowKey={row => row.property.en}
+            label={labels.transport}
+            breakpoint="md"
+            minWidth={620}
+            columns={[
+              { id: 'property', header: language === 'it' ? 'Proprietà' : 'Property', heading: true, cell: row => row.property[language] },
+              { id: 'tcp', header: 'TCP', headerClassName: 'text-indigo-600', cell: row => row.tcp[language] },
+              { id: 'udp', header: 'UDP', headerClassName: 'text-amber-600', cell: row => row.udp[language] }
+            ]}
+          />
         </div>
       </section>
 

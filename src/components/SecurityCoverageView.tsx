@@ -179,7 +179,7 @@ export default function SecurityCoverageView() {
           {filteredTechniques.map(technique => {
             const familyItem = ATTACK_FAMILY_BY_ID.get(technique.familyId);
             return (
-              <article key={technique.id} className="rounded-xl border border-slate-200 bg-white p-5 [content-visibility:auto] [contain-intrinsic-size:auto_520px]">
+              <article key={technique.id} className="rounded-xl border border-slate-200 bg-white p-5 deferred-card [contain-intrinsic-height:auto_520px]">
                 <div className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 pb-4">
                   <div>
                     <p className="text-[10px] font-semibold uppercase tracking-wider text-indigo-600">{familyItem?.name[language]}</p>

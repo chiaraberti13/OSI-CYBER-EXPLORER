@@ -669,7 +669,7 @@ export default function LayerDetails() {
             </div>
 
             {/* Tab Bar */}
-            <div className="flex border-b border-slate-100 flex-shrink-0 px-2 gap-0.5 bg-white">
+            <div className="flex border-b border-slate-100 flex-shrink-0 px-2 gap-0.5 bg-white overflow-x-auto no-scrollbar">
               {tabs.map(tab => {
                 const Icon = tab.icon;
                 const isActive = detailTab === tab.id;
@@ -677,7 +677,7 @@ export default function LayerDetails() {
                    <button
                     key={tab.id}
                     onClick={() => setDetailTab(tab.id)}
-                    className={`flex items-center gap-1.5 px-2.5 py-2.5 text-[11px] font-medium transition-all border-b-2 -mb-px ${
+                    className={`flex items-center gap-1 px-1.5 py-2.5 text-[11px] font-medium transition-all border-b-2 -mb-px sm:gap-1.5 sm:px-2.5 ${
                       isActive
                         ? tab.id === 'attacks'
                           ? 'border-red-500 text-red-600'

@@ -53,7 +53,7 @@ function SecurityResponsePlaybooks({ language, onOpenDomain, onTechniqueSelect }
         </div>
       </div>
 
-      <div className="mt-4 flex gap-2 overflow-x-auto pb-2" aria-label={language === 'it' ? 'Selezione playbook' : 'Playbook selection'}>
+      <div className="mt-4 flex flex-wrap gap-2" aria-label={language === 'it' ? 'Selezione playbook' : 'Playbook selection'}>
         {SECURITY_PLAYBOOKS.map(playbook => {
           const active = selected.id === playbook.id;
           return (
@@ -62,7 +62,7 @@ function SecurityResponsePlaybooks({ language, onOpenDomain, onTechniqueSelect }
               key={playbook.id}
               onClick={() => setSelectedId(playbook.id)}
               aria-pressed={active}
-              className={`shrink-0 rounded-lg border px-3 py-2 text-left text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 ${active ? 'border-indigo-200 bg-indigo-50 text-indigo-800' : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'}`}
+              className={`rounded-lg border px-3 py-2 text-left text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 ${active ? 'border-indigo-200 bg-indigo-50 text-indigo-800' : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'}`}
             >
               {playbook.title[language]}
             </button>
