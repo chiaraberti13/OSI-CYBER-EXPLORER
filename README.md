@@ -55,6 +55,8 @@
 - **Cybersecurity (IDS/IPS)** — Reference on defensive appliances (NIDS/NIPS/HIDS/HIPS/WIDS/WIPS/EDR) and the key difference between **detecting** (IDS) and **blocking** (IPS).
 - **Network Glossary** — Searchable dictionary of networking & security terms.
 
+The labs are grouped into four dropdown menus — CCNA path, Interactive labs, Security by area, Operations and defense — each entry carrying a one-line description, plus a **quick search** (`Ctrl`/`⌘` + `K`) that filters every lab by name, protocol, or topic. The current location stays visible in the bar.
+
 Every screen is available in **Italian and English**, switchable with one click. UI preferences (language, audio, speed) persist across reloads.
 
 ## Tech stack
