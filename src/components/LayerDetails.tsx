@@ -28,8 +28,8 @@ const SCENARIO_FEEDBACK: Record<string, {
   },
   'l2-mitm': {
     attack: {
-      it: 'ARP POISONING RIUSCITO: L\'attaccante ha avvelenato la cache ARP dello switch. Tutto il traffico locale viene ricanalizzato attraverso l\'host malevolo.',
-      en: 'ARP POISONING SUCCESSFUL: The attacker poisoned the ARP cache. Local area traffic is rerouted through the fraudulent host.'
+      it: 'ARP POISONING RIUSCITO: L\'attaccante ha avvelenato la cache ARP degli host (e del gateway), non la CAM table dello switch. Il traffico locale viene ricanalizzato attraverso l\'host malevolo.',
+      en: 'ARP POISONING SUCCESSFUL: The attacker poisoned the ARP cache of the hosts (and of the gateway) — not the switch CAM table. Local traffic is rerouted through the fraudulent host.'
     },
     defense: {
       it: 'CONTROMISURA DAI: Dynamic ARP Inspection (DAI) sullo switch ha scartato i messaggi ARP gratuitous fasulli e non autorizzati.',
@@ -38,8 +38,8 @@ const SCENARIO_FEEDBACK: Record<string, {
   },
   'l2-mac-flood': {
     attack: {
-      it: 'MAC FLOODING RIUSCITO: La tabella CAM dello switch è satura. Lo switch entra in modalità fail-open, inoltrando frammenti in broadcast a tutte le porte.',
-      en: 'MAC FLOODING SUCCESSFUL: The switch CAM table is filled to capacity. The switch fails open, broadcasting all frames like a hub.'
+      it: 'MAC FLOODING RIUSCITO: La CAM table dello switch è satura. Lo switch entra in fail-open ed esegue il flooding dei frame unknown-unicast su tutte le porte della VLAN.',
+      en: 'MAC FLOODING SUCCESSFUL: The switch CAM table is filled to capacity. The switch fails open and floods unknown-unicast frames to every port in the VLAN.'
     },
     defense: {
       it: 'PORT SECURITY ATTIVA: Lo switch limita i MAC address consentiti per porta e blocca l\'interfaccia violata che inviava richieste massive.',

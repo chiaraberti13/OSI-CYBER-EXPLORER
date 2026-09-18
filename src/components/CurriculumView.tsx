@@ -23,6 +23,11 @@ export default function CurriculumView() {
                 ? 'Ogni dominio collega funzionamento della rete, configurazione, verifica, attacchi osservabili e difese. La piattaforma è un laboratorio esplorativo: non assegna voti e non simula l’esame.'
                 : 'Each domain connects network operation, configuration, verification, observable attacks, and defenses. The platform is an exploratory lab: it does not assign scores or simulate the exam.'}
             </p>
+            <p className="max-w-3xl rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs leading-relaxed text-amber-900">
+              {language === 'it'
+                ? 'Materiale di studio originale e non ufficiale, non affiliato né approvato da Cisco Systems. I contenuti sono note di studio personali: non contengono domande d’esame reali né materiale coperto da copyright Cisco. Obiettivi, pesi, costi, date e policy d’esame vanno sempre verificati sulle fonti ufficiali (Cisco Learning Network e learningnetwork.cisco.com), che prevalgono su questa mappa.'
+                : 'Original, unofficial study material, neither affiliated with nor endorsed by Cisco Systems. The content is a set of personal study notes: it contains no real exam questions and no Cisco-copyrighted material. Objectives, weights, pricing, dates, and exam policy must always be verified against the official sources (Cisco Learning Network, learningnetwork.cisco.com), which take precedence over this map.'}
+            </p>
           </div>
         </div>
       </header>

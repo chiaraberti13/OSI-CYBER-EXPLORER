@@ -194,7 +194,7 @@ export default function NetworkAccessLab() {
   return (
     <div className="space-y-8">
       <header className="rounded-xl border border-slate-200 bg-white p-6 md:p-8">
-        <p className="eyebrow">CCNA 2.1 · 2.2 · 2.3 · 2.4 · 2.5 · 2.6 · 2.9</p>
+        <p className="eyebrow">CCNA 2.1 · 2.2 · 2.3 · 2.4 · 2.5 · 2.6 · 2.7</p>
         <h1 className="mt-2 text-2xl font-semibold text-slate-900">{t.title}</h1>
         <p className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-600">{t.subtitle}</p>
       </header>
