@@ -39,6 +39,7 @@ const ManagementTelemetryLab = lazy(() => import('./components/ManagementTelemet
 const EndpointSecurityLab = lazy(() => import('./components/EndpointSecurityLab'));
 const ApplicationSecurityLab = lazy(() => import('./components/ApplicationSecurityLab'));
 const EmailHumanSecurityLab = lazy(() => import('./components/EmailHumanSecurityLab'));
+const Layer2SecurityLab = lazy(() => import('./components/Layer2SecurityLab'));
 const SecurityEvidenceLab = lazy(() => import('./components/SecurityEvidenceLab'));
 const DefenseControlsLab = lazy(() => import('./components/DefenseControlsLab'));
 
@@ -276,6 +277,12 @@ export default function App() {
           {activeView === 'emailsecurity' && (
             <motion.div key="emailsecurity" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.18 }}>
               <EmailHumanSecurityLab />
+            </motion.div>
+          )}
+
+          {activeView === 'layer2security' && (
+            <motion.div key="layer2security" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.18 }}>
+              <Layer2SecurityLab />
             </motion.div>
           )}
 
