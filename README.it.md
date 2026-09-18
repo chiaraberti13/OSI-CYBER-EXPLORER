@@ -55,6 +55,8 @@
 - **Cybersecurity (IDS/IPS)** — Riferimento sugli apparati difensivi (NIDS/NIPS/HIDS/HIPS/WIDS/WIPS/EDR) e la differenza tra **rilevare** (IDS) e **bloccare** (IPS).
 - **Glossario di Rete** — Dizionario ricercabile di termini di rete e sicurezza.
 
+I laboratori sono raggruppati in quattro menu a tendina — Percorso CCNA, Laboratori interattivi, Sicurezza per area, Operazioni e difesa — ognuno con una descrizione per voce, più una **ricerca rapida** (`Ctrl`/`⌘` + `K`) che filtra tutti i laboratori per nome, protocollo o argomento. Il percorso corrente resta sempre visibile nella barra.
+
 Ogni schermata è disponibile in **italiano e inglese**, commutabile con un click. Le preferenze (lingua, audio, velocità) vengono ricordate tra una sessione e l'altra.
 
 ## Stack tecnologico
