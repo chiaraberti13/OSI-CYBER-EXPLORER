@@ -177,7 +177,7 @@ export default function NetworkFundamentalsLab() {
   return (
     <div className="space-y-8">
       <header className="rounded-xl border border-slate-200 bg-white p-6 md:p-8">
-        <p className="eyebrow">CCNA 1.5 · 1.6 · 1.7 · 1.10</p>
+        <p className="eyebrow">CCNA 1.4 · 1.5 · 1.6 · 1.7 · 1.8 · 1.9</p>
         <h1 className="mt-2 text-2xl font-semibold text-slate-900">{labels.title}</h1>
         <p className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-600">{labels.subtitle}</p>
       </header>

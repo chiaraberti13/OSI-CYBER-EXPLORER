@@ -729,8 +729,8 @@ const DEVICE_REGISTRY: DeviceInfo[] = [
     layer: 'Layer 2 (Data Link)',
     category: 'networking',
     role: {
-      en: 'Connects and divides two distinct physical network links, isolating collision domains locally.',
-      it: 'Raccorda e segmenta due tratte di cavo differenti della stessa rete locale, riducendo lo spreco di collisioni elettriche.'
+      en: 'Joins two physical LAN segments and separates their collision domains, while the two segments remain a single broadcast domain — the historical ancestor of the switch, which is simply a multiport bridge.',
+      it: 'Unisce due segmenti LAN fisici separandone i domini di collisione, mentre i due segmenti restano un unico dominio di broadcast: è l\'antenato storico dello switch, che non è altro che un bridge multiporta.'
     },
     howItWorks: {
       en: 'Tracks physical MAC addresses seen on interfaces and lets a frame cross only if the target MAC resides on the opposite segment.',
@@ -1374,10 +1374,10 @@ const PORT_REGISTRY: PortInfo[] = [
       it: 'Traduce i nomi di dominio (come google.com) in indirizzi IP leggibili dalle macchine.'
     },
     security: {
-      en: 'Target for DNS Spoofing, Cache Poisoning, and DDoS Amplification. Protect via DNSSEC.',
-      it: 'Target per DNS Spoofing, Cache Poisoning e DDoS Amplification. Proteggere con DNSSEC.'
+      en: 'Cleartext by default: queries and answers are readable and forgeable. Target for DNS spoofing, cache poisoning, tunneling, and reflection/amplification. DNSSEC signs the records (authenticity and integrity) but does not encrypt; confidentiality requires DoT (TCP 853) or DoH (TCP 443).',
+      it: 'In chiaro per impostazione predefinita: query e risposte sono leggibili e falsificabili. Bersaglio di DNS spoofing, cache poisoning, tunneling e reflection/amplification. DNSSEC firma i record (autenticità e integrità) ma non cifra; per la riservatezza servono DoT (TCP 853) o DoH (TCP 443).'
     },
-    isSecure: true
+    isSecure: false
   },
   {
     port: '67 / 68',
@@ -1614,10 +1614,10 @@ const PORT_REGISTRY: PortInfo[] = [
       it: 'Decide i percorsi di instradamento tra gli Autonomous Systems (AS) su Internet.'
     },
     security: {
-      en: 'Vulnerable to BGP Hijacking and Route Leaks. Protect via RPKI, MD5 signatures, or BGPsec.',
-      it: 'Vulnerabile a BGP Hijacking e Route Leak. Proteggere via RPKI, firme MD5 o BGPsec.'
+      en: 'The TCP session is not encrypted: TCP-MD5 or TCP-AO only authenticate the peer. Vulnerable to hijacking and route leaks, mitigated by prefix filtering, max-prefix limits, RPKI origin validation, and GTSM/TTL security.',
+      it: 'La sessione TCP non è cifrata: TCP-MD5 o TCP-AO autenticano soltanto il peer. Vulnerabile a hijacking e route leak, mitigati con prefix filtering, limiti max-prefix, validazione dell\'origine RPKI e GTSM/TTL security.'
     },
-    isSecure: true
+    isSecure: false
   },
   {
     port: 389,
@@ -1872,10 +1872,10 @@ const PORT_REGISTRY: PortInfo[] = [
       it: 'Porta di sviluppo predefinita comune usata nei framework Vite, React ed Express.'
     },
     security: {
-      en: 'Normally bound locally. Never leave developmental APIs running exposed to production servers.',
-      it: 'Normalmente vincolata in locale. Mai lasciare API di sviluppo esposte su server produttivi.'
+      en: 'Plain HTTP with no authentication by default, plus verbose errors and source maps. Bind it to localhost only and never expose a development server on a public interface.',
+      it: 'HTTP in chiaro e senza autenticazione per impostazione predefinita, con errori verbosi e source map. Va vincolata solo a localhost e un server di sviluppo non va mai esposto su un\'interfaccia pubblica.'
     },
-    isSecure: true
+    isSecure: false
   },
   {
     port: 3306,
