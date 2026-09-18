@@ -127,9 +127,10 @@ const WIRELESS_PRINCIPLES: Array<{ title: Localized; detail: Localized }> = [
 ];
 
 // CCNA 2.8 — management access to network devices, APs, and WLCs
-const MGMT_ACCESS_ROWS: Array<{ method: string; detail: Localized; verdict: Localized }> = [
+/** A method is either a protocol/port label, identical in both languages, or a translated name. */
+const MGMT_ACCESS_ROWS: Array<{ method: string | Localized; detail: Localized; verdict: Localized }> = [
   {
-    method: { it: 'Console (out-of-band)', en: 'Console (out-of-band)' } as unknown as string,
+    method: { it: 'Console (out-of-band)', en: 'Console (out-of-band)' },
     detail: { it: 'Accesso diretto via cavo, indipendente dalla configurazione IP: è l’unica via quando la rete è giù o la configurazione è sbagliata, e serve per il recupero password.', en: 'Direct cabled access, independent of any IP configuration: the only way in when the network is down or the configuration is wrong, and what password recovery relies on.' },
     verdict: { it: 'Da proteggere fisicamente e con password: chi raggiunge la console raggiunge il dispositivo.', en: 'Protect it physically and with a password: whoever reaches the console reaches the device.' }
   },
@@ -159,7 +160,7 @@ const MGMT_ACCESS_ROWS: Array<{ method: string; detail: Localized; verdict: Loca
     verdict: { it: 'Conserva sempre un fallback locale testato, o un server irraggiungibile diventa un lockout.', en: 'Always keep a tested local fallback, or an unreachable server becomes a lockout.' }
   },
   {
-    method: { it: 'Gestione cloud', en: 'Cloud-managed' } as unknown as string,
+    method: { it: 'Gestione cloud', en: 'Cloud-managed' },
     detail: { it: 'Il dispositivo stabilisce una sessione uscente verso un controller cloud e ne riceve la configurazione: nessuna porta di gestione esposta in ingresso.', en: 'The device establishes an outbound session to a cloud controller and receives its configuration from it: no inbound management port is exposed.' },
     verdict: { it: 'Sposta la fiducia sull’account cloud: MFA e ruoli minimi diventano il controllo principale.', en: 'It shifts trust onto the cloud account: MFA and least-privilege roles become the primary control.' }
   }
@@ -383,7 +384,7 @@ export default function NetworkAccessLab() {
 
       <section className="rounded-xl border border-slate-200 bg-white p-5 md:p-6" aria-labelledby="mgmt-access-title">
         <SectionTitle icon={ShieldCheck} title={t.mgmtTitle} id="mgmt-access-title" />
-        <div className="mt-4 overflow-x-auto"><table className="w-full min-w-[820px] border-collapse text-left text-xs"><thead><tr className="border-b border-slate-200 text-slate-500"><th className="p-3">{t.method}</th><th className="p-3">{t.mgmtDetail}</th><th className="p-3">{t.mgmtVerdict}</th></tr></thead><tbody>{MGMT_ACCESS_ROWS.map(row => { const label = typeof row.method === 'string' ? row.method : (row.method as unknown as Localized)[language]; return <tr key={row.detail.en} className="border-b border-slate-100 align-top"><th className="p-3 font-mono text-[11px] font-semibold text-indigo-700">{label}</th><td className="p-3 leading-relaxed text-slate-600">{row.detail[language]}</td><td className="p-3 leading-relaxed text-emerald-800">{row.verdict[language]}</td></tr>; })}</tbody></table></div>
+        <div className="mt-4 overflow-x-auto"><table className="w-full min-w-[820px] border-collapse text-left text-xs"><thead><tr className="border-b border-slate-200 text-slate-500"><th className="p-3">{t.method}</th><th className="p-3">{t.mgmtDetail}</th><th className="p-3">{t.mgmtVerdict}</th></tr></thead><tbody>{MGMT_ACCESS_ROWS.map(row => { const label = typeof row.method === 'string' ? row.method : row.method[language]; return <tr key={row.detail.en} className="border-b border-slate-100 align-top"><th className="p-3 font-mono text-[11px] font-semibold text-indigo-700">{label}</th><td className="p-3 leading-relaxed text-slate-600">{row.detail[language]}</td><td className="p-3 leading-relaxed text-emerald-800">{row.verdict[language]}</td></tr>; })}</tbody></table></div>
       </section>
 
       <section className="rounded-xl border border-slate-200 bg-white p-5 md:p-6" aria-labelledby="wlan-gui-title">
