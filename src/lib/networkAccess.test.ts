@@ -3,7 +3,10 @@ import {
   electRootBridge,
   evaluateTrunkFrame,
   isEtherChannelCompatible,
-  parseVlanList
+  parseVlanList,
+  STP_LONG_PATH_COST,
+  STP_SHORT_METHOD_CEILING,
+  STP_SHORT_PATH_COST
 } from './networkAccess';
 
 describe('VLAN and 802.1Q trunk logic', () => {
@@ -39,6 +42,26 @@ describe('STP root bridge election', () => {
       { id: 'SW2', priority: 32768, mac: '00:11:22:33:44:01' }
     ]);
     expect(root.id).toBe('SW2');
+  });
+});
+
+describe('STP path costs', () => {
+  it('keeps the 802.1D-1998 short values', () => {
+    expect(STP_SHORT_PATH_COST).toEqual({ '10 Mb/s': 100, '100 Mb/s': 19, '1 Gb/s': 4, '10 Gb/s': 2 });
+  });
+
+  it('exposes long values that still rank links apart above the short-method ceiling', () => {
+    expect(STP_SHORT_METHOD_CEILING).toBe('10 Gb/s');
+    expect(STP_SHORT_PATH_COST[STP_SHORT_METHOD_CEILING]).toBe(2);
+
+    // The short method has nothing left to give beyond its ceiling; the long one has.
+    expect(Object.keys(STP_SHORT_PATH_COST)).not.toContain('100 Gb/s');
+    expect(STP_LONG_PATH_COST['100 Gb/s']).toBe(200);
+    expect(STP_LONG_PATH_COST['1 Tb/s']).toBe(20);
+
+    const longCosts = Object.values(STP_LONG_PATH_COST);
+    const strictlyDecreasing = longCosts.every((cost, index) => index === 0 || cost < longCosts[index - 1]);
+    expect(strictlyDecreasing).toBe(true);
   });
 });
 

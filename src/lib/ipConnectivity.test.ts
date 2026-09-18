@@ -54,5 +54,45 @@ describe('OSPF calculations and elections', () => {
     ]);
     expect(election.dr?.id).toBe('R3');
     expect(election.bdr?.id).toBe('R2');
+    // On a fresh segment the BDR is elected first and then promoted to DR.
+    expect(election.promotedBdr).toBe(true);
+    expect(election.preemptionBlocked).toBe(false);
+  });
+
+  it('is not preemptive: a better router joining a converged segment stays a DROTHER', () => {
+    const segment = [
+      { id: 'R1', priority: 100, routerId: '1.1.1.1' },
+      { id: 'R2', priority: 100, routerId: '2.2.2.2' },
+      { id: 'R3', priority: 255, routerId: '3.3.3.3' }
+    ];
+    const election = electOspfDrBdr(segment, { drId: 'R2', bdrId: 'R1' });
+    expect(election.dr?.id).toBe('R2');
+    expect(election.bdr?.id).toBe('R1');
+    expect(election.promotedBdr).toBe(false);
+    expect(election.preemptionBlocked).toBe(true);
+  });
+
+  it('promotes the BDR and elects a new one when the DR disappears', () => {
+    const remaining = [
+      { id: 'R1', priority: 100, routerId: '1.1.1.1' },
+      { id: 'R3', priority: 255, routerId: '3.3.3.3' }
+    ];
+    // R2 was the DR and is gone; the seated BDR R1 takes over even though R3 ranks higher.
+    const election = electOspfDrBdr(remaining, { drId: 'R2', bdrId: 'R1' });
+    expect(election.dr?.id).toBe('R1');
+    expect(election.bdr?.id).toBe('R3');
+    expect(election.promotedBdr).toBe(true);
+  });
+
+  it('ignores a seated role held by a router that became ineligible', () => {
+    const election = electOspfDrBdr(
+      [
+        { id: 'R1', priority: 0, routerId: '1.1.1.1' },
+        { id: 'R2', priority: 100, routerId: '2.2.2.2' }
+      ],
+      { drId: 'R1' }
+    );
+    expect(election.dr?.id).toBe('R2');
+    expect(election.bdr).toBeNull();
   });
 });

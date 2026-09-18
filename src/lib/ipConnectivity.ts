@@ -19,6 +19,24 @@ export interface OspfCandidate {
   routerId: string;
 }
 
+/** Who already holds each role when the election runs again (ids of existing candidates). */
+export interface OspfElectionState {
+  drId?: string;
+  bdrId?: string;
+}
+
+export interface OspfElectionResult {
+  dr: OspfCandidate | null;
+  bdr: OspfCandidate | null;
+  /** The BDR was promoted to DR because no DR was seated. */
+  promotedBdr: boolean;
+  /**
+   * A better-ranked eligible router was present but could not take a seated role:
+   * this is the observable proof that OSPF elections are not preemptive.
+   */
+  preemptionBlocked: boolean;
+}
+
 export interface RouterIdSelection {
   routerId: string;
   source: 'configured' | 'loopback' | 'interface';
@@ -81,14 +99,46 @@ export function selectOspfRouterId(configured: string | undefined, loopbacks: st
   throw new Error('NO_ROUTER_ID_CANDIDATE');
 }
 
-export function electOspfDrBdr(candidates: OspfCandidate[]): { dr: OspfCandidate | null; bdr: OspfCandidate | null } {
+/** Highest priority first, then highest Router ID — the OSPF ranking rule. */
+function byOspfRank(left: OspfCandidate, right: OspfCandidate): number {
+  return right.priority - left.priority || ipv4ToUint(right.routerId) - ipv4ToUint(left.routerId);
+}
+
+/**
+ * Elects DR and BDR the way RFC 2328 does, which is not simply "the two best routers":
+ * the BDR is elected first among the routers that do not already claim the DR role, and it
+ * is promoted to DR only when no DR is seated. Passing the current state models the fact
+ * that the election is NOT preemptive — a router joining a converged segment with a better
+ * priority stays a DROTHER until the seated router disappears.
+ */
+export function electOspfDrBdr(candidates: OspfCandidate[], current: OspfElectionState = {}): OspfElectionResult {
   const eligible = candidates
     .filter(candidate => {
       if (!Number.isInteger(candidate.priority) || candidate.priority < 0 || candidate.priority > 255) throw new Error('INVALID_OSPF_PRIORITY');
       ipv4ToUint(candidate.routerId);
       return candidate.priority > 0;
     })
-    .sort((left, right) => right.priority - left.priority || ipv4ToUint(right.routerId) - ipv4ToUint(left.routerId));
+    .sort(byOspfRank);
 
-  return { dr: eligible[0] ?? null, bdr: eligible[1] ?? null };
+  // A seated role only survives if that router is still present and still eligible.
+  const seatedDr = eligible.find(candidate => candidate.id === current.drId) ?? null;
+  const seatedBdr = eligible.find(candidate => candidate.id === current.bdrId) ?? null;
+
+  // Step 1: elect the BDR among the routers that are not the DR.
+  const bdrPool = eligible.filter(candidate => candidate !== seatedDr);
+  let bdr = seatedBdr && seatedBdr !== seatedDr ? seatedBdr : bdrPool[0] ?? null;
+
+  // Step 2: the DR is the seated one, otherwise the BDR is promoted and a new BDR is elected.
+  let dr = seatedDr;
+  let promotedBdr = false;
+  if (!dr && bdr) {
+    dr = bdr;
+    promotedBdr = true;
+    bdr = bdrPool.filter(candidate => candidate !== dr)[0] ?? null;
+  }
+
+  const best = eligible[0] ?? null;
+  const preemptionBlocked = Boolean(best && dr && best !== dr && byOspfRank(best, dr) < 0);
+
+  return { dr, bdr, promotedBdr, preemptionBlocked };
 }

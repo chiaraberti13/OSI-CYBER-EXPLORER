@@ -5,6 +5,8 @@ import {
   evaluateTrunkFrame,
   isEtherChannelCompatible,
   parseVlanList,
+  STP_LONG_PATH_COST,
+  STP_SHORT_METHOD_CEILING,
   STP_SHORT_PATH_COST,
   type EtherChannelMode
 } from '../lib/networkAccess';
@@ -172,7 +174,8 @@ export default function NetworkAccessLab() {
         tagged: 'Il frame attraversa il trunk con tag 802.1Q.', untagged: 'Il frame appartiene alla native VLAN e, per impostazione predefinita, attraversa il trunk senza tag.', pruned: 'Il frame viene scartato: la VLAN non è nella allowed list.',
         nativeWarning: 'Una native VLAN mismatch può causare perdita di traffico, leakage tra VLAN e messaggi CDP; deve coincidere sui due estremi.',
         stpTitle: 'STP/RSTP e prevenzione dei loop', priority: 'Priorità bridge', root: 'Root bridge eletto', rootRule: 'Nella stessa VLAN vince il Bridge ID più basso: prima la priorità configurata, poi il MAC. Il system ID extension contiene il VLAN ID e la priorità procede a incrementi di 4096.',
-        costs: 'Costi STP classici (short method)', etherTitle: 'EtherChannel', left: 'Switch sinistro', right: 'Switch destro', formed: 'Port-channel formato', notFormed: 'Port-channel non formato',
+        costs: 'Costi STP (short method, 802.1D-1998)', longCosts: 'Costi STP (long method, 802.1D-2004)',
+        costNote: `Il metodo short è a 16 bit e si ferma a ${STP_SHORT_METHOD_CEILING}: da lì in su i valori collassano verso 1 e link di velocità molto diversa diventano indistinguibili per STP. Con uplink a 10 Gb/s o più veloci si abilita spanning-tree pathcost method long, che deve essere identico su tutti gli switch della topologia: mescolare short e long produce un albero incoerente.`, etherTitle: 'EtherChannel', left: 'Switch sinistro', right: 'Switch destro', formed: 'Port-channel formato', notFormed: 'Port-channel non formato',
         etherNote: 'LACP: active avvia la negoziazione, passive risponde. PAgP: desirable avvia, auto risponde. La modalità on non negozia e deve essere coerente sui due lati.',
         wirelessTitle: 'Fondamenti wireless', securityTitle: 'Attacchi e difese di accesso', attack: 'Attacco', mechanism: 'Meccanismo e impatto', defense: 'Difesa appropriata', verify: 'Verifica IOS',
         configTitle: 'Configurazioni IOS di riferimento', configNote: 'Gli esempi sono blocchi didattici: nomi interfaccia, VLAN, piattaforma e supporto dei comandi vanno adattati al dispositivo reale.'
@@ -183,7 +186,8 @@ export default function NetworkAccessLab() {
         tagged: 'The frame crosses the trunk with an 802.1Q tag.', untagged: 'The frame belongs to the native VLAN and crosses the trunk untagged by default.', pruned: 'The frame is dropped: its VLAN is not in the allowed list.',
         nativeWarning: 'A native VLAN mismatch can cause traffic loss, VLAN leakage, and CDP messages; both trunk ends must match.',
         stpTitle: 'STP/RSTP and loop prevention', priority: 'Bridge priority', root: 'Elected root bridge', rootRule: 'Within the same VLAN, the lowest Bridge ID wins: configured priority first, then MAC address. The system ID extension carries the VLAN ID, and priority uses increments of 4096.',
-        costs: 'Classic STP costs (short method)', etherTitle: 'EtherChannel', left: 'Left switch', right: 'Right switch', formed: 'Port-channel formed', notFormed: 'Port-channel not formed',
+        costs: 'STP costs (short method, 802.1D-1998)', longCosts: 'STP costs (long method, 802.1D-2004)',
+        costNote: `The short method is 16-bit and stops at ${STP_SHORT_METHOD_CEILING}: above that the values collapse toward 1 and links of very different speed become indistinguishable to STP. With 10 Gb/s or faster uplinks, enable spanning-tree pathcost method long — and keep it identical on every switch of the topology, because mixing short and long produces an inconsistent tree.`, etherTitle: 'EtherChannel', left: 'Left switch', right: 'Right switch', formed: 'Port-channel formed', notFormed: 'Port-channel not formed',
         etherNote: 'LACP: active initiates negotiation, passive responds. PAgP: desirable initiates, auto responds. Mode on does not negotiate and must be consistent on both sides.',
         wirelessTitle: 'Wireless fundamentals', securityTitle: 'Access-layer attacks and defenses', attack: 'Attack', mechanism: 'Mechanism and impact', defense: 'Appropriate defense', verify: 'IOS verification',
         configTitle: 'Reference IOS configurations', configNote: 'These are teaching blocks: interface names, VLANs, platform, and command support must be adapted to the actual device.'
@@ -230,7 +234,11 @@ export default function NetworkAccessLab() {
           ))}
         </div>
         <p className="mt-4 text-sm font-semibold text-indigo-700">{t.root}: {rootBridge?.id ?? '—'}</p>
-        <div className="mt-5"><h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">{t.costs}</h3><div className="mt-2 flex flex-wrap gap-2">{Object.entries(STP_SHORT_PATH_COST).map(([speed, cost]) => <span key={speed} className="rounded-md bg-slate-100 px-3 py-2 font-mono text-xs text-slate-700">{speed} → {cost}</span>)}</div></div>
+        <div className="mt-5 grid gap-4 lg:grid-cols-2">
+          <div><h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">{t.costs}</h3><div className="mt-2 flex flex-wrap gap-2">{Object.entries(STP_SHORT_PATH_COST).map(([speed, cost]) => <span key={speed} className="rounded-md bg-slate-100 px-3 py-2 font-mono text-xs text-slate-700">{speed} → {cost}</span>)}</div></div>
+          <div><h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">{t.longCosts}</h3><div className="mt-2 flex flex-wrap gap-2">{Object.entries(STP_LONG_PATH_COST).map(([speed, cost]) => <span key={speed} className="rounded-md bg-indigo-50 px-3 py-2 font-mono text-xs text-indigo-800">{speed} → {cost.toLocaleString(language)}</span>)}</div></div>
+        </div>
+        <p className="mt-4 rounded-lg border border-amber-100 bg-amber-50 p-3 text-xs leading-relaxed text-amber-900">{t.costNote}</p>
         <div className="mt-5 grid gap-3 md:grid-cols-2">{STP_ROLES.map(item => <article key={item.name} className="rounded-lg border border-slate-200 p-3"><h3 className="text-xs font-semibold text-slate-900">{item.name}</h3><p className="mt-1.5 text-xs leading-relaxed text-slate-600">{item.detail[language]}</p></article>)}</div>
       </section>
 

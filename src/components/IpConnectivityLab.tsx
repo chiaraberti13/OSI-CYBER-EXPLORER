@@ -134,6 +134,10 @@ const OSPF_CONFIG = `router ospf 10
  router-id 1.1.1.1
  passive-interface default
  no passive-interface GigabitEthernet0/0
+ ! reference-bandwidth is expressed in Mb/s: 100000 = 100 Gb/s.
+ ! It is local to the router and is NOT advertised: a different value on a
+ ! neighbour makes the two run SPF on different costs, so the same value must
+ ! be configured on every router of the OSPF domain.
  auto-cost reference-bandwidth 100000
 !
 interface GigabitEthernet0/0
@@ -151,6 +155,7 @@ export default function IpConnectivityLab() {
   const [referenceBandwidth, setReferenceBandwidth] = useState(100000);
   const [interfaceBandwidth, setInterfaceBandwidth] = useState(1000);
   const [priorities, setPriorities] = useState<Record<string, number>>({ R1: 1, R2: 100, R3: 100 });
+  const [lateJoin, setLateJoin] = useState(false);
 
   const lookup = useMemo(() => {
     try {
@@ -175,8 +180,15 @@ export default function IpConnectivityLab() {
       { id: 'R2', priority: priorities.R2, routerId: '2.2.2.2' },
       { id: 'R3', priority: priorities.R3, routerId: '3.3.3.3' }
     ];
-    return electOspfDrBdr(candidates);
-  }, [priorities]);
+    const initial = electOspfDrBdr(candidates);
+    if (!lateJoin) return initial;
+    // R4 joins a segment that has already converged: the seated roles are passed in,
+    // which is what makes the absence of preemption observable.
+    return electOspfDrBdr(
+      [...candidates, { id: 'R4', priority: 255, routerId: '4.4.4.4' }],
+      { drId: initial.dr?.id, bdrId: initial.bdr?.id }
+    );
+  }, [priorities, lateJoin]);
 
   const selectedIds = new Set(lookup.selected.map(route => route.id));
   const t = language === 'it'
@@ -186,7 +198,11 @@ export default function IpConnectivityLab() {
         logic: 'Ordine della decisione', logicText: '1. Prefisso più lungo; 2. distanza amministrativa minore tra rotte dello stesso prefisso; 3. metrica minore all’interno dello stesso protocollo. Percorsi equivalenti possono essere installati in ECMP.',
         fib: 'RIB, FIB e adjacency table', fibText: 'La RIB raccoglie le rotte candidate del control plane. Le migliori vengono programmate nella FIB; l’adjacency table contiene le informazioni di riscrittura di livello 2. CEF usa FIB e adjacency per inoltrare nel data plane.',
         ospf: 'OSPFv2 single-area', cost: 'Calcolatore del costo OSPF', reference: 'Reference bandwidth (Mb/s)', bandwidth: 'Bandwidth interfaccia (Mb/s)', result: 'Costo risultante', costNote: 'Costo = reference bandwidth / interface bandwidth, con minimo 1. Configura lo stesso valore di riferimento su tutti i router del dominio OSPF.',
-        election: 'Elezione DR/BDR iniziale', priority: 'Priorità', dr: 'DR', bdr: 'BDR', electionNote: 'Sulle reti broadcast eleggibili vince la priorità più alta, poi il Router ID più alto. Priorità 0 rende il router non eleggibile. L’elezione non è preemptive.',
+        election: 'Elezione DR/BDR', priority: 'Priorità', dr: 'DR', bdr: 'BDR',
+        electionNote: 'Sulle reti broadcast vince la priorità più alta, poi il Router ID più alto; priorità 0 rende il router non eleggibile. L’ordine reale non è “i due migliori”: OSPF elegge prima il BDR tra i router che non rivendicano il ruolo di DR e lo promuove a DR solo se nessun DR è presente.',
+        lateJoin: 'Aggiungi R4 (priorità 255) a rete già converta',
+        promoted: 'Nessun DR presente: il BDR è stato promosso a DR ed è stato eletto un nuovo BDR.',
+        blocked: 'R4 ha la priorità migliore ma resta DROTHER: l’elezione OSPF non è preemptive e i ruoli assegnati non vengono revocati finché il router seduto non scompare (o non si azzera il processo con clear ip ospf process).',
         states: 'Formazione dell’adiacenza', fhrp: 'First-hop redundancy: HSRP e VRRP', fhrpNote: 'Un FHRP protegge il default gateway, non il percorso: gli host continuano a usare un solo IP virtuale mentre il router fisico dietro di esso può cambiare. Attenzione all’esame: in HSRP il subentro del router con priorità migliore avviene solo se è configurato preempt, e un FHRP senza object tracking può restare Active pur avendo perso l’uplink.', property: 'Proprietà', security: 'Attacchi e difese del routing', attack: 'Attacco', effect: 'Effetto osservabile', defense: 'Difesa e limite', evidence: 'Verifica', config: 'Configurazioni IOS di riferimento', configNote: 'I comandi di autenticazione e CoPP dipendono dalla release e dalla piattaforma: verifica sempre il supporto IOS/IOS XE reale.'
       }
     : {
@@ -195,7 +211,11 @@ export default function IpConnectivityLab() {
         logic: 'Decision order', logicText: '1. Longest prefix; 2. lowest administrative distance among routes for the same prefix; 3. lowest metric within the same protocol. Equivalent paths may be installed as ECMP.',
         fib: 'RIB, FIB, and adjacency table', fibText: 'The RIB collects control-plane route candidates. The best routes are programmed into the FIB; the adjacency table holds Layer 2 rewrite information. CEF uses the FIB and adjacency table for data-plane forwarding.',
         ospf: 'Single-area OSPFv2', cost: 'OSPF cost calculator', reference: 'Reference bandwidth (Mb/s)', bandwidth: 'Interface bandwidth (Mb/s)', result: 'Resulting cost', costNote: 'Cost = reference bandwidth / interface bandwidth, with a minimum of 1. Configure the same reference value on every router in the OSPF domain.',
-        election: 'Initial DR/BDR election', priority: 'Priority', dr: 'DR', bdr: 'BDR', electionNote: 'On eligible broadcast networks, the highest priority wins, followed by the highest Router ID. Priority 0 makes a router ineligible. The election is non-preemptive.',
+        election: 'DR/BDR election', priority: 'Priority', dr: 'DR', bdr: 'BDR',
+        electionNote: 'On broadcast networks the highest priority wins, then the highest Router ID; priority 0 makes a router ineligible. The real order is not “the best two”: OSPF elects the BDR first among the routers that do not claim the DR role, and promotes it to DR only when no DR is present.',
+        lateJoin: 'Add R4 (priority 255) to an already converged segment',
+        promoted: 'No DR was present: the BDR was promoted to DR and a new BDR was elected.',
+        blocked: 'R4 has the best priority but stays a DROTHER: the OSPF election is not preemptive and seated roles are not revoked until the seated router disappears (or the process is reset with clear ip ospf process).',
         states: 'Adjacency formation', fhrp: 'First-hop redundancy: HSRP and VRRP', fhrpNote: 'An FHRP protects the default gateway, not the path: hosts keep using a single virtual IP while the physical router behind it can change. Exam watch-out: in HSRP a better-priority router only takes over when preempt is configured, and an FHRP without object tracking can stay Active after losing its uplink.', property: 'Property', security: 'Routing attacks and defenses', attack: 'Attack', effect: 'Observable effect', defense: 'Defense and limitation', evidence: 'Verification', config: 'Reference IOS configurations', configNote: 'Authentication and CoPP commands vary by release and platform: always verify support on the actual IOS/IOS XE device.'
       };
 
@@ -216,7 +236,7 @@ export default function IpConnectivityLab() {
         <SectionTitle icon={Router} title={t.ospf} id="ospf-title" />
         <div className="mt-5 grid gap-6 xl:grid-cols-2">
           <article className="rounded-lg border border-slate-200 p-4"><h3 className="text-sm font-semibold text-slate-900">{t.cost}</h3><div className="mt-4 grid gap-3 sm:grid-cols-2"><label className="space-y-1.5 text-xs text-slate-600">{t.reference}<input type="number" min={1} value={referenceBandwidth} onChange={event => setReferenceBandwidth(Number(event.target.value))} className="block w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-sm" /></label><label className="space-y-1.5 text-xs text-slate-600">{t.bandwidth}<input type="number" min={1} value={interfaceBandwidth} onChange={event => setInterfaceBandwidth(Number(event.target.value))} className="block w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-sm" /></label></div><p className="mt-4 text-sm font-semibold text-indigo-700">{t.result}: {ospfCost ?? '—'}</p><p className="mt-2 text-xs leading-relaxed text-slate-600">{t.costNote}</p></article>
-          <article className="rounded-lg border border-slate-200 p-4"><h3 className="text-sm font-semibold text-slate-900">{t.election}</h3><div className="mt-3 grid grid-cols-3 gap-2">{(['R1', 'R2', 'R3'] as const).map(id => <label key={id} className="space-y-1 text-xs text-slate-600">{id} · {t.priority}<select value={priorities[id]} onChange={event => setPriorities(current => ({ ...current, [id]: Number(event.target.value) }))} className="block w-full rounded-lg border border-slate-200 bg-white px-2 py-2 font-mono text-xs">{[0, 1, 50, 100, 200, 255].map(value => <option key={value} value={value}>{value}</option>)}</select></label>)}</div><div className="mt-4 flex gap-3"><span className="rounded-md bg-indigo-100 px-3 py-2 text-xs font-semibold text-indigo-800">{t.dr}: {election.dr?.id ?? '—'}</span><span className="rounded-md bg-sky-100 px-3 py-2 text-xs font-semibold text-sky-800">{t.bdr}: {election.bdr?.id ?? '—'}</span></div><p className="mt-3 text-xs leading-relaxed text-slate-600">{t.electionNote}</p></article>
+          <article className="rounded-lg border border-slate-200 p-4"><h3 className="text-sm font-semibold text-slate-900">{t.election}</h3><div className="mt-3 grid grid-cols-3 gap-2">{(['R1', 'R2', 'R3'] as const).map(id => <label key={id} className="space-y-1 text-xs text-slate-600">{id} · {t.priority}<select value={priorities[id]} onChange={event => setPriorities(current => ({ ...current, [id]: Number(event.target.value) }))} className="block w-full rounded-lg border border-slate-200 bg-white px-2 py-2 font-mono text-xs">{[0, 1, 50, 100, 200, 255].map(value => <option key={value} value={value}>{value}</option>)}</select></label>)}</div><label className="mt-4 flex items-center gap-2 text-xs text-slate-700"><input type="checkbox" checked={lateJoin} onChange={event => setLateJoin(event.target.checked)} className="h-4 w-4 rounded border-slate-300" />{t.lateJoin}</label><div className="mt-4 flex gap-3"><span className="rounded-md bg-indigo-100 px-3 py-2 text-xs font-semibold text-indigo-800">{t.dr}: {election.dr?.id ?? '—'}</span><span className="rounded-md bg-sky-100 px-3 py-2 text-xs font-semibold text-sky-800">{t.bdr}: {election.bdr?.id ?? '—'}</span></div>{election.preemptionBlocked ? <p className="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs leading-relaxed text-amber-900">{t.blocked}</p> : null}{election.promotedBdr ? <p className="mt-3 rounded-lg border border-sky-100 bg-sky-50 p-3 text-xs leading-relaxed text-sky-900">{t.promoted}</p> : null}<p className="mt-3 text-xs leading-relaxed text-slate-600">{t.electionNote}</p></article>
         </div>
         <h3 className="mt-6 text-sm font-semibold text-slate-900">{t.states}</h3><ol className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-4">{OSPF_STATES.map((item, index) => <li key={item.state} className="rounded-lg border border-slate-200 p-3"><span className="font-mono text-[10px] text-indigo-600">{index + 1}</span><h4 className="mt-1 text-xs font-semibold text-slate-900">{item.state}</h4><p className="mt-1.5 text-xs leading-relaxed text-slate-600">{item.detail[language]}</p></li>)}</ol>
       </section>
