@@ -7,6 +7,8 @@ export type Ipv6AddressKind =
   | 'multicast'
   | 'documentation'
   | 'ipv4-mapped'
+  | 'ipv4-compatible'
+  | 'nat64'
   | 'other';
 
 export interface Ipv6Details {
@@ -27,9 +29,33 @@ function parsePrefix(input: string): { address: string; prefix?: number } {
   return { address: parts[0], prefix };
 }
 
+/**
+ * Rewrites the dotted-quad tail of an IPv4-embedded address (::ffff:192.0.2.1,
+ * 64:ff9b::192.0.2.33) into the two hextets it actually represents, so the rest of
+ * the parser only ever deals with hex groups.
+ */
+function embedTrailingIpv4(address: string): string {
+  const lastColon = address.lastIndexOf(':');
+  if (lastColon === -1) throw new Error('INVALID_IPV6');
+  const tail = address.slice(lastColon + 1);
+  const octets = tail.split('.');
+  if (octets.length !== 4) throw new Error('INVALID_IPV6');
+
+  const values = octets.map(octet => {
+    if (!/^\d{1,3}$/.test(octet)) throw new Error('INVALID_IPV6');
+    const value = Number(octet);
+    if (value > 255) throw new Error('INVALID_IPV6');
+    return value;
+  });
+
+  const high = (((values[0] << 8) | values[1]) >>> 0).toString(16);
+  const low = (((values[2] << 8) | values[3]) >>> 0).toString(16);
+  return `${address.slice(0, lastColon + 1)}${high}:${low}`;
+}
+
 export function expandIpv6(input: string): string[] {
-  const { address } = parsePrefix(input.toLowerCase().split('%')[0]);
-  if (address.includes('.')) throw new Error('IPV4_EMBEDDED_NOT_SUPPORTED');
+  const { address: rawAddress } = parsePrefix(input.toLowerCase().split('%')[0]);
+  const address = rawAddress.includes('.') ? embedTrailingIpv4(rawAddress) : rawAddress;
   if ((address.match(/::/g) ?? []).length > 1) throw new Error('INVALID_IPV6');
 
   const compressed = address.includes('::');
@@ -79,6 +105,8 @@ export function classifyIpv6(hextets: string[]): Ipv6AddressKind {
   if (allZero) return 'unspecified';
   if (values.slice(0, 7).every(value => value === 0) && values[7] === 1) return 'loopback';
   if (values.slice(0, 5).every(value => value === 0) && values[5] === 0xffff) return 'ipv4-mapped';
+  if (values.slice(0, 6).every(value => value === 0)) return 'ipv4-compatible';
+  if (values[0] === 0x0064 && values[1] === 0xff9b) return 'nat64';
   if (values[0] === 0x2001 && values[1] === 0x0db8) return 'documentation';
   if ((values[0] & 0xff00) === 0xff00) return 'multicast';
   if ((values[0] & 0xffc0) === 0xfe80) return 'link-local';
@@ -87,14 +115,28 @@ export function classifyIpv6(hextets: string[]): Ipv6AddressKind {
   return 'other';
 }
 
+/** Renders the last 32 bits as a dotted quad, e.g. c000:0201 -> 192.0.2.1. */
+function trailingIpv4(hextets: string[]): string {
+  const high = Number.parseInt(hextets[6], 16);
+  const low = Number.parseInt(hextets[7], 16);
+  return [high >> 8, high & 0xff, low >> 8, low & 0xff].join('.');
+}
+
 export function inspectIpv6(input: string): Ipv6Details {
   const parsed = parsePrefix(input);
   const hextets = expandIpv6(input);
+  const kind = classifyIpv6(hextets);
+  const compressed = compressIpv6(hextets);
+  const mixedNotation = kind === 'ipv4-mapped' || kind === 'ipv4-compatible' || kind === 'nat64';
+
   return {
     expanded: hextets.join(':'),
-    compressed: compressIpv6(hextets),
+    // RFC 5952 writes IPv4-embedded addresses in mixed notation: ::ffff:192.0.2.1
+    compressed: mixedNotation
+      ? `${compressed.replace(/[0-9a-f]{1,4}:[0-9a-f]{1,4}$/, '')}${trailingIpv4(hextets)}`
+      : compressed,
     hextets,
-    kind: classifyIpv6(hextets),
+    kind,
     prefix: parsed.prefix
   };
 }

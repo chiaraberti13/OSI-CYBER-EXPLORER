@@ -5,6 +5,7 @@ import {
   dscpName,
   isDnsCacheValid,
   isSyslogForwarded,
+  patPortRange,
   syslogSeverityName
 } from './ipServices';
 
@@ -17,6 +18,23 @@ describe('PAT translations', () => {
     const translation = createPatTranslation('10.0.0.11', 49152, '198.51.100.10', new Set([49152, 1024]));
     expect(translation.insideGlobal).toBe('198.51.100.10:1025');
     expect(translation.preservedPort).toBe(false);
+    expect(translation.portRange).toEqual([1024, 65535]);
+  });
+
+  it('keeps the translated port inside the range of the original one', () => {
+    expect(patPortRange(80)).toEqual([1, 511]);
+    expect(patPortRange(600)).toEqual([512, 1023]);
+    expect(patPortRange(49152)).toEqual([1024, 65535]);
+
+    // A well-known source port is never relocated into the dynamic range.
+    const translation = createPatTranslation('10.0.0.12', 443, '198.51.100.10', new Set([443, 1, 2]));
+    expect(translation.insideGlobal).toBe('198.51.100.10:3');
+    expect(translation.portRange).toEqual([1, 511]);
+  });
+
+  it('reports exhaustion of the range instead of leaking into the next one', () => {
+    const fullLowRange = new Set(Array.from({ length: 511 }, (_, index) => index + 1));
+    expect(() => createPatTranslation('10.0.0.13', 80, '198.51.100.10', fullLowRange)).toThrow('PAT_PORT_EXHAUSTION');
   });
 });
 

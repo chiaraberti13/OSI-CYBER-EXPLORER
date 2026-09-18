@@ -86,9 +86,32 @@ export function isEtherChannelCompatible(left: EtherChannelMode, right: EtherCha
   return left === 'desirable' || right === 'desirable';
 }
 
+/**
+ * IEEE 802.1D-1998 "short" path costs. The method is 16-bit and was defined when
+ * 10 Gb/s was the ceiling: from 10 Gb/s upward the values collapse toward 1, so links
+ * of very different speed become indistinguishable to STP.
+ */
 export const STP_SHORT_PATH_COST: Readonly<Record<string, number>> = {
   '10 Mb/s': 100,
   '100 Mb/s': 19,
   '1 Gb/s': 4,
   '10 Gb/s': 2
 };
+
+/**
+ * IEEE 802.1D-2004 "long" path costs (32-bit), enabled with
+ * `spanning-tree pathcost method long`. This is what keeps 10, 100 Gb/s and beyond
+ * distinguishable. The method must be identical on every switch of the topology:
+ * mixing short and long produces an inconsistent tree.
+ */
+export const STP_LONG_PATH_COST: Readonly<Record<string, number>> = {
+  '10 Mb/s': 2_000_000,
+  '100 Mb/s': 200_000,
+  '1 Gb/s': 20_000,
+  '10 Gb/s': 2_000,
+  '100 Gb/s': 200,
+  '1 Tb/s': 20
+};
+
+/** The speed at and above which the short method can no longer rank links apart. */
+export const STP_SHORT_METHOD_CEILING = '10 Gb/s';

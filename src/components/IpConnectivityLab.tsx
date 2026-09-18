@@ -87,6 +87,73 @@ const SECURITY_ROWS: Array<{ attack: Localized; effect: Localized; defense: Loca
   }
 ];
 
+const ROUTE_TABLE_OUTPUT = `R1# show ip route
+Codes: L - local, C - connected, S - static, R - RIP, O - OSPF,
+       IA - OSPF inter area, E1/E2 - OSPF external type 1/2,
+       B - BGP, D - EIGRP, EX - EIGRP external, * - candidate default
+
+Gateway of last resort is 198.51.100.1 to network 0.0.0.0
+
+S*    0.0.0.0/0 [1/0] via 198.51.100.1
+      10.0.0.0/8 is variably subnetted, 3 subnets, 3 masks
+S        10.0.0.0/8 [1/0] via 192.0.2.6
+O        10.10.0.0/16 [110/20] via 192.0.2.2, 00:04:11, GigabitEthernet0/0
+C        10.10.10.0/24 is directly connected, GigabitEthernet0/1
+L        10.10.10.1/32 is directly connected, GigabitEthernet0/1
+O IA  172.16.0.0/16 [110/30] via 192.0.2.2, 00:03:52, GigabitEthernet0/0`;
+
+const ROUTE_TABLE_LEGEND: Array<{ token: string; detail: Localized }> = [
+  {
+    token: 'Gateway of last resort',
+    detail: {
+      it: 'Dove finisce il traffico che non corrisponde ad alcuna rotta più specifica. Se manca, i pacchetti senza corrispondenza vengono scartati con ICMP Destination Unreachable.',
+      en: 'Where traffic that matches no more-specific route ends up. If it is absent, unmatched packets are dropped with ICMP Destination Unreachable.'
+    }
+  },
+  {
+    token: 'S* 0.0.0.0/0',
+    detail: {
+      it: 'L’asterisco marca la rotta come candidate default. Il prefisso /0 corrisponde a tutto, quindi vince solo quando nessun prefisso più lungo corrisponde.',
+      en: 'The asterisk marks the route as a candidate default. The /0 prefix matches everything, so it only wins when no longer prefix matches.'
+    }
+  },
+  {
+    token: '[110/20]',
+    detail: {
+      it: 'Distanza amministrativa / metrica. Il primo numero confronta sorgenti diverse per lo stesso prefisso (110 = OSPF), il secondo confronta percorsi dentro la stessa sorgente. Le rotte connected e local non lo mostrano perché hanno AD 0.',
+      en: 'Administrative distance / metric. The first number compares different sources for the same prefix (110 = OSPF), the second compares paths within the same source. Connected and local routes do not show it because their AD is 0.'
+    }
+  },
+  {
+    token: 'C vs L',
+    detail: {
+      it: 'C è la subnet configurata sull’interfaccia, L è l’indirizzo /32 del router stesso: serve al router per riconoscere il traffico destinato a sé. Vederli entrambi è normale, non una duplicazione.',
+      en: 'C is the subnet configured on the interface, L is the router’s own /32 address, which lets the router recognize traffic addressed to itself. Seeing both is normal, not a duplication.'
+    }
+  },
+  {
+    token: 'variably subnetted',
+    detail: {
+      it: 'La rete maggiore è divisa in subnet con maschere diverse (VLSM). La riga indica quante subnet e quante maschere distinte: è un riepilogo, non una rotta installata.',
+      en: 'The major network is divided into subnets with different masks (VLSM). The line states how many subnets and how many distinct masks: it is a summary line, not an installed route.'
+    }
+  },
+  {
+    token: 'O IA · 00:03:52',
+    detail: {
+      it: 'IA indica una rotta OSPF appresa da un’altra area. Il timer è da quanto la rotta è nella tabella: se si azzera continuamente, la rete sta flappando.',
+      en: 'IA marks an OSPF route learned from another area. The timer shows how long the route has been in the table: if it keeps resetting, the network is flapping.'
+    }
+  },
+  {
+    token: 'via · directly connected',
+    detail: {
+      it: 'via indica un next hop da risolvere con una ricorsione nella tabella (recursive lookup); directly connected indica che la destinazione si raggiunge sul segmento locale, senza altri salti.',
+      en: 'via names a next hop that must be resolved by a recursive lookup in the table; directly connected means the destination is reached on the local segment, with no further hop.'
+    }
+  }
+];
+
 const FHRP_ROWS: Array<{ property: Localized; hsrp: Localized; vrrp: Localized }> = [
   {
     property: { it: 'Standard e ruoli', en: 'Standard and roles' },
@@ -134,6 +201,10 @@ const OSPF_CONFIG = `router ospf 10
  router-id 1.1.1.1
  passive-interface default
  no passive-interface GigabitEthernet0/0
+ ! reference-bandwidth is expressed in Mb/s: 100000 = 100 Gb/s.
+ ! It is local to the router and is NOT advertised: a different value on a
+ ! neighbour makes the two run SPF on different costs, so the same value must
+ ! be configured on every router of the OSPF domain.
  auto-cost reference-bandwidth 100000
 !
 interface GigabitEthernet0/0
@@ -151,6 +222,7 @@ export default function IpConnectivityLab() {
   const [referenceBandwidth, setReferenceBandwidth] = useState(100000);
   const [interfaceBandwidth, setInterfaceBandwidth] = useState(1000);
   const [priorities, setPriorities] = useState<Record<string, number>>({ R1: 1, R2: 100, R3: 100 });
+  const [lateJoin, setLateJoin] = useState(false);
 
   const lookup = useMemo(() => {
     try {
@@ -175,33 +247,59 @@ export default function IpConnectivityLab() {
       { id: 'R2', priority: priorities.R2, routerId: '2.2.2.2' },
       { id: 'R3', priority: priorities.R3, routerId: '3.3.3.3' }
     ];
-    return electOspfDrBdr(candidates);
-  }, [priorities]);
+    const initial = electOspfDrBdr(candidates);
+    if (!lateJoin) return initial;
+    // R4 joins a segment that has already converged: the seated roles are passed in,
+    // which is what makes the absence of preemption observable.
+    return electOspfDrBdr(
+      [...candidates, { id: 'R4', priority: 255, routerId: '4.4.4.4' }],
+      { drId: initial.dr?.id, bdrId: initial.bdr?.id }
+    );
+  }, [priorities, lateJoin]);
 
   const selectedIds = new Set(lookup.selected.map(route => route.id));
   const t = language === 'it'
     ? {
         title: 'IP Connectivity Lab', subtitle: 'Dal lookup nella routing table alla convergenza OSPF: osserva come il router decide e come proteggere il control plane.',
+        readTable: 'Leggere show ip route', legend: 'Elemento', legendDetail: 'Come si interpreta',
+        readTableNote: 'La tabella qui sotto è un output realistico annotato. Leggerlo è un obiettivo d’esame a sé: prima di calcolare un percorso bisogna saper dire da dove viene ogni rotta, quanto è attendibile e se il router la userà davvero.',
         lookup: 'Routing table e longest-prefix match', destination: 'IPv4 di destinazione', invalid: 'Inserisci un indirizzo IPv4 valido.', code: 'Codice', prefix: 'Prefisso', adMetric: '[AD/metrica]', nextHop: 'Next hop / uscita', decision: 'Decisione', selected: 'Selezionata', candidate: 'Candidata', ignored: 'Non corrisponde',
         logic: 'Ordine della decisione', logicText: '1. Prefisso più lungo; 2. distanza amministrativa minore tra rotte dello stesso prefisso; 3. metrica minore all’interno dello stesso protocollo. Percorsi equivalenti possono essere installati in ECMP.',
         fib: 'RIB, FIB e adjacency table', fibText: 'La RIB raccoglie le rotte candidate del control plane. Le migliori vengono programmate nella FIB; l’adjacency table contiene le informazioni di riscrittura di livello 2. CEF usa FIB e adjacency per inoltrare nel data plane.',
         ospf: 'OSPFv2 single-area', cost: 'Calcolatore del costo OSPF', reference: 'Reference bandwidth (Mb/s)', bandwidth: 'Bandwidth interfaccia (Mb/s)', result: 'Costo risultante', costNote: 'Costo = reference bandwidth / interface bandwidth, con minimo 1. Configura lo stesso valore di riferimento su tutti i router del dominio OSPF.',
-        election: 'Elezione DR/BDR iniziale', priority: 'Priorità', dr: 'DR', bdr: 'BDR', electionNote: 'Sulle reti broadcast eleggibili vince la priorità più alta, poi il Router ID più alto. Priorità 0 rende il router non eleggibile. L’elezione non è preemptive.',
+        election: 'Elezione DR/BDR', priority: 'Priorità', dr: 'DR', bdr: 'BDR',
+        electionNote: 'Sulle reti broadcast vince la priorità più alta, poi il Router ID più alto; priorità 0 rende il router non eleggibile. L’ordine reale non è “i due migliori”: OSPF elegge prima il BDR tra i router che non rivendicano il ruolo di DR e lo promuove a DR solo se nessun DR è presente.',
+        lateJoin: 'Aggiungi R4 (priorità 255) a rete già converta',
+        promoted: 'Nessun DR presente: il BDR è stato promosso a DR ed è stato eletto un nuovo BDR.',
+        blocked: 'R4 ha la priorità migliore ma resta DROTHER: l’elezione OSPF non è preemptive e i ruoli assegnati non vengono revocati finché il router seduto non scompare (o non si azzera il processo con clear ip ospf process).',
         states: 'Formazione dell’adiacenza', fhrp: 'First-hop redundancy: HSRP e VRRP', fhrpNote: 'Un FHRP protegge il default gateway, non il percorso: gli host continuano a usare un solo IP virtuale mentre il router fisico dietro di esso può cambiare. Attenzione all’esame: in HSRP il subentro del router con priorità migliore avviene solo se è configurato preempt, e un FHRP senza object tracking può restare Active pur avendo perso l’uplink.', property: 'Proprietà', security: 'Attacchi e difese del routing', attack: 'Attacco', effect: 'Effetto osservabile', defense: 'Difesa e limite', evidence: 'Verifica', config: 'Configurazioni IOS di riferimento', configNote: 'I comandi di autenticazione e CoPP dipendono dalla release e dalla piattaforma: verifica sempre il supporto IOS/IOS XE reale.'
       }
     : {
         title: 'IP Connectivity Lab', subtitle: 'From routing-table lookup to OSPF convergence: observe how the router decides and how to protect the control plane.',
+        readTable: 'Reading show ip route', legend: 'Element', legendDetail: 'How to read it',
+        readTableNote: 'The output below is a realistic annotated routing table. Reading it is an exam objective in its own right: before computing a path you must be able to say where each route came from, how trusted it is, and whether the router will actually use it.',
         lookup: 'Routing table and longest-prefix match', destination: 'Destination IPv4', invalid: 'Enter a valid IPv4 address.', code: 'Code', prefix: 'Prefix', adMetric: '[AD/metric]', nextHop: 'Next hop / exit', decision: 'Decision', selected: 'Selected', candidate: 'Candidate', ignored: 'No match',
         logic: 'Decision order', logicText: '1. Longest prefix; 2. lowest administrative distance among routes for the same prefix; 3. lowest metric within the same protocol. Equivalent paths may be installed as ECMP.',
         fib: 'RIB, FIB, and adjacency table', fibText: 'The RIB collects control-plane route candidates. The best routes are programmed into the FIB; the adjacency table holds Layer 2 rewrite information. CEF uses the FIB and adjacency table for data-plane forwarding.',
         ospf: 'Single-area OSPFv2', cost: 'OSPF cost calculator', reference: 'Reference bandwidth (Mb/s)', bandwidth: 'Interface bandwidth (Mb/s)', result: 'Resulting cost', costNote: 'Cost = reference bandwidth / interface bandwidth, with a minimum of 1. Configure the same reference value on every router in the OSPF domain.',
-        election: 'Initial DR/BDR election', priority: 'Priority', dr: 'DR', bdr: 'BDR', electionNote: 'On eligible broadcast networks, the highest priority wins, followed by the highest Router ID. Priority 0 makes a router ineligible. The election is non-preemptive.',
+        election: 'DR/BDR election', priority: 'Priority', dr: 'DR', bdr: 'BDR',
+        electionNote: 'On broadcast networks the highest priority wins, then the highest Router ID; priority 0 makes a router ineligible. The real order is not “the best two”: OSPF elects the BDR first among the routers that do not claim the DR role, and promotes it to DR only when no DR is present.',
+        lateJoin: 'Add R4 (priority 255) to an already converged segment',
+        promoted: 'No DR was present: the BDR was promoted to DR and a new BDR was elected.',
+        blocked: 'R4 has the best priority but stays a DROTHER: the OSPF election is not preemptive and seated roles are not revoked until the seated router disappears (or the process is reset with clear ip ospf process).',
         states: 'Adjacency formation', fhrp: 'First-hop redundancy: HSRP and VRRP', fhrpNote: 'An FHRP protects the default gateway, not the path: hosts keep using a single virtual IP while the physical router behind it can change. Exam watch-out: in HSRP a better-priority router only takes over when preempt is configured, and an FHRP without object tracking can stay Active after losing its uplink.', property: 'Property', security: 'Routing attacks and defenses', attack: 'Attack', effect: 'Observable effect', defense: 'Defense and limitation', evidence: 'Verification', config: 'Reference IOS configurations', configNote: 'Authentication and CoPP commands vary by release and platform: always verify support on the actual IOS/IOS XE device.'
       };
 
   return (
     <div className="space-y-8">
       <header className="rounded-xl border border-slate-200 bg-white p-6 md:p-8"><p className="eyebrow">CCNA 3.1 · 3.2 · 3.3 · 3.4 · 3.5</p><h1 className="mt-2 text-2xl font-semibold text-slate-900">{t.title}</h1><p className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-600">{t.subtitle}</p></header>
+
+      <section className="rounded-xl border border-slate-200 bg-white p-5 md:p-6" aria-labelledby="route-read-title">
+        <SectionTitle icon={Route} title={t.readTable} id="route-read-title" />
+        <p className="mt-3 max-w-4xl text-xs leading-relaxed text-slate-600">{t.readTableNote}</p>
+        <pre className="mt-4 overflow-x-auto rounded-lg bg-slate-950 p-4 text-xs leading-relaxed text-emerald-300"><code>{ROUTE_TABLE_OUTPUT}</code></pre>
+        <div className="mt-4 overflow-x-auto"><table className="w-full min-w-[680px] border-collapse text-left text-xs"><thead><tr className="border-b border-slate-200 text-slate-500"><th className="p-3">{t.legend}</th><th className="p-3">{t.legendDetail}</th></tr></thead><tbody>{ROUTE_TABLE_LEGEND.map(item => <tr key={item.token} className="border-b border-slate-100 align-top"><th className="p-3"><code className="text-[11px] font-semibold text-indigo-700">{item.token}</code></th><td className="p-3 leading-relaxed text-slate-600">{item.detail[language]}</td></tr>)}</tbody></table></div>
+      </section>
 
       <section className="rounded-xl border border-slate-200 bg-white p-5 md:p-6" aria-labelledby="route-lookup-title">
         <SectionTitle icon={Route} title={t.lookup} id="route-lookup-title" />
@@ -216,7 +314,7 @@ export default function IpConnectivityLab() {
         <SectionTitle icon={Router} title={t.ospf} id="ospf-title" />
         <div className="mt-5 grid gap-6 xl:grid-cols-2">
           <article className="rounded-lg border border-slate-200 p-4"><h3 className="text-sm font-semibold text-slate-900">{t.cost}</h3><div className="mt-4 grid gap-3 sm:grid-cols-2"><label className="space-y-1.5 text-xs text-slate-600">{t.reference}<input type="number" min={1} value={referenceBandwidth} onChange={event => setReferenceBandwidth(Number(event.target.value))} className="block w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-sm" /></label><label className="space-y-1.5 text-xs text-slate-600">{t.bandwidth}<input type="number" min={1} value={interfaceBandwidth} onChange={event => setInterfaceBandwidth(Number(event.target.value))} className="block w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-sm" /></label></div><p className="mt-4 text-sm font-semibold text-indigo-700">{t.result}: {ospfCost ?? '—'}</p><p className="mt-2 text-xs leading-relaxed text-slate-600">{t.costNote}</p></article>
-          <article className="rounded-lg border border-slate-200 p-4"><h3 className="text-sm font-semibold text-slate-900">{t.election}</h3><div className="mt-3 grid grid-cols-3 gap-2">{(['R1', 'R2', 'R3'] as const).map(id => <label key={id} className="space-y-1 text-xs text-slate-600">{id} · {t.priority}<select value={priorities[id]} onChange={event => setPriorities(current => ({ ...current, [id]: Number(event.target.value) }))} className="block w-full rounded-lg border border-slate-200 bg-white px-2 py-2 font-mono text-xs">{[0, 1, 50, 100, 200, 255].map(value => <option key={value} value={value}>{value}</option>)}</select></label>)}</div><div className="mt-4 flex gap-3"><span className="rounded-md bg-indigo-100 px-3 py-2 text-xs font-semibold text-indigo-800">{t.dr}: {election.dr?.id ?? '—'}</span><span className="rounded-md bg-sky-100 px-3 py-2 text-xs font-semibold text-sky-800">{t.bdr}: {election.bdr?.id ?? '—'}</span></div><p className="mt-3 text-xs leading-relaxed text-slate-600">{t.electionNote}</p></article>
+          <article className="rounded-lg border border-slate-200 p-4"><h3 className="text-sm font-semibold text-slate-900">{t.election}</h3><div className="mt-3 grid grid-cols-3 gap-2">{(['R1', 'R2', 'R3'] as const).map(id => <label key={id} className="space-y-1 text-xs text-slate-600">{id} · {t.priority}<select value={priorities[id]} onChange={event => setPriorities(current => ({ ...current, [id]: Number(event.target.value) }))} className="block w-full rounded-lg border border-slate-200 bg-white px-2 py-2 font-mono text-xs">{[0, 1, 50, 100, 200, 255].map(value => <option key={value} value={value}>{value}</option>)}</select></label>)}</div><label className="mt-4 flex items-center gap-2 text-xs text-slate-700"><input type="checkbox" checked={lateJoin} onChange={event => setLateJoin(event.target.checked)} className="h-4 w-4 rounded border-slate-300" />{t.lateJoin}</label><div className="mt-4 flex gap-3"><span className="rounded-md bg-indigo-100 px-3 py-2 text-xs font-semibold text-indigo-800">{t.dr}: {election.dr?.id ?? '—'}</span><span className="rounded-md bg-sky-100 px-3 py-2 text-xs font-semibold text-sky-800">{t.bdr}: {election.bdr?.id ?? '—'}</span></div>{election.preemptionBlocked ? <p className="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs leading-relaxed text-amber-900">{t.blocked}</p> : null}{election.promotedBdr ? <p className="mt-3 rounded-lg border border-sky-100 bg-sky-50 p-3 text-xs leading-relaxed text-sky-900">{t.promoted}</p> : null}<p className="mt-3 text-xs leading-relaxed text-slate-600">{t.electionNote}</p></article>
         </div>
         <h3 className="mt-6 text-sm font-semibold text-slate-900">{t.states}</h3><ol className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-4">{OSPF_STATES.map((item, index) => <li key={item.state} className="rounded-lg border border-slate-200 p-3"><span className="font-mono text-[10px] text-indigo-600">{index + 1}</span><h4 className="mt-1 text-xs font-semibold text-slate-900">{item.state}</h4><p className="mt-1.5 text-xs leading-relaxed text-slate-600">{item.detail[language]}</p></li>)}</ol>
       </section>

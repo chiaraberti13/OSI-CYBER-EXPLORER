@@ -19,9 +19,25 @@ describe('IPv6 inspection', () => {
     expect(inspectIpv6('ff02::1').kind).toBe('multicast');
   });
 
+  it('parses IPv4-embedded addresses and prints them in mixed notation', () => {
+    const mapped = inspectIpv6('::ffff:192.0.2.1');
+    expect(mapped.kind).toBe('ipv4-mapped');
+    expect(mapped.expanded).toBe('0000:0000:0000:0000:0000:ffff:c000:0201');
+    expect(mapped.compressed).toBe('::ffff:192.0.2.1');
+
+    const nat64 = inspectIpv6('64:ff9b::192.0.2.33/96');
+    expect(nat64.kind).toBe('nat64');
+    expect(nat64.compressed).toBe('64:ff9b::192.0.2.33');
+    expect(nat64.prefix).toBe(96);
+
+    expect(inspectIpv6('::192.0.2.1').kind).toBe('ipv4-compatible');
+  });
+
   it('rejects malformed values', () => {
     expect(() => inspectIpv6('2001::db8::1')).toThrow('INVALID_IPV6');
     expect(() => inspectIpv6('2001:db8::1/129')).toThrow('INVALID_IPV6_PREFIX');
+    expect(() => inspectIpv6('::ffff:192.0.2')).toThrow('INVALID_IPV6');
+    expect(() => inspectIpv6('::ffff:192.0.2.300')).toThrow('INVALID_IPV6');
   });
 });
 

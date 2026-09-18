@@ -5,6 +5,8 @@ export interface PatTranslation {
   insideGlobal: string;
   protocol: 'tcp' | 'udp';
   preservedPort: boolean;
+  /** The port range PAT drew from, because a translated port never leaves its own range. */
+  portRange: readonly [number, number];
 }
 
 export interface NtpMetrics {
@@ -40,6 +42,18 @@ function assertPort(port: number): void {
   if (!Number.isInteger(port) || port < 1 || port > 65535) throw new Error('INVALID_PORT');
 }
 
+/**
+ * PAT keeps a translated port inside the same range as the original one: 1-511,
+ * 512-1023, or 1024-65535. It matters operationally — a host sourcing from a
+ * well-known port can exhaust its small range while the dynamic range is still empty.
+ */
+export function patPortRange(port: number): readonly [number, number] {
+  assertPort(port);
+  if (port < 512) return [1, 511];
+  if (port < 1024) return [512, 1023];
+  return [1024, 65535];
+}
+
 export function createPatTranslation(
   insideIp: string,
   sourcePort: number,
@@ -51,18 +65,20 @@ export function createPatTranslation(
   ipv4ToUint(publicIp);
   assertPort(sourcePort);
 
+  const [rangeStart, rangeEnd] = patPortRange(sourcePort);
   let translatedPort = sourcePort;
   if (occupiedPorts.has(translatedPort)) {
-    translatedPort = 1024;
-    while (translatedPort <= 65535 && occupiedPorts.has(translatedPort)) translatedPort += 1;
-    if (translatedPort > 65535) throw new Error('PAT_PORT_EXHAUSTION');
+    translatedPort = rangeStart;
+    while (translatedPort <= rangeEnd && occupiedPorts.has(translatedPort)) translatedPort += 1;
+    if (translatedPort > rangeEnd) throw new Error('PAT_PORT_EXHAUSTION');
   }
 
   return {
     insideLocal: `${uintToIpv4(ipv4ToUint(insideIp))}:${sourcePort}`,
     insideGlobal: `${uintToIpv4(ipv4ToUint(publicIp))}:${translatedPort}`,
     protocol,
-    preservedPort: translatedPort === sourcePort
+    preservedPort: translatedPort === sourcePort,
+    portRange: [rangeStart, rangeEnd]
   };
 }
 
