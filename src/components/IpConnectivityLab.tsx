@@ -87,6 +87,73 @@ const SECURITY_ROWS: Array<{ attack: Localized; effect: Localized; defense: Loca
   }
 ];
 
+const ROUTE_TABLE_OUTPUT = `R1# show ip route
+Codes: L - local, C - connected, S - static, R - RIP, O - OSPF,
+       IA - OSPF inter area, E1/E2 - OSPF external type 1/2,
+       B - BGP, D - EIGRP, EX - EIGRP external, * - candidate default
+
+Gateway of last resort is 198.51.100.1 to network 0.0.0.0
+
+S*    0.0.0.0/0 [1/0] via 198.51.100.1
+      10.0.0.0/8 is variably subnetted, 3 subnets, 3 masks
+S        10.0.0.0/8 [1/0] via 192.0.2.6
+O        10.10.0.0/16 [110/20] via 192.0.2.2, 00:04:11, GigabitEthernet0/0
+C        10.10.10.0/24 is directly connected, GigabitEthernet0/1
+L        10.10.10.1/32 is directly connected, GigabitEthernet0/1
+O IA  172.16.0.0/16 [110/30] via 192.0.2.2, 00:03:52, GigabitEthernet0/0`;
+
+const ROUTE_TABLE_LEGEND: Array<{ token: string; detail: Localized }> = [
+  {
+    token: 'Gateway of last resort',
+    detail: {
+      it: 'Dove finisce il traffico che non corrisponde ad alcuna rotta più specifica. Se manca, i pacchetti senza corrispondenza vengono scartati con ICMP Destination Unreachable.',
+      en: 'Where traffic that matches no more-specific route ends up. If it is absent, unmatched packets are dropped with ICMP Destination Unreachable.'
+    }
+  },
+  {
+    token: 'S* 0.0.0.0/0',
+    detail: {
+      it: 'L’asterisco marca la rotta come candidate default. Il prefisso /0 corrisponde a tutto, quindi vince solo quando nessun prefisso più lungo corrisponde.',
+      en: 'The asterisk marks the route as a candidate default. The /0 prefix matches everything, so it only wins when no longer prefix matches.'
+    }
+  },
+  {
+    token: '[110/20]',
+    detail: {
+      it: 'Distanza amministrativa / metrica. Il primo numero confronta sorgenti diverse per lo stesso prefisso (110 = OSPF), il secondo confronta percorsi dentro la stessa sorgente. Le rotte connected e local non lo mostrano perché hanno AD 0.',
+      en: 'Administrative distance / metric. The first number compares different sources for the same prefix (110 = OSPF), the second compares paths within the same source. Connected and local routes do not show it because their AD is 0.'
+    }
+  },
+  {
+    token: 'C vs L',
+    detail: {
+      it: 'C è la subnet configurata sull’interfaccia, L è l’indirizzo /32 del router stesso: serve al router per riconoscere il traffico destinato a sé. Vederli entrambi è normale, non una duplicazione.',
+      en: 'C is the subnet configured on the interface, L is the router’s own /32 address, which lets the router recognize traffic addressed to itself. Seeing both is normal, not a duplication.'
+    }
+  },
+  {
+    token: 'variably subnetted',
+    detail: {
+      it: 'La rete maggiore è divisa in subnet con maschere diverse (VLSM). La riga indica quante subnet e quante maschere distinte: è un riepilogo, non una rotta installata.',
+      en: 'The major network is divided into subnets with different masks (VLSM). The line states how many subnets and how many distinct masks: it is a summary line, not an installed route.'
+    }
+  },
+  {
+    token: 'O IA · 00:03:52',
+    detail: {
+      it: 'IA indica una rotta OSPF appresa da un’altra area. Il timer è da quanto la rotta è nella tabella: se si azzera continuamente, la rete sta flappando.',
+      en: 'IA marks an OSPF route learned from another area. The timer shows how long the route has been in the table: if it keeps resetting, the network is flapping.'
+    }
+  },
+  {
+    token: 'via · directly connected',
+    detail: {
+      it: 'via indica un next hop da risolvere con una ricorsione nella tabella (recursive lookup); directly connected indica che la destinazione si raggiunge sul segmento locale, senza altri salti.',
+      en: 'via names a next hop that must be resolved by a recursive lookup in the table; directly connected means the destination is reached on the local segment, with no further hop.'
+    }
+  }
+];
+
 const FHRP_ROWS: Array<{ property: Localized; hsrp: Localized; vrrp: Localized }> = [
   {
     property: { it: 'Standard e ruoli', en: 'Standard and roles' },
@@ -194,6 +261,8 @@ export default function IpConnectivityLab() {
   const t = language === 'it'
     ? {
         title: 'IP Connectivity Lab', subtitle: 'Dal lookup nella routing table alla convergenza OSPF: osserva come il router decide e come proteggere il control plane.',
+        readTable: 'Leggere show ip route', legend: 'Elemento', legendDetail: 'Come si interpreta',
+        readTableNote: 'La tabella qui sotto è un output realistico annotato. Leggerlo è un obiettivo d’esame a sé: prima di calcolare un percorso bisogna saper dire da dove viene ogni rotta, quanto è attendibile e se il router la userà davvero.',
         lookup: 'Routing table e longest-prefix match', destination: 'IPv4 di destinazione', invalid: 'Inserisci un indirizzo IPv4 valido.', code: 'Codice', prefix: 'Prefisso', adMetric: '[AD/metrica]', nextHop: 'Next hop / uscita', decision: 'Decisione', selected: 'Selezionata', candidate: 'Candidata', ignored: 'Non corrisponde',
         logic: 'Ordine della decisione', logicText: '1. Prefisso più lungo; 2. distanza amministrativa minore tra rotte dello stesso prefisso; 3. metrica minore all’interno dello stesso protocollo. Percorsi equivalenti possono essere installati in ECMP.',
         fib: 'RIB, FIB e adjacency table', fibText: 'La RIB raccoglie le rotte candidate del control plane. Le migliori vengono programmate nella FIB; l’adjacency table contiene le informazioni di riscrittura di livello 2. CEF usa FIB e adjacency per inoltrare nel data plane.',
@@ -207,6 +276,8 @@ export default function IpConnectivityLab() {
       }
     : {
         title: 'IP Connectivity Lab', subtitle: 'From routing-table lookup to OSPF convergence: observe how the router decides and how to protect the control plane.',
+        readTable: 'Reading show ip route', legend: 'Element', legendDetail: 'How to read it',
+        readTableNote: 'The output below is a realistic annotated routing table. Reading it is an exam objective in its own right: before computing a path you must be able to say where each route came from, how trusted it is, and whether the router will actually use it.',
         lookup: 'Routing table and longest-prefix match', destination: 'Destination IPv4', invalid: 'Enter a valid IPv4 address.', code: 'Code', prefix: 'Prefix', adMetric: '[AD/metric]', nextHop: 'Next hop / exit', decision: 'Decision', selected: 'Selected', candidate: 'Candidate', ignored: 'No match',
         logic: 'Decision order', logicText: '1. Longest prefix; 2. lowest administrative distance among routes for the same prefix; 3. lowest metric within the same protocol. Equivalent paths may be installed as ECMP.',
         fib: 'RIB, FIB, and adjacency table', fibText: 'The RIB collects control-plane route candidates. The best routes are programmed into the FIB; the adjacency table holds Layer 2 rewrite information. CEF uses the FIB and adjacency table for data-plane forwarding.',
@@ -222,6 +293,13 @@ export default function IpConnectivityLab() {
   return (
     <div className="space-y-8">
       <header className="rounded-xl border border-slate-200 bg-white p-6 md:p-8"><p className="eyebrow">CCNA 3.1 · 3.2 · 3.3 · 3.4 · 3.5</p><h1 className="mt-2 text-2xl font-semibold text-slate-900">{t.title}</h1><p className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-600">{t.subtitle}</p></header>
+
+      <section className="rounded-xl border border-slate-200 bg-white p-5 md:p-6" aria-labelledby="route-read-title">
+        <SectionTitle icon={Route} title={t.readTable} id="route-read-title" />
+        <p className="mt-3 max-w-4xl text-xs leading-relaxed text-slate-600">{t.readTableNote}</p>
+        <pre className="mt-4 overflow-x-auto rounded-lg bg-slate-950 p-4 text-xs leading-relaxed text-emerald-300"><code>{ROUTE_TABLE_OUTPUT}</code></pre>
+        <div className="mt-4 overflow-x-auto"><table className="w-full min-w-[680px] border-collapse text-left text-xs"><thead><tr className="border-b border-slate-200 text-slate-500"><th className="p-3">{t.legend}</th><th className="p-3">{t.legendDetail}</th></tr></thead><tbody>{ROUTE_TABLE_LEGEND.map(item => <tr key={item.token} className="border-b border-slate-100 align-top"><th className="p-3"><code className="text-[11px] font-semibold text-indigo-700">{item.token}</code></th><td className="p-3 leading-relaxed text-slate-600">{item.detail[language]}</td></tr>)}</tbody></table></div>
+      </section>
 
       <section className="rounded-xl border border-slate-200 bg-white p-5 md:p-6" aria-labelledby="route-lookup-title">
         <SectionTitle icon={Route} title={t.lookup} id="route-lookup-title" />

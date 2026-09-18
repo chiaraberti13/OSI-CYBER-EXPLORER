@@ -80,6 +80,120 @@ const WIRELESS_ROWS: Array<{ topic: Localized; detail: Localized }> = [
   { topic: { it: 'Infrastruttura', en: 'Infrastructure' }, detail: { it: 'AP lightweight e WLC separano funzioni di accesso, controllo e gestione; CAPWAP crea i tunnel AP–controller.', en: 'Lightweight APs and WLCs separate access, control, and management functions; CAPWAP builds AP-to-controller tunnels.' } }
 ];
 
+// CCNA 1.11 — wireless principles (the RF and 802.11 basics the other labs build on)
+const WIRELESS_PRINCIPLES: Array<{ title: Localized; detail: Localized }> = [
+  {
+    title: { it: 'Mezzo condiviso e half-duplex', en: 'Shared, half-duplex medium' },
+    detail: {
+      it: 'La radio è un mezzo condiviso: su un canale trasmette uno alla volta e il throughput reale si divide tra i client associati. Un AP non è uno switch — non esistono porte dedicate.',
+      en: 'Radio is a shared medium: one station transmits at a time on a channel and real throughput is divided among the associated clients. An AP is not a switch — there are no dedicated ports.'
+    }
+  },
+  {
+    title: { it: 'CSMA/CA', en: 'CSMA/CA' },
+    detail: {
+      it: 'Il Wi-Fi evita le collisioni invece di rilevarle: il client ascolta, attende un backoff casuale, trasmette e attende un ACK. RTS/CTS prenota il canale quando i client non si sentono tra loro (nodo nascosto).',
+      en: 'Wi-Fi avoids collisions rather than detecting them: the client listens, waits a random backoff, transmits, and waits for an ACK. RTS/CTS reserves the channel when clients cannot hear each other (hidden node).'
+    }
+  },
+  {
+    title: { it: 'SSID, BSSID, BSS ed ESS', en: 'SSID, BSSID, BSS, and ESS' },
+    detail: {
+      it: 'Il SSID è il nome della rete; il BSSID è il MAC della radio dell’AP e identifica la singola cella (BSS). Più AP con lo stesso SSID formano un ESS e permettono il roaming; senza AP la topologia è ad-hoc (IBSS).',
+      en: 'The SSID is the network name; the BSSID is the MAC of the AP radio and identifies the single cell (BSS). Several APs sharing an SSID form an ESS and enable roaming; with no AP the topology is ad-hoc (IBSS).'
+    }
+  },
+  {
+    title: { it: 'Canali e interferenza', en: 'Channels and interference' },
+    detail: {
+      it: 'In 2,4 GHz con canali da 20 MHz solo 1, 6 e 11 non si sovrappongono. Due AP vicini sullo stesso canale si contendono il tempo (co-channel interference); su canali parzialmente sovrapposti si disturbano come rumore, che è peggio.',
+      en: 'In 2.4 GHz with 20 MHz channels only 1, 6, and 11 do not overlap. Two nearby APs on the same channel contend for airtime (co-channel interference); on partially overlapping channels they interfere as noise, which is worse.'
+    }
+  },
+  {
+    title: { it: 'Banda, ampiezza e portata', en: 'Band, width, and range' },
+    detail: {
+      it: 'Canali più larghi (40/80/160 MHz) aumentano il throughput ma riducono i canali disponibili e il rapporto segnale/rumore. Le frequenze più alte portano più capacità e meno penetrazione: 6 GHz copre meno di 2,4 GHz.',
+      en: 'Wider channels (40/80/160 MHz) raise throughput but reduce the number of available channels and the signal-to-noise ratio. Higher frequencies bring more capacity and less penetration: 6 GHz covers less than 2.4 GHz.'
+    }
+  },
+  {
+    title: { it: 'Associazione in tre fasi', en: 'Three-stage association' },
+    detail: {
+      it: 'Il client scopre l’AP (beacon o probe), si autentica e infine si associa. Sono tre passaggi distinti: un client associato non è necessariamente autorizzato sulla rete, ed è l’errore da non fare nella diagnosi.',
+      en: 'The client discovers the AP (beacon or probe), authenticates, and only then associates. These are three distinct steps: an associated client is not necessarily authorized on the network, and conflating them is the diagnostic mistake to avoid.'
+    }
+  }
+];
+
+// CCNA 2.8 — management access to network devices, APs, and WLCs
+const MGMT_ACCESS_ROWS: Array<{ method: string; detail: Localized; verdict: Localized }> = [
+  {
+    method: { it: 'Console (out-of-band)', en: 'Console (out-of-band)' } as unknown as string,
+    detail: { it: 'Accesso diretto via cavo, indipendente dalla configurazione IP: è l’unica via quando la rete è giù o la configurazione è sbagliata, e serve per il recupero password.', en: 'Direct cabled access, independent of any IP configuration: the only way in when the network is down or the configuration is wrong, and what password recovery relies on.' },
+    verdict: { it: 'Da proteggere fisicamente e con password: chi raggiunge la console raggiunge il dispositivo.', en: 'Protect it physically and with a password: whoever reaches the console reaches the device.' }
+  },
+  {
+    method: 'Telnet · TCP 23',
+    detail: { it: 'Sessione CLI in chiaro: credenziali e comandi sono leggibili da chiunque intercetti il traffico.', en: 'Cleartext CLI session: credentials and commands are readable by anyone intercepting the traffic.' },
+    verdict: { it: 'Da disabilitare (transport input ssh sulle linee vty).', en: 'Disable it (transport input ssh on the vty lines).' }
+  },
+  {
+    method: 'SSH · TCP 22',
+    detail: { it: 'Sessione CLI cifrata e autenticata. Richiede hostname, ip domain name, una coppia di chiavi RSA e ip ssh version 2.', en: 'Encrypted, authenticated CLI session. It requires a hostname, ip domain name, an RSA key pair, and ip ssh version 2.' },
+    verdict: { it: 'È il metodo CLI da usare, abbinato a AAA e a una ACL sulle vty.', en: 'This is the CLI method to use, paired with AAA and an ACL on the vty lines.' }
+  },
+  {
+    method: 'HTTP · TCP 80',
+    detail: { it: 'GUI di gestione non cifrata: su un WLC significa esporre in chiaro le credenziali di amministrazione dell’intera infrastruttura wireless.', en: 'Unencrypted management GUI: on a WLC this means exposing the administrative credentials of the whole wireless infrastructure in cleartext.' },
+    verdict: { it: 'Da disabilitare (no ip http server).', en: 'Disable it (no ip http server).' }
+  },
+  {
+    method: 'HTTPS · TCP 443',
+    detail: { it: 'GUI cifrata con TLS, il metodo con cui si configura normalmente un WLC. Il certificato va sostituito con uno attendibile, altrimenti gli amministratori si abituano a ignorare gli avvisi.', en: 'TLS-encrypted GUI, the normal way to configure a WLC. Replace the certificate with a trusted one, otherwise administrators get used to dismissing warnings.' },
+    verdict: { it: 'Metodo GUI da usare, limitato alle sorgenti di management.', en: 'The GUI method to use, restricted to management sources.' }
+  },
+  {
+    method: 'TACACS+ · RADIUS',
+    detail: { it: 'Spostano autenticazione e autorizzazione su un server centrale invece delle password locali: TACACS+ per l’amministrazione dei dispositivi, RADIUS per l’accesso alla rete.', en: 'They move authentication and authorization to a central server instead of local passwords: TACACS+ for device administration, RADIUS for network access.' },
+    verdict: { it: 'Conserva sempre un fallback locale testato, o un server irraggiungibile diventa un lockout.', en: 'Always keep a tested local fallback, or an unreachable server becomes a lockout.' }
+  },
+  {
+    method: { it: 'Gestione cloud', en: 'Cloud-managed' } as unknown as string,
+    detail: { it: 'Il dispositivo stabilisce una sessione uscente verso un controller cloud e ne riceve la configurazione: nessuna porta di gestione esposta in ingresso.', en: 'The device establishes an outbound session to a cloud controller and receives its configuration from it: no inbound management port is exposed.' },
+    verdict: { it: 'Sposta la fiducia sull’account cloud: MFA e ruoli minimi diventano il controllo principale.', en: 'It shifts trust onto the cloud account: MFA and least-privilege roles become the primary control.' }
+  }
+];
+
+// CCNA 2.9 + 5.10 — reading the WLC GUI and building a WPA2 PSK WLAN
+const WLAN_GUI_STEPS: Array<{ tab: string; fields: Localized; note: Localized }> = [
+  {
+    tab: 'WLANs → Create New → General',
+    fields: { it: 'Profile Name (nome interno del profilo), SSID (nome trasmesso ai client), Status (abilita la WLAN), Radio Policy (quali bande servono la WLAN) e Interface/Interface Group, che lega la WLAN alla VLAN e quindi alla subnet.', en: 'Profile Name (internal profile name), SSID (the name broadcast to clients), Status (enables the WLAN), Radio Policy (which bands serve the WLAN), and Interface/Interface Group, which binds the WLAN to its VLAN and therefore to its subnet.' },
+    note: { it: 'Profile Name e SSID sono campi distinti: possono differire, e confonderli è l’errore più comune. Senza l’interfaccia corretta i client si associano ma non ottengono indirizzo.', en: 'Profile Name and SSID are distinct fields: they may differ, and confusing them is the most common mistake. With the wrong interface, clients associate but get no address.' }
+  },
+  {
+    tab: 'Security → Layer 2',
+    fields: { it: 'Layer 2 Security = WPA+WPA2 (o WPA2+WPA3), spunta su WPA2 Policy e WPA2 Encryption = AES/CCMP, Authentication Key Management = PSK, e la passphrase in PSK Format (ASCII, 8-63 caratteri).', en: 'Layer 2 Security = WPA+WPA2 (or WPA2+WPA3), WPA2 Policy checked with WPA2 Encryption = AES/CCMP, Authentication Key Management = PSK, and the passphrase under PSK Format (ASCII, 8-63 characters).' },
+    note: { it: 'Questa è la configurazione WPA2 PSK dell’obiettivo 5.10. TKIP va lasciato disattivato: è deprecato. La PSK è condivisa da tutti i client, quindi non identifica nessuno e non si revoca singolarmente.', en: 'This is the WPA2 PSK configuration of objective 5.10. Leave TKIP off: it is deprecated. The PSK is shared by every client, so it identifies no one and cannot be revoked individually.' }
+  },
+  {
+    tab: 'Security → AAA Servers',
+    fields: { it: 'Con 802.1X al posto di PSK si selezionano qui i server RADIUS di autenticazione e accounting, già definiti in Security → RADIUS.', en: 'With 802.1X instead of PSK, this is where the authentication and accounting RADIUS servers — already defined under Security → RADIUS — are selected.' },
+    note: { it: 'È il passaggio da Personal a Enterprise: credenziali o certificati per utente, revoca individuale e VLAN/policy assegnate dinamicamente.', en: 'This is the step from Personal to Enterprise: per-user credentials or certificates, individual revocation, and dynamically assigned VLANs/policy.' }
+  },
+  {
+    tab: 'QoS',
+    fields: { it: 'Profilo Platinum (voce), Gold (video), Silver (best effort, predefinito) o Bronze (background), più i limiti di banda per SSID o per client e la WMM policy.', en: 'Platinum (voice), Gold (video), Silver (best effort, the default), or Bronze (background) profile, plus per-SSID or per-client bandwidth limits and the WMM policy.' },
+    note: { it: 'Il profilo impone un tetto alla priorità del traffico della WLAN: una WLAN voce su Silver vede la marcatura declassata all’ingresso.', en: 'The profile caps the priority of that WLAN’s traffic: a voice WLAN on Silver has its marking downgraded on ingress.' }
+  },
+  {
+    tab: 'Advanced',
+    fields: { it: 'Session Timeout, Client Exclusion, P2P Blocking Action (isolamento tra client), FlexConnect Local Switching, DHCP Addr. Assignment e Enable Passive Client.', en: 'Session Timeout, Client Exclusion, P2P Blocking Action (client isolation), FlexConnect Local Switching, DHCP Addr. Assignment, and Enable Passive Client.' },
+    note: { it: 'P2P Blocking è ciò che isola i client di una WLAN guest tra loro; FlexConnect Local Switching cambia dove il traffico esce e quindi dove le policy vanno applicate.', en: 'P2P Blocking is what isolates the clients of a guest WLAN from each other; FlexConnect Local Switching changes where traffic exits and therefore where policy must be applied.' }
+  }
+];
+
 const STP_ROLES: Array<{ name: string; detail: Localized }> = [
   { name: 'Root port', detail: { it: 'Su ogni switch non-root, è la porta con il costo totale minore verso la root bridge.', en: 'On each non-root switch, this is the port with the lowest total path cost toward the root bridge.' } },
   { name: 'Designated port', detail: { it: 'È la porta che offre il percorso migliore verso la root per uno specifico segmento; inoltra i frame.', en: 'This port offers the best path to the root for a specific segment; it forwards frames.' } },
@@ -177,7 +291,11 @@ export default function NetworkAccessLab() {
         costs: 'Costi STP (short method, 802.1D-1998)', longCosts: 'Costi STP (long method, 802.1D-2004)',
         costNote: `Il metodo short è a 16 bit e si ferma a ${STP_SHORT_METHOD_CEILING}: da lì in su i valori collassano verso 1 e link di velocità molto diversa diventano indistinguibili per STP. Con uplink a 10 Gb/s o più veloci si abilita spanning-tree pathcost method long, che deve essere identico su tutti gli switch della topologia: mescolare short e long produce un albero incoerente.`, etherTitle: 'EtherChannel', left: 'Switch sinistro', right: 'Switch destro', formed: 'Port-channel formato', notFormed: 'Port-channel non formato',
         etherNote: 'LACP: active avvia la negoziazione, passive risponde. PAgP: desirable avvia, auto risponde. La modalità on non negozia e deve essere coerente sui due lati.',
-        wirelessTitle: 'Fondamenti wireless', securityTitle: 'Attacchi e difese di accesso', attack: 'Attacco', mechanism: 'Meccanismo e impatto', defense: 'Difesa appropriata', verify: 'Verifica IOS',
+        wirelessTitle: 'Fondamenti wireless', principlesTitle: 'Principi radio e 802.11',
+        mgmtTitle: 'Accesso di gestione a dispositivi, AP e WLC', method: 'Metodo', mgmtDetail: 'Come funziona', mgmtVerdict: 'Indicazione operativa',
+        guiTitle: 'Configurazione WLAN dalla GUI del WLC (WPA2 PSK)', guiTab: 'Percorso nella GUI', guiFields: 'Campi da impostare', guiNote: 'Nota didattica',
+        guiIntro: 'Sequenza dei campi che si incontrano creando una WLAN su un Wireless LAN Controller. È una descrizione testuale, non una GUI interattiva: nomi e posizione dei campi variano tra AireOS e IOS XE.',
+        securityTitle: 'Attacchi e difese di accesso', attack: 'Attacco', mechanism: 'Meccanismo e impatto', defense: 'Difesa appropriata', verify: 'Verifica IOS',
         configTitle: 'Configurazioni IOS di riferimento', configNote: 'Gli esempi sono blocchi didattici: nomi interfaccia, VLAN, piattaforma e supporto dei comandi vanno adattati al dispositivo reale.'
       }
     : {
@@ -189,7 +307,11 @@ export default function NetworkAccessLab() {
         costs: 'STP costs (short method, 802.1D-1998)', longCosts: 'STP costs (long method, 802.1D-2004)',
         costNote: `The short method is 16-bit and stops at ${STP_SHORT_METHOD_CEILING}: above that the values collapse toward 1 and links of very different speed become indistinguishable to STP. With 10 Gb/s or faster uplinks, enable spanning-tree pathcost method long — and keep it identical on every switch of the topology, because mixing short and long produces an inconsistent tree.`, etherTitle: 'EtherChannel', left: 'Left switch', right: 'Right switch', formed: 'Port-channel formed', notFormed: 'Port-channel not formed',
         etherNote: 'LACP: active initiates negotiation, passive responds. PAgP: desirable initiates, auto responds. Mode on does not negotiate and must be consistent on both sides.',
-        wirelessTitle: 'Wireless fundamentals', securityTitle: 'Access-layer attacks and defenses', attack: 'Attack', mechanism: 'Mechanism and impact', defense: 'Appropriate defense', verify: 'IOS verification',
+        wirelessTitle: 'Wireless fundamentals', principlesTitle: 'Radio and 802.11 principles',
+        mgmtTitle: 'Management access to devices, APs, and WLCs', method: 'Method', mgmtDetail: 'How it works', mgmtVerdict: 'Operational guidance',
+        guiTitle: 'WLAN configuration from the WLC GUI (WPA2 PSK)', guiTab: 'GUI path', guiFields: 'Fields to set', guiNote: 'Teaching note',
+        guiIntro: 'The sequence of fields encountered when creating a WLAN on a Wireless LAN Controller. This is a textual description, not an interactive GUI: field names and placement differ between AireOS and IOS XE.',
+        securityTitle: 'Access-layer attacks and defenses', attack: 'Attack', mechanism: 'Mechanism and impact', defense: 'Appropriate defense', verify: 'IOS verification',
         configTitle: 'Reference IOS configurations', configNote: 'These are teaching blocks: interface names, VLANs, platform, and command support must be adapted to the actual device.'
       };
 
@@ -198,7 +320,7 @@ export default function NetworkAccessLab() {
   return (
     <div className="space-y-8">
       <header className="rounded-xl border border-slate-200 bg-white p-6 md:p-8">
-        <p className="eyebrow">CCNA 2.1 · 2.2 · 2.3 · 2.4 · 2.5 · 2.6 · 2.7</p>
+        <p className="eyebrow">CCNA 1.11 · 2.1 · 2.2 · 2.3 · 2.4 · 2.5 · 2.6 · 2.7 · 2.8 · 2.9</p>
         <h1 className="mt-2 text-2xl font-semibold text-slate-900">{t.title}</h1>
         <p className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-600">{t.subtitle}</p>
       </header>
@@ -255,6 +377,25 @@ export default function NetworkAccessLab() {
       <section className="rounded-xl border border-slate-200 bg-white p-5 md:p-6" aria-labelledby="wireless-title">
         <SectionTitle icon={Radio} title={t.wirelessTitle} id="wireless-title" />
         <div className="mt-4 grid gap-3 md:grid-cols-2">{WIRELESS_ROWS.map(row => <article key={row.topic.en} className="rounded-lg border border-slate-200 p-4"><h3 className="text-sm font-semibold text-slate-900">{row.topic[language]}</h3><p className="mt-2 text-xs leading-relaxed text-slate-600">{row.detail[language]}</p></article>)}</div>
+        <h3 className="mt-6 text-xs font-semibold uppercase tracking-wide text-slate-500">{t.principlesTitle}</h3>
+        <div className="mt-2 grid gap-3 md:grid-cols-2 xl:grid-cols-3">{WIRELESS_PRINCIPLES.map(item => <article key={item.title.en} className="rounded-lg border border-slate-200 p-4"><h4 className="text-sm font-semibold text-slate-900">{item.title[language]}</h4><p className="mt-2 text-xs leading-relaxed text-slate-600">{item.detail[language]}</p></article>)}</div>
+      </section>
+
+      <section className="rounded-xl border border-slate-200 bg-white p-5 md:p-6" aria-labelledby="mgmt-access-title">
+        <SectionTitle icon={ShieldCheck} title={t.mgmtTitle} id="mgmt-access-title" />
+        <div className="mt-4 overflow-x-auto"><table className="w-full min-w-[820px] border-collapse text-left text-xs"><thead><tr className="border-b border-slate-200 text-slate-500"><th className="p-3">{t.method}</th><th className="p-3">{t.mgmtDetail}</th><th className="p-3">{t.mgmtVerdict}</th></tr></thead><tbody>{MGMT_ACCESS_ROWS.map(row => { const label = typeof row.method === 'string' ? row.method : (row.method as unknown as Localized)[language]; return <tr key={row.detail.en} className="border-b border-slate-100 align-top"><th className="p-3 font-mono text-[11px] font-semibold text-indigo-700">{label}</th><td className="p-3 leading-relaxed text-slate-600">{row.detail[language]}</td><td className="p-3 leading-relaxed text-emerald-800">{row.verdict[language]}</td></tr>; })}</tbody></table></div>
+      </section>
+
+      <section className="rounded-xl border border-slate-200 bg-white p-5 md:p-6" aria-labelledby="wlan-gui-title">
+        <SectionTitle icon={Radio} title={t.guiTitle} id="wlan-gui-title" />
+        <p className="mt-3 max-w-4xl text-xs leading-relaxed text-slate-600">{t.guiIntro}</p>
+        <ol className="mt-4 space-y-3">{WLAN_GUI_STEPS.map((step, index) => (
+          <li key={step.tab} className="rounded-lg border border-slate-200 p-4">
+            <div className="flex flex-wrap items-baseline gap-2"><span className="font-mono text-[10px] font-semibold text-indigo-600">{index + 1}</span><code className="text-xs font-semibold text-slate-900">{step.tab}</code></div>
+            <p className="mt-2 text-xs leading-relaxed text-slate-600"><strong>{t.guiFields}:</strong> {step.fields[language]}</p>
+            <p className="mt-2 text-xs leading-relaxed text-amber-900"><strong>{t.guiNote}:</strong> {step.note[language]}</p>
+          </li>
+        ))}</ol>
       </section>
 
       <section className="rounded-xl border border-slate-200 bg-white p-5 md:p-6" aria-labelledby="access-security-title">

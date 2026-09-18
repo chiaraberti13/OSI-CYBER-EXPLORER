@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { AlertTriangle, Binary, Cable, Calculator, ShieldCheck } from 'lucide-react';
+import { AlertTriangle, Binary, Cable, Calculator, Laptop, Network, Server, ShieldCheck } from 'lucide-react';
 import { calculateIpv4Subnet, type Ipv4AddressKind } from '../lib/ipv4';
 import { inspectIpv6, macToModifiedEui64, type Ipv6AddressKind } from '../lib/ipv6';
 import { useStore } from '../store';
@@ -79,6 +79,148 @@ const INTERFACE_STATES = [
   }
 ];
 
+// CCNA 1.13 — switching concepts, stated positively (the attack labs only show the abuses)
+const SWITCHING_CONCEPTS = [
+  {
+    title: { it: 'Apprendimento (learning)', en: 'Learning' },
+    detail: {
+      it: 'Lo switch legge il MAC sorgente di ogni frame in ingresso e lo associa alla porta e alla VLAN da cui è arrivato, scrivendo la voce nella CAM table. Non impara nulla dal MAC di destinazione.',
+      en: 'The switch reads the source MAC of every incoming frame and associates it with the port and VLAN it arrived on, writing the entry into the CAM table. It learns nothing from the destination MAC.'
+    }
+  },
+  {
+    title: { it: 'Inoltro e filtraggio', en: 'Forwarding and filtering' },
+    detail: {
+      it: 'Se il MAC di destinazione è in CAM su un’altra porta, il frame esce solo da quella porta (forwarding); se è sulla stessa porta da cui è arrivato, il frame viene scartato (filtering).',
+      en: 'If the destination MAC is in the CAM table on another port, the frame leaves only through that port (forwarding); if it is on the same port it arrived on, the frame is discarded (filtering).'
+    }
+  },
+  {
+    title: { it: 'Flooding', en: 'Flooding' },
+    detail: {
+      it: 'Tre categorie vengono replicate su tutte le porte della VLAN tranne quella di ingresso: unknown unicast (destinazione non in CAM), broadcast e multicast senza snooping. Il flooding è comportamento normale, non un guasto.',
+      en: 'Three categories are replicated to every port of the VLAN except the ingress one: unknown unicast (destination not in the CAM table), broadcast, and multicast without snooping. Flooding is normal behavior, not a fault.'
+    }
+  },
+  {
+    title: { it: 'Aging e MAC move', en: 'Aging and MAC moves' },
+    detail: {
+      it: 'Una voce inutilizzata scade dopo l’aging time (300 s per impostazione predefinita). Se lo stesso MAC riappare su un’altra porta la voce viene riscritta: un MAC che rimbalza tra due porte (MAC flapping) indica un loop o un host duplicato.',
+      en: 'An unused entry expires after the aging time (300 s by default). If the same MAC reappears on another port the entry is rewritten: a MAC bouncing between two ports (MAC flapping) indicates a loop or a duplicated host.'
+    }
+  },
+  {
+    title: { it: 'CAM table e tabella ARP', en: 'CAM table vs ARP table' },
+    detail: {
+      it: 'Sono due cose diverse e una trappola d’esame ricorrente: la CAM table dello switch mappa MAC → porta (livello 2), la tabella ARP di un host o router mappa IP → MAC (livello 3 verso 2).',
+      en: 'They are two different things and a recurring exam trap: the switch CAM table maps MAC to port (Layer 2), while the ARP table of a host or router maps IP to MAC (Layer 3 to Layer 2).'
+    }
+  },
+  {
+    title: { it: 'Store-and-forward e cut-through', en: 'Store-and-forward vs cut-through' },
+    detail: {
+      it: 'Store-and-forward riceve il frame completo e ne verifica l’FCS prima di inoltrarlo: scarta i frame corrotti ma aggiunge latenza. Cut-through inoltra appena letto l’header di destinazione: è più rapido ma propaga anche i frame errati.',
+      en: 'Store-and-forward receives the whole frame and verifies its FCS before forwarding: it drops corrupted frames but adds latency. Cut-through forwards as soon as the destination header is read: faster, but it also propagates bad frames.'
+    }
+  }
+];
+
+// CCNA 1.12 — virtualization fundamentals
+const VIRTUALIZATION_ROWS = [
+  {
+    title: { it: 'Virtualizzazione dei server', en: 'Server virtualization' },
+    detail: {
+      it: 'Un hypervisor divide un server fisico in più macchine virtuali, ognuna con il proprio sistema operativo completo e kernel separato. Tipo 1 (bare-metal, es. ESXi) gira direttamente sull’hardware; tipo 2 gira sopra un sistema operativo host.',
+      en: 'A hypervisor divides one physical server into several virtual machines, each with its own complete operating system and separate kernel. Type 1 (bare-metal, e.g. ESXi) runs directly on the hardware; type 2 runs on top of a host operating system.'
+    },
+    network: {
+      it: 'Ogni VM ha una vNIC collegata a un virtual switch; il traffico tra VM sullo stesso host può non toccare mai la rete fisica, quindi sfugge agli strumenti di ispezione tradizionali.',
+      en: 'Each VM has a vNIC attached to a virtual switch; traffic between VMs on the same host may never touch the physical network, so it escapes traditional inspection tools.'
+    }
+  },
+  {
+    title: { it: 'Container', en: 'Containers' },
+    detail: {
+      it: 'Impacchettano applicazione e dipendenze condividendo il kernel dell’host: avvio in secondi e footprint molto minore di una VM. La condivisione del kernel rende però l’isolamento più debole di quello di una macchina virtuale.',
+      en: 'They package an application with its dependencies while sharing the host kernel: startup in seconds and a much smaller footprint than a VM. Sharing the kernel, however, makes isolation weaker than a virtual machine’s.'
+    },
+    network: {
+      it: 'La rete è tipicamente NAT o overlay per namespace, con indirizzi effimeri: le policy vanno espresse su identità o label, non su indirizzi IP.',
+      en: 'Networking is typically NAT or an overlay per namespace, with ephemeral addresses: policy must be expressed on identity or labels, not on IP addresses.'
+    }
+  },
+  {
+    title: { it: 'VRF', en: 'VRFs' },
+    detail: {
+      it: 'Virtual Routing and Forwarding: un router mantiene più tabelle di routing indipendenti sullo stesso dispositivo fisico. Le interfacce assegnate a VRF diverse non si raggiungono, anche con indirizzi sovrapposti.',
+      en: 'Virtual Routing and Forwarding: one router keeps several independent routing tables on the same physical device. Interfaces assigned to different VRFs cannot reach each other, even with overlapping addresses.'
+    },
+    network: {
+      it: 'Separa il livello 3 come una VLAN separa il livello 2, ed è la base del management VRF. Non cifra e non filtra: per far comunicare due VRF serve un route leaking o un firewall esplicito.',
+      en: 'It separates Layer 3 the way a VLAN separates Layer 2, and is the basis of the management VRF. It neither encrypts nor filters: making two VRFs talk requires explicit route leaking or a firewall.'
+    }
+  }
+];
+
+// CCNA 1.10 — verify IP parameters on the client operating system
+const CLIENT_IP_COMMANDS = [
+  {
+    os: 'Windows',
+    commands: 'ipconfig /all\nipconfig /release · /renew\nipconfig /flushdns\nroute print · nslookup',
+    read: {
+      it: 'IPv4 Address, Subnet Mask, Default Gateway, DNS Servers, DHCP Enabled e la durata del lease. /all è indispensabile: ipconfig da solo non mostra DNS né stato DHCP.',
+      en: 'IPv4 Address, Subnet Mask, Default Gateway, DNS Servers, DHCP Enabled, and the lease duration. /all is essential: plain ipconfig shows neither DNS nor DHCP state.'
+    }
+  },
+  {
+    os: 'macOS',
+    commands: 'ifconfig en0\nipconfig getpacket en0\nnetworksetup -getinfo Wi-Fi\nscutil --dns · route -n get default',
+    read: {
+      it: 'inet e netmask dell’interfaccia, il pacchetto DHCP ricevuto (con router e domain_name_server), i resolver attivi e il gateway effettivo.',
+      en: 'The interface inet and netmask, the DHCP packet actually received (with router and domain_name_server), the active resolvers, and the effective gateway.'
+    }
+  },
+  {
+    os: 'Linux',
+    commands: 'ip addr show\nip route show\nresolvectl status\nip neigh · ss -tulpn',
+    read: {
+      it: 'Indirizzo con prefisso CIDR, default via che indica il gateway, i resolver per link e la cache dei vicini. ifconfig e route sono deprecati a favore del comando ip.',
+      en: 'The address with its CIDR prefix, the default via line that names the gateway, per-link resolvers, and the neighbour cache. ifconfig and route are deprecated in favour of the ip command.'
+    }
+  }
+];
+
+const CLIENT_IP_SYMPTOMS = [
+  {
+    symptom: '169.254.x.x / fe80:: only',
+    meaning: {
+      it: 'Indirizzo APIPA autoassegnato: nessun DHCPACK è arrivato. Cerca la causa tra porta in VLAN errata, DHCP relay mancante, pool esaurito o DHCP Snooping che scarta le risposte su una porta non trusted.',
+      en: 'A self-assigned APIPA address: no DHCPACK arrived. Look for a port in the wrong VLAN, a missing DHCP relay, an exhausted pool, or DHCP snooping dropping replies on an untrusted port.'
+    }
+  },
+  {
+    symptom: { it: 'Gateway assente o errato', en: 'Missing or wrong gateway' },
+    meaning: {
+      it: 'La comunicazione dentro la subnet funziona, tutto il resto no. È il caso in cui il ping all’host vicino riesce e quello a Internet no.',
+      en: 'Communication inside the subnet works, everything else fails. This is the case where a ping to the neighbouring host succeeds and a ping to the Internet does not.'
+    }
+  },
+  {
+    symptom: { it: 'Subnet mask incoerente', en: 'Inconsistent subnet mask' },
+    meaning: {
+      it: 'L’host sbaglia la decisione locale/remota: alcune destinazioni sono raggiungibili e altre no, in modo apparentemente casuale. Il sintomo tipico è asimmetrico tra i due host.',
+      en: 'The host makes the wrong local/remote decision: some destinations are reachable and others are not, apparently at random. The symptom is typically asymmetric between the two hosts.'
+    }
+  },
+  {
+    symptom: { it: 'IP corretto, DNS non risolve', en: 'Correct IP, DNS not resolving' },
+    meaning: {
+      it: 'Il ping per indirizzo funziona, quello per nome no: il problema è nel resolver o nella sua raggiungibilità, non nel livello 3. Distingue un guasto di rete da un guasto di servizio.',
+      en: 'A ping by address works, a ping by name does not: the problem is in the resolver or its reachability, not in Layer 3. This separates a network fault from a service fault.'
+    }
+  }
+];
+
 const ATTACK_ITEMS = [
   { it: 'IP spoofing e falsificazione dell’indirizzo sorgente', en: 'IP spoofing and source-address forgery' },
   { it: 'SYN flood, UDP flood e reflection/amplification', en: 'SYN floods, UDP floods, and reflection/amplification' },
@@ -154,14 +296,20 @@ export default function NetworkFundamentalsLab() {
         calculator: 'Esploratore IPv4 e subnetting', address: 'Indirizzo IPv4', prefix: 'Prefisso CIDR', invalid: 'Inserisci un indirizzo IPv4 valido e un prefisso compreso tra /0 e /32.',
         mask: 'Subnet mask', wildcard: 'Wildcard mask', network: 'Indirizzo di rete', broadcast: 'Broadcast', noBroadcast: 'Non applicabile', range: 'Intervallo utilizzabile', hosts: 'Host utilizzabili', total: 'Indirizzi totali', kind: 'Tipo indirizzo',
         binary: 'Rappresentazione binaria', networkBits: 'bit di rete', hostBits: 'bit host', special31: '/31: collegamento point-to-point; entrambi gli indirizzi sono utilizzabili.', special32: '/32: host route; identifica un solo indirizzo.', ipv6: 'Esploratore IPv6', ipv6Address: 'Indirizzo IPv6', ipv6Invalid: 'Inserisci un indirizzo IPv6 valido, con prefisso opzionale tra /0 e /128. È accettata anche la notazione mista con IPv4 incorporato, per esempio ::ffff:192.0.2.1 o 64:ff9b::192.0.2.33.', expanded: 'Forma espansa', compressed: 'Forma compressa', ipv6Type: 'Tipo IPv6', eui64: 'Modified EUI-64', mac: 'MAC address', macInvalid: 'Inserisci un MAC address valido di 48 bit.', interfaceId: 'Interface ID generato', anycast: 'Anycast non possiede un prefisso dedicato: usa un indirizzo unicast assegnato a più interfacce e il routing consegna il traffico all’istanza più vicina.',
-        transport: 'TCP e UDP', diagnostics: 'Diagnostica delle interfacce', security: 'Attacchi e difese collegati', cause: 'Possibile causa', action: 'Verifica consigliata'
+        transport: 'TCP e UDP', diagnostics: 'Diagnostica delle interfacce', security: 'Attacchi e difese collegati', cause: 'Possibile causa', action: 'Verifica consigliata',
+        switching: 'Concetti di switching', switchingNote: 'Uno switch prende una sola decisione per frame, e la prende sul MAC di destinazione: inoltrare su una porta, filtrare o fare flooding. Tutto il resto — VLAN, STP, Port Security — serve a delimitare dove quella decisione può avere effetto.',
+        virtualization: 'Virtualizzazione: server, container e VRF', virtualizationImpact: 'Effetto sulla rete',
+        clientIp: 'Verifica dei parametri IP sul client', clientRead: 'Cosa leggere', clientSymptoms: 'Sintomi e interpretazione', clientNote: 'Prima di sospettare la rete, leggi i quattro parametri che l’host possiede davvero: indirizzo, mask, gateway e DNS. Tre quarti dei problemi “di rete” si chiudono qui.'
       }
     : {
         title: 'Network Fundamentals Lab', subtitle: 'IPv4 addressing, transport, diagnostics, and security — without scores or assessment.',
         calculator: 'IPv4 and subnetting explorer', address: 'IPv4 address', prefix: 'CIDR prefix', invalid: 'Enter a valid IPv4 address and a prefix between /0 and /32.',
         mask: 'Subnet mask', wildcard: 'Wildcard mask', network: 'Network address', broadcast: 'Broadcast', noBroadcast: 'Not applicable', range: 'Usable range', hosts: 'Usable hosts', total: 'Total addresses', kind: 'Address type',
         binary: 'Binary representation', networkBits: 'network bits', hostBits: 'host bits', special31: '/31: point-to-point link; both addresses are usable.', special32: '/32: host route; identifies one address.', ipv6: 'IPv6 explorer', ipv6Address: 'IPv6 address', ipv6Invalid: 'Enter a valid IPv6 address, with an optional prefix between /0 and /128. Mixed notation with an embedded IPv4 address is also accepted, for example ::ffff:192.0.2.1 or 64:ff9b::192.0.2.33.', expanded: 'Expanded form', compressed: 'Compressed form', ipv6Type: 'IPv6 type', eui64: 'Modified EUI-64', mac: 'MAC address', macInvalid: 'Enter a valid 48-bit MAC address.', interfaceId: 'Generated interface ID', anycast: 'Anycast has no dedicated prefix: it uses a unicast address assigned to multiple interfaces, and routing delivers traffic to the nearest instance.',
-        transport: 'TCP and UDP', diagnostics: 'Interface diagnostics', security: 'Related attacks and defenses', cause: 'Possible cause', action: 'Recommended verification'
+        transport: 'TCP and UDP', diagnostics: 'Interface diagnostics', security: 'Related attacks and defenses', cause: 'Possible cause', action: 'Recommended verification',
+        switching: 'Switching concepts', switchingNote: 'A switch makes a single decision per frame, and makes it on the destination MAC: forward out one port, filter, or flood. Everything else — VLANs, STP, Port Security — exists to bound where that decision can take effect.',
+        virtualization: 'Virtualization: servers, containers, and VRFs', virtualizationImpact: 'Network impact',
+        clientIp: 'Verifying IP parameters on the client', clientRead: 'What to read', clientSymptoms: 'Symptoms and interpretation', clientNote: 'Before suspecting the network, read the four parameters the host actually holds: address, mask, gateway, and DNS. Three quarters of “network” problems end here.'
       };
 
   const subnet = calculation.subnet;
@@ -179,7 +327,7 @@ export default function NetworkFundamentalsLab() {
   return (
     <div className="space-y-8">
       <header className="rounded-xl border border-slate-200 bg-white p-6 md:p-8">
-        <p className="eyebrow">CCNA 1.4 · 1.5 · 1.6 · 1.7 · 1.8 · 1.9</p>
+        <p className="eyebrow">CCNA 1.4 · 1.5 · 1.6 · 1.7 · 1.8 · 1.9 · 1.10 · 1.12 · 1.13</p>
         <h1 className="mt-2 text-2xl font-semibold text-slate-900">{labels.title}</h1>
         <p className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-600">{labels.subtitle}</p>
       </header>
@@ -290,6 +438,49 @@ export default function NetworkFundamentalsLab() {
           {INTERFACE_STATES.map(item => <article key={item.state} className="rounded-lg border border-slate-200 p-4"><code className="text-xs font-semibold text-sky-700">{item.state}</code><p className="mt-3 text-xs leading-relaxed text-slate-600"><strong>{labels.cause}:</strong> {item.cause[language]}</p><p className="mt-2 text-xs leading-relaxed text-slate-600"><strong>{labels.action}:</strong> {item.action[language]}</p></article>)}
         </div>
         <pre className="mt-4 overflow-x-auto rounded-lg bg-slate-950 p-4 text-xs leading-relaxed text-emerald-300"><code>show ip interface brief{`\n`}show interfaces{`\n`}show interfaces counters errors{`\n`}show controllers ethernet-controller</code></pre>
+      </section>
+
+      <section className="rounded-xl border border-slate-200 bg-white p-5 md:p-6" aria-labelledby="switching-title">
+        <div className="flex items-center gap-3"><Network className="h-5 w-5 text-indigo-600" /><h2 id="switching-title" className="text-lg font-semibold text-slate-900">{labels.switching}</h2></div>
+        <p className="mt-3 max-w-4xl text-xs leading-relaxed text-slate-600">{labels.switchingNote}</p>
+        <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+          {SWITCHING_CONCEPTS.map(item => <article key={item.title.en} className="rounded-lg border border-slate-200 p-4"><h3 className="text-sm font-semibold text-slate-900">{item.title[language]}</h3><p className="mt-2 text-xs leading-relaxed text-slate-600">{item.detail[language]}</p></article>)}
+        </div>
+        <pre className="mt-4 overflow-x-auto rounded-lg bg-slate-950 p-4 text-xs leading-relaxed text-emerald-300"><code>show mac address-table dynamic{`\n`}show mac address-table count{`\n`}show mac address-table aging-time{`\n`}show interfaces status</code></pre>
+      </section>
+
+      <section className="rounded-xl border border-slate-200 bg-white p-5 md:p-6" aria-labelledby="virtualization-title">
+        <div className="flex items-center gap-3"><Server className="h-5 w-5 text-violet-600" /><h2 id="virtualization-title" className="text-lg font-semibold text-slate-900">{labels.virtualization}</h2></div>
+        <div className="mt-4 grid gap-3 lg:grid-cols-3">
+          {VIRTUALIZATION_ROWS.map(item => (
+            <article key={item.title.en} className="rounded-lg border border-slate-200 p-4">
+              <h3 className="text-sm font-semibold text-slate-900">{item.title[language]}</h3>
+              <p className="mt-2 text-xs leading-relaxed text-slate-600">{item.detail[language]}</p>
+              <p className="mt-3 border-t border-slate-100 pt-3 text-xs leading-relaxed text-violet-900"><strong>{labels.virtualizationImpact}:</strong> {item.network[language]}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="rounded-xl border border-slate-200 bg-white p-5 md:p-6" aria-labelledby="client-ip-title">
+        <div className="flex items-center gap-3"><Laptop className="h-5 w-5 text-sky-600" /><h2 id="client-ip-title" className="text-lg font-semibold text-slate-900">{labels.clientIp}</h2></div>
+        <p className="mt-3 max-w-4xl text-xs leading-relaxed text-slate-600">{labels.clientNote}</p>
+        <div className="mt-4 grid gap-3 lg:grid-cols-3">
+          {CLIENT_IP_COMMANDS.map(item => (
+            <article key={item.os} className="rounded-lg border border-slate-200 p-4">
+              <h3 className="text-sm font-semibold text-slate-900">{item.os}</h3>
+              <pre className="mt-2 overflow-x-auto rounded-md bg-slate-950 p-3 text-[11px] leading-relaxed text-sky-300"><code>{item.commands}</code></pre>
+              <p className="mt-3 text-xs leading-relaxed text-slate-600"><strong>{labels.clientRead}:</strong> {item.read[language]}</p>
+            </article>
+          ))}
+        </div>
+        <h3 className="mt-6 text-xs font-semibold uppercase tracking-wide text-slate-500">{labels.clientSymptoms}</h3>
+        <div className="mt-2 grid gap-3 md:grid-cols-2">
+          {CLIENT_IP_SYMPTOMS.map(item => {
+            const symptom = typeof item.symptom === 'string' ? item.symptom : item.symptom[language];
+            return <article key={typeof item.symptom === 'string' ? item.symptom : item.symptom.en} className="rounded-lg border border-slate-200 p-4"><code className="text-xs font-semibold text-sky-700">{symptom}</code><p className="mt-2 text-xs leading-relaxed text-slate-600">{item.meaning[language]}</p></article>;
+          })}
+        </div>
       </section>
 
       <section className="rounded-xl border border-slate-200 bg-white p-5 md:p-6" aria-labelledby="security-title">
