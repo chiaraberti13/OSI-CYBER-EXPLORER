@@ -34,6 +34,7 @@ const TAB_GROUPS = [
       { id: 'endpointsecurity', en: 'Endpoint & Posture', it: 'Endpoint e Postura', icon: Laptop },
       { id: 'applicationsecurity', en: 'DNS & Application', it: 'DNS e Applicazioni', icon: GlobeLock },
       { id: 'emailsecurity', en: 'Email & Phishing', it: 'Email e Phishing', icon: MailWarning },
+      { id: 'layer2security', en: 'Layer 2 & First Hop', it: 'Layer 2 e First Hop', icon: Cable },
       { id: 'defense', en: 'Defense Lab', it: 'Lab Difese', icon: Shield },
       { id: 'evidence', en: 'Evidence Lab', it: 'Lab Evidenze', icon: FileSearch },
       { id: 'osi', en: 'OSI Stack Lab', it: 'Lab Pila OSI', icon: Layers },
