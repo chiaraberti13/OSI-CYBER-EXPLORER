@@ -4,7 +4,8 @@ import { CCNA_DOMAINS } from '../content/ccna';
 import { SECURITY_TECHNIQUES, type CcnaDomainId } from '../content/securityCoverage';
 import { ATTACK_FAMILIES, type SecurityPlane } from '../content/securityTaxonomy';
 import { useStore } from '../store';
-import SecurityCoverageMatrix, { DOMAIN_LAB_VIEWS } from './SecurityCoverageMatrix';
+import SecurityCoverageMatrix from './SecurityCoverageMatrix';
+import { DOMAIN_LAB_VIEWS } from '../lib/navigation';
 import SecurityResponsePlaybooks from './SecurityResponsePlaybooks';
 
 const PLANES: SecurityPlane[] = ['physical', 'data', 'control', 'management', 'application', 'identity'];

@@ -363,3 +363,16 @@ export function searchNav(query: string, language: 'it' | 'en'): ReadonlyArray<{
     return terms.every(term => haystack.includes(term));
   });
 }
+
+/**
+ * Which lab a CCNA domain opens. Kept next to the navigation model because it maps
+ * content identifiers onto views, exactly like the groups above.
+ */
+export const DOMAIN_LAB_VIEWS: Record<string, AppView> = {
+  'network-fundamentals': 'fundamentals',
+  'network-access': 'access',
+  'ip-connectivity': 'routing',
+  'ip-services': 'services',
+  'security-fundamentals': 'securitycore',
+  'automation-programmability': 'automation'
+};

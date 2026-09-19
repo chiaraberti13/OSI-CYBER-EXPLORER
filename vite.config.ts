@@ -10,4 +10,11 @@ export default defineConfig({
       '@': path.resolve(__dirname, '.'),
     },
   },
+  test: {
+    // Pure logic in src/lib needs no DOM; component tests declare `@vitest-environment jsdom`
+    // at the top of the file, so the fast default is kept for the 160+ logic tests.
+    environment: 'node',
+    globals: false,
+    restoreMocks: true
+  },
 });

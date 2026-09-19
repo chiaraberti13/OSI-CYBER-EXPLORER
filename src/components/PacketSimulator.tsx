@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useStore } from '../store';
 import { motion, AnimatePresence } from 'motion/react';
-import { OSI_LAYERS, ATTACK_SCENARIOS, GLOSSARY_TERMS } from '../constants';
+import { OSI_LAYERS, ATTACK_SCENARIOS } from '../constants';
 import { Zap, Skull, ShieldCheck, Play, RotateCcw, Info, Pause, ChevronDown, Volume2, VolumeX } from 'lucide-react';
 import { playAudioCue } from '../utils/audio';
 import { pduNameForLayer, l4ProtocolFor, type SimProtocol } from '../lib/osi';
@@ -29,9 +29,6 @@ export default function PacketSimulator() {
     setViewMode,
     setSelectedLayerId,
     setDetailTab,
-    setLanguage,
-    isGlossaryOpen,
-    setIsGlossaryOpen,
     audioEnabled,
     setAudioEnabled,
     simSpeed,
@@ -110,9 +107,9 @@ export default function PacketSimulator() {
     addLog(language === 'en' ? 'Simulation reset.' : 'Simulazione resettata.', 'warning');
   };
 
-  const getPduName = (layerId: number) => pduNameForLayer(layerId, selectedProtocol);
+  const getPduName = useCallback((layerId: number) => pduNameForLayer(layerId, selectedProtocol), [selectedProtocol]);
 
-  const getHeaderForLayer = (layerId: number) => {
+  const getHeaderForLayer = useCallback((layerId: number) => {
     const layer = OSI_LAYERS.find(l => l.id === layerId);
     if (!layer) return 'Data';
     if (layerId === 7) return selectedProtocol;
@@ -122,7 +119,7 @@ export default function PacketSimulator() {
     if (layerId === 3) return 'IP';
     if (layerId === 2) return 'Ethernet II';
     return layer.translations[language].protocols?.[0] || 'Data';
-  };
+  }, [language, selectedProtocol]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -387,7 +384,8 @@ export default function PacketSimulator() {
     }
 
     return () => clearInterval(interval);
-  }, [simulationState, currentStep, activeAttack, defenseEnabled, isPaused, selectedProtocol, language, audioEnabled, stepInterval]);
+  }, [simulationState, currentStep, activeAttack, defenseEnabled, isPaused, selectedProtocol, language, audioEnabled, stepInterval,
+      addLog, addPacketHeader, getHeaderForLayer, getPduName, setCurrentStep, setSelectedLayerId, setSimulationState]);
 
   const threatLevel = activeAttack === 'none' ? 0 : defenseEnabled ? 40 : 100;
   const threatBg = activeAttack === 'none' ? 'bg-emerald-500' : defenseEnabled ? 'bg-orange-500' : 'bg-red-500';

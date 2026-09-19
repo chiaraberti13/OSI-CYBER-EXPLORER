@@ -4,11 +4,6 @@ import { X, Search, BookOpen } from 'lucide-react';
 import { GLOSSARY_TERMS } from '../constants';
 import { useStore } from '../store';
 
-interface GlossaryModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
-
 export default function GlossaryModal({ isOpen = false, onClose = () => {}, inline = false }: { isOpen?: boolean; onClose?: () => void; inline?: boolean }) {
   const { language } = useStore();
   const [searchTerm, setSearchTerm] = useState('');
