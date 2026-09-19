@@ -4,6 +4,7 @@ import { calculateIpv4Subnet, type Ipv4AddressKind } from '../lib/ipv4';
 import { inspectIpv6, macToModifiedEui64, type Ipv6AddressKind } from '../lib/ipv6';
 import { useStore } from '../store';
 import ResponsiveTable from './ResponsiveTable';
+import VlsmPlanner from './VlsmPlanner';
 import { CABLING_TYPES, NETWORK_COMPONENTS, TOPOLOGY_ARCHITECTURES } from '../content/networkConcepts';
 
 type Language = 'it' | 'en';
@@ -450,6 +451,8 @@ export default function NetworkFundamentalsLab() {
           </div>
         ) : null}
       </section>
+
+      <VlsmPlanner />
 
       <section className="rounded-xl border border-slate-200 bg-white p-5 md:p-6" aria-labelledby="ipv6-title">
         <div className="flex items-center gap-3">

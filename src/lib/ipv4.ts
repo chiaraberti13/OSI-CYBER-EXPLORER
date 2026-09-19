@@ -122,3 +122,151 @@ export function calculateIpv4Subnet(address: string, prefix: number): Ipv4Subnet
     binaryMask: binaryOctets(mask)
   };
 }
+
+/**
+ * VLSM planning.
+ *
+ * The subnet explorer analyses an address you already have. What the exam actually
+ * asks — and what people get wrong — is the inverse: given a block and a list of
+ * requirements, produce the plan. The rule that makes it work is sorting the
+ * requirements from largest to smallest; allocating in request order fragments the
+ * block and fails on a space that would otherwise have been sufficient.
+ */
+export interface VlsmRequirement {
+  id: string;
+  name: string;
+  /** Usable hosts needed, excluding network and broadcast. */
+  hosts: number;
+}
+
+export interface VlsmAllocation {
+  id: string;
+  name: string;
+  requestedHosts: number;
+  prefix: number;
+  network: string;
+  broadcast: string;
+  firstUsable: string;
+  lastUsable: string;
+  usableHosts: number;
+  /** Addresses allocated but not requested. */
+  wastedHosts: number;
+}
+
+export interface VlsmPlan {
+  base: string;
+  basePrefix: number;
+  allocations: VlsmAllocation[];
+  totalAddresses: number;
+  /** Addresses spent, counting the gaps that boundary alignment leaves unusable. */
+  usedAddresses: number;
+  /** Share of the block consumed, as a percentage with one decimal. */
+  utilisationPercent: number;
+  /** First address after the last allocation, or null when the block is full. */
+  nextFreeAddress: string | null;
+}
+
+/** Smallest prefix that still provides `hosts` usable addresses, counting the two reserved ones. */
+export function prefixForHosts(hosts: number): number {
+  if (!Number.isInteger(hosts) || hosts < 1) throw new Error('INVALID_HOST_COUNT');
+  // /31 and /32 are special cases with no broadcast, so a request of 1 or 2 still needs a /30.
+  if (hosts > 2 ** 30 - 2) throw new Error('HOSTS_EXCEED_IPV4');
+  for (let prefix = 30; prefix >= 0; prefix -= 1) {
+    if (2 ** (32 - prefix) - 2 >= hosts) return prefix;
+  }
+  throw new Error('HOSTS_EXCEED_IPV4');
+}
+
+export function planVlsm(base: string, basePrefix: number, requirements: VlsmRequirement[]): VlsmPlan {
+  if (requirements.length === 0) throw new Error('NO_REQUIREMENTS');
+  // `&` in JavaScript yields a *signed* 32-bit integer, so 192.168.1.0 & mask comes
+  // back negative: `>>> 0` brings it back into the unsigned range the rest of the
+  // arithmetic assumes.
+  const blockStart = (ipv4ToUint(base) & prefixToMask(basePrefix)) >>> 0;
+  const blockSize = 2 ** (32 - basePrefix);
+  const blockEnd = blockStart + blockSize - 1;
+
+  // Largest first: this is the whole trick of VLSM.
+  const ordered = [...requirements].sort((left, right) => right.hosts - left.hosts || left.id.localeCompare(right.id));
+
+  let cursor = blockStart;
+  const allocations: VlsmAllocation[] = [];
+
+  for (const requirement of ordered) {
+    const prefix = prefixForHosts(requirement.hosts);
+    const size = 2 ** (32 - prefix);
+    // A subnet must start on a boundary that is a multiple of its own size.
+    const aligned = Math.ceil(cursor / size) * size;
+    if (aligned + size - 1 > blockEnd) throw new Error('BLOCK_TOO_SMALL');
+
+    const network = aligned >>> 0;
+    const broadcast = (network + size - 1) >>> 0;
+    const usableHosts = size - 2;
+    allocations.push({
+      id: requirement.id,
+      name: requirement.name,
+      requestedHosts: requirement.hosts,
+      prefix,
+      network: uintToIpv4(network),
+      broadcast: uintToIpv4(broadcast),
+      firstUsable: uintToIpv4((network + 1) >>> 0),
+      lastUsable: uintToIpv4((broadcast - 1) >>> 0),
+      usableHosts,
+      wastedHosts: usableHosts - requirement.hosts
+    });
+    cursor = (broadcast + 1) >>> 0;
+  }
+
+  const usedAddresses = cursor - blockStart;
+  return {
+    base: uintToIpv4(blockStart >>> 0),
+    basePrefix,
+    allocations,
+    totalAddresses: blockSize,
+    usedAddresses,
+    utilisationPercent: Math.round((usedAddresses / blockSize) * 1000) / 10,
+    nextFreeAddress: cursor > blockEnd ? null : uintToIpv4(cursor)
+  };
+}
+
+/**
+ * The wildcard needed to match a contiguous range with a single ACE, and whether one
+ * ACE is actually enough. Converting a prefix to a wildcard is the easy direction; this
+ * is the one people get wrong, because a wildcard can only express a block that is
+ * aligned to its own size.
+ */
+export interface WildcardMatch {
+  /** Address to write in the ACE. */
+  address: string;
+  wildcard: string;
+  /** Prefix equivalent of the block the ACE actually matches. */
+  prefix: number;
+  /** True when the single ACE matches the requested range and nothing more. */
+  exact: boolean;
+  /** Addresses the ACE matches beyond the requested range. */
+  extraAddresses: number;
+}
+
+export function wildcardForRange(firstAddress: string, lastAddress: string): WildcardMatch {
+  const first = ipv4ToUint(firstAddress);
+  const last = ipv4ToUint(lastAddress);
+  if (last < first) throw new Error('INVALID_RANGE');
+
+  const requested = last - first + 1;
+  // Grow the block until one aligned prefix covers the whole range.
+  for (let prefix = 32; prefix >= 0; prefix -= 1) {
+    const mask = prefixToMask(prefix);
+    const blockStart = (first & mask) >>> 0;
+    const size = 2 ** (32 - prefix);
+    if (blockStart + size - 1 >= last) {
+      return {
+        address: uintToIpv4(blockStart),
+        wildcard: uintToIpv4((~mask) >>> 0),
+        prefix,
+        exact: blockStart === first && size === requested,
+        extraAddresses: size - requested
+      };
+    }
+  }
+  throw new Error('INVALID_RANGE');
+}
