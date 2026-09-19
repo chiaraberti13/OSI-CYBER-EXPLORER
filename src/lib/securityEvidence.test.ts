@@ -11,10 +11,13 @@ describe('operational evidence cases', () => {
   });
 
   it('keeps every annotation bound to an existing output line', () => {
-    SECURITY_EVIDENCE_CASES.forEach(item => item.annotations.forEach(annotation => {
-      expect(annotation.line).toBeGreaterThanOrEqual(1);
-      expect(annotation.line).toBeLessThanOrEqual(item.output.length);
-    }));
+    SECURITY_EVIDENCE_CASES.forEach(item => {
+      const lineIds = item.output.map(line => line.id);
+      expect(new Set(lineIds).size, `${item.id} has duplicate line ids`).toBe(lineIds.length);
+      item.annotations.forEach(annotation => {
+        expect(lineIds, `${item.id} annotation ${annotation.lineId}`).toContain(annotation.lineId);
+      });
+    });
   });
 
   it('provides bilingual interpretation, correlation, and limitations', () => {
@@ -33,6 +36,7 @@ describe('operational evidence cases', () => {
       expect(item.source.length).toBeGreaterThan(2);
       expect(item.command.length).toBeGreaterThan(5);
       expect(item.output.length).toBeGreaterThanOrEqual(5);
+      item.output.forEach(line => expect(line.text.trim().length).toBeGreaterThan(0));
     });
   });
 });

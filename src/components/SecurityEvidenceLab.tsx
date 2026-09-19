@@ -20,7 +20,7 @@ export default function SecurityEvidenceLab() {
   const language = useStore(state => state.language);
   const [selectedId, setSelectedId] = useState(SECURITY_EVIDENCE_CASES[0].id);
   const selected = useMemo(() => SECURITY_EVIDENCE_CASES.find(item => item.id === selectedId) ?? SECURITY_EVIDENCE_CASES[0], [selectedId]);
-  const annotationsByLine = useMemo(() => new Map(selected.annotations.map(item => [item.line, item])), [selected]);
+  const annotationsByLine = useMemo(() => new Map(selected.annotations.map(item => [item.lineId, item])), [selected]);
 
   return (
     <div className="space-y-6">
@@ -70,12 +70,11 @@ export default function SecurityEvidenceLab() {
             </div>
             <ol className="overflow-x-auto p-3 font-mono text-xs leading-6">
               {selected.output.map((line, index) => {
-                const lineNumber = index + 1;
-                const annotation = annotationsByLine.get(lineNumber);
+                const annotation = annotationsByLine.get(line.id);
                 return (
-                  <li key={`${lineNumber}-${line}`} className={`grid min-w-max grid-cols-[2rem_1fr] border-l-2 px-2 ${annotation ? LINE_STYLES[annotation.severity] : 'border-transparent'}`}>
-                    <span className="select-none text-right text-slate-600">{lineNumber}</span>
-                    <code className="pl-3">{line}</code>
+                  <li key={line.id} className={`grid min-w-max grid-cols-[2rem_1fr] border-l-2 px-2 ${annotation ? LINE_STYLES[annotation.severity] : 'border-transparent'}`}>
+                    <span className="select-none text-right text-slate-600">{index + 1}</span>
+                    <code className="pl-3">{line.text}</code>
                   </li>
                 );
               })}
@@ -84,8 +83,8 @@ export default function SecurityEvidenceLab() {
 
           <aside aria-label={language === 'it' ? 'Annotazioni' : 'Annotations'} className="space-y-3">
             {selected.annotations.map(annotation => (
-              <article key={annotation.line} className="rounded-lg border border-slate-200 p-3">
-                <div className="flex items-center justify-between gap-3"><h3 className="text-xs font-semibold text-slate-900">L{annotation.line} · {annotation.label[language]}</h3><span className={`rounded-full px-2 py-0.5 text-[9px] font-semibold uppercase ${BADGE_STYLES[annotation.severity]}`}>{annotation.severity}</span></div>
+              <article key={annotation.lineId} className="rounded-lg border border-slate-200 p-3">
+                <div className="flex items-center justify-between gap-3"><h3 className="text-xs font-semibold text-slate-900">L{selected.output.findIndex(line => line.id === annotation.lineId) + 1} · {annotation.label[language]}</h3><span className={`rounded-full px-2 py-0.5 text-[9px] font-semibold uppercase ${BADGE_STYLES[annotation.severity]}`}>{annotation.severity}</span></div>
                 <p className="mt-2 text-xs leading-relaxed text-slate-600">{annotation.meaning[language]}</p>
               </article>
             ))}

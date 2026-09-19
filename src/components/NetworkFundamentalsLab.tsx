@@ -1,9 +1,10 @@
 import { useMemo, useState } from 'react';
-import { AlertTriangle, Binary, Cable, Calculator, Laptop, Network, Server, ShieldCheck } from 'lucide-react';
+import { AlertTriangle, Binary, Cable, Calculator, Laptop, Network, Router, Server, ShieldCheck, Workflow } from 'lucide-react';
 import { calculateIpv4Subnet, type Ipv4AddressKind } from '../lib/ipv4';
 import { inspectIpv6, macToModifiedEui64, type Ipv6AddressKind } from '../lib/ipv6';
 import { useStore } from '../store';
 import ResponsiveTable from './ResponsiveTable';
+import { CABLING_TYPES, NETWORK_COMPONENTS, TOPOLOGY_ARCHITECTURES } from '../content/networkConcepts';
 
 type Language = 'it' | 'en';
 
@@ -300,7 +301,11 @@ export default function NetworkFundamentalsLab() {
         transport: 'TCP e UDP', diagnostics: 'Diagnostica delle interfacce', security: 'Attacchi e difese collegati', cause: 'Possibile causa', action: 'Verifica consigliata',
         switching: 'Concetti di switching', switchingNote: 'Uno switch prende una sola decisione per frame, e la prende sul MAC di destinazione: inoltrare su una porta, filtrare o fare flooding. Tutto il resto — VLAN, STP, Port Security — serve a delimitare dove quella decisione può avere effetto.',
         virtualization: 'Virtualizzazione: server, container e VRF', virtualizationImpact: 'Effetto sulla rete',
-        clientIp: 'Verifica dei parametri IP sul client', clientRead: 'Cosa leggere', clientSymptoms: 'Sintomi e interpretazione', clientNote: 'Prima di sospettare la rete, leggi i quattro parametri che l’host possiede davvero: indirizzo, mask, gateway e DNS. Tre quarti dei problemi “di rete” si chiudono qui.'
+        clientIp: 'Verifica dei parametri IP sul client', clientRead: 'Cosa leggere', clientSymptoms: 'Sintomi e interpretazione', clientNote: 'Prima di sospettare la rete, leggi i quattro parametri che l’host possiede davvero: indirizzo, mask, gateway e DNS. Tre quarti dei problemi “di rete” si chiudono qui.',
+        components: 'Componenti di rete e decisione che prendono', componentsNote: 'Ogni apparato prende una sola decisione per ogni unità di traffico. Sapere quale è, e quale confine crea, spiega in anticipo perché una configurazione funziona o no.',
+        decision: 'Decisione che prende', boundary: 'Confine che crea', notThis: 'Ciò che NON fa',
+        topology: 'Architetture di topologia', shape: 'Com’è fatta', whenToUse: 'Quando si usa', tradeOff: 'Compromesso',
+        cabling: 'Interfacce fisiche e cablaggio', medium: 'Come funziona il mezzo', reach: 'Portata', useCase: 'Dove si usa', trap: 'Trappola d’esame'
       }
     : {
         title: 'Network Fundamentals Lab', subtitle: 'IPv4 addressing, transport, diagnostics, and security — without scores or assessment.',
@@ -310,7 +315,11 @@ export default function NetworkFundamentalsLab() {
         transport: 'TCP and UDP', diagnostics: 'Interface diagnostics', security: 'Related attacks and defenses', cause: 'Possible cause', action: 'Recommended verification',
         switching: 'Switching concepts', switchingNote: 'A switch makes a single decision per frame, and makes it on the destination MAC: forward out one port, filter, or flood. Everything else — VLANs, STP, Port Security — exists to bound where that decision can take effect.',
         virtualization: 'Virtualization: servers, containers, and VRFs', virtualizationImpact: 'Network impact',
-        clientIp: 'Verifying IP parameters on the client', clientRead: 'What to read', clientSymptoms: 'Symptoms and interpretation', clientNote: 'Before suspecting the network, read the four parameters the host actually holds: address, mask, gateway, and DNS. Three quarters of “network” problems end here.'
+        clientIp: 'Verifying IP parameters on the client', clientRead: 'What to read', clientSymptoms: 'Symptoms and interpretation', clientNote: 'Before suspecting the network, read the four parameters the host actually holds: address, mask, gateway, and DNS. Three quarters of “network” problems end here.',
+        components: 'Network components and the decision they make', componentsNote: 'Every device makes a single decision per unit of traffic. Knowing which one it is, and which boundary it creates, explains in advance why a configuration works or does not.',
+        decision: 'Decision it makes', boundary: 'Boundary it creates', notThis: 'What it does NOT do',
+        topology: 'Topology architectures', shape: 'What it looks like', whenToUse: 'When it is used', tradeOff: 'Trade-off',
+        cabling: 'Physical interfaces and cabling', medium: 'How the medium works', reach: 'Reach', useCase: 'Where it is used', trap: 'Exam trap'
       };
 
   const subnet = calculation.subnet;
@@ -328,10 +337,63 @@ export default function NetworkFundamentalsLab() {
   return (
     <div className="space-y-8">
       <header className="rounded-xl border border-slate-200 bg-white p-6 md:p-8">
-        <p className="eyebrow">CCNA 1.4 · 1.5 · 1.6 · 1.7 · 1.8 · 1.9 · 1.10 · 1.12 · 1.13</p>
+        <p className="eyebrow">CCNA 1.1 → 1.10 · 1.12 · 1.13</p>
         <h1 className="mt-2 text-2xl font-semibold text-slate-900">{labels.title}</h1>
         <p className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-600">{labels.subtitle}</p>
       </header>
+
+      <section className="rounded-xl border border-slate-200 bg-white p-5 md:p-6" aria-labelledby="components-title">
+        <div className="flex items-center gap-3"><Router className="h-5 w-5 text-indigo-600" /><h2 id="components-title" className="text-lg font-semibold text-slate-900">{labels.components}</h2></div>
+        <p className="mt-3 max-w-4xl text-xs leading-relaxed text-slate-600">{labels.componentsNote}</p>
+        <div className="mt-4 grid gap-3 md:grid-cols-2">
+          {NETWORK_COMPONENTS.map(component => (
+            <article key={component.id} className="rounded-lg border border-slate-200 p-4">
+              <div className="flex flex-wrap items-baseline justify-between gap-x-2 gap-y-1">
+                <h3 className="text-sm font-semibold text-slate-900">{component.name[language]}</h3>
+                <span className="eyebrow shrink-0">{component.layer}</span>
+              </div>
+              <p className="mt-2 text-xs leading-relaxed text-slate-600"><strong className="text-slate-700">{labels.decision}:</strong> {component.decision[language]}</p>
+              <p className="mt-1.5 text-xs leading-relaxed text-sky-900"><strong>{labels.boundary}:</strong> {component.boundary[language]}</p>
+              <p className="mt-1.5 text-xs leading-relaxed text-amber-900"><strong>{labels.notThis}:</strong> {component.notThis[language]}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="rounded-xl border border-slate-200 bg-white p-5 md:p-6" aria-labelledby="topology-title">
+        <div className="flex items-center gap-3"><Workflow className="h-5 w-5 text-violet-600" /><h2 id="topology-title" className="text-lg font-semibold text-slate-900">{labels.topology}</h2></div>
+        <div className="mt-4">
+          <ResponsiveTable
+            rows={TOPOLOGY_ARCHITECTURES}
+            rowKey={row => row.id}
+            label={labels.topology}
+            minWidth={880}
+            columns={[
+              { id: 'name', header: labels.topology, heading: true, cell: row => row.name[language] },
+              { id: 'shape', header: labels.shape, cell: row => row.shape[language] },
+              { id: 'when', header: labels.whenToUse, cell: row => row.whenToUse[language] },
+              { id: 'tradeoff', header: labels.tradeOff, cellClassName: 'text-amber-900', cell: row => row.tradeOff[language] }
+            ]}
+          />
+        </div>
+      </section>
+
+      <section className="rounded-xl border border-slate-200 bg-white p-5 md:p-6" aria-labelledby="cabling-title">
+        <div className="flex items-center gap-3"><Cable className="h-5 w-5 text-sky-600" /><h2 id="cabling-title" className="text-lg font-semibold text-slate-900">{labels.cabling}</h2></div>
+        <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+          {CABLING_TYPES.map(cable => (
+            <article key={cable.id} className="rounded-lg border border-slate-200 p-4">
+              <div className="flex flex-wrap items-baseline justify-between gap-x-2 gap-y-1">
+                <h3 className="text-sm font-semibold text-slate-900">{cable.name[language]}</h3>
+                <span className="eyebrow min-w-0">{typeof cable.reach === 'string' ? cable.reach : cable.reach[language]}</span>
+              </div>
+              <p className="mt-2 text-xs leading-relaxed text-slate-600">{cable.medium[language]}</p>
+              <p className="mt-1.5 text-xs leading-relaxed text-slate-600"><strong className="text-slate-700">{labels.useCase}:</strong> {cable.useCase[language]}</p>
+              <p className="mt-1.5 text-xs leading-relaxed text-amber-900"><strong>{labels.trap}:</strong> {cable.trap[language]}</p>
+            </article>
+          ))}
+        </div>
+      </section>
 
       <section className="rounded-xl border border-slate-200 bg-white p-5 md:p-6" aria-labelledby="subnet-title">
         <div className="flex items-center gap-3">
