@@ -19,6 +19,15 @@ describe('OSI_LAYERS', () => {
     expect(ids).toEqual([1, 2, 3, 4, 5, 6, 7]);
   });
 
+  it('offers the same number of attacks and defenses in both languages', () => {
+    // A missing entry in one language is invisible to a reader of that language:
+    // the Italian Layer 7 block once had one attack fewer than the English one.
+    for (const layer of OSI_LAYERS) {
+      expect(layer.translations.it.attacks?.length, `L${layer.id} attacks`).toBe(layer.translations.en.attacks?.length);
+      expect(layer.translations.it.defenses?.length, `L${layer.id} defenses`).toBe(layer.translations.en.defenses?.length);
+    }
+  });
+
   it('has bilingual name and description for every layer', () => {
     for (const layer of OSI_LAYERS) {
       for (const lang of ['it', 'en'] as const) {

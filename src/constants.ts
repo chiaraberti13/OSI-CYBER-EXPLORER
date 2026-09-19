@@ -80,7 +80,7 @@ export const OSI_LAYERS: LayerData[] = [
             description: 'A denial-of-service attack that enables one machine to take down another machine\'s web server with minimal bandwidth.',
             howItWorks: '1. Attacker opens multiple connections to the target web server.\n2. Sends partial HTTP requests but never completes them.\n3. Periodically sends subsequent headers to keep the connections open.\n4. Server connection pool is exhausted, denying service to legitimate users.',
             impact: 'Complete web service unavailability.',
-            mitigation_strategy: 'Limit the number of concurrent connections per IP. Use the latest web server software.',
+            mitigation_strategy: 'Enforce a timeout on header reception and cap concurrent connections per IP. Put a reverse proxy or WAF in front of the server so it buffers the complete request before forwarding it: that is what neutralizes the attack, because a per-IP cap alone is defeated by a botnet.',
             severity: 'high',
             protocols: ['HTTP']
           }
@@ -185,6 +185,15 @@ export const OSI_LAYERS: LayerData[] = [
             mitigation_strategy: 'Distribuisci DNSSEC per firmare crittograficamente i record DNS.',
             severity: 'critical',
             protocols: ['DNS']
+          },
+          {
+            name: 'Slowloris',
+            description: 'Un attacco denial-of-service che permette a una singola macchina di rendere indisponibile il web server di un\'altra con banda minima.',
+            howItWorks: '1. L\'attaccante apre molte connessioni verso il web server bersaglio.\n2. Invia richieste HTTP parziali senza mai completarle.\n3. Periodicamente invia un altro header per tenere aperte le connessioni.\n4. Il pool di connessioni del server si esaurisce e i client legittimi non vengono più serviti.',
+            impact: 'Indisponibilità completa del servizio web.',
+            mitigation_strategy: 'Imponi timeout sulla ricezione degli header e limita le connessioni concorrenti per IP. Metti davanti al server un reverse proxy o un WAF che bufferizzi la richiesta completa prima di inoltrarla: è questo a neutralizzare l\'attacco, perché il solo limite per IP viene aggirato da una botnet.',
+            severity: 'high',
+            protocols: ['HTTP']
           }
         ],
         defenses: [
@@ -293,7 +302,7 @@ export const OSI_LAYERS: LayerData[] = [
             description: 'Using characters from different sets (e.g., Cyrillic) that look identical to Latin characters to deceive users.',
             howItWorks: '1. Attacker registers a domain like "apple.com" but uses a Cyrillic "а".\n2. User clicks a link that looks perfectly legitimate.\n3. Browser resolves the Punycode version (xn--pple-43d.com) of the domain.\n4. Attacker hosts a phishing site on the visually identical domain.',
             impact: 'Highly effective phishing, credential theft, malware distribution.',
-            mitigation_strategy: 'Enable browser-level homograph protection. Use Punycode display in address bars for suspicious characters. Implement HSTS.',
+            mitigation_strategy: 'Rely on the browser IDN policy that shows the Punycode form when a label mixes scripts, monitor registrations of lookalike domains and Certificate Transparency logs for your brand, and allow-list the domains that matter in mail and web filtering. HSTS does not help here: the lookalike is a different domain, with its own valid certificate and its own HSTS policy.',
             severity: 'high',
             protocols: ['HTTP', 'DNS']
           }
@@ -402,7 +411,7 @@ export const OSI_LAYERS: LayerData[] = [
             description: 'Utilizzo di caratteri di set diversi (es. Cirillico) che sembrano identici ai caratteri Latini per ingannare gli utenti.',
             howItWorks: '1. L\'attaccante registra un dominio come "apple.com" usando una "а" cirillica.\n2. L\'utente clicca su un link che sembra perfettamente legittimo.\n3. Il browser risolve la versione Punycode (xn--pple-43d.com) del dominio.\n4. L\'attaccante ospita un sito di phishing sul dominio visivamente identico.',
             impact: 'Phishing altamente efficace, furto di credenziali, distribuzione di malware.',
-            mitigation_strategy: 'Abilita la protezione omografica a livello di browser. Usa la visualizzazione Punycode per caratteri sospetti.',
+            mitigation_strategy: 'Affidati alla policy IDN del browser, che mostra la forma Punycode quando un\'etichetta mescola più alfabeti, monitora le registrazioni di domini lookalike e i log di Certificate Transparency per il tuo marchio, e usa allowlist dei domini rilevanti nel filtraggio mail e web. HSTS non serve in questo caso: il dominio lookalike è un dominio diverso, con un proprio certificato valido e una propria policy HSTS.',
             severity: 'high',
             protocols: ['HTTP', 'DNS']
           }
@@ -518,7 +527,7 @@ export const OSI_LAYERS: LayerData[] = [
             description: 'Sessions remain active far longer than necessary, increasing the window for hijacking.',
             howItWorks: '1. User finishes using an application but does not log out.\n2. Attacker gains access to the local machine or steals the cookie later.\n3. The session is still valid because there is no server-side timeout.\n4. Attacker continues using the authenticated session indefinitely.',
             impact: 'Prolonged window for session theft and unauthorized access.',
-            mitigation_strategy: 'Implement absolute timeouts and idle timeouts. Invalidate sessions on the server upon browser close or logout.',
+            mitigation_strategy: 'Apply both an idle timeout and an absolute timeout, and invalidate the session server-side on logout, on password change, and on privilege change. The server cannot detect a closed browser: a short-lived cookie only stops the browser from resending the token, so the session must expire on the server too.',
             severity: 'medium',
             protocols: ['HTTP']
           }
@@ -620,7 +629,7 @@ export const OSI_LAYERS: LayerData[] = [
             description: 'Le sessioni rimangono attive molto più a lungo del necessario, aumentando la finestra per il furto.',
             howItWorks: '1. L\'utente finisce di usare l\'app ma non effettua il logout.\n2. L\'attaccante ottiene accesso alla macchina locale in seguito.\n3. La sessione è ancora valida perché non c\'è timeout lato server.\n4. L\'attaccante continua a usare la sessione autenticata per giorni.',
             impact: 'Finestra prolungata per il furto di sessione e accesso non autorizzato.',
-            mitigation_strategy: 'Implementa timeout assoluti e di inattività. Invalida le sessioni sul server dopo il logout.',
+            mitigation_strategy: 'Applica sia un timeout di inattività sia un timeout assoluto, e invalida la sessione lato server al logout, al cambio password e al cambio di privilegi. Il server non può accorgersi della chiusura del browser: un cookie di sessione impedisce solo al browser di rinviare il token, quindi la sessione deve scadere anche sul server.',
             severity: 'medium',
             protocols: ['HTTP']
           }
@@ -712,7 +721,7 @@ export const OSI_LAYERS: LayerData[] = [
             description: 'Attacker abuses UDP services that return large responses to small queries, amplifying attack traffic.',
             howItWorks: '1. Attacker sends small UDP requests (e.g., DNS, NTP) with victim\'s spoofed source IP.\n2. Servers send large responses to the victim.\n3. Amplification factor can be 10x–100x (NTP monlist up to 556x).\n4. Victim is flooded with traffic it never requested.',
             impact: 'Network saturation, service outage with minimal attacker bandwidth.',
-            mitigation_strategy: 'Disable amplifying services (monlist). Configure BCP38 egress filtering to prevent spoofed source IPs.',
+            mitigation_strategy: 'Remove the amplifier: no open recursive DNS resolver, NTP without monlist and with restrict, no memcached, SSDP, or CLDAP exposed to the Internet. Then remove the spoofing that makes reflection possible with ingress filtering at the network edge (BCP 38 / RFC 2827) and uRPF, plus response-rate limiting and upstream scrubbing capacity for the victim side.',
             severity: 'critical',
             protocols: ['DNS']
           },
@@ -740,7 +749,7 @@ export const OSI_LAYERS: LayerData[] = [
             description: 'Attacker kills a legitimate TCP connection by sending a spoofed packet with the RST (Reset) flag set.',
             howItWorks: '1. Attacker observes or predicts a TCP session sequence number.\n2. Sends a spoofed packet with the victim\'s source IP and the RST flag.\n3. Server receives the RST packet and immediately closes the connection.\n4. Legitimate users are disconnected without warning.',
             impact: 'Disruption of long-lived connections (BGP sessions, long downloads).',
-            mitigation_strategy: 'Use TCP MD5 signatures or TLS for authentication. Use modern operating systems with harder-to-predict sequence numbers.',
+            mitigation_strategy: 'Authenticate the TCP session itself with TCP-AO (RFC 5925, which supersedes the legacy TCP MD5 of RFC 2385) on long-lived sessions such as BGP, and rely on modern stacks that randomize initial sequence numbers and check that a RST falls inside the expected window. TLS does not help here: it protects the payload, so a forged RST still tears the connection down — TLS only ensures the truncation is detected rather than silently accepted.',
             severity: 'high',
             protocols: ['BGP', 'SSH', 'FTP']
           },
@@ -862,7 +871,7 @@ export const OSI_LAYERS: LayerData[] = [
             description: 'L\'attaccante termina una connessione TCP legittima inviando un pacchetto falsificato con il flag RST (Reset) impostato.',
             howItWorks: '1. L\'attaccante osserva o predice il numero di sequenza di una sessione TCP.\n2. Invia un pacchetto spoofato con l\'IP della vittima e il flag RST.\n3. Il server riceve il RST e chiude immediatamente la connessione.\n4. Gli utenti legittimi vengono disconnessi senza preavviso.',
             impact: 'Interruzione di connessioni a lunga durata (sessioni BGP, download lunghi).',
-            mitigation_strategy: 'Usa firme TCP MD5 o TLS per l\'autenticazione. Usa sistemi operativi moderni con numeri di sequenza difficili da prevedere.',
+            mitigation_strategy: 'Autentica la sessione TCP stessa con TCP-AO (RFC 5925, che sostituisce il TCP MD5 legacy di RFC 2385) sulle sessioni a lunga durata come BGP, e affidati a stack moderni che randomizzano gli initial sequence number e verificano che il RST cada nella finestra attesa. TLS non aiuta in questo caso: protegge il payload, quindi un RST falsificato abbatte comunque la connessione — TLS garantisce solo che il troncamento venga rilevato invece di essere accettato in silenzio.',
             severity: 'high',
             protocols: ['BGP', 'SSH', 'FTP']
           },
@@ -954,7 +963,7 @@ export const OSI_LAYERS: LayerData[] = [
             description: 'Injecting false routing information into protocols like OSPF or RIP to redirect or drop traffic.',
             howItWorks: '1. Attacker joins a network segment as a router.\n2. Sends forged routing updates claiming a faster path to a network.\n3. Legitimate routers update their tables with the false path.\n4. Attacker becomes a Man-in-the-Middle for across-network traffic.',
             impact: 'Traffic redirection, network-wide MITM, selective packet dropping.',
-            mitigation_strategy: 'Use routing protocol authentication (e.g., OSPF MD5 authentication). Limit neighbor adjacencies.',
+            mitigation_strategy: 'Authenticate the protocol — on current IOS XE with a key chain and SHA (ip ospf authentication key-chain), since plain MD5 is legacy — set passive-interface default and enable adjacencies only on intended transit links. Remember the limit: authentication proves knowledge of the key, so an authorized router that has been compromised can still advertise false information; prefix filtering on redistribution and a neighbour/LSDB baseline are what catch that.',
             severity: 'high'
           },
           {
@@ -970,7 +979,7 @@ export const OSI_LAYERS: LayerData[] = [
             description: 'Sending oversized or malformed ICMP packets to crash, freeze, or destabilize the target system.',
             howItWorks: '1. ICMP allows packets up to 65,535 bytes.\n2. Attacker sends a packet larger than the maximum allowed by IP.\n3. Packet is fragmented during transit.\n4. Reassembly at target causes buffer overflow because the total size exceeds allocated memory.',
             impact: 'System crash, blue screen (BSOD), kernel panic.',
-            mitigation_strategy: 'Update OS with latest security patches. Configure firewalls to drop ICMP packets exceeding standard MTU sizes.',
+            mitigation_strategy: 'Patch the operating system — the bug is in the reassembly code, not in ICMP itself. Then have the firewall reassemble fragments and drop those whose reassembled length would exceed the 65,535-byte IP maximum, along with overlapping or malformed fragments. Do not filter on the MTU: legitimate traffic larger than the MTU is fragmented normally and must keep flowing.',
             severity: 'high'
           },
           {
@@ -978,7 +987,7 @@ export const OSI_LAYERS: LayerData[] = [
             description: 'Malicious ASes announce more specific IP prefix routes, capturing internet traffic meant for others.',
             howItWorks: '1. Attacker controls an Autonomous System (AS) connected to BGP.\n2. Announces ownership of IP blocks actually owned by others.\n3. Routers prefer more specific routes, redirecting traffic.\n4. Attacker can intercept, drop, or inspect traffic at internet scale.',
             impact: 'Global traffic interception, internet routing disruption, massive-scale MITM.',
-            mitigation_strategy: 'Deploy BGPsec and RPKI (Resource Public Key Infrastructure) to cryptographically validate route origins.',
+            mitigation_strategy: 'Deploy RPKI origin validation (ROV) and drop Invalid announcements, filter prefixes and AS paths per peer, set maximum-prefix limits, and monitor your prefixes from independent collectors. ROV validates only the originating AS, not the whole AS_PATH: BGPsec would sign the path but has no meaningful production deployment.',
             severity: 'critical',
             protocols: ['BGP']
           },
@@ -996,7 +1005,7 @@ export const OSI_LAYERS: LayerData[] = [
             description: 'Attacker creates a loop in the network, forcing packets to circulate between routers until TTL expiry.',
             howItWorks: '1. Attacker sends forged routing updates to multiple routers.\n2. Routers A thinks B has the best path; B thinks A has the best path.\n3. A packet for that network bounces back and forth between A and B.\n4. Link bandwidth is instantly consumed by the looping packets.',
             impact: 'Instant network congestion, link saturation, denial of service.',
-            mitigation_strategy: 'Implement Split Horizon and Route Poisoning. Use reliable routing protocols with loop prevention mechanisms.',
+            mitigation_strategy: 'Authenticate the routing protocol so an unauthorized router cannot inject updates, filter redistribution with prefix lists and route tags, and keep adjacencies only on intended links. Split horizon and route poisoning are distance-vector mechanisms (RIP, EIGRP): a link-state protocol such as OSPF prevents loops by running SPF over a synchronized LSDB, which is why loops there come from redistribution or summarization mistakes, not from the protocol itself.',
             severity: 'high'
           }
         ],
@@ -1069,7 +1078,7 @@ export const OSI_LAYERS: LayerData[] = [
             description: 'Iniezione di informazioni di routing false in protocolli come OSPF o RIP per reindirizzare o scartare il traffico.',
             howItWorks: '1. L\'attaccante si unisce a un segmento di rete come router.\n2. Invia aggiornamenti di routing falsi dichiarando un percorso più veloce verso una rete.\n3. I router legittimi aggiornano le loro tabelle con il percorso falso.\n4. L\'attaccante diventa un MITM per il traffico tra reti.',
             impact: 'Reindirizzamento del traffico, MITM a livello di intera rete, scarto selettivo dei pacchetti.',
-            mitigation_strategy: 'Usa l\'autenticazione nei protocolli di routing (es. OSPF MD5). Limita le adiacenze dei vicini.',
+            mitigation_strategy: 'Autentica il protocollo — su IOS XE attuale con una key chain e SHA (ip ospf authentication key-chain), perché il solo MD5 è legacy — imposta passive-interface default e abilita le adiacenze solo sui link di transito previsti. Attenzione al limite: l\'autenticazione prova la conoscenza della chiave, quindi un router autorizzato ma compromesso può comunque annunciare informazioni false; sono il filtraggio dei prefissi in redistribuzione e una baseline di neighbor/LSDB a intercettarlo.',
             severity: 'high'
           },
           {
@@ -1111,7 +1120,7 @@ export const OSI_LAYERS: LayerData[] = [
             description: 'L\'attaccante crea un loop nella rete, forzando i pacchetti a circolare tra i router fino alla scadenza del TTL.',
             howItWorks: '1. L\'attaccante invia aggiornamenti di routing falsi a più router.\n2. Il router A pensa che B abbia il percorso migliore; B pensa che l\'abbia A.\n3. Un pacchetto per quella rete rimbalza tra A e B.\n4. La banda del link viene istantaneamente consumata dai pacchetti in loop.',
             impact: 'Congestione istantanea della rete, saturazione dei link, denial of service.',
-            mitigation_strategy: 'Implementa Split Horizon e Route Poisoning. Usa protocolli di routing con meccanismi di prevenzione dei loop.',
+            mitigation_strategy: 'Autentica il protocollo di routing perché un router non autorizzato non possa iniettare update, filtra la redistribuzione con prefix list e route tag e mantieni le adiacenze solo sui link previsti. Split horizon e route poisoning sono meccanismi dei protocolli distance-vector (RIP, EIGRP): un protocollo link-state come OSPF previene i loop calcolando SPF su una LSDB sincronizzata, quindi lì i loop nascono da errori di redistribuzione o summarization, non dal protocollo stesso.',
             severity: 'high'
           }
         ],
@@ -1197,7 +1206,7 @@ export const OSI_LAYERS: LayerData[] = [
           },
           {
             name: 'VLAN Trunking Protocol (VTP) Attack',
-            description: 'Attacker sends malicious VTP messages to delete or modify VLAN configurations across the network.',
+            description: 'Attacker sends malicious VTP messages to delete or modify VLAN configurations across the network. VTP is not part of the CCNA 200-301 v1.1 blueprint — it is kept here because it is still found in legacy networks and shows why a protocol that propagates configuration needs a trust boundary.',
             howItWorks: '1. Attacker connects a device and identifies a trunk port.\n2. Injects VTP packets with a higher revision number and zero VLANs.\n3. Other switches in the VTP domain accept the "update".\n4. Existing VLANs are deleted network-wide, causing massive outage.',
             impact: 'Network-wide Denial of Service, potential VLAN leakage.',
             mitigation_strategy: 'Use VTP passwords. Set switches to VTP transparent mode or disable VTP entirely.',
@@ -1305,7 +1314,7 @@ export const OSI_LAYERS: LayerData[] = [
           },
           {
             name: 'Attacco VTP (VLAN Trunking Protocol)',
-            description: 'L\'attaccante invia messaggi VTP malevoli per eliminare o modificare le configurazioni VLAN in tutta la rete.',
+            description: 'L\'attaccante invia messaggi VTP malevoli per eliminare o modificare le configurazioni VLAN in tutta la rete. VTP non fa parte del blueprint CCNA 200-301 v1.1: resta qui perché si incontra ancora nelle reti legacy e mostra perché un protocollo che propaga configurazione ha bisogno di un confine di fiducia.',
             howItWorks: '1. L\'attaccante si connette e identifica una porta trunk.\n2. Inietta pacchetti VTP con un numero di revisione più alto e zero VLAN.\n3. Gli altri switch nel dominio VTP accettano l\'aggiornamento.\n4. Le VLAN esistenti vengono eliminate dall\'intera rete, causando un blackout massivo.',
             impact: 'Denial of Service a livello di intera rete, potenziale perdita di isolamento VLAN.',
             mitigation_strategy: 'Usa password VTP. Imposta gli switch in modalità VTP transparent o disabilita VTP.',
@@ -1416,7 +1425,7 @@ export const OSI_LAYERS: LayerData[] = [
             description: 'Transmitting radio frequency interference to disrupt wireless communications.',
             howItWorks: '1. Attacker uses a radio transmitter on the target frequency (Wi-Fi, cellular).\n2. Noise overwhelms legitimate signals.\n3. Wireless clients cannot communicate with access points.\n4. Results in a localized denial of service affecting the physical area.',
             impact: 'Wireless network unavailability, IoT device disruption, communication blackout.',
-            mitigation_strategy: 'Use spread-spectrum technologies (FHSS, DSSS) that are inherently resistant to narrow-band jamming.',
+            mitigation_strategy: 'Detect and locate the source with spectrum analysis and WIDS/WIPS, then respond on the RF plane: channel and power plan, alternative band, added capacity, and a wired path for critical services. Spread spectrum (the legacy FHSS and DSSS of early 802.11; modern Wi-Fi uses OFDM) only resists narrow-band interference — no modulation defeats a broadband jammer, which makes this ultimately a physical and regulatory problem.',
             severity: 'high'
           },
           {
@@ -1548,7 +1557,7 @@ export const OSI_LAYERS: LayerData[] = [
             description: 'Intercettazione delle radiazioni elettromagnetiche dall\'hardware (monitor, cavi) per recuperare dati.',
             howItWorks: '1. I dispositivi elettronici emettono segnali elettromagnetici involontari.\n2. L\'attaccante usa antenne sensibili nelle vicinanze per catturare i segnali.\n3. Il processamento dei segnali ricostruisce immagini dello schermo o tasti premuti.\n4. Informazioni critiche rubate senza contatto fisico o logico.',
             impact: 'Furto passivo di dati altamente sensibili, password e chiavi crittografiche.',
-            mitigation_strategy: 'Usa cavi schermati (STP). Implementa gabbie di Faraday per attrezzature sensibili.',
+            mitigation_strategy: 'Usa cavi schermati (STP). Implementa gabbie di Faraday per attrezzature sensibili. Segui gli standard TEMPEST nella scelta dell\'hardware.',
             severity: 'high'
           },
           {

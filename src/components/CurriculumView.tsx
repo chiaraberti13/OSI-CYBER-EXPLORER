@@ -1,10 +1,16 @@
-import { BookOpen, Network, ShieldCheck } from 'lucide-react';
+import { BookOpen, ListChecks, Network, ShieldCheck } from 'lucide-react';
 import { CCNA_DOMAINS } from '../content/ccna';
+import { DOMAIN_CHECKLISTS } from '../content/domainChecklists';
 import { ATTACK_FAMILIES } from '../content/securityTaxonomy';
 import { useStore } from '../store';
 
+const CHECKLIST_BY_DOMAIN = new Map<string, (typeof DOMAIN_CHECKLISTS)[number]>(DOMAIN_CHECKLISTS.map(list => [list.domainId, list]));
+
 export default function CurriculumView() {
   const { language, setActiveView } = useStore();
+  const checklistLabels = language === 'it'
+    ? { title: 'Concetti da saper spiegare', observe: 'Dove osservarlo', pitfall: 'Errore rivelatore', note: 'Non è un quiz e non produce un punteggio: è un elenco di concetti da usare per decidere cosa rivedere. Ogni voce dice dove nella piattaforma puoi vedere il concetto in funzione e quale errore rivela che non è ancora solido.' }
+    : { title: 'Concepts you should be able to explain', observe: 'Where to observe it', pitfall: 'Revealing mistake', note: 'This is not a quiz and produces no score: it is a list of concepts to help you decide what to revisit. Each entry names where in the platform you can watch the concept at work and which mistake reveals it is not yet solid.' };
 
   return (
     <div className="space-y-8">
@@ -79,6 +85,28 @@ export default function CurriculumView() {
               <p className="mt-4 font-mono text-[10px] text-slate-400">
                 {language === 'it' ? 'Obiettivi' : 'Objectives'}: {domain.objectiveIds.join(' · ')}
               </p>
+
+              {CHECKLIST_BY_DOMAIN.has(domain.id) ? (
+                <details className="mt-4 rounded-lg border border-slate-200 bg-slate-50/60">
+                  <summary className="flex cursor-pointer items-center gap-2 p-3 text-xs font-semibold text-slate-700">
+                    <ListChecks className="h-4 w-4 shrink-0 text-indigo-600" aria-hidden="true" />
+                    {checklistLabels.title}
+                    <span className="ml-auto font-normal text-slate-400">{CHECKLIST_BY_DOMAIN.get(domain.id)!.items.length}</span>
+                  </summary>
+                  <div className="border-t border-slate-200 p-3">
+                    <p className="text-[11px] leading-relaxed text-slate-500">{checklistLabels.note}</p>
+                    <ul className="mt-3 space-y-3">
+                      {CHECKLIST_BY_DOMAIN.get(domain.id)!.items.map(entry => (
+                        <li key={entry.id} className="rounded-lg border border-slate-200 bg-white p-3">
+                          <p className="text-xs font-medium leading-relaxed text-slate-800">{entry.concept[language]}</p>
+                          <p className="mt-2 text-[11px] leading-relaxed text-sky-900"><strong>{checklistLabels.observe}:</strong> {entry.observeIn[language]}</p>
+                          <p className="mt-1 text-[11px] leading-relaxed text-amber-900"><strong>{checklistLabels.pitfall}:</strong> {entry.pitfall[language]}</p>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </details>
+              ) : null}
               {domain.id === 'network-fundamentals' ? (
                 <button
                   type="button"
