@@ -2,7 +2,9 @@ import { useState, useEffect, useMemo, useRef } from 'react';
 import type { LucideIcon } from 'lucide-react';
 import { useStore } from '../store';
 import { motion, AnimatePresence } from 'motion/react';
-import { ATTACK_WALKTHROUGHS, ATTACK_SCENARIOS, OSI_LAYERS } from '../constants';
+import { OSI_LAYERS } from '../content/osiLayers';
+import { ATTACK_SCENARIOS } from '../content/attackScenarios';
+import { ATTACK_WALKTHROUGHS } from '../content/attackWalkthroughs';
 import { AttackWalkthrough, StepActor } from '../types';
 import {
   Skull, ShieldCheck, ShieldOff, Server, Play, Pause, RotateCcw, ChevronRight,

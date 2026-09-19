@@ -1,7 +1,8 @@
 import { useCallback, useEffect } from 'react';
 import { useStore } from '../store';
 import { motion, AnimatePresence } from 'motion/react';
-import { OSI_LAYERS, ATTACK_SCENARIOS } from '../constants';
+import { OSI_LAYERS } from '../content/osiLayers';
+import { ATTACK_SCENARIOS } from '../content/attackScenarios';
 import { Zap, Skull, ShieldCheck, Play, RotateCcw, Info, Pause, ChevronDown, Volume2, VolumeX } from 'lucide-react';
 import { playAudioCue } from '../utils/audio';
 import { pduNameForLayer, l4ProtocolFor, type SimProtocol } from '../lib/osi';

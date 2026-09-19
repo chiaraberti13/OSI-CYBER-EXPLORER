@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Search, BookOpen } from 'lucide-react';
-import { GLOSSARY_TERMS } from '../constants';
+import { GLOSSARY_TERMS } from '../content/glossaryTerms';
 import { useStore } from '../store';
 
 export default function GlossaryModal({ isOpen = false, onClose = () => {}, inline = false }: { isOpen?: boolean; onClose?: () => void; inline?: boolean }) {
