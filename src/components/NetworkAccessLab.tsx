@@ -12,6 +12,7 @@ import {
 } from '../lib/networkAccess';
 import { useStore } from '../store';
 import ResponsiveTable from './ResponsiveTable';
+import StpConvergenceLab from './StpConvergenceLab';
 
 type Language = 'it' | 'en';
 type Localized = Record<Language, string>;
@@ -365,6 +366,8 @@ export default function NetworkAccessLab() {
         <p className="mt-4 rounded-lg border border-amber-100 bg-amber-50 p-3 text-xs leading-relaxed text-amber-900">{t.costNote}</p>
         <div className="mt-5 grid gap-3 md:grid-cols-2">{STP_ROLES.map(item => <article key={item.name} className="rounded-lg border border-slate-200 p-3"><h3 className="text-xs font-semibold text-slate-900">{item.name}</h3><p className="mt-1.5 text-xs leading-relaxed text-slate-600">{item.detail[language]}</p></article>)}</div>
       </section>
+
+      <StpConvergenceLab />
 
       <section className="rounded-xl border border-slate-200 bg-white p-5 md:p-6" aria-labelledby="etherchannel-title">
         <SectionTitle icon={Cable} title={t.etherTitle} id="etherchannel-title" />
