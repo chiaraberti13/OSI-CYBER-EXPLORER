@@ -112,9 +112,12 @@ Il progetto segue un'**architettura modulare e a responsabilità separate**:
 
 - **`src/types.ts`** — definizione centrale dei tipi (livelli OSI, attacchi, difese, header di pacchetto,
   scenari, log). È il "contratto" dati su cui poggia tutto il resto.
-- **`src/constants.ts`** — i **dati** dell'applicazione (i 7 livelli OSI con descrizioni, protocolli,
-  attacchi e difese in due lingue, gli scenari di attacco, i termini del glossario). Contenuto e logica
-  sono tenuti separati: aggiungere un attacco o un livello significa modificare i dati, non il codice.
+- **`src/content/`** — i **dati** dell'applicazione, un modulo per dataset: i 7 livelli OSI con
+  descrizioni, protocolli, attacchi e difese in due lingue (`osiLayers.ts`), gli scenari di attacco
+  (`attackScenarios.ts`), i walkthrough (`attackWalkthroughs.ts`), i termini del glossario
+  (`glossaryTerms.ts`), i domini CCNA e le topologie dei laboratori. Contenuto e logica sono tenuti
+  separati — aggiungere un attacco o un livello significa modificare i dati, non il codice — e poiché
+  ogni dataset è un modulo a sé, un laboratorio scarica soltanto il contenuto che usa davvero.
 - **`src/store.ts`** — lo **stato globale** con Zustand: lingua attiva, livello selezionato, stato della
   simulazione, protocollo scelto, attacco attivo, difese, log, header generati, vista corrente, audio,
   velocità di simulazione. Tutti i componenti leggono e scrivono da qui, evitando il "prop drilling".
@@ -170,7 +173,8 @@ usa alcun modello di AI né backend**, la simulazione è interamente determinist
 Nel progetto ho:
 
 - **Progettato l'architettura modulare** dell'applicazione, separando in modo netto i **dati**
-  (`constants.ts`), i **tipi/contratti** (`types.ts`), lo **stato** (`store.ts`) e i **componenti UI**,
+  (`src/content/`), la **logica pura e testata** (`src/lib/`), i **tipi/contratti** (`types.ts`),
+  lo **stato** (`store.ts`) e i **componenti UI**,
   così che i contenuti didattici possano crescere senza toccare la logica.
 - **Gestito la pipeline di simulazione e rendering** del pacchetto: il ciclo di
   incapsulamento/decapsulamento livello per livello, la generazione degli header realistici per ogni
