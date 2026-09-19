@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState, type KeyboardEvent as ReactKeyboa
 import { AnimatePresence, motion } from 'motion/react';
 import {
   Activity, BookOpen, Cable, Calculator, ChevronDown, FileCode2, FileSearch, Fingerprint, Gauge,
+  Split,
   GitBranch, GlobeLock, Hash, HeartPulse, KeyRound, Laptop, Layers, Layers3, LockKeyhole, Map,
   MailWarning, Network, Radar, Radio, Route, Router, Search, ServerCog, Shield, ShieldAlert,
   Swords, Workflow, X
@@ -11,6 +12,7 @@ import { useStore, type AppView } from '../store';
 
 const VIEW_ICONS: Record<AppView, typeof Map> = {
   curriculum: Map,
+  pathtrace: Split,
   fundamentals: Calculator,
   access: Cable,
   routing: Route,
