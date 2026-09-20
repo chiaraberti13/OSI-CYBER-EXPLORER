@@ -39,15 +39,15 @@ const COPY = {
     priorities: 'Priorità per la VLAN selezionata', priorityFor: 'Priorità STP', reset: 'Ripristina il progetto',
     root: 'Root bridge', bridgeId: 'Bridge ID', cost: 'Costo verso la root',
     diagram: 'Topologia e ruoli delle porte', blocked: 'Collegamenti interrotti dall’albero', none: 'Nessuno',
-    portsLabel: 'Ruolo di ogni porta', showAll: 'Tutte le porte', showBlocking: 'Solo quelle che bloccano',
+    portsLabel: 'Ruolo di ogni porta', showAll: 'Tutte le porte', showBlocking: 'Solo quelle in discarding',
     colPort: 'Porta', colNeighbor: 'Vicino', colRole: 'Ruolo', colState: 'Stato', colCost: 'Costo porta', colWhy: 'Perché',
     roles: { root: 'Root port', designated: 'Designated', alternate: 'Alternate (blocking)' },
-    states: { forwarding: 'Forwarding', blocking: 'Blocking' },
+    states: { forwarding: 'Forwarding', discarding: 'Discarding' },
     invalid: 'Configurazione non valida per questa topologia.',
     order: 'L’ordine delle decisioni',
-    orderBody: '1) Root bridge: Bridge ID più basso, e nient’altro. 2) Root port: una sola per switch non root, quella con il costo cumulativo più basso verso la root. 3) Designated port: una per segmento, dal lato che annuncia il costo migliore. 4) Tutto il resto va in blocking. I pareggi si rompono sempre nello stesso ordine: costo, Bridge ID del vicino, Port ID del vicino, Port ID proprio.',
+    orderBody: '1) Root bridge: Bridge ID più basso, e nient’altro. 2) Root port: una sola per switch non root, quella con il costo cumulativo più basso verso la root. 3) Designated port: una per segmento, dal lato che annuncia il costo migliore. 4) Tutto il resto va in discarding. I pareggi si rompono sempre nello stesso ordine: costo, Bridge ID del vicino, Port ID del vicino, Port ID proprio.',
     trap: 'Trappola d’esame',
-    trapBody: 'Il Bridge ID contiene la VLAN nell’extended system ID: priority 24576 sulla VLAN 10 si legge 24586. Per questo la priorità è configurabile solo a passi di 4096, e per questo due VLAN possono avere root diverse sugli stessi switch — è il load balancing di PVST+. Nota anche che una porta in blocking non è spenta: continua ad ascoltare le BPDU, ed è così che si accorge quando il percorso primario cade.',
+    trapBody: 'Il Bridge ID contiene la VLAN nell’extended system ID: priority 24576 sulla VLAN 10 si legge 24586. Per questo la priorità è configurabile solo a passi di 4096, e per questo due VLAN possono avere root diverse sugli stessi switch — è il load balancing di PVST+. Nota anche che una porta in discarding non è spenta: continua ad ascoltare le BPDU, ed è così che si accorge quando il percorso primario cade. Attenzione ai nomi degli stati: questa tabella usa il vocabolario RSTP, che ha tre stati — discarding, learning, forwarding — perché Rapid PVST+ è il default sugli switch Cisco attuali. Lo STP classico (802.1D) ne ha cinque — disabled, blocking, listening, learning, forwarding — e chiama blocking lo stato che qui si legge discarding.',
     pvst: 'Cosa cambia tra le VLAN',
     pvstBody: 'Passa dalla VLAN 10 alla 20 e osserva gli uplink degli access switch invertirsi: con DSW1 root per la 10 e DSW2 root per la 20, nessun uplink resta inutilizzato. Sulla VLAN 30 nessuno ha una priorità configurata, quindi decide il MAC più basso: è il comportamento che ottieni quando dimentichi di scegliere la root.'
   },
@@ -58,15 +58,15 @@ const COPY = {
     priorities: 'Priorities for the selected VLAN', priorityFor: 'STP priority', reset: 'Restore the design',
     root: 'Root bridge', bridgeId: 'Bridge ID', cost: 'Cost to the root',
     diagram: 'Topology and port roles', blocked: 'Links the tree has cut', none: 'None',
-    portsLabel: 'Role of every port', showAll: 'All ports', showBlocking: 'Only the blocking ones',
+    portsLabel: 'Role of every port', showAll: 'All ports', showBlocking: 'Only the discarding ones',
     colPort: 'Port', colNeighbor: 'Neighbour', colRole: 'Role', colState: 'State', colCost: 'Port cost', colWhy: 'Why',
     roles: { root: 'Root port', designated: 'Designated', alternate: 'Alternate (blocking)' },
-    states: { forwarding: 'Forwarding', blocking: 'Blocking' },
+    states: { forwarding: 'Forwarding', discarding: 'Discarding' },
     invalid: 'Invalid configuration for this topology.',
     order: 'The order of the decisions',
-    orderBody: '1) Root bridge: lowest Bridge ID, and nothing else. 2) Root port: one per non-root switch, the one with the lowest cumulative cost to the root. 3) Designated port: one per segment, on the side advertising the better cost. 4) Everything left goes to blocking. Ties always break in the same order: cost, neighbour Bridge ID, neighbour Port ID, own Port ID.',
+    orderBody: '1) Root bridge: lowest Bridge ID, and nothing else. 2) Root port: one per non-root switch, the one with the lowest cumulative cost to the root. 3) Designated port: one per segment, on the side advertising the better cost. 4) Everything left goes to discarding. Ties always break in the same order: cost, neighbour Bridge ID, neighbour Port ID, own Port ID.',
     trap: 'Exam trap',
-    trapBody: 'The Bridge ID carries the VLAN in its extended system ID: priority 24576 on VLAN 10 reads as 24586. That is why the priority is only settable in steps of 4096, and why two VLANs can have different roots on the same switches — PVST+ load balancing. Note too that a blocking port is not shut down: it keeps listening to BPDUs, which is how it notices when the primary path fails.',
+    trapBody: 'The Bridge ID carries the VLAN in its extended system ID: priority 24576 on VLAN 10 reads as 24586. That is why the priority is only settable in steps of 4096, and why two VLANs can have different roots on the same switches — PVST+ load balancing. Note too that a discarding port is not shut down: it keeps listening to BPDUs, which is how it notices when the primary path fails. Mind the state names: this table uses the RSTP vocabulary, which has three states — discarding, learning, forwarding — because Rapid PVST+ is the default on current Cisco switches. Classic STP (802.1D) has five — disabled, blocking, listening, learning, forwarding — and calls blocking the state shown here as discarding.',
     pvst: 'What changes between VLANs',
     pvstBody: 'Switch from VLAN 10 to VLAN 20 and watch the access uplinks swap: with DSW1 root for 10 and DSW2 root for 20, no uplink sits idle. On VLAN 30 nobody has a configured priority, so the lowest MAC decides — the behaviour you get when you forget to choose the root.'
   }
@@ -293,7 +293,7 @@ export default function StpConvergenceLab() {
             <div className="mt-3">
               <ResponsiveTable<StpPort>
                 label={copy.portsLabel}
-                rows={blockingOnly ? converged.ports.filter(port => port.state === 'blocking') : converged.ports}
+                rows={blockingOnly ? converged.ports.filter(port => port.state === 'discarding') : converged.ports}
                 rowKey={(port) => `${port.switchId}-${port.port}`}
                 breakpoint="lg"
                 minWidth={900}
@@ -318,7 +318,7 @@ export default function StpConvergenceLab() {
                       </span>
                     )
                   },
-                  { id: 'state', header: copy.colState, cell: (port) => <span className={`text-xs font-medium ${port.state === 'blocking' ? 'text-rose-700' : 'text-emerald-700'}`}>{copy.states[port.state]}</span> },
+                  { id: 'state', header: copy.colState, cell: (port) => <span className={`text-xs font-medium ${port.state === 'discarding' ? 'text-rose-700' : 'text-emerald-700'}`}>{copy.states[port.state]}</span> },
                   { id: 'cost', header: copy.colCost, cell: (port) => <span className="font-mono text-xs">{port.cost.toLocaleString(language)}</span> },
                   { id: 'why', header: copy.colWhy, cell: (port) => <span className="text-xs leading-relaxed text-slate-600">{port.reason[language]}</span> }
                 ]}

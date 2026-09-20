@@ -17,7 +17,14 @@ import { normalizeMac, STP_LONG_PATH_COST, STP_SHORT_PATH_COST } from './network
 
 export type StpPathCostMethod = 'short' | 'long';
 export type StpPortRole = 'root' | 'designated' | 'alternate';
-export type StpPortState = 'forwarding' | 'blocking';
+/**
+ * RSTP state names, because the roles here are RSTP roles: `alternate` exists only in
+ * 802.1w. Classic 802.1D has five states (disabled, blocking, listening, learning,
+ * forwarding) and calls this one `blocking`; RSTP collapses the first three into
+ * `discarding` and keeps three states in total. Mixing the two vocabularies in one
+ * table is a common way to lose a mark, so this module stays in one of them.
+ */
+export type StpPortState = 'forwarding' | 'discarding';
 
 export interface StpSwitch {
   id: string;
@@ -70,7 +77,7 @@ export interface StpResult {
   bridgeIds: Record<string, StpBridgeId>;
   rootPathCosts: Record<string, number>;
   ports: StpPort[];
-  /** Links with a blocking end: the redundant paths the tree has cut. */
+  /** Links with a discarding end: the redundant paths the tree has cut. */
   blockedLinkIds: string[];
 }
 
@@ -283,18 +290,18 @@ export function convergeStp({ switches, links, vlan, method = 'short' }: StpOpti
         );
       } else if (decidedBy === 'cost') {
         reason = b(
-          `Costo verso la root peggiore di ${neighbourName} (${own} contro ${peer}) e non è root port: blocca per rompere il loop, ma continua ad ascoltare le BPDU.`,
-          `Worse cost to the root than ${neighbourName} (${own} against ${peer}), and not a root port: it blocks to break the loop, but keeps listening to BPDUs.`
+          `Costo verso la root peggiore di ${neighbourName} (${own} contro ${peer}) e non è root port: va in discarding per rompere il loop, ma continua ad ascoltare le BPDU.`,
+          `Worse cost to the root than ${neighbourName} (${own} against ${peer}), and not a root port: it moves to discarding to break the loop, but keeps listening to BPDUs.`
         );
       } else if (decidedBy === 'bridge-id') {
         reason = b(
-          `Costo identico a ${neighbourName} (${own}), ma Bridge ID più alto: perde il ruolo di designated e blocca, continuando ad ascoltare le BPDU.`,
-          `Same cost as ${neighbourName} (${own}), but a higher Bridge ID: it loses the designated role and blocks, while still listening to BPDUs.`
+          `Costo identico a ${neighbourName} (${own}), ma Bridge ID più alto: perde il ruolo di designated e va in discarding, continuando ad ascoltare le BPDU.`,
+          `Same cost as ${neighbourName} (${own}), but a higher Bridge ID: it loses the designated role and moves to discarding, while still listening to BPDUs.`
         );
       } else {
         reason = b(
-          `Costo e Bridge ID identici a ${neighbourName}, ma Port ID più alto: blocca, continuando ad ascoltare le BPDU.`,
-          `Same cost and Bridge ID as ${neighbourName}, but a higher Port ID: it blocks, while still listening to BPDUs.`
+          `Costo e Bridge ID identici a ${neighbourName}, ma Port ID più alto: va in discarding, continuando ad ascoltare le BPDU.`,
+          `Same cost and Bridge ID as ${neighbourName}, but a higher Port ID: it moves to discarding, while still listening to BPDUs.`
         );
       }
 
@@ -305,7 +312,7 @@ export function convergeStp({ switches, links, vlan, method = 'short' }: StpOpti
         neighborId: end.neighborId,
         neighborPort: end.neighborPort,
         role,
-        state: role === 'alternate' ? 'blocking' : 'forwarding',
+        state: role === 'alternate' ? 'discarding' : 'forwarding',
         cost,
         rootPathCost: rootPathCosts[end.switchId],
         reason
