@@ -42,7 +42,7 @@ const COPY = {
     rules: 'Come si legge una wildcard',
     rulesBody: '0 significa “questo bit deve corrispondere”, 1 significa “questo bit è indifferente”. È l’opposto della subnet mask: /28 è 255.255.255.240 come mask e 0.0.0.15 come wildcard. Per ricavarla a mente: 255 meno ogni ottetto della mask.',
     trap: 'Trappola d’esame',
-    trapBody: 'La wildcard non deve essere contigua: 0.0.0.254 sui bit bassi corrisponde solo agli indirizzi pari, e si usa per esempio per selezionare gli indirizzi dei router in un piano a /30. Ma attenzione: una mask non contigua è illegale, una wildcard non contigua è legale. Inoltre l’indirizzo scritto nella ACE viene confrontato solo sui bit a 0 della wildcard, quindi 10.1.1.9 0.0.0.3 e 10.1.1.8 0.0.0.3 corrispondono allo stesso blocco.'
+    trapBody: 'La wildcard non deve essere contigua, a differenza della subnet mask: una mask non contigua è illegale, una wildcard non contigua è legale. L’esempio canonico è selezionare un sottoinsieme regolare di subnet: 10.1.0.0 0.0.254.255 corrisponde a tutte e sole le subnet con terzo ottetto pari (10.1.0.0, 10.1.2.0, 10.1.4.0 …), perché il bit meno significativo del terzo ottetto resta a 0 nella wildcard e deve quindi corrispondere. Seconda trappola: l’indirizzo scritto nella ACE viene confrontato solo sui bit a 0 della wildcard, quindi 10.1.1.9 0.0.0.3 e 10.1.1.8 0.0.0.3 indicano lo stesso blocco.'
   },
   en: {
     title: 'Wildcard, in reverse',
@@ -57,7 +57,7 @@ const COPY = {
     rules: 'How to read a wildcard',
     rulesBody: '0 means “this bit must match”, 1 means “this bit is irrelevant”. It is the inverse of the subnet mask: /28 is 255.255.255.240 as a mask and 0.0.0.15 as a wildcard. To derive it in your head: 255 minus each octet of the mask.',
     trap: 'Exam trap',
-    trapBody: 'A wildcard need not be contiguous: 0.0.0.254 on the low bits matches only even addresses, which is how you select every router address in a /30 plan. But note the asymmetry: a non-contiguous mask is illegal, a non-contiguous wildcard is legal. Also, the address written in the ACE is only compared on the wildcard’s 0 bits, so 10.1.1.9 0.0.0.3 and 10.1.1.8 0.0.0.3 match the same block.'
+    trapBody: 'A wildcard need not be contiguous, unlike a subnet mask: a non-contiguous mask is illegal, a non-contiguous wildcard is legal. The canonical example is selecting a regular subset of subnets: 10.1.0.0 0.0.254.255 matches every subnet whose third octet is even, and only those (10.1.0.0, 10.1.2.0, 10.1.4.0 …), because the least significant bit of the third octet stays 0 in the wildcard and therefore has to match. Second trap: the address written in the ACE is compared only on the wildcard’s 0 bits, so 10.1.1.9 0.0.0.3 and 10.1.1.8 0.0.0.3 name the same block.'
   }
 } as const;
 

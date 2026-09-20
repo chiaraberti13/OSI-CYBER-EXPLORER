@@ -24,14 +24,21 @@ export const GLOSSARY_TERMS = [
   {
     term: 'VPN',
     definition: {
-      en: 'Virtual Private Network - A technology that creates an encrypted logical tunnel over public, untrusted transport networks, making remote clients access local office LAN assets safely.',
-      it: 'Virtual Private Network - Una tecnologia che stabilisce un canale logico cifrato sopra reti pubbliche insicure, consentendo a computer remoti di agire come se fossero fisicamente connessi in ufficio.'
+      en: 'Virtual Private Network - A logical tunnel carried over a public, untrusted transport network, which lets remote hosts and sites behave as if they were on the same private network. In the VPNs used for security (IPsec, TLS) that tunnel is also encrypted and authenticated; encapsulation alone is not encryption, which is why GRE is a VPN technology that provides neither confidentiality nor authentication.',
+      it: 'Virtual Private Network - Canale logico trasportato su una rete pubblica non fidata, che permette a host e sedi remote di comportarsi come se fossero sulla stessa rete privata. Nelle VPN usate per la sicurezza (IPsec, TLS) quel canale è anche cifrato e autenticato; l\'incapsulamento da solo non è cifratura, ed è il motivo per cui GRE è una tecnologia VPN che non fornisce né riservatezza né autenticazione.'
+    }
+  },
+  {
+    term: 'GRE',
+    definition: {
+      en: 'Generic Routing Encapsulation - A tunnelling protocol that wraps an arbitrary payload, including multicast and routing protocol traffic, in a new IP header. It encapsulates without encrypting or authenticating anything, so it is used inside IPsec (GRE over IPsec) whenever confidentiality is required. The extra header reduces the usable MTU of the path.',
+      it: 'Generic Routing Encapsulation - Protocollo di tunneling che incapsula un payload arbitrario, compresi multicast e traffico dei protocolli di routing, in un nuovo header IP. Incapsula senza cifrare né autenticare nulla, quindi si usa dentro IPsec (GRE over IPsec) quando serve riservatezza. L\'header aggiuntivo riduce la MTU utilizzabile del percorso.'
     }
   },
   {
     term: 'PDU',
     definition: {
-      en: 'Protocol Data Unit - The name data takes at each layer: Data at L5-L7, Segment at L4 with TCP (Datagram with UDP), Packet at L3, Frame at L2, Bit at L1. Naming the PDU correctly tells you which header you are looking at.',
+      en: 'Protocol Data Unit - The name data takes at each layer: Data at layers 5-7, Segment at layer 4 with TCP (Datagram with UDP), Packet at layer 3, Frame at layer 2, Bit at layer 1. Naming the PDU correctly tells you which header you are looking at.',
       it: 'Protocol Data Unit - Il nome che i dati assumono a ogni livello: Data ai livelli 5-7, Segment al livello 4 con TCP (Datagram con UDP), Packet al livello 3, Frame al livello 2, Bit al livello 1. Usare il nome corretto della PDU dice subito quale header si sta osservando.'
     }
   },
@@ -220,28 +227,28 @@ export const GLOSSARY_TERMS = [
   {
     term: 'IDS',
     definition: {
-      en: 'Intrusion Detection System - A device or software application that monitors a network or systems for malicious activity or policy violations.',
+      en: 'Intrusion Detection System - A device or software application that monitors a network or systems for malicious activity or policy violations. It works out of band on a copy of the traffic: it detects and alerts, it does not block.',
       it: 'Intrusion Detection System - Dispositivo o software che monitora rete o sistemi alla ricerca di attività dannose o violazioni delle policy. Opera fuori banda su una copia del traffico: rileva e allerta, non blocca.'
     }
   },
   {
     term: 'IPS',
     definition: {
-      en: 'Intrusion Prevention System - A network security tool that monitors network traffic to detect and actively block or prevent malicious activities.',
+      en: 'Intrusion Prevention System - A security tool placed inline in the traffic path: beyond detecting, it can drop the packet or tear down the session. Because it is inline, a false positive blocks legitimate traffic and a failure of the device affects availability.',
       it: 'Intrusion Prevention System - Strumento di sicurezza posto inline sul percorso del traffico: oltre a rilevare può scartare il pacchetto o terminare la sessione. Essendo inline, un falso positivo blocca traffico legittimo e un guasto impatta la disponibilità.'
     }
   },
   {
     term: 'NIDS / NIPS',
     definition: {
-      en: 'Network-based IDS/IPS - Monitors and analyzes traffic from multiple devices on an entire subnet to identify security threats.',
+      en: 'Network-based IDS/IPS - Analyses the traffic of several devices across a whole segment, received through SPAN/port mirroring or a TAP (NIDS) or inline (NIPS). It cannot see what stays inside the host, nor — without decryption — the content of encrypted traffic.',
       it: 'Network-based IDS/IPS - Analizza il traffico di più dispositivi di un intero segmento, ricevuto via SPAN/port mirroring o TAP (NIDS) oppure inline (NIPS). Non vede ciò che resta dentro l\'host né, senza decifratura, il contenuto del traffico cifrato.'
     }
   },
   {
     term: 'HIDS / HIPS',
     definition: {
-      en: 'Host-based IDS/IPS - Installed directly on a specific host or device to monitor internal operating system activities and files.',
+      en: 'Host-based IDS/IPS - An agent installed on a single host to monitor processes, system calls, files, and local logs. It sees traffic already decrypted and local activity, but covers only the machine it is installed on.',
       it: 'Host-based IDS/IPS - Agent installato sul singolo host per monitorare processi, chiamate di sistema, file e log locali. Vede il traffico già decifrato e l\'attività locale, ma copre solo la macchina su cui è installato.'
     }
   },
@@ -262,7 +269,7 @@ export const GLOSSARY_TERMS = [
   {
     term: 'EAP',
     definition: {
-      en: 'Extensible Authentication Protocol - An authentication framework frequently used in wireless networks and point-to-point links. It supports various authentication methods like EAP-TLS (highly secure, certificate-based), EAP-PEAP, and EAP-TTLS (tunnel-based).',
+      en: 'Extensible Authentication Protocol - An authentication framework frequently used in wireless networks (WPA-Enterprise) and point-to-point links. It supports various authentication methods like EAP-TLS (highly secure, certificate-based), EAP-PEAP, and EAP-TTLS (tunnel-based).',
       it: 'Extensible Authentication Protocol - Un framework di autenticazione comunemente usato nelle reti wireless (WPA-Enterprise) e nei link punto-punto. Supporta diverse metodologie come EAP-TLS (altamente sicuro, basato su certificati client/server), EAP-PEAP e EAP-TTLS (che creano un tunnel cifrato sicuro prima di autenticare).'
     }
   },
@@ -318,7 +325,7 @@ export const GLOSSARY_TERMS = [
   {
     term: 'OSI Model',
     definition: {
-      en: 'Open Systems Interconnection Model - A theoretical framework of 7 conceptual layers developed by the ISO to standardize and partition network telecommunication functions.',
+      en: 'OSI Model (Open Systems Interconnection) - A theoretical framework of 7 conceptual layers developed by the ISO to standardize and partition network telecommunication functions.',
       it: 'Modello OSI (Open Systems Interconnection) - Una struttura teorica a 7 livelli concettuali sviluppata dall\'ISO per standardizzare e ripartire le funzioni di telecomunicazione e di rete.'
     }
   },
@@ -346,7 +353,7 @@ export const GLOSSARY_TERMS = [
   {
     term: 'UDP',
     definition: {
-      en: 'User Datagram Protocol - A connectionless Transport layer (Layer 4) protocol. It is not faster on the wire than TCP: it has an 8-byte header and no handshake, acknowledgements, retransmission, ordering, or congestion control, so it avoids the delay those mechanisms introduce. Its PDU is called a datagram.',
+      en: 'User Datagram Protocol - A connectionless Transport layer (Layer 4) protocol. It is not faster on the wire than TCP: it has an 8-byte header and no handshake, acknowledgements (ACK), retransmission, ordering, or congestion control, so it avoids the delay those mechanisms introduce. Its PDU is called a datagram.',
       it: 'User Datagram Protocol - Protocollo di livello Transport (Livello 4) connectionless. Non è più veloce di TCP sul filo: ha un header di soli 8 byte e nessun handshake, ACK, ritrasmissione, ordinamento o controllo di congestione, quindi evita i ritardi introdotti da questi meccanismi. La sua PDU si chiama datagram.'
     }
   },
@@ -375,7 +382,7 @@ export const GLOSSARY_TERMS = [
     term: 'Cross-Site Scripting',
     definition: {
       en: 'XSS - A vulnerability where an attacker injects malicious scripts (often JavaScript) into web pages viewed by other users, allowing session cookie theft or interface manipulation.',
-      it: 'Cross-Site Scripting - Una vulnerabilità in cui l\'attaccante inietta script malevoli (spesso JavaScript) all\'interno di pagine web visitate da altri utenti, consentendo il furto di cookie di sessione.'
+      it: 'Cross-Site Scripting - Una vulnerabilità in cui l\'attaccante inietta script malevoli (spesso JavaScript) all\'interno di pagine web visitate da altri utenti, consentendo il furto di cookie di sessione o la manipolazione dell\'interfaccia.'
     }
   },
   {
@@ -409,8 +416,8 @@ export const GLOSSARY_TERMS = [
   {
     term: 'AEAD',
     definition: {
-      en: 'Authenticated Encryption with Associated Data - Encryption modes (like AES-GCM) that guarantee both data confidentiality and cryptographic payload integrity simultaneously, blocking padding tampering.',
-      it: 'Authenticated Encryption with Associated Data - Modalità di cifratura (es. AES-GCM, ChaCha20-Poly1305) che garantiscono insieme riservatezza e integrità autenticata del payload: il testo cifrato manomesso viene rifiutato prima di essere decifrato, eliminando gli attacchi di tipo padding oracle tipici delle modalità CBC con MAC applicato dopo.'
+      en: 'Authenticated Encryption with Associated Data - Encryption modes (for example AES-GCM, ChaCha20-Poly1305) that provide confidentiality and authenticated payload integrity in a single operation: tampered ciphertext is rejected before it is decrypted. This removes the padding oracle attacks that affect CBC with MAC-then-Encrypt, where the MAC is computed on the plaintext and encrypted with it, so the receiver has to decrypt and check the padding before it can verify the MAC.',
+      it: 'Authenticated Encryption with Associated Data - Modalità di cifratura (per esempio AES-GCM, ChaCha20-Poly1305) che forniscono riservatezza e integrità autenticata del payload in una sola operazione: il testo cifrato manomesso viene rifiutato prima di essere decifrato. Questo elimina gli attacchi di tipo padding oracle che colpiscono CBC con MAC-then-Encrypt, dove il MAC è calcolato sul plaintext e cifrato insieme a esso, quindi il destinatario deve decifrare e controllare il padding prima di poter verificare il MAC.'
     }
   },
 

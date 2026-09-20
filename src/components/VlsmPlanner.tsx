@@ -48,7 +48,7 @@ const COPY = {
       GENERIC: 'Controlla blocco, prefisso e host richiesti.'
     },
     why: 'Perché dal più grande al più piccolo',
-    whyBody: 'Una subnet può iniziare solo su un multiplo della propria dimensione. Se assegni prima una /28 in un blocco /25, la /26 che segue non può più partire da .16: deve saltare a .64, e i 48 indirizzi in mezzo restano inutilizzabili. Partendo dalla più grande, ogni subnet successiva è più piccola della precedente e cade sempre su un confine valido: nessun buco.',
+    whyBody: 'Una subnet può iniziare solo su un multiplo della propria dimensione. Se in un blocco /25 assegni prima una /28, la /26 che segue non può più partire da .16: deve saltare a .64, e i 48 indirizzi in mezzo restano utilizzabili solo da subnet più piccole — quindi la /27 richiesta dopo non trova più spazio allineato e il piano fallisce, pur avendo indirizzi liberi. Partendo dalla più grande, ogni subnet successiva è più piccola della precedente e cade sempre su un confine valido: nessuna frammentazione.',
     trap: 'Trappola d’esame',
     trapBody: 'Il numero richiesto sono gli host utilizzabili, non gli indirizzi: 62 host stanno in una /26, ma 63 host obbligano a una /25. E un collegamento punto-punto tra due router chiede 2 host, quindi una /30 (o una /31, dove è supportata: non ha broadcast e usa entrambi gli indirizzi).'
   },
@@ -71,7 +71,7 @@ const COPY = {
       GENERIC: 'Check the block, the prefix, and the host counts.'
     },
     why: 'Why largest to smallest',
-    whyBody: 'A subnet can only start on a multiple of its own size. Allocate a /28 first inside a /25 and the /26 that follows can no longer start at .16: it has to jump to .64, and the 48 addresses in between are stranded. Starting from the largest, every later subnet is smaller than the one before it and always lands on a valid boundary: no holes.',
+    whyBody: 'A subnet can only start on a multiple of its own size. Allocate a /28 first inside a /25 and the /26 that follows can no longer start at .16: it has to jump to .64, and the 48 addresses in between stay usable only by smaller subnets — so the /27 requested next finds no aligned room and the plan fails while free addresses remain. Starting from the largest, every later subnet is smaller than the one before it and always lands on a valid boundary: no fragmentation.',
     trap: 'Exam trap',
     trapBody: 'The number requested is usable hosts, not addresses: 62 hosts fit a /26, but 63 hosts force a /25. And a point-to-point link between two routers needs 2 hosts, so a /30 — or a /31 where it is supported, which has no broadcast and uses both addresses.'
   }

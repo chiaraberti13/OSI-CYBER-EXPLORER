@@ -72,6 +72,6 @@ export const TOPO_ACL_TEXT = [
 export const TOPO_TRAFFIC = [
   { id: 'https', label: b('HTTPS — TCP 443', 'HTTPS — TCP 443'), protocol: 'tcp' as const, port: 443 },
   { id: 'telnet', label: b('Telnet — TCP 23', 'Telnet — TCP 23'), protocol: 'tcp' as const, port: 23 },
-  { id: 'dns', label: b('DNS — TCP 53', 'DNS — TCP 53'), protocol: 'tcp' as const, port: 53 },
+  { id: 'dns', label: b('DNS su TCP (zone transfer, risposte grandi) — TCP 53', 'DNS over TCP (zone transfers, large responses) — TCP 53'), protocol: 'tcp' as const, port: 53 },
   { id: 'icmp', label: b('Ping — ICMP', 'Ping — ICMP'), protocol: 'icmp' as const, port: undefined }
 ];

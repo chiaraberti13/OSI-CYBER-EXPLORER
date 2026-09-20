@@ -17,8 +17,8 @@ const converge = (vlan: number, overrides: Partial<Record<string, number>> = {},
 const portOf = (result: StpResult, switchId: string, port: string) =>
   result.ports.find(item => item.switchId === switchId && item.port === port);
 
-const blockingPorts = (result: StpResult) =>
-  result.ports.filter(item => item.state === 'blocking').map(item => `${item.switchId} ${item.port}`).sort();
+const discardingPorts = (result: StpResult) =>
+  result.ports.filter(item => item.state === 'discarding').map(item => `${item.switchId} ${item.port}`).sort();
 
 describe('Bridge ID', () => {
   it('adds the VLAN to the configured priority, as the extended system ID does', () => {
@@ -74,7 +74,7 @@ describe('root path cost', () => {
     expect(pathCostFor('10 Gb/s', 'short')).toBe(2);
     expect(pathCostFor('10 Gb/s', 'long')).toBe(2000);
     expect(long.rootPathCosts).toEqual({ dsw1: 0, dsw2: 2000, asw1: 20000, asw2: 20000 });
-    expect(blockingPorts(long)).toEqual(blockingPorts(short));
+    expect(discardingPorts(long)).toEqual(discardingPorts(short));
   });
 
   it('refuses a link speed the chosen method cannot cost', () => {
@@ -107,8 +107,8 @@ describe('port roles', () => {
     }
   });
 
-  it('blocks the redundant uplinks and the access cross link on VLAN 10', () => {
-    expect(blockingPorts(converge(10))).toEqual(['asw1 Gi1/0/23', 'asw2 Gi1/0/1', 'asw2 Gi1/0/23']);
+  it('puts the redundant uplinks and the access cross link into discarding on VLAN 10', () => {
+    expect(discardingPorts(converge(10))).toEqual(['asw1 Gi1/0/23', 'asw2 Gi1/0/1', 'asw2 Gi1/0/23']);
   });
 
   it('breaks a cost tie with the lower Bridge ID', () => {
@@ -136,8 +136,8 @@ describe('per-VLAN trees', () => {
     expect(portOf(twenty, 'asw1', 'Gi1/0/24')?.role).toBe('alternate');
   });
 
-  it('blocks a different set of ports per VLAN', () => {
-    expect(blockingPorts(converge(20))).not.toEqual(blockingPorts(converge(10)));
+  it('discards a different set of ports per VLAN', () => {
+    expect(discardingPorts(converge(20))).not.toEqual(discardingPorts(converge(10)));
   });
 });
 
@@ -148,6 +148,17 @@ describe('the result is a spanning tree', () => {
       const forwardingLinks = STP_LINKS.filter(link => !result.blockedLinkIds.includes(link.id));
       // A loop-free tree over n nodes has exactly n - 1 edges.
       expect(forwardingLinks.length, `VLAN ${vlan}`).toBe(STP_SWITCHES.length - 1);
+    }
+  });
+
+  it('stays in one state vocabulary', () => {
+    // The roles are RSTP roles (`alternate` exists only in 802.1w), so the states must
+    // be RSTP states too: saying a port is "blocking" while calling it Alternate mixes
+    // 802.1D with 802.1w, which is exactly the distinction the exam tests.
+    for (const port of converge(10).ports) {
+      expect(['forwarding', 'discarding']).toContain(port.state);
+      expect(port.reason.en.toLowerCase()).not.toMatch(/\bblock(s|ing|ed)?\b/);
+      expect(port.reason.it.toLowerCase()).not.toMatch(/\bblocc(a|ando|ato)\b/);
     }
   });
 
