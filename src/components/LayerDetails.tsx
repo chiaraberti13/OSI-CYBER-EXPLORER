@@ -1,5 +1,6 @@
 import { useState, Fragment } from 'react';
-import { OSI_LAYERS, ATTACK_SCENARIOS } from '../constants';
+import { OSI_LAYERS } from '../content/osiLayers';
+import { ATTACK_SCENARIOS } from '../content/attackScenarios';
 import { useStore } from '../store';
 
 const SCENARIO_FEEDBACK: Record<string, {

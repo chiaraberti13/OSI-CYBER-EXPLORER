@@ -16,6 +16,7 @@ const SecurityDashboard = lazy(() => import('./components/SecurityDashboard'));
 const AttackLab = lazy(() => import('./components/AttackLab'));
 const CurriculumView = lazy(() => import('./components/CurriculumView'));
 const OsiLabView = lazy(() => import('./components/OsiLabView'));
+const PathTraceLab = lazy(() => import('./components/PathTraceLab'));
 const NetworkFundamentalsLab = lazy(() => import('./components/NetworkFundamentalsLab'));
 const NetworkAccessLab = lazy(() => import('./components/NetworkAccessLab'));
 const IpConnectivityLab = lazy(() => import('./components/IpConnectivityLab'));
@@ -97,6 +98,12 @@ export default function App() {
               transition={{ duration: 0.18 }}
             >
               <OsiLabView />
+            </motion.div>
+          )}
+
+          {activeView === 'pathtrace' && (
+            <motion.div key="pathtrace" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.18 }}>
+              <PathTraceLab />
             </motion.div>
           )}
 

@@ -1,10 +1,8 @@
 import { describe, it, expect } from 'vitest';
-import {
-  OSI_LAYERS,
-  ATTACK_SCENARIOS,
-  ATTACK_WALKTHROUGHS,
-  GLOSSARY_TERMS,
-} from '../constants';
+import { OSI_LAYERS } from '../content/osiLayers';
+import { ATTACK_SCENARIOS } from '../content/attackScenarios';
+import { ATTACK_WALKTHROUGHS } from '../content/attackWalkthroughs';
+import { GLOSSARY_TERMS } from '../content/glossaryTerms';
 
 /** A value that must carry both an Italian and an English string. */
 function expectBilingual(value: { it?: string; en?: string } | undefined, label: string) {

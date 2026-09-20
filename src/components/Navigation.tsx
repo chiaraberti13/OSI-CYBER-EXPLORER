@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState, type KeyboardEvent as ReactKeyboa
 import { AnimatePresence, motion } from 'motion/react';
 import {
   Activity, BookOpen, Cable, Calculator, ChevronDown, FileCode2, FileSearch, Fingerprint, Gauge,
+  Split,
   GitBranch, GlobeLock, Hash, HeartPulse, KeyRound, Laptop, Layers, Layers3, LockKeyhole, Map,
   MailWarning, Network, Radar, Radio, Route, Router, Search, ServerCog, Shield, ShieldAlert,
   Swords, Workflow, X
@@ -11,6 +12,7 @@ import { useStore, type AppView } from '../store';
 
 const VIEW_ICONS: Record<AppView, typeof Map> = {
   curriculum: Map,
+  pathtrace: Split,
   fundamentals: Calculator,
   access: Cable,
   routing: Route,
@@ -62,12 +64,17 @@ export default function Navigation() {
     ? { nav: 'Navigazione dei laboratori', search: 'Cerca un laboratorio', searchHint: 'Cerca per nome, protocollo o argomento…', close: 'Chiudi', noResults: 'Nessun laboratorio corrisponde alla ricerca.', current: 'Sei qui', open: 'Apri il menu', results: 'Risultati della ricerca' }
     : { nav: 'Lab navigation', search: 'Search for a lab', searchHint: 'Search by name, protocol, or topic…', close: 'Close', noResults: 'No lab matches your search.', current: 'You are here', open: 'Open menu', results: 'Search results' };
 
-  // Close the menus whenever the view changes: the destination is reached, the chrome gets out of the way.
-  useEffect(() => {
+  // Close the menus whenever the view changes: the destination is reached, so the chrome
+  // gets out of the way. The view can also change from another component, so this is
+  // adjusted during render rather than in an effect, which would commit an open panel
+  // over the new view and then close it on a second render.
+  const [lastView, setLastView] = useState(activeView);
+  if (lastView !== activeView) {
+    setLastView(activeView);
     setOpenGroupId(null);
     setIsSearchOpen(false);
     setQuery('');
-  }, [activeView]);
+  }
 
   // Ctrl/Cmd+K opens the quick search; Escape closes whatever is open.
   useEffect(() => {
@@ -107,8 +114,6 @@ export default function Navigation() {
   useEffect(() => {
     if (isSearchOpen) searchInputRef.current?.focus();
   }, [isSearchOpen]);
-
-  useEffect(() => setHighlighted(0), [query]);
 
   const onSearchKeyDown = (event: ReactKeyboardEvent<HTMLInputElement>) => {
     if (results.length === 0) return;
@@ -235,7 +240,7 @@ export default function Navigation() {
                 <input
                   ref={searchInputRef}
                   value={query}
-                  onChange={event => setQuery(event.target.value)}
+                  onChange={event => { setQuery(event.target.value); setHighlighted(0); }}
                   onKeyDown={onSearchKeyDown}
                   placeholder={labels.searchHint}
                   aria-label={labels.search}

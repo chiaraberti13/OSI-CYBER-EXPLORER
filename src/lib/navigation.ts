@@ -102,6 +102,14 @@ export const NAV_GROUPS: NavGroup[] = [
     enShort: 'Interactive',
     entries: [
       {
+        view: 'pathtrace',
+        it: 'Tracciatore di percorso',
+        en: 'Path tracer',
+        hintIt: 'Segui un pacchetto su una topologia reale: host, trunk, SVI, ACL, routing e NAT, in andata e in ritorno.',
+        hintEn: 'Follow a packet across a real topology: host, trunk, SVI, ACL, routing, and NAT, forward and return.',
+        keywords: 'percorso path trace pacchetto hop gateway svi acl nat ritorno asimmetria troubleshooting end-to-end'
+      },
+      {
         view: 'osi',
         it: 'Pila OSI',
         en: 'OSI stack',
@@ -363,3 +371,16 @@ export function searchNav(query: string, language: 'it' | 'en'): ReadonlyArray<{
     return terms.every(term => haystack.includes(term));
   });
 }
+
+/**
+ * Which lab a CCNA domain opens. Kept next to the navigation model because it maps
+ * content identifiers onto views, exactly like the groups above.
+ */
+export const DOMAIN_LAB_VIEWS: Record<string, AppView> = {
+  'network-fundamentals': 'fundamentals',
+  'network-access': 'access',
+  'ip-connectivity': 'routing',
+  'ip-services': 'services',
+  'security-fundamentals': 'securitycore',
+  'automation-programmability': 'automation'
+};

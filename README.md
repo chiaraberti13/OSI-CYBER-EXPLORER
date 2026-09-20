@@ -23,11 +23,12 @@
 
 ## Features
 - **CCNA Map** — The six official domains with their weights, objectives, topics, and links to attack and defense families. Each domain carries a **checklist of concepts you should be able to explain**: for every entry, where to observe the concept at work in the platform and which mistake reveals it is not yet solid. It is an exploratory guide with no quizzes, scores, or exam simulation: the checklist assigns no score.
-- **Network Fundamentals Lab** — IPv4 and subnetting explorer with network, broadcast, hosts, subnet mask, wildcard mask, and binary representation; IPv6 explorer that also accepts IPv4-embedded mixed notation; TCP/UDP comparison, interface diagnostics, network components with the decision each one makes and the boundary it creates, topology architectures from two- and three-tier to spine-leaf, WAN and cloud, copper and fibre cabling with T568A/B pinouts and autonegotiation, switching concepts (learning, forwarding, flooding, aging), virtualization fundamentals (hypervisors, containers, VRFs), client-side IP verification per operating system, and attack-defense links.
-- **Network Access Lab** — VLAN, 802.1Q trunking, STP/RSTP with both short and long path-cost methods, EtherChannel, radio and 802.11 principles, device/AP/WLC management access, and a described WLC GUI walkthrough for a WPA2 PSK WLAN, with deterministic simulations and a bilingual Layer 2 attack-defense matrix.
+- **Path Trace Lab** — Follow one packet across the whole topology and watch each decision in the order it happens: the host's local-or-remote test, ARP or the default gateway, the switch's CAM lookup, the trunk's allowed list and native VLAN, the SVI, the ACL in the direction it is actually applied, the routing decision, and NAT overload. Both directions are traced, so a stateless ACL applied inbound on a single SVI is visibly filtering one direction and not the other.
+- **Network Fundamentals Lab** — IPv4 and subnetting explorer with network, broadcast, hosts, subnet mask, wildcard mask, and binary representation; IPv6 explorer that also accepts IPv4-embedded mixed notation; TCP/UDP comparison, interface diagnostics, network components with the decision each one makes and the boundary it creates, topology architectures from two- and three-tier to spine-leaf, WAN and cloud, copper and fibre cabling with T568A/B pinouts and autonegotiation, switching concepts (learning, forwarding, flooding, aging), virtualization fundamentals (hypervisors, containers, VRFs), client-side IP verification per operating system, and attack-defense links. A **VLSM planner** turns one block and a list of host requirements into an addressing plan: it allocates from the largest requirement down — the ordering rule that makes the arithmetic fit — and reports the addresses each subnet wastes, the share of the block consumed, and the first address still free.
+- **Network Access Lab** — VLAN, 802.1Q trunking, STP/RSTP with both short and long path-cost methods, EtherChannel, radio and 802.11 principles, device/AP/WLC management access, and a described WLC GUI walkthrough for a WPA2 PSK WLAN, with deterministic simulations and a bilingual Layer 2 attack-defense matrix. **STP convergence** then runs the real algorithm on a four-switch mesh holding three physical loops: root election on the Bridge ID, cumulative path cost, one root port per non-root switch and one designated port per segment, with the criterion that actually decided each port named explicitly — cost, Bridge ID, or Port ID — and the per-VLAN trees of PVST+ visible by switching VLAN.
 - **IP Connectivity Lab** — Annotated `show ip route` output, interactive routing-table lookup, longest-prefix match, static routes, OSPFv2 cost and adjacencies, a non-preemptive DR/BDR election you can observe, first-hop redundancy (HSRP/VRRP), and control-plane protection.
 - **IP Services Lab** — DHCP/relay and DNS from the client's point of view, NAT/PAT with range-accurate port allocation, NTP, SNMPv3, Syslog, QoS, and SSH with interactive calculations, IOS configurations, and an attack-defense matrix.
-- **Security Fundamentals Lab** — IPv4 ACL evaluator, AAA, VPN/IPsec, firewalls, IDS/IPS, PKI, NAC, WEP-to-WPA3 comparison with a WPA2 PSK deployment sequence, wireless and endpoint security with IOS hardening and defense limitations.
+- **Security Fundamentals Lab** — IPv4 ACL evaluator, AAA, VPN/IPsec, firewalls, IDS/IPS, PKI, NAC, WEP-to-WPA3 comparison with a WPA2 PSK deployment sequence, wireless and endpoint security with IOS hardening and defense limitations. A **reverse wildcard** builder works in the direction requirements actually arrive in: give it a range of addresses and it produces the ACE, saying whether one wildcard covers the range exactly or how many extra addresses it drags in.
 - **Automation & Programmability Lab** — Controller-based architecture, underlay/overlay/fabric, REST/CRUD, JSON, configuration management, and AI/ML with pipeline security and blast-radius controls.
 - **Integrated Attack–Defense Catalog** — A searchable, filterable cross-domain catalog of network and cybersecurity techniques. Each entry connects attack mechanics to prevention, detection, response/recovery, and operational verification in both languages; a domain × family matrix exposes coverage and links directly to the relevant lab. Eight evidence-first response playbooks cover Layer 2, wireless, routing, services, availability, credentials, PKI/VPN, and automation incidents.
 - **Attack Paths Lab** — Eight multi-stage paths connect reconnaissance, access, propagation, impact, observable signals, defensive controls, and validation across every attack family and the related CCNA domains.
@@ -75,16 +76,18 @@ Every screen is available in **Italian and English**, switchable with one click.
 ## Project structure
 ```
 src/
-├─ components/     UI components (OsiStack, PacketSimulator, PacketInspector,
-│                  AttackLab, SecurityDashboard, LayerDetails, Terminal, …)
-├─ lib/            Pure, unit-tested logic (osi.ts) + tests
+├─ components/     UI components (OsiStack, PacketSimulator, PathTraceLab,
+│                  StpConvergenceLab, VlsmPlanner, AttackLab, LayerDetails, …)
+├─ content/        Bilingual educational data, one module per dataset (OSI layers,
+│                  attack scenarios, walkthroughs, glossary, CCNA domains, topologies)
+├─ lib/            Pure, unit-tested logic (ipv4, ipv6, routing, stp, pathTrace,
+│                  securityFundamentals, navigation, osi, …) + tests
 ├─ utils/          Web Audio synth
-├─ constants.ts    Bilingual educational data (layers, attacks, walkthroughs, glossary)
 ├─ store.ts        Global state (Zustand)
 ├─ types.ts        Shared type contracts
 └─ App.tsx
 ```
-Content (`constants.ts`) is kept separate from logic and UI, so adding an attack or a layer means editing data, not code.
+Content (`src/content/`) is kept separate from logic (`src/lib/`) and UI, so adding an attack or a layer means editing data, not code. Each dataset is its own module, so a lab downloads only the content it actually uses.
 
 ## Getting started
 Requires Node.js 18+.

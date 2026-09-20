@@ -1,7 +1,10 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
+import type { LucideIcon } from 'lucide-react';
 import { useStore } from '../store';
 import { motion, AnimatePresence } from 'motion/react';
-import { ATTACK_WALKTHROUGHS, ATTACK_SCENARIOS, OSI_LAYERS } from '../constants';
+import { OSI_LAYERS } from '../content/osiLayers';
+import { ATTACK_SCENARIOS } from '../content/attackScenarios';
+import { ATTACK_WALKTHROUGHS } from '../content/attackWalkthroughs';
 import { AttackWalkthrough, StepActor } from '../types';
 import {
   Skull, ShieldCheck, ShieldOff, Server, Play, Pause, RotateCcw, ChevronRight,
@@ -72,7 +75,7 @@ const SEVERITY_STYLE: Record<string, string> = {
   critical: 'bg-red-50 text-red-700 border-red-200'
 };
 
-const ACTOR_STYLE: Record<StepActor, { dot: string; badge: string; label: { it: string; en: string }; Icon: any }> = {
+const ACTOR_STYLE: Record<StepActor, { dot: string; badge: string; label: { it: string; en: string }; Icon: LucideIcon }> = {
   attacker: { dot: 'bg-red-500', badge: 'text-red-600 bg-red-50 border-red-100', label: { it: 'Attaccante', en: 'Attacker' }, Icon: Skull },
   victim:   { dot: 'bg-blue-500', badge: 'text-blue-600 bg-blue-50 border-blue-100', label: { it: 'Bersaglio', en: 'Target' }, Icon: Server },
   network:  { dot: 'bg-violet-500', badge: 'text-violet-600 bg-violet-50 border-violet-100', label: { it: 'Rete', en: 'Network' }, Icon: Radio },
@@ -99,7 +102,6 @@ export default function AttackLab() {
     () => ATTACK_WALKTHROUGHS.find(w => w.scenarioId === selectedId) || ATTACK_WALKTHROUGHS[0],
     [selectedId]
   );
-  const scenario = ATTACK_SCENARIOS.find(s => s.id === wt.scenarioId);
   const layerColor = OSI_LAYERS.find(l => l.id === wt.layer)?.color || '#6366f1';
 
   // Build the ordered timeline based on whether the defense is active.
@@ -118,30 +120,35 @@ export default function AttackLab() {
     return entries;
   }, [wt, defenseOn]);
 
-  const stopPlaying = () => {
+  // Reset the walkthrough when the attack or the defense state changes. React recommends
+  // adjusting state during render rather than in an effect: an effect would commit the old
+  // walkthrough first and then re-render, showing a frame of the previous timeline.
+  // Only state is touched here — clearing the interval is the effect's job, below.
+  const selectionKey = `${selectedId}|${defenseOn}`;
+  const [lastSelection, setLastSelection] = useState(selectionKey);
+  if (lastSelection !== selectionKey) {
+    setLastSelection(selectionKey);
     setPlaying(false);
-    if (playRef.current) { clearInterval(playRef.current); playRef.current = null; }
-  };
-
-  // Reset the walkthrough whenever the attack or the defense state changes.
-  useEffect(() => {
-    stopPlaying();
     setRevealed(0);
-  }, [selectedId, defenseOn]);
+  }
 
-  // Auto-advance while playing.
+  // Auto-advance while playing. The cleanup clears the interval whenever `playing`
+  // becomes false and on unmount, so nothing else has to touch the ref.
   useEffect(() => {
     if (!playing) return;
     playRef.current = setInterval(() => {
       setRevealed(prev => {
-        if (prev >= timeline.length) { stopPlaying(); return prev; }
+        if (prev >= timeline.length) {
+          setPlaying(false);
+          return prev;
+        }
         return prev + 1;
       });
     }, 1100);
-    return () => { if (playRef.current) clearInterval(playRef.current); };
+    return () => {
+      if (playRef.current) { clearInterval(playRef.current); playRef.current = null; }
+    };
   }, [playing, timeline.length]);
-
-  useEffect(() => () => stopPlaying(), []);
 
   const atEnd = revealed >= timeline.length;
 
@@ -149,8 +156,8 @@ export default function AttackLab() {
     if (atEnd) { setRevealed(0); setPlaying(true); return; }
     setPlaying(p => !p);
   };
-  const handleNext = () => { stopPlaying(); setRevealed(r => Math.min(r + 1, timeline.length)); };
-  const handleReset = () => { stopPlaying(); setRevealed(0); };
+  const handleNext = () => { setPlaying(false); setRevealed(r => Math.min(r + 1, timeline.length)); };
+  const handleReset = () => { setPlaying(false); setRevealed(0); };
 
   // Attacks grouped by OSI layer (top-down 7 → 1), respecting the search filter.
   const grouped = useMemo(() => {
@@ -379,7 +386,7 @@ export default function AttackLab() {
 
           <div className="space-y-2.5">
             <AnimatePresence initial={false}>
-              {timeline.slice(0, revealed).map((entry, i) => {
+              {timeline.slice(0, revealed).map((entry) => {
                 if (entry.kind === 'defense') {
                   return (
                     <motion.div

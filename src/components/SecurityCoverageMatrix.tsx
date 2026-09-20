@@ -3,17 +3,7 @@ import { ArrowUpRight, Grid3X3 } from 'lucide-react';
 import { CCNA_DOMAINS } from '../content/ccna';
 import { SECURITY_TECHNIQUES, type CcnaDomainId } from '../content/securityCoverage';
 import { ATTACK_FAMILIES } from '../content/securityTaxonomy';
-import type { AppView } from '../store';
 import type { Language } from '../types';
-
-export const DOMAIN_LAB_VIEWS: Record<CcnaDomainId, AppView> = {
-  'network-fundamentals': 'fundamentals',
-  'network-access': 'access',
-  'ip-connectivity': 'routing',
-  'ip-services': 'services',
-  'security-fundamentals': 'securitycore',
-  'automation-programmability': 'automation'
-};
 
 const COVERAGE_COUNTS = new Map<string, number>();
 

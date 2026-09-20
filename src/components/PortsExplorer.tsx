@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
-  X, Search, ShieldAlert, ShieldCheck, HelpCircle, 
+  X, Search, ShieldAlert, ShieldCheck,
   Sparkles, Hash, Activity, Lock, Unlock, RefreshCw,
-  Layers, Globe, Shield, Shuffle, Network, Radio, Cpu, Server
+  Layers, Shield, Shuffle, Network, Radio, Cpu, Server
 } from 'lucide-react';
 import { useStore } from '../store';
 
@@ -2895,17 +2895,17 @@ export default function PortsExplorer({ isOpen = false, onClose = () => {}, inli
                             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
                               {language === 'en' ? 'Select EAP Method' : 'Seleziona Metodo EAP'}
                             </span>
-                            {[
+                            {([
                               { id: 'tls', name: 'EAP-TLS', full: 'EAP Transport Layer Security', desc: 'Dual-certs' },
                               { id: 'peap', name: 'EAP-PEAP', full: 'Protected Extensible Auth Protocol', desc: 'Server cert' },
                               { id: 'ttls', name: 'EAP-TTLS', full: 'Tunneled TLS Auth', desc: 'Flexible inner' },
                               { id: 'fast', name: 'EAP-FAST', full: 'Flexible Auth via Secure Tunneling', desc: 'PAC key exchange' },
                               { id: 'md5', name: 'EAP-MD5', full: 'Message Digest 5', desc: 'Insecure legacy' }
-                            ].map((met) => (
+                            ] as const).map((met) => (
                               <button
                                 key={met.id}
                                 id={`eap-btn-${met.id}`}
-                                onClick={() => setSelectedEap(met.id as any)}
+                                onClick={() => setSelectedEap(met.id)}
                                 className={`w-full text-left p-3.5 rounded-xl border text-xs transition-all flex justify-between items-center ${
                                   selectedEap === met.id
                                     ? 'bg-emerald-600 border-emerald-700 text-white shadow'
@@ -3272,16 +3272,16 @@ export default function PortsExplorer({ isOpen = false, onClose = () => {}, inli
                             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
                               {language === 'en' ? 'Select Tunnel Technology' : 'Scegli la Tecnologia Minerale'}
                             </span>
-                            {[
+                            {([
                               { id: 'vpn-overview', name: 'VPN Overview', desc: 'Secure logical envelopes' },
                               { id: 'ipsec-tunnel', name: 'IPsec Tunnel Mode', desc: 'Whole packet encryption' },
                               { id: 'ipsec-transport', name: 'IPsec Transport Mode', desc: 'Payload encryption only' },
                               { id: 'dtls', name: 'DTLS (UDP Security)', desc: 'Real-time high performance' }
-                            ].map((vMode) => (
+                            ] as const).map((vMode) => (
                               <button
                                 key={vMode.id}
                                 id={`vpn-btn-${vMode.id}`}
-                                onClick={() => setSelectedVpnMode(vMode.id as any)}
+                                onClick={() => setSelectedVpnMode(vMode.id)}
                                 className={`w-full text-left p-3.5 rounded-xl border text-xs transition-all flex justify-between items-center ${
                                   selectedVpnMode === vMode.id
                                     ? 'bg-emerald-600 border-emerald-700 text-white shadow'

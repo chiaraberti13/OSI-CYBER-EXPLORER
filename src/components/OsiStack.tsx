@@ -1,4 +1,4 @@
-import { OSI_LAYERS } from '../constants';
+import { OSI_LAYERS } from '../content/osiLayers';
 import { useStore } from '../store';
 import { motion } from 'motion/react';
 import { ShieldCheck, Skull } from 'lucide-react';

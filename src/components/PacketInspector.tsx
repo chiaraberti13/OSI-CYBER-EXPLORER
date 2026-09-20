@@ -1,5 +1,5 @@
 import { useStore } from '../store';
-import { OSI_LAYERS } from '../constants';
+import { OSI_LAYERS } from '../content/osiLayers';
 import { motion, AnimatePresence } from 'motion/react';
 import { Layers, ArrowDown } from 'lucide-react';
 
