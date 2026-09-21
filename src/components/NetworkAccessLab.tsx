@@ -12,6 +12,7 @@ import {
 } from '../lib/networkAccess';
 import { useStore } from '../store';
 import ResponsiveTable from './ResponsiveTable';
+import CamTableLab from './CamTableLab';
 import StpConvergenceLab from './StpConvergenceLab';
 
 type Language = 'it' | 'en';
@@ -345,6 +346,8 @@ export default function NetworkAccessLab() {
         )}
         <p className="mt-4 rounded-lg border border-sky-100 bg-sky-50 p-3 text-xs leading-relaxed text-sky-900">{t.nativeWarning}</p>
       </section>
+
+      <CamTableLab />
 
       <section className="rounded-xl border border-slate-200 bg-white p-5 md:p-6" aria-labelledby="stp-title">
         <SectionTitle icon={Waypoints} title={t.stpTitle} id="stp-title" />
