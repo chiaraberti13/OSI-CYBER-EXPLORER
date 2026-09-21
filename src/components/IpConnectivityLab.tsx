@@ -10,6 +10,7 @@ import {
   type RouteSource
 } from '../lib/ipConnectivity';
 import { useStore } from '../store';
+import OspfSpfLab from './OspfSpfLab';
 import ResponsiveTable from './ResponsiveTable';
 
 type Language = 'it' | 'en';
@@ -329,6 +330,8 @@ export default function IpConnectivityLab() {
         </div>
         <h3 className="mt-6 text-sm font-semibold text-slate-900">{t.states}</h3><ol className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-4">{OSPF_STATES.map((item, index) => <li key={item.state} className="rounded-lg border border-slate-200 p-3"><span className="font-mono text-[10px] text-indigo-600">{index + 1}</span><h4 className="mt-1 text-xs font-semibold text-slate-900">{item.state}</h4><p className="mt-1.5 text-xs leading-relaxed text-slate-600">{item.detail[language]}</p></li>)}</ol>
       </section>
+
+      <OspfSpfLab />
 
       <section className="rounded-xl border border-slate-200 bg-white p-5 md:p-6" aria-labelledby="fhrp-title">
         <SectionTitle icon={Router} title={t.fhrp} id="fhrp-title" />
