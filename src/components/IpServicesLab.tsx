@@ -8,6 +8,7 @@ import {
   syslogSeverityName
 } from '../lib/ipServices';
 import { useStore } from '../store';
+import DhcpFlowLab from './DhcpFlowLab';
 import ResponsiveTable from './ResponsiveTable';
 
 type Language = 'it' | 'en';
@@ -196,6 +197,8 @@ export default function IpServicesLab() {
       <header className="rounded-xl border border-slate-200 bg-white p-6 md:p-8"><p className="eyebrow">CCNA 4.1 · 4.2 · 4.3 · 4.4 · 4.5 · 4.6 · 4.7 · 4.8 · 4.9</p><h1 className="mt-2 text-2xl font-semibold text-slate-900">{t.title}</h1><p className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-600">{t.subtitle}</p></header>
 
       <section className="rounded-xl border border-slate-200 bg-white p-5 md:p-6" aria-labelledby="dhcp-title"><SectionTitle icon={Network} title={t.dhcp} id="dhcp-title" /><ol className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4">{DHCP_STEPS.map((step, index) => <li key={step.acronym} className="rounded-lg border border-slate-200 p-4"><span className="font-mono text-[10px] text-indigo-600">{index + 1} · {step.direction}</span><h3 className="mt-2 text-sm font-semibold text-slate-900">{step.acronym}</h3><p className="mt-2 text-xs leading-relaxed text-slate-600">{step.detail[language]}</p></li>)}</ol><p className="mt-4 rounded-lg border border-sky-100 bg-sky-50 p-3 text-xs leading-relaxed text-sky-900">{t.relay}</p></section>
+
+      <DhcpFlowLab />
 
       <section className="rounded-xl border border-slate-200 bg-white p-5 md:p-6" aria-labelledby="dns-title"><SectionTitle icon={Database} title={t.dns} id="dns-title" /><p className="mt-3 text-xs leading-relaxed text-slate-600">{t.dnsFlow}</p><div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">{DNS_RECORDS.map(record => <article key={record.type} className="rounded-lg border border-slate-200 p-3"><h3 className="font-mono text-sm font-semibold text-indigo-700">{record.type}</h3><p className="mt-1.5 text-xs text-slate-600">{record.purpose[language]}</p></article>)}</div></section>
 

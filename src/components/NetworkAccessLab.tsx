@@ -13,6 +13,7 @@ import {
 import { useStore } from '../store';
 import ResponsiveTable from './ResponsiveTable';
 import CamTableLab from './CamTableLab';
+import PortSecurityLab from './PortSecurityLab';
 import StpConvergenceLab from './StpConvergenceLab';
 
 type Language = 'it' | 'en';
@@ -415,6 +416,8 @@ export default function NetworkAccessLab() {
           </li>
         ))}</ol>
       </section>
+
+      <PortSecurityLab />
 
       <section className="rounded-xl border border-slate-200 bg-white p-5 md:p-6" aria-labelledby="access-security-title">
         <SectionTitle icon={ShieldCheck} title={t.securityTitle} id="access-security-title" />
