@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Bot, Braces, GitBranch, Network, ShieldCheck, TriangleAlert } from 'lucide-react';
-import { findSensitiveJsonPaths, flattenJsonDocument, httpMethodProfile, httpStatusFamily, type HttpMethod } from '../lib/automation';
+import { inspectJsonDocument, httpMethodProfile, httpStatusFamily, type HttpMethod } from '../lib/automation';
 import { useStore } from '../store';
 import ResponsiveTable from './ResponsiveTable';
 
@@ -93,7 +93,8 @@ export default function AutomationLab() {
 
   const jsonInspection = useMemo(() => {
     try {
-      return { nodes: flattenJsonDocument(jsonInput), sensitive: findSensitiveJsonPaths(jsonInput), error: false } as const;
+      const inspection = inspectJsonDocument(jsonInput);
+      return { nodes: inspection.nodes, sensitive: inspection.sensitivePaths, error: false } as const;
     } catch {
       return { nodes: [], sensitive: [], error: true } as const;
     }

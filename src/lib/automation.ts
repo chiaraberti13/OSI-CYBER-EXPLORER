@@ -13,6 +13,39 @@ export interface JsonNode {
   value: string;
 }
 
+export interface JsonInspectionLimits {
+  maxBytes: number;
+  maxDepth: number;
+  maxNodes: number;
+}
+
+export interface JsonInspection {
+  nodes: JsonNode[];
+  sensitivePaths: string[];
+}
+
+export type JsonInputErrorCode =
+  | 'JSON_INVALID'
+  | 'JSON_TOO_MANY_BYTES'
+  | 'JSON_TOO_DEEP'
+  | 'JSON_TOO_MANY_NODES';
+
+export class JsonInputError extends Error {
+  readonly code: JsonInputErrorCode;
+
+  constructor(code: JsonInputErrorCode) {
+    super(code);
+    this.name = 'JsonInputError';
+    this.code = code;
+  }
+}
+
+export const JSON_INPUT_LIMITS: Readonly<JsonInspectionLimits> = Object.freeze({
+  maxBytes: 64 * 1024,
+  maxDepth: 12,
+  maxNodes: 200
+});
+
 const HTTP_PROFILES: Readonly<Record<HttpMethod, HttpMethodProfile>> = {
   GET: { crud: 'read', safe: true, idempotent: true, typicalSuccess: [200] },
   POST: { crud: 'create', safe: false, idempotent: false, typicalSuccess: [200, 201, 202] },
@@ -41,45 +74,118 @@ function displayValue(value: unknown, type: JsonNode['type']): string {
   return String(value);
 }
 
-export function flattenJsonDocument(input: string, maxNodes = 200): JsonNode[] {
-  const parsed: unknown = JSON.parse(input);
-  const nodes: JsonNode[] = [];
-
-  const visit = (value: unknown, path: string, depth: number): void => {
-    if (depth > 12) throw new Error('JSON_TOO_DEEP');
-    if (nodes.length >= maxNodes) throw new Error('JSON_TOO_LARGE');
-    const type = valueType(value);
-    nodes.push({ path, type, value: displayValue(value, type) });
-    if (Array.isArray(value)) {
-      value.forEach((item, index) => visit(item, `${path}[${index}]`, depth + 1));
-    } else if (value !== null && typeof value === 'object') {
-      Object.entries(value).forEach(([key, item]) => visit(item, path === '$' ? `$.${key}` : `${path}.${key}`, depth + 1));
-    }
-  };
-
-  visit(parsed, '$', 0);
-  return nodes;
+function resolveJsonLimits(overrides: Partial<JsonInspectionLimits>): JsonInspectionLimits {
+  const limits = { ...JSON_INPUT_LIMITS, ...overrides };
+  if (Object.values(limits).some(limit => !Number.isSafeInteger(limit) || limit < 1)) {
+    throw new TypeError('JSON limits must be positive safe integers');
+  }
+  return limits;
 }
 
-export function findSensitiveJsonPaths(input: string): string[] {
-  const parsed: unknown = JSON.parse(input);
-  const paths: string[] = [];
+/**
+ * Reject oversized or excessively nested documents before JSON.parse allocates
+ * the corresponding object graph. Brackets inside JSON strings are ignored.
+ * Syntax validation remains the responsibility of JSON.parse.
+ */
+function assertJsonPreParseLimits(input: string, limits: JsonInspectionLimits): void {
+  if (new TextEncoder().encode(input).byteLength > limits.maxBytes) {
+    throw new JsonInputError('JSON_TOO_MANY_BYTES');
+  }
 
-  const visit = (value: unknown, path: string): void => {
-    if (Array.isArray(value)) {
-      value.forEach((item, index) => visit(item, `${path}[${index}]`));
-      return;
+  let depth = 0;
+  let inString = false;
+  let escaped = false;
+
+  for (const character of input) {
+    if (inString) {
+      if (escaped) {
+        escaped = false;
+      } else if (character === '\\') {
+        escaped = true;
+      } else if (character === '"') {
+        inString = false;
+      }
+      continue;
     }
-    if (value === null || typeof value !== 'object') return;
-    Object.entries(value).forEach(([key, item]) => {
-      const childPath = path === '$' ? `$.${key}` : `${path}.${key}`;
-      if (SENSITIVE_KEY.test(key)) paths.push(childPath);
-      visit(item, childPath);
-    });
-  };
 
-  visit(parsed, '$');
-  return paths;
+    if (character === '"') {
+      inString = true;
+    } else if (character === '{' || character === '[') {
+      depth += 1;
+      if (depth > limits.maxDepth) throw new JsonInputError('JSON_TOO_DEEP');
+    } else if ((character === '}' || character === ']') && depth > 0) {
+      depth -= 1;
+    }
+  }
+}
+
+interface PendingJsonNode {
+  value: unknown;
+  path: string;
+  depth: number;
+  key?: string;
+}
+
+export function inspectJsonDocument(
+  input: string,
+  limitOverrides: Partial<JsonInspectionLimits> = {}
+): JsonInspection {
+  const limits = resolveJsonLimits(limitOverrides);
+  assertJsonPreParseLimits(input, limits);
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(input);
+  } catch {
+    throw new JsonInputError('JSON_INVALID');
+  }
+
+  const nodes: JsonNode[] = [];
+  const sensitivePaths: string[] = [];
+  const pending: PendingJsonNode[] = [{ value: parsed, path: '$', depth: 0 }];
+
+  while (pending.length > 0) {
+    const current = pending.pop()!;
+    const { value, path, depth, key } = current;
+    if (depth > limits.maxDepth) throw new JsonInputError('JSON_TOO_DEEP');
+    if (nodes.length >= limits.maxNodes) throw new JsonInputError('JSON_TOO_MANY_NODES');
+    const type = valueType(value);
+    nodes.push({ path, type, value: displayValue(value, type) });
+    if (key !== undefined && SENSITIVE_KEY.test(key)) sensitivePaths.push(path);
+
+    if (Array.isArray(value)) {
+      if (nodes.length + pending.length + value.length > limits.maxNodes) {
+        throw new JsonInputError('JSON_TOO_MANY_NODES');
+      }
+      for (let index = value.length - 1; index >= 0; index -= 1) {
+        pending.push({ value: value[index], path: `${path}[${index}]`, depth: depth + 1 });
+      }
+    } else if (value !== null && typeof value === 'object') {
+      const entries = Object.entries(value);
+      if (nodes.length + pending.length + entries.length > limits.maxNodes) {
+        throw new JsonInputError('JSON_TOO_MANY_NODES');
+      }
+      for (let index = entries.length - 1; index >= 0; index -= 1) {
+        const [childKey, item] = entries[index];
+        pending.push({
+          value: item,
+          path: path === '$' ? `$.${childKey}` : `${path}.${childKey}`,
+          depth: depth + 1,
+          key: childKey
+        });
+      }
+    }
+  }
+
+  return { nodes, sensitivePaths };
+}
+
+export function flattenJsonDocument(input: string, maxNodes = JSON_INPUT_LIMITS.maxNodes): JsonNode[] {
+  return inspectJsonDocument(input, { maxNodes }).nodes;
+}
+
+export function findSensitiveJsonPaths(input: string, maxNodes = JSON_INPUT_LIMITS.maxNodes): string[] {
+  return inspectJsonDocument(input, { maxNodes }).sensitivePaths;
 }
 
 export function httpStatusFamily(status: number): 'success' | 'redirect' | 'client-error' | 'server-error' | 'informational' {
