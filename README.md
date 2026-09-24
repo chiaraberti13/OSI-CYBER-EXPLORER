@@ -92,12 +92,14 @@ Content (`src/content/`) is kept separate from logic (`src/lib/`) and UI, so add
 ## Getting started
 Requires Node.js 22.22.2+ or 24.15+ (24 LTS recommended, see `.nvmrc`) and npm.
 ```bash
-npm install      # install dependencies
+npm ci           # install the exact versions from package-lock.json
 npm run dev      # start dev server at http://localhost:3000
 npm run build    # production build
 npm test         # run the test suite (Vitest)
 npm run typecheck # TypeScript type-check
+npm run verify   # type-check, lint, tests and build, as in CI
 ```
+Dependency and audit policy: [docs/DEPENDENCIES.md](docs/DEPENDENCIES.md).
 
 ## What this project demonstrates
 - Front-end engineering with **React 19 + TypeScript**, centralized state (Zustand) and a clean data/logic/UI separation.

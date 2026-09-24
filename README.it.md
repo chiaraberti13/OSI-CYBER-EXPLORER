@@ -66,12 +66,14 @@ TypeScript · React 19 · Vite 6 · Tailwind CSS 4 · Zustand (`persist`) · Mot
 ## Avvio rapido
 Richiede Node.js 22.22.2+ oppure 24.15+ (consigliato 24 LTS, vedi `.nvmrc`) e npm.
 ```bash
-npm install       # installa le dipendenze
+npm ci            # installa le versioni esatte di package-lock.json
 npm run dev       # avvia in sviluppo su http://localhost:3000
 npm run build     # build di produzione
 npm test          # esegue i test (Vitest)
 npm run typecheck # controllo dei tipi TypeScript
+npm run verify    # type-check, lint, test e build, come in CI
 ```
+Policy su dipendenze e audit: [docs/DEPENDENCIES.md](docs/DEPENDENCIES.md#-italiano).
 
 ## Competenze dimostrate
 - Sviluppo front-end con **React 19 + TypeScript**, stato centralizzato (Zustand) e netta separazione dati/logica/UI.

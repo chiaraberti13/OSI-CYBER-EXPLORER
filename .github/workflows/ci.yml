@@ -37,3 +37,14 @@ jobs:
 
       - name: Build
         run: npm run build
+
+      # Audit policy: docs/DEPENDENCIES.md. Registry results do not depend on the
+      # Node.js version, so the audit runs once, on the recommended LTS.
+      - name: Audit runtime dependencies (blocking)
+        if: matrix.node-version == '24.x'
+        run: npm run audit:runtime
+
+      - name: Audit full toolchain (report only, see ROADMAP SEC-01)
+        if: matrix.node-version == '24.x'
+        continue-on-error: true
+        run: npm run audit:full

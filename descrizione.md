@@ -222,7 +222,7 @@ Nel progetto ho:
 
 ```bash
 # Requisiti: Node.js 22.22.2+ oppure 24.15+ (consigliato 24 LTS)
-npm install       # installa le dipendenze
+npm ci            # installa le versioni esatte registrate nel lockfile
 npm run dev       # avvia in sviluppo su http://localhost:3000
 npm run build     # crea la build di produzione
 npm test          # esegue i test (Vitest)

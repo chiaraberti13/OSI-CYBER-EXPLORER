@@ -36,7 +36,7 @@ Il progetto dispone già di:
 
 ### Problemi verificati nella baseline
 
-1. 🟡 *Corretto da ENG-01, in attesa di conferma su GitHub Actions.* **CI rossa su `main`:** il workflow usa Node 20, mentre `jsdom@30.1.0` richiede Node `^22.22.2 || ^24.15.0 || >=26`. I test di logica passano, ma i due test componenti non inizializzano jsdom; il build viene quindi saltato.
+1. ✅ *Risolto da ENG-01 (CI verde su `main`, run #91).* **CI rossa su `main`:** il workflow usa Node 20, mentre `jsdom@30.1.0` richiede Node `^22.22.2 || ^24.15.0 || >=26`. I test di logica passano, ma i due test componenti non inizializzano jsdom; il build viene quindi saltato.
 2. ✅ *Risolto da ENG-01.* **Requisiti incoerenti:** il README dichiara Node 18+, in contrasto con la toolchain installata.
 3. **Supply chain di sviluppo:** `npm audit` completo rileva 10 vulnerabilità nella toolchain/dev dependencies (1 low, 4 moderate, 4 high, 1 critical); `npm audit --omit=dev` non rileva vulnerabilità runtime.
 4. **Debito di modularità:** `PortsExplorer.tsx` supera 226 KB, `LayerDetails.tsx` 65 KB e diversi laboratori 30–42 KB; dati, logica e rendering sono ancora accoppiati in alcuni componenti.
@@ -138,9 +138,9 @@ La mappatura serve a spiegare *perché* esiste un controllo, non a dichiarare co
 
 ### P0 — Baseline affidabile e riproducibile
 
-- [~] **ENG-01 — Ripristinare la CI verde e allineare Node.** Portare CI, `package.json#engines`, `.nvmrc` e README a Node 22.22.2+ oppure 24 LTS/supportato; aggiungere `packageManager`. Consigliato: `.nvmrc` su Node 24 LTS e una matrice CI minima `22.22.x` + `24.x`, così il limite inferiore dichiarato in `engines` resta davvero testato (la baseline passa già con Node 22.22.2). Un downgrade di jsdom è possibile ma meno coerente con la toolchain corrente. **Completato quando:** type-check, lint, 38 file di test/239 test e build terminano con successo in locale e GitHub Actions. **Esito (24/09/2026):** `engines` = `^22.22.2 || ^24.15.0 || >=26.0.0` (lo stesso intervallo richiesto da jsdom), `.nvmrc` = `24`, `packageManager` = `npm@11.19.0` (npm incluso in Node 24.21.0), CI con matrice `22.22.x` + `24.x` e `fail-fast: false`, requisiti aggiornati in `README.md`, `README.it.md` e `descrizione.md`. Nel lockfile è stato aggiunto solo il blocco `engines` della radice. Verifica locale su Node 22.22.2/npm 10.9.7 e Node 24.21.0/npm 11.19.0: type-check, lint, 44 file/344 test (la suite è cresciuta dopo la baseline) e build superati. Resta da confermare la prima esecuzione verde su GitHub Actions (il workflow parte su PR e su push a `main`); dopo di che il task passa a [x]. Nota per SEC-17: con npm 11 `npm ci` avvisa che alcuni script di installazione non sono approvati (`npm install-scripts ls`); l'installazione e i test non ne risentono.
+- [x] **ENG-01 — Ripristinare la CI verde e allineare Node.** Portare CI, `package.json#engines`, `.nvmrc` e README a Node 22.22.2+ oppure 24 LTS/supportato; aggiungere `packageManager`. Consigliato: `.nvmrc` su Node 24 LTS e una matrice CI minima `22.22.x` + `24.x`, così il limite inferiore dichiarato in `engines` resta davvero testato (la baseline passa già con Node 22.22.2). Un downgrade di jsdom è possibile ma meno coerente con la toolchain corrente. **Completato quando:** type-check, lint, 38 file di test/239 test e build terminano con successo in locale e GitHub Actions. **Esito (24/09/2026):** `engines` = `^22.22.2 || ^24.15.0 || >=26.0.0` (lo stesso intervallo richiesto da jsdom), `.nvmrc` = `24`, `packageManager` = `npm@11.19.0` (npm incluso in Node 24.21.0), CI con matrice `22.22.x` + `24.x` e `fail-fast: false`, requisiti aggiornati in `README.md`, `README.it.md` e `descrizione.md`. Nel lockfile è stato aggiunto solo il blocco `engines` della radice. Verifica locale su Node 22.22.2/npm 10.9.7 e Node 24.21.0/npm 11.19.0: type-check, lint, 44 file/344 test (la suite è cresciuta dopo la baseline) e build superati. Confermato su GitHub Actions: entrambi i job della matrice verdi sulla PR #48 e su `main` (run #91). Nota per SEC-17: con npm 11 `npm ci` avvisa che alcuni script di installazione non sono approvati (`npm install-scripts ls`); l'installazione e i test non ne risentono.
 
-- [ ] **ENG-02 — Rendere deterministica la gestione delle dipendenze.** Mantenere `npm ci`, aggiornare il lockfile solo in PR dedicate e documentare la policy di audit, incluse differenze tra dipendenze runtime e development. **Completato quando:** una nuova installazione usa versioni e runtime dichiarati e produce lo stesso esito della CI.
+- [x] **ENG-02 — Rendere deterministica la gestione delle dipendenze.** Mantenere `npm ci`, aggiornare il lockfile solo in PR dedicate e documentare la policy di audit, incluse differenze tra dipendenze runtime e development. **Completato quando:** una nuova installazione usa versioni e runtime dichiarati e produce lo stesso esito della CI. **Esito (24/09/2026):** `.npmrc` con `engine-strict=true` (su Node 20 `npm ci` ora fallisce subito con `EBADENGINE` invece di rompere i test più avanti); script `verify` (stessa sequenza della CI), `audit:runtime` (`npm audit --omit=dev --audit-level=high`) e `audit:full`; in CI l'audit runtime è bloccante e quello completo è solo report fino a SEC-01; policy bilingue in `docs/DEPENDENCIES.md`; README e `descrizione.md` indicano `npm ci` invece di `npm install`. Verificato su Node 22.22.2 e 24.21.0: `npm ci` + `npm run verify` superati (44 file/344 test); `audit:runtime` 0 vulnerabilità.
 
 ### P1 — Manutenibilità, tipi e test
 
@@ -278,9 +278,9 @@ La mappatura serve a spiegare *perché* esiste un controllo, non a dichiarare co
 
 | Indicatore | Baseline (24/09/2026) | Obiettivo | Task collegati |
 |---|---:|---:|---|
-| Stato CI su `main` | rossa (Node 20) → verde in locale su Node 22.22.2 e 24.21.0 dopo ENG-01 | verde, tempo totale < 5 min | ENG-01, ENG-18 |
+| Stato CI su `main` | rossa (Node 20) → verde su Node 22.22.x e 24.x dopo ENG-01 (run #91) | verde, tempo totale < 5 min | ENG-01, ENG-18 |
 | Advisory `npm audit` High/Critical | 5 (solo dev) | 0 non documentati | SEC-01, SEC-06 |
-| Advisory runtime (`--omit=dev`) | 0 | 0 | SEC-01 |
+| Advisory runtime (`--omit=dev`) | 0 | 0, controllo bloccante in CI da ENG-02 | SEC-01, ENG-02 |
 | Action non fissate a SHA | 2 su 2 | 0 | SEC-04 |
 | JS iniziale (gzip) | 123 KB | ≤ 123 KB, poi budget ridotto dopo ENG-06/ENG-10 | ENG-14 |
 | Coverage righe `src/lib` | non misurata | ≥ 80% dopo la misura iniziale | ENG-11 |
@@ -326,3 +326,4 @@ La roadmap può considerarsi completata quando:
 | 2026-09-24 | Esempi limitati agli indirizzi RFC 5737/3849 e ai domini RFC 2606 | Evita che comandi copiati dagli studenti generino traffico verso infrastrutture reali di terzi |
 | 2026-09-24 | Scorecard usato come indicatore, non come gate | Alcuni controlli (ad es. fuzzing, release firmate) non sono proporzionati alla fase attuale del progetto |
 | 2026-09-24 | ENG-01: Node 24 LTS come riferimento, 22.22.2 come minimo testato | Coincide con i requisiti di jsdom; la matrice CI impedisce che `engines` dichiari versioni mai verificate |
+| 2026-09-24 | ENG-02: audit runtime bloccante, audit toolchain solo report | Le vulnerabilità note sono solo nelle dev dependencies e hanno già un task (SEC-01); bloccare subito la toolchain renderebbe rossa ogni PR senza aumentare la sicurezza degli utenti |
