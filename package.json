@@ -4,6 +4,10 @@
   "version": "1.0.0",
   "type": "module",
   "description": "Bilingual, interactive lab to study the OSI model, packet encapsulation and layer-by-layer network security.",
+  "engines": {
+    "node": "^22.22.2 || ^24.15.0 || >=26.0.0"
+  },
+  "packageManager": "npm@11.19.0",
   "scripts": {
     "dev": "vite --port=3000 --host=0.0.0.0",
     "build": "vite build",

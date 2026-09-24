@@ -64,7 +64,7 @@ Ogni schermata è disponibile in **italiano e inglese**, commutabile con un clic
 TypeScript · React 19 · Vite 6 · Tailwind CSS 4 · Zustand (`persist`) · Motion · lucide-react · Web Audio API · Vitest.
 
 ## Avvio rapido
-Richiede Node.js 18+.
+Richiede Node.js 22.22.2+ oppure 24.15+ (consigliato 24 LTS, vedi `.nvmrc`) e npm.
 ```bash
 npm install       # installa le dipendenze
 npm run dev       # avvia in sviluppo su http://localhost:3000
