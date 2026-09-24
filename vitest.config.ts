@@ -1,9 +1,9 @@
 import { defineConfig } from 'vitest/config';
 
 /**
- * Vitest keeps its own config file because it ships its own copy of Vite: sharing one
- * `defineConfig` made the plugin types from the two copies disagree. No Vite plugin is
- * needed to run the suite — esbuild handles the TSX in the component tests.
+ * Vitest keeps a focused config so the test runner does not load the application-only
+ * React and Tailwind plugins. Vitest 5 now shares the same Vite 8 installation used by
+ * the build; esbuild handles TSX in the component tests without those plugins.
  */
 export default defineConfig({
   test: {

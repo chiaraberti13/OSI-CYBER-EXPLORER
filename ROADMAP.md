@@ -38,7 +38,7 @@ Il progetto dispone già di:
 
 1. ✅ *Risolto da ENG-01 (CI verde su `main`, run #91).* **CI rossa su `main`:** il workflow usa Node 20, mentre `jsdom@30.1.0` richiede Node `^22.22.2 || ^24.15.0 || >=26`. I test di logica passano, ma i due test componenti non inizializzano jsdom; il build viene quindi saltato.
 2. ✅ *Risolto da ENG-01.* **Requisiti incoerenti:** il README dichiara Node 18+, in contrasto con la toolchain installata.
-3. **Supply chain di sviluppo:** `npm audit` completo rileva 10 vulnerabilità nella toolchain/dev dependencies (1 low, 4 moderate, 4 high, 1 critical); `npm audit --omit=dev` non rileva vulnerabilità runtime.
+3. **Supply chain di sviluppo (risolto da SEC-01):** la baseline rilevava 10 vulnerabilità nella toolchain/dev dependencies (1 low, 4 moderate, 4 high, 1 critical). Dopo l'aggiornamento coordinato a Vite 8/Vitest 5 e il refresh delle dipendenze transitive, sia `npm audit` sia `npm audit --omit=dev` riportano 0 vulnerabilità.
 4. **Debito di modularità:** `PortsExplorer.tsx` supera 226 KB, `LayerDetails.tsx` 65 KB e diversi laboratori 30–42 KB; dati, logica e rendering sono ancora accoppiati in alcuni componenti.
 5. **Accessibilità incompleta:** le basi sono buone, ma modali, ricerca tipo combobox, focus management e alcuni stati visuali non seguono ancora integralmente WCAG 2.2 AA.
 6. **Indirizzi e servizi reali nei contenuti didattici:** simulazioni ed esempi usano IP pubblici reali (`8.8.8.8` in `pathTopology.ts`, `PacketSimulator.tsx`, `PathTraceLab.tsx`, `LayerDetails.tsx`; `104.22.3.14`, appartenente a un provider CDN, in `PacketSimulator.tsx`) e un servizio di terzi (`curl -Iv https://httpbin.org/get` in `LayerDetails.tsx`), invece dei blocchi riservati alla documentazione (RFC 5737, RFC 3849) e dei domini `example.*` (RFC 2606). Vedi NET-01.
@@ -49,7 +49,7 @@ Il progetto dispone già di:
 | Controllo | Esito rilevato | Nota |
 |---|---|---|
 | `vitest run` (Node 22.22.2) | 38 file, 239 test superati | conferma che il problema della CI è la versione di Node, non il codice |
-| `npm audit` completo | 10 advisory: 1 low, 4 moderate, 4 high, 1 critical | dirette: `vite` (high) e `vitest` (critical); il resto è transitivo (`esbuild`, `postcss`, `nanoid`, `browserslist`, `vite-node`, `@vitest/mocker`, …) |
+| `npm audit` completo | 0 vulnerabilità dopo SEC-01 | Vite 8.3.1, Vitest 5.0.1, plugin React 6.1.1 e dipendenze transitive aggiornate senza `npm audit fix --force` |
 | `npm audit --omit=dev` | 0 vulnerabilità | il bundle servito agli utenti non include le dipendenze vulnerabili |
 | `vite build` | chunk iniziale 385 KB (123 KB gzip), Porte 171 KB (50 KB gzip) | valori usati come baseline di ENG-14 |
 | Sink pericolosi (`dangerouslySetInnerHTML`, `eval`, `new Function`, `innerHTML`, `fetch`) | nessuno nel codice sorgente | l'unica risorsa remota a runtime è l'immagine Unsplash in `GuideModal.tsx` (UX-11) |
@@ -78,7 +78,7 @@ Evolvere la piattaforma in un laboratorio didattico affidabile, verificabile e a
 
 ### P0 — Correzioni critiche
 
-- [ ] **SEC-01 — Correggere le vulnerabilità della toolchain.** Aggiornare in PR controllate Vite, Vitest e dipendenze transitive alle prime versioni supportate prive degli advisory rilevati; rigenerare `package-lock.json`, rieseguire tutti i test ed evitare `npm audit fix --force` non revisionato. Poiché gli advisory più gravi riguardano direttamente `vite` e `vitest`, aggiornarli insieme a versioni compatibili tra loro: questo permette anche di rivalutare la separazione tra `vite.config.ts` e `vitest.config.ts`, oggi motivata dalla doppia copia di Vite. **Completato quando:** non rimangono vulnerabilità High/Critical non documentate; il report runtime e quello completo sono separati.
+- [x] **SEC-01 — Correggere le vulnerabilità della toolchain.** Aggiornare in PR controllate Vite, Vitest e dipendenze transitive alle prime versioni supportate prive degli advisory rilevati; rigenerare `package-lock.json`, rieseguire tutti i test ed evitare `npm audit fix --force` non revisionato. Poiché gli advisory più gravi riguardano direttamente `vite` e `vitest`, aggiornarli insieme a versioni compatibili tra loro: questo permette anche di rivalutare la separazione tra `vite.config.ts` e `vitest.config.ts`, oggi motivata dalla doppia copia di Vite. **Completato quando:** non rimangono vulnerabilità High/Critical non documentate; il report runtime e quello completo sono separati. **Esito (24/09/2026):** aggiornati `vite` 6.2.3 → 8.3.1, `vitest` 2.1.9 → 5.0.1 e `@vitejs/plugin-react` 5.0.4 → 6.1.1; aggiornate tramite lockfile anche le dipendenze transitive vulnerabili (`@babel/core`, `browserslist`, `baseline-browser-mapping` e toolchain correlate), senza usare `npm audit fix --force`. `npm audit` completo e `npm audit --omit=dev` riportano entrambi 0 vulnerabilità. La separazione tra `vite.config.ts` e `vitest.config.ts` è stata mantenuta per non caricare plugin React/Tailwind nei test, aggiornandone la motivazione; la configurazione Vite usa ora `import.meta.url` ed è compatibile con il futuro config loader nativo. Verificati type-check, lint, 44 file/344 test e build con Node 24; test e build verificati anche sulla linea minima Node 22.22.2.
 
 - [ ] **SEC-02 — Applicare limiti pre-parse agli input JSON.** In `AutomationLab`/`src/lib/automation.ts` definire soglie condivise per byte, profondità e numero di nodi prima e durante la visita. `flattenJsonDocument` limita nodi e profondità solo dopo `JSON.parse`, mentre `findSensitiveJsonPaths` percorre oggi l'intero oggetto senza gli stessi limiti. **Completato quando:** input oltre soglia falliscono in modo controllato e test boundary/fuzz coprono byte, depth, nodes e stack exhaustion; valutare `fast-check`.
 
@@ -279,7 +279,7 @@ La mappatura serve a spiegare *perché* esiste un controllo, non a dichiarare co
 | Indicatore | Baseline (24/09/2026) | Obiettivo | Task collegati |
 |---|---:|---:|---|
 | Stato CI su `main` | rossa (Node 20) → verde su Node 22.22.x e 24.x dopo ENG-01 (run #91) | verde, tempo totale < 5 min | ENG-01, ENG-18 |
-| Advisory `npm audit` High/Critical | 5 (solo dev) | 0 non documentati | SEC-01, SEC-06 |
+| Advisory `npm audit` High/Critical | 0 dopo SEC-01 (baseline: 5 solo dev) | 0 non documentati | SEC-01, SEC-06 |
 | Advisory runtime (`--omit=dev`) | 0 | 0, controllo bloccante in CI da ENG-02 | SEC-01, ENG-02 |
 | Action non fissate a SHA | 2 su 2 | 0 | SEC-04 |
 | JS iniziale (gzip) | 123 KB | ≤ 123 KB, poi budget ridotto dopo ENG-06/ENG-10 | ENG-14 |
@@ -325,5 +325,6 @@ La roadmap può considerarsi completata quando:
 | 2026-09-24 | Aggiunto il track Networking (NET-01–NET-08) senza rinumerare SEC/ENG/UX | In un prodotto didattico la correttezza tecnica è un requisito; mantenere gli ID esistenti preserva i riferimenti già usati in issue e PR |
 | 2026-09-24 | Esempi limitati agli indirizzi RFC 5737/3849 e ai domini RFC 2606 | Evita che comandi copiati dagli studenti generino traffico verso infrastrutture reali di terzi |
 | 2026-09-24 | Scorecard usato come indicatore, non come gate | Alcuni controlli (ad es. fuzzing, release firmate) non sono proporzionati alla fase attuale del progetto |
+| 2026-09-24 | SEC-01: aggiornamento coordinato Vite 8/Vitest 5 | Elimina gli advisory della toolchain mantenendo una sola copia compatibile di Vite e senza ricorrere a fix forzati |
 | 2026-09-24 | ENG-01: Node 24 LTS come riferimento, 22.22.2 come minimo testato | Coincide con i requisiti di jsdom; la matrice CI impedisce che `engines` dichiari versioni mai verificate |
 | 2026-09-24 | ENG-02: audit runtime bloccante, audit toolchain solo report | Le vulnerabilità note sono solo nelle dev dependencies e hanno già un task (SEC-01); bloccare subito la toolchain renderebbe rossa ogni PR senza aumentare la sicurezza degli utenti |
