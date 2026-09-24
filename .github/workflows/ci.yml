@@ -44,7 +44,7 @@ jobs:
         if: matrix.node-version == '24.x'
         run: npm run audit:runtime
 
-      - name: Audit full toolchain (report only, see ROADMAP SEC-01)
+      - name: Audit full toolchain (report only, see ROADMAP SEC-06)
         if: matrix.node-version == '24.x'
         continue-on-error: true
         run: npm run audit:full
