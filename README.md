@@ -90,7 +90,7 @@ src/
 Content (`src/content/`) is kept separate from logic (`src/lib/`) and UI, so adding an attack or a layer means editing data, not code. Each dataset is its own module, so a lab downloads only the content it actually uses.
 
 ## Getting started
-Requires Node.js 18+.
+Requires Node.js 22.22.2+ or 24.15+ (24 LTS recommended, see `.nvmrc`) and npm.
 ```bash
 npm install      # install dependencies
 npm run dev      # start dev server at http://localhost:3000

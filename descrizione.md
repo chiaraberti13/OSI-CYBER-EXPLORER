@@ -221,7 +221,7 @@ Nel progetto ho:
 ## 6. Come si avvia (per chi vuole provarlo)
 
 ```bash
-# Requisiti: Node.js 18+
+# Requisiti: Node.js 22.22.2+ oppure 24.15+ (consigliato 24 LTS)
 npm install       # installa le dipendenze
 npm run dev       # avvia in sviluppo su http://localhost:3000
 npm run build     # crea la build di produzione
