@@ -50,7 +50,7 @@ export const NAV_GROUPS: NavGroup[] = [
         en: 'Network fundamentals',
         hintIt: 'IPv4 e subnetting, IPv6, TCP/UDP, switching, virtualizzazione, parametri IP del client.',
         hintEn: 'IPv4 and subnetting, IPv6, TCP/UDP, switching, virtualization, client IP parameters.',
-        keywords: 'subnet mask wildcard cidr binario eui-64 slaac mtu duplex collisione broadcast container vrf ipconfig'
+        keywords: 'subnet mask wildcard cidr binario eui-64 slaac mtu duplex collisione broadcast container vrf ipconfig vlsm pianificatore planner frammentazione fragmentation df pmtud mss adjust-mss gre tunnel overhead 1500 1476 802.1q baby giant'
       },
       {
         view: 'access',
@@ -58,7 +58,7 @@ export const NAV_GROUPS: NavGroup[] = [
         en: 'Network access',
         hintIt: 'VLAN, trunk 802.1Q, STP/RSTP, EtherChannel, principi wireless e GUI del WLC.',
         hintEn: 'VLANs, 802.1Q trunks, STP/RSTP, EtherChannel, wireless principles, and the WLC GUI.',
-        keywords: 'vlan trunk native stp rstp bpdu portfast lacp pagp etherchannel wlc capwap ssid csma'
+        keywords: 'vlan trunk native stp rstp bpdu portfast lacp pagp etherchannel wlc capwap ssid csma cam table mac address-table flooding filtering aging learning unknown unicast port-security sticky violation protect restrict shutdown err-disable psecure bridge id discarding pvst'
       },
       {
         view: 'routing',
@@ -66,7 +66,7 @@ export const NAV_GROUPS: NavGroup[] = [
         en: 'IP connectivity',
         hintIt: 'Lettura di show ip route, longest prefix match, OSPFv2, DR/BDR e first-hop redundancy.',
         hintEn: 'Reading show ip route, longest prefix match, OSPFv2, DR/BDR, and first-hop redundancy.',
-        keywords: 'routing table rotte statiche floating ospf costo router-id dr bdr hsrp vrrp fhrp rib fib cef'
+        keywords: 'routing table rotte statiche floating ospf costo router-id dr bdr hsrp vrrp fhrp rib fib cef spf dijkstra shortest path ecmp maximum-paths reference-bandwidth auto-cost area lsa riconvergenza'
       },
       {
         view: 'services',
@@ -74,7 +74,7 @@ export const NAV_GROUPS: NavGroup[] = [
         en: 'IP services',
         hintIt: 'DHCP e relay, DNS, NAT/PAT, NTP, SNMPv3, Syslog, QoS e SSH.',
         hintEn: 'DHCP and relay, DNS, NAT/PAT, NTP, SNMPv3, Syslog, QoS, and SSH.',
-        keywords: 'dhcp dora relay giaddr dns nat pat overload ntp stratum snmp syslog severity qos dscp ssh tftp'
+        keywords: 'dhcp dora discover offer request ack nak relay helper-address giaddr option 82 snooping trusted lease t1 t2 apipa 169.254 dns nat pat overload ntp stratum snmp syslog severity qos dscp ssh tftp'
       },
       {
         view: 'securitycore',
@@ -82,7 +82,7 @@ export const NAV_GROUPS: NavGroup[] = [
         en: 'Security fundamentals',
         hintIt: 'ACL IPv4, AAA, VPN e IPsec, firewall e IDS/IPS, PKI, da WEP a WPA3.',
         hintEn: 'IPv4 ACLs, AAA, VPNs and IPsec, firewalls and IDS/IPS, PKI, WEP through WPA3.',
-        keywords: 'acl standard extended established aaa tacacs radius ipsec ikev2 pki crl ocsp wpa2 psk wpa3 sae mfa'
+        keywords: 'acl standard extended established first match implicit deny shadowing riga morta ordine sequenza access-group access-list wildcard aaa tacacs radius ipsec ikev2 pki crl ocsp wpa2 psk wpa3 sae mfa'
       },
       {
         view: 'automation',

@@ -4,6 +4,7 @@ import { calculateIpv4Subnet, type Ipv4AddressKind } from '../lib/ipv4';
 import { inspectIpv6, macToModifiedEui64, type Ipv6AddressKind } from '../lib/ipv6';
 import { useStore } from '../store';
 import ResponsiveTable from './ResponsiveTable';
+import MtuLab from './MtuLab';
 import VlsmPlanner from './VlsmPlanner';
 import { CABLING_TYPES, NETWORK_COMPONENTS, TOPOLOGY_ARCHITECTURES } from '../content/networkConcepts';
 
@@ -487,6 +488,8 @@ export default function NetworkFundamentalsLab() {
           </div>
         </div>
       </section>
+
+      <MtuLab />
 
       <section className="rounded-xl border border-slate-200 bg-white p-5 md:p-6" aria-labelledby="transport-title">
         <h2 id="transport-title" className="text-lg font-semibold text-slate-900">{labels.transport}</h2>

@@ -68,6 +68,32 @@ describe('navigation model', () => {
     expect(both.map(item => item.entry.view)).toEqual(['applicationsecurity']);
   });
 
+  it('finds every interactive exercise by the name a learner would type', () => {
+    // These exercises are sections inside a lab, not views of their own, so the search
+    // keywords are the only way to reach them by name.
+    const cases: Array<[string, string]> = [
+      ['cam table', 'access'],
+      ['flooding', 'access'],
+      ['port-security', 'access'],
+      ['sticky', 'access'],
+      ['vlsm', 'fundamentals'],
+      ['frammentazione', 'fundamentals'],
+      ['pmtud', 'fundamentals'],
+      ['spf', 'routing'],
+      ['ecmp', 'routing'],
+      ['reference-bandwidth', 'routing'],
+      ['dora', 'services'],
+      ['giaddr', 'services'],
+      ['option 82', 'services'],
+      ['shadowing', 'securitycore'],
+      ['implicit deny', 'securitycore'],
+      ['wildcard', 'securitycore']
+    ];
+    for (const [query, view] of cases) {
+      expect(searchNav(query, 'it').map(item => item.entry.view), `"${query}"`).toContain(view);
+    }
+  });
+
   it('returns nothing for a query that matches no view', () => {
     expect(searchNav('zzzznotathing', 'it')).toHaveLength(0);
   });
