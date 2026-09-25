@@ -61,19 +61,22 @@ I laboratori sono raggruppati in quattro menu a tendina — Percorso CCNA, Labor
 Ogni schermata è disponibile in **italiano e inglese**, commutabile con un click. Le preferenze (lingua, audio, velocità) vengono ricordate tra una sessione e l'altra.
 
 ## Stack tecnologico
-TypeScript · React 19 · Vite 6 · Tailwind CSS 4 · Zustand (`persist`) · Motion · lucide-react · Web Audio API · Vitest.
+TypeScript · React 19 · Vite 8 · Tailwind CSS 4 · Zustand (`persist`) · Motion · lucide-react · Web Audio API · Vitest.
 
 ## Avvio rapido
 Richiede Node.js 22.22.2+ oppure 24.15+ (consigliato 24 LTS, vedi `.nvmrc`) e npm.
 ```bash
 npm ci            # installa le versioni esatte di package-lock.json
-npm run dev       # avvia in sviluppo su http://localhost:3000
+npm run dev       # avvia solo su loopback: http://127.0.0.1:3000
+npm run dev:network # abilita esplicitamente l'accesso dalla rete locale
 npm run build     # build di produzione
 npm test          # esegue i test (Vitest)
 npm run typecheck # controllo dei tipi TypeScript
 npm run verify    # type-check, lint, test e build, come in CI
 ```
 Policy su dipendenze e audit: [docs/DEPENDENCIES.md](docs/DEPENDENCIES.md#-italiano).
+
+`npm run dev` è il comando predefinito sicuro e non espone Vite agli altri dispositivi. `npm run dev:network` associa il server di sviluppo a tutte le interfacce: va usato solo quando serve l'accesso LAN, su una rete fidata e con un firewall host adeguato. Il server di sviluppo Vite non deve essere esposto pubblicamente né usato in produzione.
 
 ## Competenze dimostrate
 - Sviluppo front-end con **React 19 + TypeScript**, stato centralizzato (Zustand) e netta separazione dati/logica/UI.

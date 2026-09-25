@@ -100,7 +100,7 @@ Alcune scelte pensate specificamente per l'apprendimento e l'usabilità:
 |------|------------|--------------------|
 | Linguaggio | **TypeScript** | Tipizzazione statica di dati e stato, meno errori a runtime |
 | UI | **React 19** | Costruzione dell'interfaccia a componenti |
-| Build tool | **Vite 6** | Dev server rapido e bundling di produzione |
+| Build tool | **Vite 8** | Dev server rapido e bundling di produzione |
 | Stile | **Tailwind CSS 4** | Design system utility-first, look coerente e responsivo |
 | Stato globale | **Zustand** | Store centralizzato e leggero, senza boilerplate |
 | Animazioni | **Motion** | Transizioni fluide tra viste e micro-interazioni |
@@ -223,11 +223,14 @@ Nel progetto ho:
 ```bash
 # Requisiti: Node.js 22.22.2+ oppure 24.15+ (consigliato 24 LTS)
 npm ci            # installa le versioni esatte registrate nel lockfile
-npm run dev       # avvia in sviluppo su http://localhost:3000
+npm run dev       # avvia solo su loopback: http://127.0.0.1:3000
+npm run dev:network # abilita esplicitamente l'accesso dalla LAN
 npm run build     # crea la build di produzione
 npm test          # esegue i test (Vitest)
 npm run typecheck # controllo dei tipi TypeScript (tsc --noEmit)
 ```
+
+Il comando predefinito non espone il server agli altri dispositivi. `npm run dev:network` va usato solo quando è necessario provare il progetto dalla rete locale, su una rete fidata e mai come server pubblico o di produzione.
 
 ---
 
