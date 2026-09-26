@@ -21,7 +21,7 @@
     "test:watch": "vitest",
     "verify": "npm run typecheck && npm run lint && npm test && npm run build",
     "audit:runtime": "npm audit --omit=dev --audit-level=high",
-    "audit:full": "npm audit"
+    "audit:full": "npm audit --audit-level=high"
   },
   "dependencies": {
     "lucide-react": "^0.546.0",

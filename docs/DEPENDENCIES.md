@@ -27,9 +27,9 @@ The shipped bundle only contains the `dependencies` (`react`, `react-dom`, `zust
 | Scope | Command | In CI | Why |
 |---|---|---|---|
 | Runtime (`dependencies`) | `npm run audit:runtime` | **blocking** on High/Critical | code that reaches the browser |
-| Full toolchain | `npm run audit:full` | report only until SEC-06 | Vite 8/Vitest 5 and refreshed transitive dependencies currently audit clean; SEC-06 will make this a blocking security gate |
+| Full toolchain | `npm run audit:full` | **blocking** on High/Critical | build and test dependencies execute on developer machines and CI |
 
-A new High/Critical advisory in a runtime dependency must be fixed, or documented with a reason and an expiry date, before merging.
+A new High/Critical advisory must be fixed before merging. A temporary exception requires a versioned entry in `.github/security-exceptions.yml`, including owner, reason, compensating control and expiry date, plus the matching scanner configuration described in `docs/SECURITY_SCANNING.md`.
 
 ---
 
@@ -56,6 +56,6 @@ Il bundle distribuito contiene solo le `dependencies` (`react`, `react-dom`, `zu
 | Ambito | Comando | In CI | Motivo |
 |---|---|---|---|
 | Runtime (`dependencies`) | `npm run audit:runtime` | **bloccante** su High/Critical | codice che arriva al browser |
-| Toolchain completa | `npm run audit:full` | solo report fino a SEC-06 | Vite 8/Vitest 5 e le dipendenze transitive aggiornate non presentano advisory; SEC-06 renderà il controllo bloccante |
+| Toolchain completa | `npm run audit:full` | **bloccante** su High/Critical | le dipendenze di build e test vengono eseguite sulle macchine di sviluppo e in CI |
 
-Un nuovo advisory High/Critical in una dipendenza runtime va corretto, oppure documentato con motivazione e scadenza, prima del merge.
+Un nuovo advisory High/Critical va corretto prima del merge. Un'eccezione temporanea richiede una voce versionata in `.github/security-exceptions.yml`, con responsabile, motivazione, controllo compensativo e scadenza, oltre alla configurazione dello scanner descritta in `docs/SECURITY_SCANNING.md`.
