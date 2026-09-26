@@ -8,12 +8,16 @@ This policy defines the automated security checks for OSI Cyber Explorer and how
 |---|---|---|---|
 | Static application security testing | CodeQL, JavaScript/TypeScript `security-extended` suite | SARIF in GitHub Code scanning | Review every alert; enable severity-based merge protection when repository rules support it |
 | Dependency gate | `npm audit --audit-level=high` | Readable job log and failing check | High/Critical findings block the workflow |
+| Lockfile trust | Zero-dependency bootstrap validator, then `lockfile-lint` | Tests plus readable job log | Unexpected registries, non-HTTPS tarballs, invalid package names, missing URLs or non-SHA512 integrity block the workflow before/after install |
+| Package signatures | `npm audit signatures` | Runtime gate plus full-inventory log | Runtime signature or provenance failures block; the full toolchain check is informational while npm's attestation endpoint for `whatwg-url@17.1.1` returns 404 |
 | Dependency intelligence | OSV-Scanner | PR annotations, SARIF and downloadable JSON/SARIF artifacts | Informational during the initial rollout; PR reports contain only newly introduced vulnerabilities |
 | Secret detection | Gitleaks with its default rules | Job summary; SARIF artifact when a leak is found | Any detected secret blocks the workflow and must be rotated, not merely deleted |
 | Software bill of materials | Anchore Syft | CycloneDX JSON workflow artifact retained for 14 days | Generation failure blocks the workflow |
-| Update discovery | Dependabot | Weekly npm and GitHub Actions pull requests | Review lockfile/action SHA changes before merging |
+| Update discovery | Dependabot with cooldown | Weekly npm and GitHub Actions pull requests | Review lockfile/action SHA changes before merging; ordinary npm updates wait 3/7/14 days for patch/minor/major and Actions updates wait 7 days; security updates remain immediate |
 
 All third-party actions are pinned to full, verified commit SHAs. Dependabot proposes controlled updates without weakening immutable pins.
+
+Dependency lifecycle scripts are disabled in `.npmrc` and CI also invokes `npm ci --ignore-scripts` explicitly. The current dependency graph needs no exception; only optional `fsevents` declares an install script. Any future exception requires a narrowly documented allowlist and security review.
 
 ## Versioned exceptions
 
@@ -46,4 +50,3 @@ exceptions:
 - Prefer a direct dependency update that preserves the lockfile over `npm audit fix --force`.
 - Link remediation commits to the advisory or rule identifier so later reviews can reconstruct the decision.
 - If a scanner fails to execute or produce its report, treat that as a failed security check rather than a clean scan.
-

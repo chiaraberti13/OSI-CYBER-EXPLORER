@@ -17,6 +17,41 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  lockfile:
+    name: Lockfile and package signatures
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24.x
+          cache: npm
+
+      - name: Bootstrap lockfile policy
+        run: node --test scripts/verify-lockfile.test.mjs && node scripts/verify-lockfile.mjs
+
+      - name: Install dependencies without lifecycle scripts
+        run: npm ci --ignore-scripts
+
+      - name: Validate registry, package names and integrity
+        run: npm run lint:lockfile
+
+      - name: Verify runtime registry signatures and provenance
+        run: npm run audit:signatures:runtime
+
+      # npm currently receives a 404 from the registry attestation endpoint for
+      # whatwg-url@17.1.1. Keep the complete inventory visible without weakening
+      # the blocking runtime verification above.
+      - name: Verify full registry signatures and provenance (informational)
+        continue-on-error: true
+        run: npm run audit:signatures:full
+
   secrets:
     name: Secret scan (Gitleaks)
     runs-on: ubuntu-latest
@@ -74,4 +109,3 @@ jobs:
           artifact-name: osi-cyber-explorer-sbom.cdx.json
           upload-artifact-retention: 14
           upload-release-assets: false
-
