@@ -6,6 +6,7 @@ import { ATTACK_SCENARIOS } from '../content/attackScenarios';
 import { Zap, Skull, ShieldCheck, Play, RotateCcw, Info, Pause, ChevronDown, Volume2, VolumeX } from 'lucide-react';
 import { playAudioCue } from '../utils/audio';
 import { pduNameForLayer, l4ProtocolFor, type SimProtocol } from '../lib/osi';
+import { SIMULATION_SPEEDS } from '../lib/preferences';
 
 export default function PacketSimulator() {
   const { 
@@ -430,7 +431,7 @@ export default function PacketSimulator() {
               {language === 'en' ? 'Speed' : 'Velocità'}
             </span>
             <div className="flex bg-slate-100 p-0.5 rounded-lg">
-              {[0.5, 1, 2].map((s) => (
+              {SIMULATION_SPEEDS.map((s) => (
                 <button
                   key={s}
                   onClick={() => setSimSpeed(s)}

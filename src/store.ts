@@ -2,6 +2,15 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { Language, LogEntry, SimulationState, AttackType, PacketHeader } from './types';
 import type { SimProtocol } from './lib/osi';
+import {
+  DEFAULT_PREFERENCES,
+  PREFERENCES_STORAGE_KEY,
+  PREFERENCES_STORAGE_VERSION,
+  isSimulationSpeed,
+  migratePreferences,
+  sanitizePreferences,
+} from './lib/preferences';
+import type { SimulationSpeed } from './lib/preferences';
 
 interface AppState {
   language: Language;
@@ -64,8 +73,8 @@ interface AppState {
   setAudioEnabled: (enabled: boolean) => void;
 
   // Simulation playback speed multiplier (0.5x = slow tutor mode, 2x = fast review)
-  simSpeed: number;
-  setSimSpeed: (speed: number) => void;
+  simSpeed: SimulationSpeed;
+  setSimSpeed: (speed: SimulationSpeed) => void;
 
   // Onboarding: whether the user has already seen the Lab Guide
   hasSeenGuide: boolean;
@@ -77,7 +86,7 @@ export type AppView = 'curriculum' | 'pathtrace' | 'fundamentals' | 'access' | '
 export const useStore = create<AppState>()(
   persist(
     (set) => ({
-  language: 'it',
+  language: DEFAULT_PREFERENCES.language,
   setLanguage: (language) => set({ language }),
   
   selectedLayerId: 7,
@@ -143,20 +152,29 @@ export const useStore = create<AppState>()(
   activeView: 'osi',
   setActiveView: (activeView) => set({ activeView }),
 
-  audioEnabled: true,
+  audioEnabled: DEFAULT_PREFERENCES.audioEnabled,
   setAudioEnabled: (audioEnabled) => set({ audioEnabled }),
 
-  simSpeed: 1,
-  setSimSpeed: (simSpeed) => set({ simSpeed }),
+  simSpeed: DEFAULT_PREFERENCES.simSpeed,
+  setSimSpeed: (simSpeed) => set({
+    simSpeed: isSimulationSpeed(simSpeed) ? simSpeed : DEFAULT_PREFERENCES.simSpeed,
+  }),
 
-  hasSeenGuide: false,
+  hasSeenGuide: DEFAULT_PREFERENCES.hasSeenGuide,
   setHasSeenGuide: (hasSeenGuide) => set({ hasSeenGuide }),
     }),
     {
-      name: 'osi-lab-preferences',
+      name: PREFERENCES_STORAGE_KEY,
       storage: createJSONStorage(() => localStorage),
-      // Only persist user preferences and progress — never transient session state
-      // (logs, simulation status, active attack) so a reload always starts clean.
+      version: PREFERENCES_STORAGE_VERSION,
+      migrate: migratePreferences,
+      merge: (persistedState, currentState) => ({
+        ...currentState,
+        ...sanitizePreferences(persistedState),
+      }),
+      // These non-secret preferences intentionally remain inspectable in localStorage.
+      // Never persist transient session state (logs, simulation status, active attack),
+      // so a reload always starts clean.
       partialize: (state) => ({
         language: state.language,
         audioEnabled: state.audioEnabled,
