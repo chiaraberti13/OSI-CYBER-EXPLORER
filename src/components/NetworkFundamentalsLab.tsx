@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { AlertTriangle, Binary, Cable, Calculator, Laptop, Network, Router, Server, ShieldCheck, Workflow } from 'lucide-react';
 import { calculateIpv4Subnet, type Ipv4AddressKind } from '../lib/ipv4';
+import { INTERACTIVE_INPUT_LIMITS, inputErrorMessage, parseIpv4Subnet } from '../lib/inputValidation';
 import { inspectIpv6, macToModifiedEui64, type Ipv6AddressKind } from '../lib/ipv6';
 import { useStore } from '../store';
 import ResponsiveTable from './ResponsiveTable';
@@ -266,15 +267,16 @@ function BinaryStrip({ octets, prefix }: { octets: string[]; prefix: number }) {
 export default function NetworkFundamentalsLab() {
   const language = useStore((state) => state.language);
   const [address, setAddress] = useState('192.168.10.42');
-  const [prefix, setPrefix] = useState(24);
+  const [prefix, setPrefix] = useState('24');
   const [ipv6Address, setIpv6Address] = useState('2001:db8:acad::10/64');
   const [macAddress, setMacAddress] = useState('00:1A:2B:3C:4D:5E');
 
   const calculation = useMemo(() => {
     try {
-      return { subnet: calculateIpv4Subnet(address, prefix), error: false } as const;
-    } catch {
-      return { subnet: null, error: true } as const;
+      const validated = parseIpv4Subnet(address, prefix);
+      return { subnet: calculateIpv4Subnet(validated.address, validated.prefix), error: null } as const;
+    } catch (error) {
+      return { subnet: null, error } as const;
     }
   }, [address, prefix]);
 
@@ -406,17 +408,17 @@ export default function NetworkFundamentalsLab() {
         <div className="mt-5 grid gap-4 sm:grid-cols-[1fr_160px]">
           <label className="space-y-1.5 text-xs font-medium text-slate-600">
             {labels.address}
-            <input value={address} onChange={(event) => setAddress(event.target.value)} inputMode="decimal" className="block w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-sm text-slate-900 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" />
+            <input value={address} maxLength={INTERACTIVE_INPUT_LIMITS.ipv4Characters + 1} onChange={(event) => setAddress(event.target.value)} inputMode="decimal" aria-invalid={calculation.error !== null} className="block w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-sm text-slate-900 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" />
           </label>
           <label className="space-y-1.5 text-xs font-medium text-slate-600">
             {labels.prefix}
-            <input type="number" min={0} max={32} value={prefix} onChange={(event) => setPrefix(Number(event.target.value))} className="block w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-sm text-slate-900 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" />
+            <input inputMode="numeric" value={prefix} maxLength={2} onChange={(event) => setPrefix(event.target.value)} aria-invalid={calculation.error !== null} className="block w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-sm text-slate-900 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" />
           </label>
         </div>
 
         {calculation.error ? (
           <div className="mt-5 flex items-center gap-2 rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700" role="alert">
-            <AlertTriangle className="h-4 w-4 shrink-0" /> {labels.invalid}
+            <AlertTriangle className="h-4 w-4 shrink-0" /> {inputErrorMessage(calculation.error, language)}
           </div>
         ) : subnet ? (
           <div className="mt-6 space-y-6">

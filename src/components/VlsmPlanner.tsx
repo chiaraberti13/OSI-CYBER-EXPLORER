@@ -1,6 +1,14 @@
 import { useMemo, useState } from 'react';
 import { AlertTriangle, LayoutGrid, Plus, Trash2 } from 'lucide-react';
 import { planVlsm, prefixToMask, uintToIpv4, type VlsmAllocation, type VlsmPlan } from '../lib/ipv4';
+import {
+  INTERACTIVE_INPUT_LIMITS,
+  inputErrorMessage,
+  parseBoundedInteger,
+  parseIpv4Address,
+  validateTextInput,
+  type InputLanguage
+} from '../lib/inputValidation';
 import { useStore } from '../store';
 import ResponsiveTable from './ResponsiveTable';
 
@@ -27,6 +35,8 @@ const DEFAULT_ROWS: Row[] = [
   { id: 'r3', name: 'Servers', hosts: '10' },
   { id: 'r4', name: 'WAN link', hosts: '2' }
 ];
+
+const VLSM_MAX_SEGMENTS = 32;
 
 const COPY = {
   it: {
@@ -79,9 +89,14 @@ const COPY = {
 
 type ErrorKey = keyof typeof COPY['it']['errors'];
 
-function errorKeyOf(error: unknown): ErrorKey {
+function errorKeyOf(error: unknown): ErrorKey | null {
   const message = error instanceof Error ? error.message : '';
-  return message in COPY.it.errors ? (message as ErrorKey) : 'GENERIC';
+  return message in COPY.it.errors ? (message as ErrorKey) : null;
+}
+
+function vlsmErrorMessage(error: unknown, language: InputLanguage): string {
+  const key = errorKeyOf(error);
+  return key ? COPY[language].errors[key] : inputErrorMessage(error, language);
 }
 
 export default function VlsmPlanner() {
@@ -89,17 +104,24 @@ export default function VlsmPlanner() {
   const copy = COPY[language];
 
   const [base, setBase] = useState('192.168.1.0');
-  const [basePrefix, setBasePrefix] = useState(24);
+  const [basePrefix, setBasePrefix] = useState('24');
   const [rows, setRows] = useState<Row[]>(DEFAULT_ROWS);
 
-  const result = useMemo<{ plan: VlsmPlan; error: null } | { plan: null; error: ErrorKey }>(() => {
+  const result = useMemo<{ plan: VlsmPlan; error: null } | { plan: null; error: unknown }>(() => {
     try {
       const requirements = rows
         .filter(row => row.hosts.trim() !== '')
-        .map(row => ({ id: row.id, name: row.name.trim() || row.id, hosts: Number(row.hosts) }));
-      return { plan: planVlsm(base.trim(), basePrefix, requirements), error: null };
+        .map(row => ({
+          id: row.id,
+          name: validateTextInput(row.name, { maxLength: INTERACTIVE_INPUT_LIMITS.labelCharacters, allowEmpty: true }) || row.id,
+          hosts: parseBoundedInteger(row.hosts, 1, 2 ** 30 - 2)
+        }));
+      return {
+        plan: planVlsm(parseIpv4Address(base), parseBoundedInteger(basePrefix, 0, 30), requirements),
+        error: null
+      };
     } catch (error) {
-      return { plan: null, error: errorKeyOf(error) };
+      return { plan: null, error };
     }
   }, [base, basePrefix, rows]);
 
@@ -107,7 +129,9 @@ export default function VlsmPlanner() {
     setRows(current => current.map(row => (row.id === id ? { ...row, ...patch } : row)));
 
   const addRow = () =>
-    setRows(current => [...current, { id: `r${Date.now().toString(36)}`, name: '', hosts: '' }]);
+    setRows(current => current.length >= VLSM_MAX_SEGMENTS
+      ? current
+      : [...current, { id: `r${Date.now().toString(36)}`, name: '', hosts: '' }]);
 
   const removeRow = (id: string) =>
     setRows(current => (current.length > 1 ? current.filter(row => row.id !== id) : current));
@@ -126,18 +150,18 @@ export default function VlsmPlanner() {
       <div className="mt-5 grid gap-4 sm:grid-cols-[1fr_140px]">
         <label className="space-y-1.5 text-xs font-medium text-slate-600">
           {copy.base}
-          <input value={base} onChange={(event) => setBase(event.target.value)} inputMode="decimal" className={inputClass} />
+          <input value={base} maxLength={INTERACTIVE_INPUT_LIMITS.ipv4Characters + 1} onChange={(event) => setBase(event.target.value)} inputMode="decimal" aria-invalid={result.error !== null} className={inputClass} />
         </label>
         <label className="space-y-1.5 text-xs font-medium text-slate-600">
           {copy.prefix}
-          <input type="number" min={0} max={30} value={basePrefix} onChange={(event) => setBasePrefix(Number(event.target.value))} className={inputClass} />
+          <input inputMode="numeric" value={basePrefix} maxLength={2} onChange={(event) => setBasePrefix(event.target.value)} aria-invalid={result.error !== null} className={inputClass} />
         </label>
       </div>
 
       <div className="mt-6">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h3 className="text-sm font-semibold text-slate-900">{copy.requirements}</h3>
-          <button type="button" onClick={addRow} className="inline-flex items-center gap-1.5 rounded-lg border border-indigo-200 bg-indigo-50 px-2.5 py-1.5 text-xs font-semibold text-indigo-700 transition hover:bg-indigo-100">
+          <button type="button" onClick={addRow} disabled={rows.length >= VLSM_MAX_SEGMENTS} className="inline-flex items-center gap-1.5 rounded-lg border border-indigo-200 bg-indigo-50 px-2.5 py-1.5 text-xs font-semibold text-indigo-700 transition hover:bg-indigo-100 disabled:cursor-not-allowed disabled:opacity-50">
             <Plus className="h-3.5 w-3.5" /> {copy.addRow}
           </button>
         </div>
@@ -148,6 +172,7 @@ export default function VlsmPlanner() {
             <li key={row.id} className="grid grid-cols-[1fr_auto] gap-2 sm:grid-cols-[1fr_120px_auto]">
               <input
                 value={row.name}
+                maxLength={INTERACTIVE_INPUT_LIMITS.labelCharacters + 1}
                 onChange={(event) => updateRow(row.id, { name: event.target.value })}
                 aria-label={copy.name}
                 placeholder={copy.name}
@@ -155,6 +180,7 @@ export default function VlsmPlanner() {
               />
               <input
                 value={row.hosts}
+                maxLength={10}
                 onChange={(event) => updateRow(row.id, { hosts: event.target.value })}
                 aria-label={copy.hosts}
                 placeholder={copy.hosts}
@@ -177,7 +203,7 @@ export default function VlsmPlanner() {
 
       {result.error ? (
         <div className="mt-5 flex items-start gap-2 rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700" role="alert">
-          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" /> <span>{copy.errors[result.error]}</span>
+          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" /> <span>{vlsmErrorMessage(result.error, language)}</span>
         </div>
       ) : plan ? (
         <div className="mt-6 space-y-5">

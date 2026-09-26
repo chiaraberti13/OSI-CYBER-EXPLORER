@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Crosshair, TriangleAlert } from 'lucide-react';
-import { wildcardForRange, type WildcardMatch } from '../lib/ipv4';
+import type { WildcardMatch } from '../lib/ipv4';
+import { INTERACTIVE_INPUT_LIMITS, inputErrorMessage, parseWildcardRange } from '../lib/inputValidation';
 import { useStore } from '../store';
 
 /**
@@ -68,11 +69,11 @@ export default function WildcardBuilder() {
   const [first, setFirst] = useState('10.1.1.8');
   const [last, setLast] = useState('10.1.1.11');
 
-  const result = useMemo<{ match: WildcardMatch; error: false } | { match: null; error: true }>(() => {
+  const result = useMemo<{ match: WildcardMatch; error: null } | { match: null; error: unknown }>(() => {
     try {
-      return { match: wildcardForRange(first.trim(), last.trim()), error: false };
-    } catch {
-      return { match: null, error: true };
+      return { match: parseWildcardRange(first, last), error: null };
+    } catch (error) {
+      return { match: null, error };
     }
   }, [first, last]);
 
@@ -90,11 +91,11 @@ export default function WildcardBuilder() {
       <div className="mt-5 grid gap-4 sm:grid-cols-2">
         <label className="space-y-1.5 text-xs font-medium text-slate-600">
           {copy.first}
-          <input value={first} onChange={(event) => setFirst(event.target.value)} inputMode="decimal" className={inputClass} />
+          <input value={first} maxLength={INTERACTIVE_INPUT_LIMITS.ipv4Characters + 1} onChange={(event) => setFirst(event.target.value)} inputMode="decimal" aria-invalid={result.error !== null} className={inputClass} />
         </label>
         <label className="space-y-1.5 text-xs font-medium text-slate-600">
           {copy.last}
-          <input value={last} onChange={(event) => setLast(event.target.value)} inputMode="decimal" className={inputClass} />
+          <input value={last} maxLength={INTERACTIVE_INPUT_LIMITS.ipv4Characters + 1} onChange={(event) => setLast(event.target.value)} inputMode="decimal" aria-invalid={result.error !== null} className={inputClass} />
         </label>
       </div>
 
@@ -120,7 +121,7 @@ export default function WildcardBuilder() {
 
       {result.error || !match ? (
         <p className="mt-5 flex items-center gap-2 rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700" role="alert">
-          <TriangleAlert className="h-4 w-4 shrink-0" /> {copy.invalid}
+          <TriangleAlert className="h-4 w-4 shrink-0" /> {inputErrorMessage(result.error, language)}
         </p>
       ) : (
         <div className="mt-5 space-y-4">

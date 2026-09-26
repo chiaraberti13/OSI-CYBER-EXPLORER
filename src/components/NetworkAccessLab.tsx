@@ -4,12 +4,17 @@ import {
   electRootBridge,
   evaluateTrunkFrame,
   isEtherChannelCompatible,
-  parseVlanList,
   STP_LONG_PATH_COST,
   STP_SHORT_METHOD_CEILING,
   STP_SHORT_PATH_COST,
   type EtherChannelMode
 } from '../lib/networkAccess';
+import {
+  INTERACTIVE_INPUT_LIMITS,
+  inputErrorMessage,
+  parseVlanId,
+  parseVlanListInput
+} from '../lib/inputValidation';
 import { useStore } from '../store';
 import ResponsiveTable from './ResponsiveTable';
 import CamTableLab from './CamTableLab';
@@ -258,8 +263,8 @@ function SectionTitle({ icon: Icon, title, id }: { icon: typeof Cable; title: st
 export default function NetworkAccessLab() {
   const language = useStore(state => state.language);
   const [allowedInput, setAllowedInput] = useState('10,20,30-32,99');
-  const [frameVlan, setFrameVlan] = useState(20);
-  const [nativeVlan, setNativeVlan] = useState(99);
+  const [frameVlan, setFrameVlan] = useState('20');
+  const [nativeVlan, setNativeVlan] = useState('99');
   const [sw1Priority, setSw1Priority] = useState(24576);
   const [sw2Priority, setSw2Priority] = useState(32768);
   const [leftMode, setLeftMode] = useState<EtherChannelMode>('active');
@@ -267,10 +272,10 @@ export default function NetworkAccessLab() {
 
   const trunk = useMemo(() => {
     try {
-      const allowed = parseVlanList(allowedInput);
-      return { allowed, result: evaluateTrunkFrame(frameVlan, nativeVlan, allowed), error: false } as const;
-    } catch {
-      return { allowed: [], result: null, error: true } as const;
+      const allowed = parseVlanListInput(allowedInput);
+      return { allowed, result: evaluateTrunkFrame(parseVlanId(frameVlan), parseVlanId(nativeVlan), allowed), error: null } as const;
+    } catch (error) {
+      return { allowed: [], result: null, error } as const;
     }
   }, [allowedInput, frameVlan, nativeVlan]);
 
@@ -333,12 +338,12 @@ export default function NetworkAccessLab() {
       <section className="rounded-xl border border-slate-200 bg-white p-5 md:p-6" aria-labelledby="vlan-title">
         <SectionTitle icon={Waypoints} title={t.vlanTitle} id="vlan-title" />
         <div className="mt-5 grid gap-4 md:grid-cols-3">
-          <label className="space-y-1.5 text-xs font-medium text-slate-600">{t.allowed}<input value={allowedInput} onChange={event => setAllowedInput(event.target.value)} spellCheck={false} className="block w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-sm outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" /></label>
-          <label className="space-y-1.5 text-xs font-medium text-slate-600">{t.frame}<input type="number" min={1} max={4094} value={frameVlan} onChange={event => setFrameVlan(Number(event.target.value))} className="block w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-sm outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" /></label>
-          <label className="space-y-1.5 text-xs font-medium text-slate-600">{t.native}<input type="number" min={1} max={4094} value={nativeVlan} onChange={event => setNativeVlan(Number(event.target.value))} className="block w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-sm outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" /></label>
+          <label className="space-y-1.5 text-xs font-medium text-slate-600">{t.allowed}<input value={allowedInput} maxLength={INTERACTIVE_INPUT_LIMITS.vlanListCharacters + 1} onChange={event => setAllowedInput(event.target.value)} spellCheck={false} aria-invalid={trunk.error !== null} className="block w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-sm outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" /></label>
+          <label className="space-y-1.5 text-xs font-medium text-slate-600">{t.frame}<input inputMode="numeric" value={frameVlan} maxLength={4} onChange={event => setFrameVlan(event.target.value)} aria-invalid={trunk.error !== null} className="block w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-sm outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" /></label>
+          <label className="space-y-1.5 text-xs font-medium text-slate-600">{t.native}<input inputMode="numeric" value={nativeVlan} maxLength={4} onChange={event => setNativeVlan(event.target.value)} aria-invalid={trunk.error !== null} className="block w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-sm outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" /></label>
         </div>
         {trunk.error ? (
-          <p className="mt-4 flex items-center gap-2 rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700" role="alert"><TriangleAlert className="h-4 w-4" />{t.invalidVlan}</p>
+          <p className="mt-4 flex items-center gap-2 rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700" role="alert"><TriangleAlert className="h-4 w-4" />{inputErrorMessage(trunk.error, language)}</p>
         ) : (
           <div className={`mt-5 rounded-lg border p-4 text-sm ${trunk.result?.forwarded ? 'border-emerald-200 bg-emerald-50 text-emerald-800' : 'border-amber-200 bg-amber-50 text-amber-800'}`}>
             <p className="font-semibold">{trunkMessage}</p>
