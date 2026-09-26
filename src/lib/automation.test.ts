@@ -2,10 +2,12 @@ import { describe, expect, it } from 'vitest';
 import {
   JSON_INPUT_LIMITS,
   JsonInputError,
+  REDACTED_JSON_VALUE,
   findSensitiveJsonPaths,
   flattenJsonDocument,
   httpMethodProfile,
   httpStatusFamily,
+  isSensitiveJsonKey,
   inspectJsonDocument
 } from './automation';
 
@@ -39,9 +41,65 @@ describe('JSON inspection', () => {
     expect(() => flattenJsonDocument('{"hostname":}')).toThrow();
   });
 
-  it('detects likely secrets by key without exposing values', () => {
-    const paths = findSensitiveJsonPaths('{"username":"netops","apiToken":"abc","nested":{"private_key":"pem"}}');
-    expect(paths).toEqual(['$.apiToken', '$.nested.private_key']);
+  it('detects supported secret-key variants across case and separators', () => {
+    const keys = [
+      'authorization', 'AUTHORIZATION', 'access_token', 'access-token', 'accessToken',
+      'refresh_token', 'idToken', 'api_key', 'api-key', 'apiKey', 'client_secret',
+      'clientSecret', 'secretKey', 'private_key', 'dbPassword', 'passwd',
+      'credentials', 'snmpCommunity', 'community_string'
+    ];
+
+    expect(keys.every(isSensitiveJsonKey)).toBe(true);
+  });
+
+  it('normalizes Unicode compatibility forms, accents and invisible separators', () => {
+    expect(isSensitiveJsonKey('ＡＣＣＥＳＳ＿ＴＯＫＥＮ')).toBe(true);
+    expect(isSensitiveJsonKey('tókén')).toBe(true);
+    expect(isSensitiveJsonKey('client\u200Bsecret')).toBe(true);
+  });
+
+  it('avoids ordinary metadata and security-related false positives', () => {
+    const ordinaryKeys = [
+      'tokenBucket', 'tokenExpiry', 'passwordPolicy', 'secretariat',
+      'authorizationServer', 'privateKeyAlgorithm', 'apiKeyName',
+      'communityDescription', 'credentialRotationDate'
+    ];
+
+    expect(ordinaryKeys.some(isSensitiveJsonKey)).toBe(false);
+  });
+
+  it('detects likely secrets without retaining their values in inspection results', () => {
+    const marker = 'value-that-must-never-survive';
+    const inspection = inspectJsonDocument(JSON.stringify({
+      username: 'netops',
+      apiToken: marker,
+      nested: { private_key: marker }
+    }));
+
+    expect(inspection.sensitivePaths).toEqual(['$.apiToken', '$.nested.private_key']);
+    expect(inspection.nodes.filter(node => inspection.sensitivePaths.includes(node.path)))
+      .toEqual(expect.arrayContaining([
+        expect.objectContaining({ path: '$.apiToken', value: REDACTED_JSON_VALUE }),
+        expect.objectContaining({ path: '$.nested.private_key', value: REDACTED_JSON_VALUE })
+      ]));
+    expect(JSON.stringify(inspection)).not.toContain(marker);
+  });
+
+  it('redacts every descendant of a sensitive container', () => {
+    const inspection = inspectJsonDocument(JSON.stringify({
+      credentials: {
+        username: 'netops',
+        password: 'never-visible'
+      },
+      hostname: 'R1'
+    }));
+
+    expect(inspection.sensitivePaths).toEqual(['$.credentials', '$.credentials.password']);
+    expect(inspection.nodes.find(node => node.path === '$.credentials.username')?.value)
+      .toBe(REDACTED_JSON_VALUE);
+    expect(inspection.nodes.find(node => node.path === '$.hostname')?.value).toBe('R1');
+    expect(JSON.stringify(inspection)).not.toContain('never-visible');
+    expect(JSON.stringify(inspection)).not.toContain('netops');
   });
 
   it('does not flag ordinary operational fields', () => {

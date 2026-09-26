@@ -54,7 +54,73 @@ const HTTP_PROFILES: Readonly<Record<HttpMethod, HttpMethodProfile>> = {
   DELETE: { crud: 'delete', safe: false, idempotent: true, typicalSuccess: [200, 202, 204] }
 };
 
-const SENSITIVE_KEY = /(?:password|passwd|secret|token|api[_-]?key|community|private[_-]?key|credential)/i;
+export const REDACTED_JSON_VALUE = '[REDACTED]';
+
+const SENSITIVE_TERMINAL_TOKENS = new Set([
+  'authorization',
+  'community',
+  'credential',
+  'credentials',
+  'passphrase',
+  'passwd',
+  'password',
+  'secret',
+  'secrets',
+  'token',
+  'tokens'
+]);
+
+const SENSITIVE_TOKEN_SUFFIXES = [
+  ['api', 'key'],
+  ['private', 'key'],
+  ['secret', 'key'],
+  ['community', 'string']
+] as const;
+
+const COMPACT_SENSITIVE_KEYS = new Set([
+  'accesstoken',
+  'apikey',
+  'authorization',
+  'clientsecret',
+  'communitystring',
+  'credential',
+  'credentials',
+  'idtoken',
+  'passphrase',
+  'passwd',
+  'password',
+  'privatekey',
+  'refreshtoken',
+  'secret',
+  'secretkey',
+  'token'
+]);
+
+function normalizedKeyTokens(key: string): string[] {
+  return key
+    .normalize('NFKC')
+    .replace(/([\p{Ll}\p{Nd}])(\p{Lu})/gu, '$1 $2')
+    .replace(/(\p{Lu})(\p{Lu}\p{Ll})/gu, '$1 $2')
+    .normalize('NFKD')
+    .replace(/\p{M}+/gu, '')
+    .toLocaleLowerCase('en-US')
+    .split(/[^\p{L}\p{N}]+/u)
+    .filter(Boolean);
+}
+
+export function isSensitiveJsonKey(key: string): boolean {
+  const tokens = normalizedKeyTokens(key);
+  if (tokens.length === 0) return false;
+
+  const compactKey = tokens.join('');
+  if (COMPACT_SENSITIVE_KEYS.has(compactKey)) return true;
+  if (SENSITIVE_TERMINAL_TOKENS.has(tokens.at(-1)!)) return true;
+
+  return SENSITIVE_TOKEN_SUFFIXES.some(suffix =>
+    suffix.length <= tokens.length
+    && suffix.every((token, index) => token === tokens[tokens.length - suffix.length + index])
+  );
+}
 
 export function httpMethodProfile(method: HttpMethod): HttpMethodProfile {
   return HTTP_PROFILES[method];
@@ -124,6 +190,7 @@ interface PendingJsonNode {
   path: string;
   depth: number;
   key?: string;
+  redact?: boolean;
 }
 
 export function inspectJsonDocument(
@@ -150,15 +217,17 @@ export function inspectJsonDocument(
     if (depth > limits.maxDepth) throw new JsonInputError('JSON_TOO_DEEP');
     if (nodes.length >= limits.maxNodes) throw new JsonInputError('JSON_TOO_MANY_NODES');
     const type = valueType(value);
-    nodes.push({ path, type, value: displayValue(value, type) });
-    if (key !== undefined && SENSITIVE_KEY.test(key)) sensitivePaths.push(path);
+    const sensitiveKey = key !== undefined && isSensitiveJsonKey(key);
+    const redact = current.redact === true || sensitiveKey;
+    nodes.push({ path, type, value: redact ? REDACTED_JSON_VALUE : displayValue(value, type) });
+    if (sensitiveKey) sensitivePaths.push(path);
 
     if (Array.isArray(value)) {
       if (nodes.length + pending.length + value.length > limits.maxNodes) {
         throw new JsonInputError('JSON_TOO_MANY_NODES');
       }
       for (let index = value.length - 1; index >= 0; index -= 1) {
-        pending.push({ value: value[index], path: `${path}[${index}]`, depth: depth + 1 });
+        pending.push({ value: value[index], path: `${path}[${index}]`, depth: depth + 1, redact });
       }
     } else if (value !== null && typeof value === 'object') {
       const entries = Object.entries(value);
@@ -171,7 +240,8 @@ export function inspectJsonDocument(
           value: item,
           path: path === '$' ? `$.${childKey}` : `${path}.${childKey}`,
           depth: depth + 1,
-          key: childKey
+          key: childKey,
+          redact
         });
       }
     }
