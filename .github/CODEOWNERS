@@ -1,0 +1,29 @@
+# Repository governance and automation
+/.github/CODEOWNERS @chiaraberti13
+/.github/dependabot.yml @chiaraberti13
+/.github/security-exceptions.yml @chiaraberti13
+/.github/workflows/ @chiaraberti13
+
+# Dependency and build trust boundary
+/.npmrc @chiaraberti13
+/.nvmrc @chiaraberti13
+/package.json @chiaraberti13
+/package-lock.json @chiaraberti13
+/scripts/verify-lockfile.mjs @chiaraberti13
+/scripts/verify-lockfile.test.mjs @chiaraberti13
+
+# Security policy, scanners, and deployment hardening
+/.gitleaks.toml @chiaraberti13
+/eslint.config.js @chiaraberti13
+/osv-scanner.toml @chiaraberti13
+/SECURITY.md @chiaraberti13
+/docs/FRONTEND_SECURITY.md @chiaraberti13
+/docs/SECURITY_SCANNING.md @chiaraberti13
+/docs/THREAT_MODEL.md @chiaraberti13
+/vercel.json @chiaraberti13
+
+# Offensive and defensive educational content
+/src/content/ @chiaraberti13
+/src/components/AttackLab.tsx @chiaraberti13
+/src/components/AttackPathsLab.tsx @chiaraberti13
+/src/components/AutomationLab.tsx @chiaraberti13
