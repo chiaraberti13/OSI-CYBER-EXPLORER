@@ -1,0 +1,156 @@
+name: Verifiable Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Build, attest and publish release
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    steps:
+      - name: Check out complete history
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24.x
+          cache: npm
+
+      - name: Require a tagged commit from main
+        run: git merge-base --is-ancestor "$GITHUB_SHA" origin/main
+
+      - name: Validate tag, manifest and changelog
+        run: |
+          mkdir release
+          node scripts/release-metadata.mjs \
+            --tag "$GITHUB_REF_NAME" \
+            --notes release/RELEASE_NOTES.md
+
+      - name: Bootstrap lockfile policy
+        run: node --test scripts/verify-lockfile.test.mjs && node scripts/verify-lockfile.mjs
+
+      - name: Install dependencies without lifecycle scripts
+        run: npm ci --ignore-scripts
+
+      - name: Verify source and build
+        run: npm run verify
+
+      - name: Audit runtime and complete dependency graph
+        run: |
+          npm run audit:runtime
+          npm run audit:full
+
+      - name: Create deterministic release archive
+        env:
+          VERSION: ${{ github.ref_name }}
+        run: |
+          VERSION="${VERSION#v}"
+          ARCHIVE="osi-cyber-explorer-${VERSION}.tar.gz"
+          SOURCE_DATE_EPOCH="$(git show -s --format=%ct "$GITHUB_SHA")"
+          tar --sort=name \
+            --mtime="@${SOURCE_DATE_EPOCH}" \
+            --owner=0 --group=0 --numeric-owner \
+            -C dist -cf - . | gzip -n -9 > "release/${ARCHIVE}"
+
+      - name: Generate release CycloneDX SBOM
+        uses: anchore/sbom-action@3ad7283483fc7af8ff2b4ea19663c2d5ca935e26 # v0.24.2
+        with:
+          path: dist
+          format: cyclonedx-json
+          output-file: release/osi-cyber-explorer-${{ github.ref_name }}-sbom.cdx.json
+          upload-artifact: false
+          upload-release-assets: false
+
+      - name: Normalize release filenames
+        env:
+          VERSION: ${{ github.ref_name }}
+        run: |
+          VERSION="${VERSION#v}"
+          mv "release/osi-cyber-explorer-v${VERSION}-sbom.cdx.json" \
+            "release/osi-cyber-explorer-${VERSION}-sbom.cdx.json"
+
+      - name: Generate build provenance attestation
+        id: provenance
+        uses: actions/attest@59d89421af93a897026c735860bf21b6eb4f7b26 # v4.1.0
+        with:
+          subject-path: release/osi-cyber-explorer-*.tar.gz
+
+      - name: Collect provenance bundle
+        env:
+          PROVENANCE_BUNDLE: ${{ steps.provenance.outputs.bundle-path }}
+          VERSION: ${{ github.ref_name }}
+        run: |
+          VERSION="${VERSION#v}"
+          cp "$PROVENANCE_BUNDLE" \
+            "release/osi-cyber-explorer-${VERSION}-provenance.intoto.jsonl"
+
+      - name: Generate SBOM attestation
+        id: sbom-attestation
+        uses: actions/attest@59d89421af93a897026c735860bf21b6eb4f7b26 # v4.1.0
+        with:
+          subject-path: release/osi-cyber-explorer-*.tar.gz
+          sbom-path: release/osi-cyber-explorer-*-sbom.cdx.json
+
+      - name: Collect attestations and checksums
+        env:
+          SBOM_BUNDLE: ${{ steps.sbom-attestation.outputs.bundle-path }}
+          VERSION: ${{ github.ref_name }}
+        run: |
+          VERSION="${VERSION#v}"
+          cp "$SBOM_BUNDLE" \
+            "release/osi-cyber-explorer-${VERSION}-sbom-attestation.intoto.jsonl"
+          (
+            cd release
+            sha256sum \
+              "osi-cyber-explorer-${VERSION}.tar.gz" \
+              "osi-cyber-explorer-${VERSION}-sbom.cdx.json" \
+              "osi-cyber-explorer-${VERSION}-provenance.intoto.jsonl" \
+              "osi-cyber-explorer-${VERSION}-sbom-attestation.intoto.jsonl" \
+              > SHA256SUMS.txt
+          )
+
+      - name: Add traceability to release notes
+        env:
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          printf '\n## Verification\n\n- Source commit: `%s`\n- Workflow run: %s\n' \
+            "$GITHUB_SHA" "$RUN_URL" >> release/RELEASE_NOTES.md
+
+      - name: Retain verifiable release artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: osi-cyber-explorer-${{ github.ref_name }}
+          path: |
+            release/osi-cyber-explorer-*
+            release/SHA256SUMS.txt
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Publish GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            release/osi-cyber-explorer-* \
+            release/SHA256SUMS.txt \
+            --verify-tag \
+            --title "OSI Cyber Explorer ${GITHUB_REF_NAME}" \
+            --notes-file release/RELEASE_NOTES.md

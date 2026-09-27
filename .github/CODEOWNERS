@@ -3,6 +3,7 @@
 /.github/dependabot.yml @chiaraberti13
 /.github/security-exceptions.yml @chiaraberti13
 /.github/workflows/ @chiaraberti13
+/CHANGELOG.md @chiaraberti13
 
 # Dependency and build trust boundary
 /.npmrc @chiaraberti13
@@ -11,6 +12,8 @@
 /package-lock.json @chiaraberti13
 /scripts/verify-lockfile.mjs @chiaraberti13
 /scripts/verify-lockfile.test.mjs @chiaraberti13
+/scripts/release-metadata.mjs @chiaraberti13
+/scripts/release-metadata.test.mjs @chiaraberti13
 
 # Security policy, scanners, and deployment hardening
 /.gitleaks.toml @chiaraberti13
@@ -20,6 +23,7 @@
 /docs/FRONTEND_SECURITY.md @chiaraberti13
 /docs/SECURITY_SCANNING.md @chiaraberti13
 /docs/THREAT_MODEL.md @chiaraberti13
+/docs/RELEASING.md @chiaraberti13
 /vercel.json @chiaraberti13
 
 # Offensive and defensive educational content

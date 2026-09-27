@@ -78,6 +78,10 @@ Policy su dipendenze e audit: [docs/DEPENDENCIES.md](docs/DEPENDENCIES.md#-itali
 
 `npm run dev` è il comando predefinito sicuro e non espone Vite agli altri dispositivi. `npm run dev:network` associa il server di sviluppo a tutte le interfacce: va usato solo quando serve l'accesso LAN, su una rete fidata e con un firewall host adeguato. Il server di sviluppo Vite non deve essere esposto pubblicamente né usato in produzione.
 
+## Release verificabili
+
+Le release da tag seguono il versionamento semantico e includono archivio applicativo deterministico, SBOM CycloneDX, checksum SHA-256 e attestazioni GitHub/Sigstore di provenienza e SBOM. Consulta il [changelog](CHANGELOG.md) e la [procedura di pubblicazione e verifica](docs/RELEASING.md#italiano).
+
 ## Competenze dimostrate
 - Sviluppo front-end con **React 19 + TypeScript**, stato centralizzato (Zustand) e netta separazione dati/logica/UI.
 - Una **macchina a stati** deterministica per incapsulamento/decapsulamento e logica pura e testabile (`src/lib`).

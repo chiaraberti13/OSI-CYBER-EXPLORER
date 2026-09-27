@@ -104,6 +104,10 @@ Dependency and audit policy: [docs/DEPENDENCIES.md](docs/DEPENDENCIES.md).
 
 `npm run dev` is the secure default and does not expose Vite to other devices. `npm run dev:network` binds the development server to every network interface; use it only when LAN access is required, on a trusted network and with an appropriate host firewall. The Vite development server is not intended for public or production exposure.
 
+## Verifiable releases
+
+Tagged releases follow Semantic Versioning and include a deterministic application archive, CycloneDX SBOM, SHA-256 checksums, and GitHub/Sigstore provenance and SBOM attestations. See the [changelog](CHANGELOG.md) and the [release verification procedure](docs/RELEASING.md).
+
 ## What this project demonstrates
 - Front-end engineering with **React 19 + TypeScript**, centralized state (Zustand) and a clean data/logic/UI separation.
 - A deterministic **encapsulation/decapsulation state machine** and testable, framework-free logic (`src/lib`).
