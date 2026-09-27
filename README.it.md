@@ -12,7 +12,7 @@
 
 > Laboratorio bilingue per studiare networking e CCNA 200-301, osservare il viaggio dei dati, simulare attacchi e comprendere le difese corrispondenti.
 
-<p align="center"><a href="https://osi-cyber-explorer.vercel.app"><strong>Demo live</strong></a> · <a href="SECURITY.md">Sicurezza</a> · <a href="LICENSE">Licenza</a></p>
+<p align="center"><a href="https://osi-cyber-explorer.vercel.app"><strong>Demo live</strong></a> · <a href="SECURITY.md">Sicurezza</a> · <a href="docs/THREAT_MODEL.md">Threat model</a> · <a href="LICENSE">Licenza</a></p>
 
 ---
 

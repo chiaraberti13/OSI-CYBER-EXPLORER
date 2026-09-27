@@ -12,7 +12,7 @@
 
 > A bilingual networking and CCNA 200-301 lab for observing data flows, simulating attacks, and understanding the corresponding defenses.
 
-<p align="center"><a href="https://osi-cyber-explorer.vercel.app"><strong>Live demo</strong></a> · <a href="SECURITY.md">Security</a> · <a href="LICENSE">Licence</a></p>
+<p align="center"><a href="https://osi-cyber-explorer.vercel.app"><strong>Live demo</strong></a> · <a href="SECURITY.md">Security</a> · <a href="docs/THREAT_MODEL.md">Threat model</a> · <a href="LICENSE">Licence</a></p>
 
 ---
 
