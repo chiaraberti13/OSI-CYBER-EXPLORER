@@ -21,9 +21,9 @@ Dependency lifecycle scripts are disabled in `.npmrc` and CI also invokes `npm c
 
 ## Sensitive-file ownership and branch enforcement
 
-`.github/CODEOWNERS` assigns the repository maintainer to changes affecting GitHub workflows and governance, the npm/build trust boundary, security policies and scanners, deployment hardening, educational content, and offensive-lab components. Keep the patterns explicit: a newly introduced workflow, scanner configuration, package-manager manifest, deployment policy, or offensive-content location must be added in the same pull request that creates it.
+`.github/CODEOWNERS` assigns the repository maintainer to changes affecting GitHub workflows and governance, the npm/build trust boundary, security policies and scanners, deployment hardening, educational content, and offensive-lab components. A newly introduced workflow, scanner configuration, package-manager manifest, deployment policy, or offensive-content location must be added to the ownership file in the same pull request that creates it.
 
-CODEOWNERS identifies reviewers but does not enforce a review by itself. The intended GitHub ruleset for the default branch requires one approval, Code Owner review, dismissal of stale approvals, approval of the latest reviewable push, resolved conversations, and an up-to-date branch. It also requires linear history, blocks branch deletion and force-pushes, and uses these stable GitHub Actions check names as merge gates:
+The active GitHub ruleset `Protect main and sensitive changes` (ID `24081937`) targets the default branch and makes the ownership policy enforceable. It requires one approval, Code Owner review, dismissal of stale approvals, approval of the latest reviewable push, resolved conversations, and an up-to-date branch. It also requires linear history, blocks branch deletion and force-pushes, and uses these GitHub Actions check names as merge gates:
 
 - `build (Node 22.22.x)`
 - `build (Node 24.x)`
@@ -33,7 +33,7 @@ CODEOWNERS identifies reviewers but does not enforce a review by itself. The int
 - `Dependency gate (npm audit)`
 - `SBOM (CycloneDX)`
 
-OSV-Scanner remains informational for now and is not a required check because its check name differs between pull-request and push workflows. Repository administrators retain an explicit recovery bypass. Until an administrator confirms and activates the prepared ruleset in GitHub, these settings describe the target policy rather than an enforced repository control.
+OSV-Scanner remains informational and is not a required check because its check name differs between pull-request and push workflows. Repository administrators retain an explicit `Always allow` bypass for recovery and direct owner maintenance; use of that bypass does not replace the requirement to obtain green CI evidence after a direct maintenance push.
 
 ## Versioned exceptions
 
