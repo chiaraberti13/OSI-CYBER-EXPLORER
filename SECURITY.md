@@ -125,6 +125,8 @@ After a production deployment, verify the effective headers with:
 curl --head https://osi-cyber-explorer.vercel.app/
 ```
 
+The [`Dynamic Deployment Security`](.github/workflows/dynamic-security.yml) workflow also validates the effective headers and CSP, then runs a non-authenticated OWASP ZAP Baseline scan after successful deployments and on a weekly production schedule. Versioned JSON/Markdown header findings and ZAP JSON/HTML/Markdown reports are retained as workflow artifacts for 90 days. The target allowlist, comparison policy and local verification commands are documented in [`docs/DYNAMIC_SECURITY.md`](docs/DYNAMIC_SECURITY.md).
+
 ---
 
 ## 🇮🇹 Italiano
@@ -243,3 +245,5 @@ Dopo un deployment di produzione, verifica gli header effettivi con:
 ```bash
 curl --head https://osi-cyber-explorer.vercel.app/
 ```
+
+Il workflow [`Dynamic Deployment Security`](.github/workflows/dynamic-security.yml) verifica inoltre header e CSP effettivi, quindi avvia una scansione OWASP ZAP Baseline non autenticata dopo i deployment riusciti e con cadenza settimanale sulla produzione. I finding versionati JSON/Markdown sugli header e i report ZAP JSON/HTML/Markdown vengono conservati come artifact per 90 giorni. Allowlist delle destinazioni, criteri di confronto e comandi di verifica locale sono documentati in [`docs/DYNAMIC_SECURITY.md`](docs/DYNAMIC_SECURITY.md).

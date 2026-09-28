@@ -1,0 +1,103 @@
+name: Dynamic Deployment Security
+
+on:
+  deployment_status:
+  schedule:
+    - cron: '17 6 * * 3'
+  workflow_dispatch:
+    inputs:
+      target_url:
+        description: Official production or OSI Cyber Explorer Vercel preview URL
+        required: false
+        default: https://osi-cyber-explorer.vercel.app
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dynamic-security-${{ github.event.deployment.id || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  scan:
+    name: Passive DAST and security headers
+    if: >-
+      github.event_name != 'deployment_status' ||
+      github.event.deployment_status.state == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      DEPLOYMENT_URL: >-
+        ${{ github.event_name == 'deployment_status'
+            && (github.event.deployment_status.environment_url || github.event.deployment_status.target_url)
+            || inputs.target_url
+            || 'https://osi-cyber-explorer.vercel.app' }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24.x
+
+      - name: Validate deployment target
+        id: target
+        env:
+          RAW_TARGET_URL: ${{ env.DEPLOYMENT_URL }}
+        run: |
+          TARGET_URL="$(node scripts/deployment-security.mjs validate-url --url "$RAW_TARGET_URL")"
+          echo "target_url=$TARGET_URL" >> "$GITHUB_OUTPUT"
+
+      - name: Test deployed headers and CSP
+        env:
+          TARGET_URL: ${{ steps.target.outputs.target_url }}
+        run: |
+          node scripts/deployment-security.mjs check \
+            --url "$TARGET_URL" \
+            --output dynamic-security/security-headers.json \
+            --summary dynamic-security/security-headers.md
+
+      - name: Run OWASP ZAP Baseline
+        id: zap
+        if: always() && steps.target.outcome == 'success'
+        continue-on-error: true
+        uses: zaproxy/action-baseline@de8ad967d3548d44ef623df22cf95c3b0baf8b25 # v0.15.0
+        with:
+          token: ${{ github.token }}
+          target: ${{ steps.target.outputs.target_url }}
+          fail_action: false
+          allow_issue_writing: false
+          artifact_name: dynamic-security-zap-${{ github.run_number }}-${{ github.run_attempt }}
+          cmd_options: '-m 2 -T 10'
+
+      - name: Record scan metadata
+        if: always()
+        env:
+          TARGET_URL: ${{ steps.target.outputs.target_url }}
+          ZAP_OUTCOME: ${{ steps.zap.outcome }}
+        run: |
+          mkdir -p dynamic-security
+          node -e 'const fs=require("node:fs"); fs.writeFileSync("dynamic-security/run.json", JSON.stringify({schemaVersion:1,target:process.env.TARGET_URL||null,commit:process.env.GITHUB_SHA,runId:process.env.GITHUB_RUN_ID,runAttempt:process.env.GITHUB_RUN_ATTEMPT,event:process.env.GITHUB_EVENT_NAME,zapOutcome:process.env.ZAP_OUTCOME||"not-run",recordedAt:new Date().toISOString()}, null, 2)+"\n", {flag:"wx"})'
+
+      - name: Retain comparable deployment findings
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: dynamic-security-headers-${{ github.run_number }}-${{ github.run_attempt }}
+          path: dynamic-security/
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Require scanner completion
+        if: always()
+        env:
+          ZAP_OUTCOME: ${{ steps.zap.outcome }}
+        run: |
+          if [ "$ZAP_OUTCOME" != "success" ]; then
+            echo "OWASP ZAP Baseline did not complete successfully: $ZAP_OUTCOME" >&2
+            exit 1
+          fi
