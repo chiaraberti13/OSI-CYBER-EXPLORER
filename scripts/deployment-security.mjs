@@ -235,6 +235,32 @@ export function evaluateSecurityHeaders({ targetUrl, responseUrl, status, header
   };
 }
 
+export function createDeploymentFailureReport({ targetUrl, error }) {
+  const normalizedTarget = validateTargetUrl(targetUrl);
+  const target = new URL(normalizedTarget);
+  const message = error instanceof Error ? error.message : 'Unknown deployment request failure.';
+
+  return {
+    schemaVersion: 1,
+    scanner: 'osi-cyber-explorer-deployment-security',
+    target: normalizedTarget,
+    responseUrl: null,
+    environment: target.hostname === PRODUCTION_HOSTNAME ? 'production' : 'preview',
+    status: null,
+    passed: false,
+    summary: { total: 1, high: 1, medium: 0 },
+    findings: [
+      finding({
+        id: 'deployment-request',
+        severity: 'high',
+        message: 'The deployment could not be inspected inside the approved origin boundary.',
+        expected: 'a reachable allowlisted deployment without redirects to another origin',
+        actual: message,
+      }),
+    ],
+  };
+}
+
 export function formatMarkdownSummary(report) {
   const result = report.passed ? 'PASS' : 'FAIL';
   const lines = [
@@ -243,7 +269,9 @@ export function formatMarkdownSummary(report) {
     `- Result: **${result}**`,
     `- Environment: \`${report.environment}\``,
     `- Target: \`${report.target}\``,
-    `- Final response: \`${report.status} ${report.responseUrl}\``,
+    `- Final response: \`${
+      report.status === null ? 'not available' : `${report.status} ${report.responseUrl}`
+    }\``,
     `- Findings: **${report.summary.total}** (${report.summary.high} high, ${report.summary.medium} medium)`,
   ];
 
@@ -273,7 +301,11 @@ async function fetchDeployment(targetUrl, fetchImpl = fetch) {
     const location = response.headers.get('location');
     if (!location) throw new Error(`HTTP ${response.status} redirect is missing Location.`);
     if (redirectCount === MAX_REDIRECTS) throw new Error('Deployment exceeded redirect limit.');
-    currentUrl = validateTargetUrl(new URL(location, currentUrl).toString());
+    try {
+      currentUrl = validateTargetUrl(new URL(location, currentUrl).toString());
+    } catch {
+      throw new Error('Deployment redirected outside the approved origin allowlist.');
+    }
   }
 
   throw new Error('Deployment redirect handling failed.');
@@ -304,13 +336,18 @@ async function main() {
     throw new Error('Use either the validate-url or check command.');
   }
 
-  const response = await fetchDeployment(normalizedTarget);
-  const report = evaluateSecurityHeaders({
-    targetUrl: normalizedTarget,
-    responseUrl: response.url || normalizedTarget,
-    status: response.status,
-    headers: response.headers,
-  });
+  let report;
+  try {
+    const response = await fetchDeployment(normalizedTarget);
+    report = evaluateSecurityHeaders({
+      targetUrl: normalizedTarget,
+      responseUrl: response.url || normalizedTarget,
+      status: response.status,
+      headers: response.headers,
+    });
+  } catch (error) {
+    report = createDeploymentFailureReport({ targetUrl: normalizedTarget, error });
+  }
   report.checkedAt = new Date().toISOString();
   report.commit = process.env.GITHUB_SHA ?? null;
   report.runId = process.env.GITHUB_RUN_ID ?? null;

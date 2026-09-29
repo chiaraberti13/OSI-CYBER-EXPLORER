@@ -23,14 +23,18 @@ jobs:
   scan:
     name: Passive DAST and security headers
     if: >-
-      github.event_name != 'deployment_status' ||
-      github.event.deployment_status.state == 'success'
+      github.event_name != 'deployment_status' || (
+        github.event.deployment_status.state == 'success' && (
+          github.event.deployment.environment == 'Production' ||
+          github.event.deployment.environment == 'production'
+        )
+      )
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
       DEPLOYMENT_URL: >-
         ${{ github.event_name == 'deployment_status'
-            && (github.event.deployment_status.environment_url || github.event.deployment_status.target_url)
+            && 'https://osi-cyber-explorer.vercel.app'
             || inputs.target_url
             || 'https://osi-cyber-explorer.vercel.app' }}
     steps:
@@ -53,6 +57,7 @@ jobs:
           echo "target_url=$TARGET_URL" >> "$GITHUB_OUTPUT"
 
       - name: Test deployed headers and CSP
+        id: headers
         env:
           TARGET_URL: ${{ steps.target.outputs.target_url }}
         run: |
@@ -63,7 +68,7 @@ jobs:
 
       - name: Run OWASP ZAP Baseline
         id: zap
-        if: always() && steps.target.outcome == 'success'
+        if: always() && steps.target.outcome == 'success' && steps.headers.outcome == 'success'
         continue-on-error: true
         uses: zaproxy/action-baseline@de8ad967d3548d44ef623df22cf95c3b0baf8b25 # v0.15.0
         with:
@@ -93,7 +98,7 @@ jobs:
           retention-days: 90
 
       - name: Require scanner completion
-        if: always()
+        if: always() && steps.headers.outcome == 'success'
         env:
           ZAP_OUTCOME: ${{ steps.zap.outcome }}
         run: |

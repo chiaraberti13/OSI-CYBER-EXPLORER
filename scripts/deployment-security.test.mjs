@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import {
+  createDeploymentFailureReport,
   evaluateSecurityHeaders,
   formatMarkdownSummary,
   parseCsp,
@@ -116,4 +117,16 @@ test('produces a compact comparable Markdown summary', () => {
 
   assert.match(markdown, /Result: \*\*PASS\*\*/);
   assert.match(markdown, /Findings: \*\*0\*\*/);
+});
+
+test('records request and redirect failures with a stable finding identifier', () => {
+  const report = createDeploymentFailureReport({
+    targetUrl: 'https://osi-cyber-explorer-preview.vercel.app',
+    error: new Error('Deployment redirected outside the approved origin allowlist.'),
+  });
+  const markdown = formatMarkdownSummary(report);
+
+  assert.equal(report.passed, false);
+  assert.equal(report.findings[0].id, 'deployment-request');
+  assert.match(markdown, /Final response: `not available`/);
 });
