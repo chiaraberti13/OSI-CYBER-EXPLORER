@@ -1,3 +1,4 @@
+import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 import {
   JSON_INPUT_LIMITS,
@@ -148,27 +149,19 @@ describe('JSON inspection', () => {
   });
 
   it('handles a deterministic fuzz corpus without leaking native parser or stack errors', () => {
-    let state = 0x5eed1234;
-    const random = (): number => {
-      state = (Math.imul(state, 1664525) + 1013904223) >>> 0;
-      return state / 0x1_0000_0000;
-    };
-    const scalar = (): unknown => {
-      const values: unknown[] = [null, true, false, 0, -42.5, 'brace } in string', 'quote \\" and slash \\\\', '€'];
-      return values[Math.floor(random() * values.length)];
-    };
-    const generate = (depth: number): unknown => {
-      if (depth >= 4 || random() < 0.45) return scalar();
-      if (random() < 0.5) return Array.from({ length: Math.floor(random() * 4) }, () => generate(depth + 1));
-      return Object.fromEntries(
-        Array.from({ length: Math.floor(random() * 4) }, (_, index) => [`key_${depth}_${index}`, generate(depth + 1)])
-      );
-    };
-
-    for (let index = 0; index < 250; index += 1) {
-      const input = JSON.stringify(generate(0));
-      expect(() => inspectJsonDocument(input)).not.toThrow();
-    }
+    fc.assert(
+      fc.property(fc.json({ maxDepth: 6 }), input => {
+        try {
+          inspectJsonDocument(input);
+          return true;
+        } catch (error) {
+          // Generated documents may intentionally cross a production limit, but callers
+          // must still receive the controlled error contract rather than a native failure.
+          return error instanceof JsonInputError;
+        }
+      }),
+      { seed: 0x5eed1234, numRuns: 250 }
+    );
   });
 
   it('uses immutable production defaults and controlled errors', () => {

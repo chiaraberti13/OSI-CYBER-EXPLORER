@@ -32,6 +32,8 @@
 /docs/offensive-content-reviews.json @chiaraberti13
 /docs/DOCUMENTATION_TARGETS.md @chiaraberti13
 /docs/documentation-target-allowlist.json @chiaraberti13
+/docs/NETWORKING_CONFORMANCE.md @chiaraberti13
+/src/lib/networkingConformance.test.ts @chiaraberti13
 /vercel.json @chiaraberti13
 
 # Offensive and defensive educational content

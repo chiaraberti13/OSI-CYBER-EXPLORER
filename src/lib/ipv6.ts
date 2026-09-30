@@ -106,8 +106,13 @@ export function classifyIpv6(hextets: string[]): Ipv6AddressKind {
   if (values.slice(0, 7).every(value => value === 0) && values[7] === 1) return 'loopback';
   if (values.slice(0, 5).every(value => value === 0) && values[5] === 0xffff) return 'ipv4-mapped';
   if (values.slice(0, 6).every(value => value === 0)) return 'ipv4-compatible';
-  if (values[0] === 0x0064 && values[1] === 0xff9b) return 'nat64';
-  if (values[0] === 0x2001 && values[1] === 0x0db8) return 'documentation';
+  const isWellKnownNat64 = values[0] === 0x0064 && values[1] === 0xff9b
+    && values.slice(2, 6).every(value => value === 0);
+  const isLocalUseNat64 = values[0] === 0x0064 && values[1] === 0xff9b && values[2] === 0x0001;
+  if (isWellKnownNat64 || isLocalUseNat64) return 'nat64';
+  const isDocumentation = (values[0] === 0x2001 && values[1] === 0x0db8)
+    || (values[0] === 0x3fff && (values[1] & 0xf000) === 0);
+  if (isDocumentation) return 'documentation';
   if ((values[0] & 0xff00) === 0xff00) return 'multicast';
   if ((values[0] & 0xffc0) === 0xfe80) return 'link-local';
   if ((values[0] & 0xfe00) === 0xfc00) return 'unique-local';
