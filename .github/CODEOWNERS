@@ -34,6 +34,10 @@
 /docs/documentation-target-allowlist.json @chiaraberti13
 /docs/NETWORKING_CONFORMANCE.md @chiaraberti13
 /src/lib/networkingConformance.test.ts @chiaraberti13
+/docs/PORT_REGISTRY.md @chiaraberti13
+/src/content/portRegistry.ts @chiaraberti13
+/src/content/portRegistry.test.ts @chiaraberti13
+/src/components/PortsExplorer.test.tsx @chiaraberti13
 /vercel.json @chiaraberti13
 
 # Offensive and defensive educational content

@@ -6,8 +6,15 @@ import {
   Layers, Shield, Shuffle, Network, Radio, Cpu, Server
 } from 'lucide-react';
 import { useStore } from '../store';
+import {
+  IANA_PORT_REGISTRY_SOURCE,
+  mergePortRegistry,
+  PORT_REGISTRY_METADATA,
+  PORT_REGISTRY_VERIFIED_ON,
+  type PortRegistryMetadata
+} from '../content/portRegistry';
 
-interface PortInfo {
+interface PortContent {
   port: number | string;
   service: string;
   name: string;
@@ -17,6 +24,8 @@ interface PortInfo {
   security: { en: string; it: string };
   isSecure: boolean;
 }
+
+type PortInfo = PortContent & PortRegistryMetadata;
 
 interface ProtocolInfo {
   name: string;
@@ -1265,7 +1274,7 @@ const DEVICE_REGISTRY: DeviceInfo[] = [
   }
 ];
 
-const PORT_REGISTRY: PortInfo[] = [
+const PORT_CONTENT: PortContent[] = [
   // Well-Known Ports
   {
     port: 20,
@@ -1991,6 +2000,8 @@ const PORT_REGISTRY: PortInfo[] = [
   }
 ];
 
+const PORT_REGISTRY: PortInfo[] = mergePortRegistry(PORT_CONTENT);
+
 export default function PortsExplorer({ isOpen = false, onClose = () => {}, inline = false }: { isOpen?: boolean; onClose?: () => void; inline?: boolean }) {
   const { language } = useStore();
   const [activeTab, setActiveTab] = useState<'ports' | 'protocols' | 'devices' | 'secure-access' | 'trainer'>('ports');
@@ -2012,7 +2023,11 @@ export default function PortsExplorer({ isOpen = false, onClose = () => {}, inli
     const rangeMatch = selectedRange === 'all' || p.range === selectedRange;
     const term = searchTerm.toLowerCase();
     const searchMatch = !searchTerm || 
-      p.port.toString().toLowerCase().includes(term) ||
+      p.ports.join(' / ').includes(term) ||
+      p.transports.join(' ').toLowerCase().includes(term) ||
+      p.registrationStatus.includes(term) ||
+      p.ianaServiceNames.some(name => name.includes(term)) ||
+      p.encryptedEquivalent?.service.toLowerCase().includes(term) ||
       p.service.toLowerCase().includes(term) ||
       p.name.toLowerCase().includes(term) ||
       p.description[language].toLowerCase().includes(term);
@@ -2311,6 +2326,15 @@ export default function PortsExplorer({ isOpen = false, onClose = () => {}, inli
                     </div>
                   </div>
 
+                  <div className="px-6 py-2.5 border-b border-slate-100 bg-indigo-50/40 text-[10px] text-indigo-700 flex flex-wrap items-center justify-between gap-2">
+                    <span className="font-semibold">
+                      {IANA_PORT_REGISTRY_SOURCE} · {PORT_REGISTRY_METADATA.length} {language === 'en' ? 'curated services' : 'servizi selezionati'}
+                    </span>
+                    <span className="font-mono">
+                      {language === 'en' ? 'Verified' : 'Verificato'}: {PORT_REGISTRY_VERIFIED_ON}
+                    </span>
+                  </div>
+
                   {/* Port Rows Grid */}
                   <div className="flex-1 p-6 space-y-4">
                     {selectedRange === 'dynamic' && (
@@ -2333,7 +2357,7 @@ export default function PortsExplorer({ isOpen = false, onClose = () => {}, inli
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {filteredPorts.map((item, idx) => (
                           <motion.div
-                            key={idx}
+                            key={`${item.ports.join('-')}-${item.transports.join('-')}`}
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: Math.min(idx * 0.02, 0.2) }}
@@ -2344,7 +2368,7 @@ export default function PortsExplorer({ isOpen = false, onClose = () => {}, inli
                               <div className="flex justify-between items-start gap-2 mb-2">
                                 <span className="flex items-center gap-1.5">
                                   <span className="px-2.5 py-1 bg-slate-900 text-white font-mono font-semibold text-xs rounded-lg select-all">
-                                    PORT {item.port}
+                                    PORT {item.ports.join(' / ')}
                                   </span>
                                   <span className="text-xs font-semibold text-slate-800 tracking-tight">
                                     {item.service}
@@ -2353,7 +2377,7 @@ export default function PortsExplorer({ isOpen = false, onClose = () => {}, inli
 
                                 <span className="flex items-center gap-1">
                                   <span className="text-[9px] font-mono font-semibold px-1.5 py-0.5 bg-slate-100 text-slate-500 rounded uppercase">
-                                    {item.type}
+                                    {item.transports.join(' / ')}
                                   </span>
                                   <span className={`text-[9.5px] font-bold px-1.5 py-0.5 rounded uppercase flex items-center gap-0.5 ${
                                     item.range === 'well-known' 
@@ -2373,6 +2397,42 @@ export default function PortsExplorer({ isOpen = false, onClose = () => {}, inli
                               <p className="text-[11px] text-slate-500 leading-normal">
                                 {item.description[language]}
                               </p>
+
+                              <div className="mt-2 flex flex-wrap gap-1.5 text-[9px] font-semibold">
+                                <span className={`px-2 py-0.5 rounded-lg border uppercase ${
+                                  item.registrationStatus === 'assigned'
+                                    ? 'bg-emerald-50 text-emerald-700 border-emerald-100'
+                                    : item.registrationStatus === 'de-facto'
+                                      ? 'bg-amber-50 text-amber-700 border-amber-100'
+                                      : 'bg-rose-50 text-rose-700 border-rose-100'
+                                }`}>
+                                  IANA: {item.registrationStatus === 'assigned'
+                                    ? (language === 'en' ? 'assigned' : 'assegnata')
+                                    : item.registrationStatus === 'de-facto'
+                                      ? 'de facto'
+                                      : item.registrationStatus === 'reserved'
+                                        ? (language === 'en' ? 'reserved' : 'riservata')
+                                        : (language === 'en' ? 'unassigned' : 'non assegnata')}
+                                </span>
+                                <span className="px-2 py-0.5 rounded-lg border bg-slate-50 text-slate-500 border-slate-100 font-mono">
+                                  {item.ianaServiceNames.join(' · ')}
+                                </span>
+                              </div>
+
+                              {item.ambiguity && (
+                                <div className="mt-2 rounded-lg border border-amber-100 bg-amber-50/60 p-2 flex gap-1.5 text-[10px] text-amber-800 leading-snug">
+                                  <ShieldAlert className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                                  <span><strong>{language === 'en' ? 'Ambiguous use:' : 'Uso ambiguo:'}</strong> {item.ambiguity[language]}</span>
+                                </div>
+                              )}
+
+                              {item.encryptedEquivalent && (
+                                <div className="mt-2 rounded-lg border border-indigo-100 bg-indigo-50/50 px-2 py-1.5 text-[10px] text-indigo-700">
+                                  <strong>{language === 'en' ? 'Encrypted option' : 'Alternativa cifrata'}:</strong>{' '}
+                                  {item.encryptedEquivalent.service} · {item.encryptedEquivalent.transports.join('/')}{' '}
+                                  {item.encryptedEquivalent.ports.join(' / ')}
+                                </div>
+                              )}
                             </div>
 
                             {/* Security Note at bottom of card */}
@@ -3458,7 +3518,7 @@ export default function PortsExplorer({ isOpen = false, onClose = () => {}, inli
 
                                 <div className="text-center py-4 space-y-1">
                                   <div className="text-6xl font-semibold font-mono tracking-tight select-all">
-                                    {flashcardsList[currentFlashcardIdx]?.port}
+                                    {flashcardsList[currentFlashcardIdx]?.ports.join(' / ')}
                                   </div>
                                   <div className="text-indigo-200 text-xs uppercase font-extrabold tracking-wider leading-loose">
                                     {language === 'en' ? 'Protocol Service' : 'Servizio di Rete'}
@@ -3483,10 +3543,10 @@ export default function PortsExplorer({ isOpen = false, onClose = () => {}, inli
                                   <div className="flex justify-between items-start border-b border-slate-100 pb-2">
                                     <span className="flex items-center gap-1.5">
                                       <span className="px-2.5 py-1 bg-indigo-600 text-white font-mono font-semibold text-xs rounded-lg select-all">
-                                        Port {flashcardsList[currentFlashcardIdx]?.port}
+                                        Port {flashcardsList[currentFlashcardIdx]?.ports.join(' / ')}
                                       </span>
                                       <span className="px-2 py-0.5 bg-indigo-50 border border-indigo-100 text-indigo-700 font-mono text-[10px] uppercase font-bold rounded-lg">
-                                        {flashcardsList[currentFlashcardIdx]?.type}
+                                        {flashcardsList[currentFlashcardIdx]?.transports.join(' / ')}
                                       </span>
                                     </span>
                                     
