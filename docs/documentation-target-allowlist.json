@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "reservedDomainSuffixes": [
+    "example.com",
+    "example.org",
+    "example.net",
+    "example.test",
+    "test",
+    "localhost"
+  ],
+  "externalDomainExceptions": [
+    {
+      "domain": "learningnetwork.cisco.com",
+      "file": "src/components/CurriculumView.tsx",
+      "purpose": "Official CCNA curriculum reference; never used as a lab target"
+    },
+    {
+      "domain": "images.unsplash.com",
+      "file": "src/components/GuideModal.tsx",
+      "purpose": "Read-only guide image governed by the production CSP and tracked by UX-11"
+    }
+  ],
+  "ipv4LiteralExceptions": [
+    {
+      "address": "1.1.1.1",
+      "files": ["src/content/ospfTopology.ts", "src/components/IpConnectivityLab.tsx"],
+      "purpose": "Conventional OSPF router ID, not a traffic destination"
+    },
+    {
+      "address": "2.2.2.2",
+      "files": ["src/content/ospfTopology.ts", "src/components/IpConnectivityLab.tsx"],
+      "purpose": "Conventional OSPF router ID, not a traffic destination"
+    },
+    {
+      "address": "3.3.3.3",
+      "files": ["src/content/ospfTopology.ts", "src/components/IpConnectivityLab.tsx"],
+      "purpose": "Conventional OSPF router ID, not a traffic destination"
+    },
+    {
+      "address": "4.4.4.4",
+      "files": ["src/content/ospfTopology.ts", "src/components/IpConnectivityLab.tsx"],
+      "purpose": "Conventional OSPF router ID, not a traffic destination"
+    },
+    {
+      "address": "5.5.5.5",
+      "files": ["src/content/ospfTopology.ts"],
+      "purpose": "Conventional OSPF router ID, not a traffic destination"
+    }
+  ]
+}

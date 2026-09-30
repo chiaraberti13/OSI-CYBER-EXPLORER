@@ -174,10 +174,10 @@ export default function PacketSimulator() {
                 { key: 'Flags', value: 'PSH, ACK' }
               ];
             } else if (currentStep === 3) {
-              details = 'IPv4: 192.168.1.10 -> 104.22.3.14';
+              details = 'IPv4: 192.168.1.10 -> 198.51.100.14';
               fields = [
                 { key: 'SrcIP', value: '192.168.1.10' },
-                { key: 'DstIP', value: '104.22.3.14' },
+                { key: 'DstIP', value: '198.51.100.14' },
                 { key: 'TTL', value: '64' },
                 { key: 'Proto', value: '0x06 (TCP)' }
               ];
@@ -226,10 +226,10 @@ export default function PacketSimulator() {
             }
           } else if (selectedProtocol === 'SMTP') {
             if (currentStep === 7) {
-              details = 'SMTP: MAIL FROM:<user@host.com>';
+              details = 'SMTP: MAIL FROM:<sender@example.com>';
               fields = [
                 { key: 'Command', value: 'MAIL FROM' },
-                { key: 'Sender', value: 'admin@system.it' }
+                { key: 'Sender', value: 'sender@example.com' }
               ];
             } else if (currentStep === 4) {
               details = 'TCP Port 25 (SMTP)';
@@ -242,11 +242,11 @@ export default function PacketSimulator() {
             }
           } else if (selectedProtocol === 'DNS') {
             if (currentStep === 7) {
-              details = 'DNS Query: google.com (A Record)';
+              details = 'DNS Query: example.com (A Record)';
               fields = [
                 { key: 'ID', value: '0x3a4b' },
                 { key: 'Flags', value: 'Standard Query' },
-                { key: 'Name', value: 'google.com' },
+                { key: 'Name', value: 'example.com' },
                 { key: 'Type', value: 'A (IPv4 Address)' }
               ];
             } else if (currentStep === 4) {
@@ -257,10 +257,10 @@ export default function PacketSimulator() {
                 { key: 'Len', value: '38' }
               ];
             } else if (currentStep === 3) {
-              details = 'IP Dest: 8.8.8.8';
+              details = 'IP Dest: 203.0.113.8';
               fields = [
                 { key: 'SrcIP', value: '192.168.1.10' },
-                { key: 'DstIP', value: '8.8.8.8' },
+                { key: 'DstIP', value: '203.0.113.8' },
                 { key: 'TTL', value: '64' }
               ];
             } else if (currentStep === 2) {
@@ -323,7 +323,7 @@ export default function PacketSimulator() {
               details = 'ICMP Over IP: Type 8, Code 0';
               fields = [
                 { key: 'SrcIP', value: '192.168.1.5' },
-                { key: 'DstIP', value: '8.8.8.8' },
+                { key: 'DstIP', value: '203.0.113.8' },
                 { key: 'TTL', value: '128' }
               ];
             } else if (currentStep === 2) {

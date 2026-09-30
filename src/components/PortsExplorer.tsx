@@ -56,7 +56,7 @@ const PROTOCOL_REGISTRY: ProtocolInfo[] = [
     type: 'Application',
     description: {
       en: 'Translates human-readable hostnames (such as example.com) into IP addresses used to reach network services.',
-      it: 'Traduce i nomi di host facili da ricordare (come google.com) in indirizzi IP numerici.'
+      it: 'Traduce i nomi di host facili da ricordare (come example.com) in indirizzi IP numerici.'
     },
     useCase: {
       en: 'Resolving domain coordinates prior to initiating TCP connection handshakes.',
@@ -1370,8 +1370,8 @@ const PORT_REGISTRY: PortInfo[] = [
     type: 'Both',
     range: 'well-known',
     description: {
-      en: 'Translates domain names (like google.com) to machine-readable IP addresses.',
-      it: 'Traduce i nomi di dominio (come google.com) in indirizzi IP leggibili dalle macchine.'
+      en: 'Translates domain names (like example.com) to machine-readable IP addresses.',
+      it: 'Traduce i nomi di dominio (come example.com) in indirizzi IP leggibili dalle macchine.'
     },
     security: {
       en: 'Cleartext by default: queries and answers are readable and forgeable. Target for DNS spoofing, cache poisoning, tunneling, and reflection/amplification. DNSSEC signs the records (authenticity and integrity) but does not encrypt; confidentiality requires DoT (TCP 853) or DoH (TCP 443).',
@@ -3613,4 +3613,3 @@ export default function PortsExplorer({ isOpen = false, onClose = () => {}, inli
     </>
   );
 }
-

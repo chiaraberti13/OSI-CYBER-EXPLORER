@@ -23,6 +23,8 @@
 
 Attack content is a non-executing simulation for owned or explicitly authorised environments. Payloads are inert or redacted, every scenario is paired with defensive context, and the [offensive-content review policy](docs/OFFENSIVE_CONTENT_REVIEW.md) is enforced in CI.
 
+Network examples use private, local, or [documentation-reserved targets](docs/DOCUMENTATION_TARGETS.md). A repository-wide CI gate prevents public IPv4/IPv6 addresses or unapproved domains from becoming copyable lab targets.
+
 ## Features
 - **CCNA Map** — The six official domains with their weights, objectives, topics, and links to attack and defense families. Each domain carries a **checklist of concepts you should be able to explain**: for every entry, where to observe the concept at work in the platform and which mistake reveals it is not yet solid. It is an exploratory guide with no quizzes, scores, or exam simulation: the checklist assigns no score.
 - **Path Trace Lab** — Follow one packet across the whole topology and watch each decision in the order it happens: the host's local-or-remote test, ARP or the default gateway, the switch's CAM lookup, the trunk's allowed list and native VLAN, the SVI, the ACL in the direction it is actually applied, the routing decision, and NAT overload. Both directions are traced, so a stateless ACL applied inbound on a single SVI is visibly filtering one direction and not the other.

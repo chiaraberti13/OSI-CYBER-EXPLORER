@@ -49,7 +49,7 @@ export default function PathTraceLab() {
         asymmetric: 'Le due direzioni non si comportano allo stesso modo',
         symmetric: 'Andata e ritorno si comportano allo stesso modo',
         l2note: 'Questo traffico non ha lasciato il Layer 2.',
-        internet: 'Internet (8.8.8.8)'
+        internet: 'Internet (203.0.113.8)'
       }
     : {
         title: 'Path tracer',
@@ -63,7 +63,7 @@ export default function PathTraceLab() {
         asymmetric: 'The two directions do not behave the same way',
         symmetric: 'Both directions behave the same way',
         l2note: 'This traffic never left Layer 2.',
-        internet: 'Internet (8.8.8.8)'
+        internet: 'Internet (203.0.113.8)'
       };
 
   const endpoints = [...TOPO_HOSTS.map(host => ({ id: host.id, label: `${host.name} · ${host.ip}` })), { id: TOPO_INTERNET.id, label: t.internet }];

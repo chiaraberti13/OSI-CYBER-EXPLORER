@@ -44,7 +44,7 @@ export const TOPO_HOSTS: TopoHost[] = [
 ];
 
 /** The Internet destination, outside every local subnet. */
-export const TOPO_INTERNET = { id: 'internet', name: 'INTERNET', ip: '8.8.8.8' } as const;
+export const TOPO_INTERNET = { id: 'internet', name: 'INTERNET', ip: '203.0.113.8' } as const;
 
 export const TOPO_LINKS = {
   /** Access switch uplink toward the core. */

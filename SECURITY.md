@@ -129,6 +129,8 @@ The [`Dynamic Deployment Security`](.github/workflows/dynamic-security.yml) work
 
 Offensive educational material follows the bilingual [offensive-content review policy](docs/OFFENSIVE_CONTENT_REVIEW.md). Every attack scenario and path has a dated checklist entry; CI rejects missing or expired reviews, live third-party targets in the reviewed sources, and reusable payload indicators.
 
+The complementary [documentation-target policy](docs/DOCUMENTATION_TARGETS.md) applies to every production TypeScript source. CI rejects public IPv4/IPv6 literals and non-reserved domains unless a file-bound, documented exception identifies a non-lab dependency or protocol identifier.
+
 ---
 
 ## 🇮🇹 Italiano
@@ -251,3 +253,5 @@ curl --head https://osi-cyber-explorer.vercel.app/
 Il workflow [`Dynamic Deployment Security`](.github/workflows/dynamic-security.yml) verifica inoltre header e CSP effettivi, quindi avvia una scansione OWASP ZAP Baseline non autenticata dopo i deployment riusciti e con cadenza settimanale sulla produzione. I finding versionati JSON/Markdown sugli header e i report ZAP JSON/HTML/Markdown vengono conservati come artifact per 90 giorni. Allowlist delle destinazioni, criteri di confronto e comandi di verifica locale sono documentati in [`docs/DYNAMIC_SECURITY.md`](docs/DYNAMIC_SECURITY.md).
 
 Il materiale didattico offensivo segue la [policy bilingue di revisione](docs/OFFENSIVE_CONTENT_REVIEW.md). Ogni scenario e percorso d'attacco ha una checklist datata; la CI rifiuta revisioni mancanti o scadute, target reali di terzi nelle sorgenti revisionate e indicatori di payload riutilizzabili.
+
+La [policy sui target di documentazione](docs/DOCUMENTATION_TARGETS.md) complementare si applica a ogni sorgente TypeScript di produzione. La CI rifiuta letterali IPv4/IPv6 pubblici e domini non riservati, salvo un'eccezione documentata e legata al file che identifichi una dipendenza non usata come target o un identificatore di protocollo.

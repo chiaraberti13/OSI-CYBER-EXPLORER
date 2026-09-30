@@ -16,6 +16,8 @@
 /scripts/release-metadata.test.mjs @chiaraberti13
 /scripts/offensive-content-review.mjs @chiaraberti13
 /scripts/offensive-content-review.test.mjs @chiaraberti13
+/scripts/documentation-targets.mjs @chiaraberti13
+/scripts/documentation-targets.test.mjs @chiaraberti13
 
 # Security policy, scanners, and deployment hardening
 /.gitleaks.toml @chiaraberti13
@@ -28,6 +30,8 @@
 /docs/RELEASING.md @chiaraberti13
 /docs/OFFENSIVE_CONTENT_REVIEW.md @chiaraberti13
 /docs/offensive-content-reviews.json @chiaraberti13
+/docs/DOCUMENTATION_TARGETS.md @chiaraberti13
+/docs/documentation-target-allowlist.json @chiaraberti13
 /vercel.json @chiaraberti13
 
 # Offensive and defensive educational content

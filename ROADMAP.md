@@ -41,7 +41,7 @@ Il progetto dispone già di:
 3. **Supply chain di sviluppo (risolto da SEC-01):** la baseline rilevava 10 vulnerabilità nella toolchain/dev dependencies (1 low, 4 moderate, 4 high, 1 critical). Dopo l'aggiornamento coordinato a Vite 8/Vitest 5 e il refresh delle dipendenze transitive, sia `npm audit` sia `npm audit --omit=dev` riportano 0 vulnerabilità.
 4. **Debito di modularità:** `PortsExplorer.tsx` supera 226 KB, `LayerDetails.tsx` 65 KB e diversi laboratori 30–42 KB; dati, logica e rendering sono ancora accoppiati in alcuni componenti.
 5. **Accessibilità incompleta:** le basi sono buone, ma modali, ricerca tipo combobox, focus management e alcuni stati visuali non seguono ancora integralmente WCAG 2.2 AA.
-6. **Indirizzi reali ancora presenti fuori dal perimetro offensivo revisionato:** alcune simulazioni di rete usano IP pubblici reali (`8.8.8.8` in `pathTopology.ts`, `PacketSimulator.tsx` e `PathTraceLab.tsx`; `104.22.3.14`, appartenente a un provider CDN, in `PacketSimulator.tsx`) invece dei blocchi riservati alla documentazione (RFC 5737, RFC 3849). I comandi e i contenuti coperti da SEC-16 sono già limitati a target di laboratorio o di documentazione; NET-01 deve estendere il controllo all'intera applicazione.
+6. ✅ **Risolto da NET-01.** Gli esempi usano esclusivamente indirizzi privati, locali, multicast o riservati alla documentazione; un gate CI analizza tutti i sorgenti di produzione e consente le dipendenze esterne o i router-ID convenzionali solo tramite eccezioni contestuali motivate.
 7. **Contenuti di rete senza fonti normative tracciate:** porte, costi STP, classi di indirizzi e intestazioni sono corretti nei casi verificati, ma non riportano la fonte (RFC, IEEE, registry IANA) né la data di verifica; manca quindi un modo per rilevare quando un dato diventa obsoleto. Vedi NET-02–NET-07.
 
 ### Verifica della baseline (rev. 2, 24/09/2026)
@@ -186,7 +186,7 @@ La mappatura serve a spiegare *perché* esiste un controllo, non a dichiarare co
 
 ### P1 — Correttezza e sicurezza degli esempi
 
-- [ ] **NET-01 — Usare solo indirizzi e domini riservati alla documentazione.** Sostituire IP pubblici reali e servizi di terzi negli esempi con `192.0.2.0/24`, `198.51.100.0/24`, `203.0.113.0/24` (RFC 5737), `2001:db8::/32` (RFC 3849) ed `example.com`/`.org`/`.net` (RFC 2606). Esempi concreti ancora aperti: `8.8.8.8` → `203.0.113.8` per la destinazione “Internet” e `104.22.3.14` → `198.51.100.14`. SEC-16 ha già sostituito i target reali nei comandi e nei contenuti offensivi revisionati; questo punto deve estendere la regola all'intera applicazione. Eccezioni ammesse e documentate: router-ID OSPF convenzionali (`1.1.1.1`, `2.2.2.2`, …), che sono identificatori e non destinazioni, e i blocchi privati RFC 1918 per le LAN. Aggiungere un test che scansioni `src/content` e i componenti e fallisca su IPv4/IPv6 pubblici fuori da un'allowlist. **Completato quando:** nessun esempio copiato dall'utente genera traffico verso sistemi reali di terzi.
+- [x] **NET-01 — Usare solo indirizzi e domini riservati alla documentazione.** Sostituire IP pubblici reali e servizi di terzi negli esempi con `192.0.2.0/24`, `198.51.100.0/24`, `203.0.113.0/24` (RFC 5737), `2001:db8::/32` (RFC 3849) ed `example.com`/`.org`/`.net` (RFC 2606). Eccezioni ammesse e documentate: router-ID OSPF convenzionali (`1.1.1.1`, `2.2.2.2`, …), che sono identificatori e non destinazioni, e i blocchi privati RFC 1918 per le LAN. Aggiungere un test che scansioni `src/content` e i componenti e fallisca su IPv4/IPv6 pubblici fuori da un'allowlist. **Completato quando:** nessun esempio copiato dall'utente genera traffico verso sistemi reali di terzi. **Esito (30/09/2026):** sostituiti in topologia, packet simulator, path trace e registry protocolli gli indirizzi pubblici `8.8.8.8`/`104.22.3.14`, i riferimenti `google.com` e le identità email su domini reali con blocchi RFC 5737 e domini RFC 2606/di laboratorio. La policy bilingue `docs/DOCUMENTATION_TARGETS.md` distingue target ammessi, prefissi di protocollo ed eccezioni contestuali; il registro machine-readable limita i router-ID OSPF ai soli file didattici e conserva separatamente il riferimento ufficiale Cisco e l'immagine Unsplash, che non sono target di laboratorio. Il gate `verify:documentation-targets`, eseguito in CI, analizza 111 sorgenti TypeScript di produzione e valida 318 letterali IPv4, 35 IPv6 e 13 domini; rifiuta indirizzi pubblici, domini non riservati ed eccezioni duplicate, incomplete o associate a file inesistenti. Sei test coprono repository reale, casi ostili IPv4/IPv6/dominio, spazi riservati, vincoli contestuali e integrità dell'allowlist; policy, registro, validatore e test sono protetti da CODEOWNERS.
 
 - [ ] **NET-02 — Test di conformità con vettori normativi.** Aggiungere casi tratti direttamente dalle specifiche: registry IANA IPv4/IPv6 Special-Purpose (RFC 6890) per `addressKind`/`classifyIpv6`, `/31` punto-punto (RFC 3021), rappresentazione testuale canonica IPv6 (RFC 5952: minuscole, compressione della sequenza di zeri più lunga e più a sinistra, nessuna compressione di un singolo gruppo), EUI-64 modificato (RFC 4291 app. A). Con `fast-check` (condiviso con SEC-02) verificare le proprietà `ipv4ToUint ∘ uintToIpv4 = id` ed `expand(compress(x)) = x`. **Completato quando:** ogni funzione di indirizzamento cita nel test la sezione della fonte usata.
 
@@ -270,7 +270,7 @@ La mappatura serve a spiegare *perché* esiste un controllo, non a dichiarare co
 4. Estrarre logica e dati prima di impostare soglie di coverage significative.
 5. Correggere modali, combobox e focus prima di rendere axe bloccante.
 6. Misurare bundle e runtime prima di introdurre memoizzazione o virtualizzazione.
-7. Eseguire NET-01 prima di SEC-16: la checklist editoriale deve poter dare per scontato che gli esempi usino solo indirizzi di documentazione.
+7. Mantenere coordinati NET-01 e SEC-16: ogni nuovo scenario deve superare sia la checklist editoriale sia il gate globale sui target di documentazione.
 8. Allineare la registry delle porte (NET-03) durante l'estrazione di ENG-04, non dopo: si evita di spostare due volte gli stessi dati.
 9. Rivalutare `fast-check` in NET-02: SEC-02 usa già un corpus fuzz deterministico senza nuova dipendenza; le proprietà di conversione IP offriranno il primo caso in cui introdurlo e riusarlo porta un beneficio netto.
 
@@ -284,7 +284,7 @@ La mappatura serve a spiegare *perché* esiste un controllo, non a dichiarare co
 | Action non fissate a SHA | 2 su 2 | 0 | SEC-04 |
 | JS iniziale (gzip) | 123 KB | ≤ 123 KB, poi budget ridotto dopo ENG-06/ENG-10 | ENG-14 |
 | Coverage righe `src/lib` | non misurata | ≥ 80% dopo la misura iniziale | ENG-11 |
-| IP pubblici reali negli esempi | ≥ 4 file coinvolti | 0 fuori allowlist | NET-01 |
+| IP pubblici reali negli esempi | 0 fuori allowlist dopo NET-01 (gate su 111 sorgenti) | 0 fuori allowlist | NET-01 |
 | Lighthouse Accessibility | non misurato | ≥ 95 | UX-16, UX-17 |
 
 ### Rischi e mitigazioni
