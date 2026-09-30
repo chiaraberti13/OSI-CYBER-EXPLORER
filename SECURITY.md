@@ -127,6 +127,8 @@ curl --head https://osi-cyber-explorer.vercel.app/
 
 The [`Dynamic Deployment Security`](.github/workflows/dynamic-security.yml) workflow also validates the effective headers and CSP, then runs a non-authenticated OWASP ZAP Baseline scan after successful deployments and on a weekly production schedule. Versioned JSON/Markdown header findings and ZAP JSON/HTML/Markdown reports are retained as workflow artifacts for 90 days. The target allowlist, comparison policy and local verification commands are documented in [`docs/DYNAMIC_SECURITY.md`](docs/DYNAMIC_SECURITY.md).
 
+Offensive educational material follows the bilingual [offensive-content review policy](docs/OFFENSIVE_CONTENT_REVIEW.md). Every attack scenario and path has a dated checklist entry; CI rejects missing or expired reviews, live third-party targets in the reviewed sources, and reusable payload indicators.
+
 ---
 
 ## 🇮🇹 Italiano
@@ -247,3 +249,5 @@ curl --head https://osi-cyber-explorer.vercel.app/
 ```
 
 Il workflow [`Dynamic Deployment Security`](.github/workflows/dynamic-security.yml) verifica inoltre header e CSP effettivi, quindi avvia una scansione OWASP ZAP Baseline non autenticata dopo i deployment riusciti e con cadenza settimanale sulla produzione. I finding versionati JSON/Markdown sugli header e i report ZAP JSON/HTML/Markdown vengono conservati come artifact per 90 giorni. Allowlist delle destinazioni, criteri di confronto e comandi di verifica locale sono documentati in [`docs/DYNAMIC_SECURITY.md`](docs/DYNAMIC_SECURITY.md).
+
+Il materiale didattico offensivo segue la [policy bilingue di revisione](docs/OFFENSIVE_CONTENT_REVIEW.md). Ogni scenario e percorso d'attacco ha una checklist datata; la CI rifiuta revisioni mancanti o scadute, target reali di terzi nelle sorgenti revisionate e indicatori di payload riutilizzabili.

@@ -39,6 +39,9 @@ jobs:
       - name: Validate lockfile with lockfile-lint
         run: npm run lint:lockfile
 
+      - name: Validate offensive educational content
+        run: npm run verify:offensive-content
+
       - name: Type-check
         run: npm run typecheck
 

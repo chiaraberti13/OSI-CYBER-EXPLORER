@@ -70,7 +70,7 @@ export interface AttackStep {
   actor: StepActor;
   title: Bilingual;
   detail: Bilingual;
-  packet?: string; // optional raw payload / technical label shown in monospace
+  packet?: string; // optional inert technical label; never an executable payload
 }
 
 export interface AttackWalkthrough {

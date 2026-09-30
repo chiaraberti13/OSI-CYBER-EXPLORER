@@ -21,6 +21,8 @@
 ## Overview
 **OSI Cyber Explorer** turns networking, encapsulation, and network security into a visual laboratory. It connects the six **CCNA 200-301 v1.1** domains to attack families and their defenses, while distinguishing real protocol headers from conceptual upper-layer OSI functions. Everything is deterministic and client-side; there is no backend and no AI involved.
 
+Attack content is a non-executing simulation for owned or explicitly authorised environments. Payloads are inert or redacted, every scenario is paired with defensive context, and the [offensive-content review policy](docs/OFFENSIVE_CONTENT_REVIEW.md) is enforced in CI.
+
 ## Features
 - **CCNA Map** — The six official domains with their weights, objectives, topics, and links to attack and defense families. Each domain carries a **checklist of concepts you should be able to explain**: for every entry, where to observe the concept at work in the platform and which mistake reveals it is not yet solid. It is an exploratory guide with no quizzes, scores, or exam simulation: the checklist assigns no score.
 - **Path Trace Lab** — Follow one packet across the whole topology and watch each decision in the order it happens: the host's local-or-remote test, ARP or the default gateway, the switch's CAM lookup, the trunk's allowed list and native VLAN, the SVI, the ACL in the direction it is actually applied, the routing decision, and NAT overload. Both directions are traced, so a stateless ACL applied inbound on a single SVI is visibly filtering one direction and not the other.

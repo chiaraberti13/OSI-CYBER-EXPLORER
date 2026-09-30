@@ -37,7 +37,8 @@ const T = {
     how: 'Come agisce',
     why: 'Perché funziona',
     replay: 'Rivedi',
-    tip: 'Suggerimento: prova lo stesso attacco con la difesa OFF e poi ON per confrontare gli esiti.'
+    tip: 'Suggerimento: prova lo stesso attacco con la difesa OFF e poi ON per confrontare gli esiti.',
+    simulationNotice: 'Simulazione locale e non esecutiva. Usala solo in ambienti posseduti o esplicitamente autorizzati: non genera traffico, non esegue comandi e omette prerequisiti e payload operativi.'
   },
   en: {
     title: 'Attack & Defense Lab',
@@ -64,7 +65,8 @@ const T = {
     how: 'What it does',
     why: 'Why it works',
     replay: 'Replay',
-    tip: 'Tip: run the same attack with the defense OFF, then ON, to compare the outcomes.'
+    tip: 'Tip: run the same attack with the defense OFF, then ON, to compare the outcomes.',
+    simulationNotice: 'Local, non-executing simulation. Use it only in owned or explicitly authorised environments: it generates no traffic, runs no commands, and omits operational prerequisites and payloads.'
   }
 };
 
@@ -199,6 +201,10 @@ export default function AttackLab() {
           </div>
           <h1 className="text-2xl md:text-3xl font-semibold tracking-tight uppercase">{t.title}</h1>
           <p className="text-slate-400 text-sm mt-2 max-w-2xl leading-relaxed">{t.subtitle}</p>
+          <div className="mt-4 flex max-w-3xl items-start gap-2 rounded-lg border border-amber-300/30 bg-amber-300/10 px-3 py-2 text-xs leading-relaxed text-amber-100" role="note">
+            <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+            <span><strong>{language === 'it' ? 'Solo simulazione.' : 'Simulation only.'}</strong> {t.simulationNotice}</span>
+          </div>
         </div>
       </div>
 

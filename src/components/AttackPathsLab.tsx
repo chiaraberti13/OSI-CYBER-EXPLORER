@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
-import { Activity, ArrowDown, CheckCircle2, Crosshair, GitBranch, ShieldCheck, Target } from 'lucide-react';
+import { Activity, AlertTriangle, ArrowDown, CheckCircle2, Crosshair, GitBranch, ShieldCheck, Target } from 'lucide-react';
 import { ATTACK_PATHS } from '../content/attackPaths';
 import { ATTACK_FAMILIES } from '../content/securityTaxonomy';
 import { SECURITY_TECHNIQUES } from '../content/securityCoverage';
@@ -36,6 +36,12 @@ export default function AttackPathsLab() {
                 ? 'Segui come tecniche diverse si concatenano tra livelli, piani di sicurezza e domini CCNA. Ogni fase mostra ciò che è osservabile, il controllo che interrompe il percorso e la verifica necessaria per dimostrarne l’efficacia.'
                 : 'Follow how different techniques chain across layers, security planes, and CCNA domains. Each stage shows what is observable, the control that breaks the path, and the validation required to prove effectiveness.'}
             </p>
+            <div className="mt-4 flex max-w-4xl items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs leading-relaxed text-amber-950" role="note">
+              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-700" aria-hidden="true" />
+              <span><strong>{language === 'it' ? 'Solo simulazione.' : 'Simulation only.'}</strong> {language === 'it'
+                ? ' Modello locale e non esecutivo per ambienti posseduti o esplicitamente autorizzati. Non genera traffico né esegue comandi; le fasi sono semplificate e omettono prerequisiti e payload operativi.'
+                : ' Local, non-executing model for owned or explicitly authorised environments. It generates no traffic and runs no commands; stages are simplified and omit operational prerequisites and payloads.'}</span>
+            </div>
           </div>
         </div>
       </header>

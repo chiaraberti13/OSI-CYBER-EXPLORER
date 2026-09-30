@@ -66,7 +66,7 @@ export const ATTACK_WALKTHROUGHS: AttackWalkthrough[] = [
       it: 'Forzare lo switch al flooding dei frame unknown-unicast sulla VLAN per sniffare il traffico destinato ad altri host.'
     },
     steps: [
-      { actor: 'attacker', title: { en: 'Flood random source MACs', it: 'Inonda con MAC sorgente casuali' }, detail: { en: 'Thousands of frames with bogus source MACs are blasted at the switch.', it: 'Migliaia di frame con MAC sorgente fasulli vengono sparati verso lo switch.' }, packet: 'src=RANDOM_MAC x10000/s' },
+      { actor: 'attacker', title: { en: 'Flood random source MACs', it: 'Inonda con MAC sorgente casuali' }, detail: { en: 'Many frames with simulated source MACs pressure the switch.', it: 'Molti frame con MAC sorgente simulati mettono sotto pressione lo switch.' }, packet: 'src=[simulated MAC set] · rate=[omitted]' },
       { actor: 'network', title: { en: 'CAM table fills up', it: 'La tabella CAM si riempie' }, detail: { en: 'The switch memory that maps MAC→port is exhausted.', it: 'La memoria dello switch che mappa MAC→porta si esaurisce.' } },
       { actor: 'network', title: { en: 'Switch fails open', it: 'Lo switch va in fail-open' }, detail: { en: 'Unable to learn new MACs, it floods every unknown-unicast frame to all ports of that VLAN; entries still in the CAM table are switched normally.', it: 'Non potendo apprendere nuovi MAC, esegue il flooding di ogni frame unknown-unicast su tutte le porte di quella VLAN; le voci ancora presenti in CAM continuano a essere commutate normalmente.' } },
       { actor: 'attacker', title: { en: 'Sniff all LAN traffic', it: 'Sniffa tutto il traffico LAN' }, detail: { en: 'The attacker now receives copies of frames meant for other hosts.', it: 'L\'attaccante ora riceve copie dei frame destinati agli altri host.' } }
@@ -135,7 +135,7 @@ export const ATTACK_WALKTHROUGHS: AttackWalkthrough[] = [
       it: 'Esaurire la tabella delle connessioni di un server così che gli utenti legittimi non possano connettersi (SYN Flood).'
     },
     steps: [
-      { actor: 'attacker', title: { en: 'Send a storm of SYN packets', it: 'Invia una tempesta di pacchetti SYN' }, detail: { en: 'Each SYN opens the first step of the TCP 3-way handshake.', it: 'Ogni SYN apre il primo passo dell\'handshake TCP a 3 vie.' }, packet: 'SYN seq=x (spoofed src) ×flood' },
+      { actor: 'attacker', title: { en: 'Send a storm of SYN packets', it: 'Invia una tempesta di pacchetti SYN' }, detail: { en: 'Each simulated SYN represents the first step of the TCP 3-way handshake.', it: 'Ogni SYN simulato rappresenta il primo passo dell\'handshake TCP a 3 vie.' }, packet: 'SYN seq=[simulated] · rate=[omitted]' },
       { actor: 'victim', title: { en: 'Server allocates half-open sockets', it: 'Il server alloca socket semi-aperti' }, detail: { en: 'It replies SYN-ACK and reserves memory waiting for an ACK that never comes.', it: 'Risponde SYN-ACK e riserva memoria aspettando un ACK che non arriva mai.' } },
       { actor: 'network', title: { en: 'SYN backlog fills up', it: 'Il backlog SYN si riempie' }, detail: { en: 'The half-open connection queue reaches its limit.', it: 'La coda delle connessioni semi-aperte raggiunge il limite.' } },
       { actor: 'victim', title: { en: 'Legitimate clients are refused', it: 'I client legittimi sono rifiutati' }, detail: { en: 'With no free slots, real users get connection timeouts.', it: 'Senza slot liberi, gli utenti reali ricevono timeout di connessione.' } }
@@ -250,7 +250,7 @@ export const ATTACK_WALKTHROUGHS: AttackWalkthrough[] = [
       it: 'Leggere o modificare il database iniettando SQL tramite un input web.'
     },
     steps: [
-      { actor: 'attacker', title: { en: 'Submit a crafted input', it: 'Invia un input manipolato' }, detail: { en: "A form field contains SQL meta-characters instead of data.", it: 'Un campo del form contiene meta-caratteri SQL invece di dati.' }, packet: "user: ' OR '1'='1' -- " },
+      { actor: 'attacker', title: { en: 'Submit a crafted input', it: 'Invia un input manipolato' }, detail: { en: "A form field contains simulated SQL meta-characters instead of data.", it: 'Un campo del form contiene meta-caratteri SQL simulati invece di dati.' }, packet: 'user=[inert SQL-like input]' },
       { actor: 'victim', title: { en: 'App concatenates it into a query', it: "L'app la concatena nella query" }, detail: { en: 'The input is glued directly into the SQL string, changing its logic.', it: "L'input viene incollato direttamente nella stringa SQL, cambiandone la logica." } },
       { actor: 'network', title: { en: 'Database executes attacker logic', it: "Il DB esegue la logica dell'attaccante" }, detail: { en: 'The tampered query returns all rows or dumps other tables.', it: 'La query alterata restituisce tutte le righe o estrae altre tabelle.' } },
       { actor: 'attacker', title: { en: 'Exfiltrate or alter data', it: 'Esfiltra o altera i dati' }, detail: { en: 'Credentials and records are stolen, or data is modified.', it: 'Credenziali e record vengono rubati, o i dati modificati.' } }
@@ -273,7 +273,7 @@ export const ATTACK_WALKTHROUGHS: AttackWalkthrough[] = [
       it: 'Eseguire JavaScript dell\'attaccante nei browser di altri utenti per rubare sessioni o dati.'
     },
     steps: [
-      { actor: 'attacker', title: { en: 'Inject a script payload', it: 'Inietta un payload script' }, detail: { en: 'A comment or profile field contains a <script> tag.', it: 'Un commento o un campo profilo contiene un tag <script>.' }, packet: '<script>steal(document.cookie)</script>' },
+      { actor: 'attacker', title: { en: 'Inject a script payload', it: 'Inietta un payload script' }, detail: { en: 'A comment or profile field contains inert script-like input.', it: 'Un commento o un campo profilo contiene un input inerte simile a uno script.' }, packet: '[simulated script input — inert]' },
       { actor: 'victim', title: { en: 'Server stores & reflects it', it: 'Il server lo salva e lo restituisce' }, detail: { en: 'The page renders the payload as HTML instead of text.', it: 'La pagina rende il payload come HTML invece che come testo.' } },
       { actor: 'network', title: { en: 'Other users load the page', it: 'Altri utenti caricano la pagina' }, detail: { en: 'Every visitor\'s browser executes the injected script.', it: 'Il browser di ogni visitatore esegue lo script iniettato.' } },
       { actor: 'attacker', title: { en: 'Sessions/keystrokes stolen', it: 'Sessioni/tasti rubati' }, detail: { en: 'Cookies are exfiltrated or actions performed on the victim\'s behalf.', it: 'I cookie vengono esfiltrati o azioni compiute a nome della vittima.' } }
@@ -297,7 +297,7 @@ export const ATTACK_WALKTHROUGHS: AttackWalkthrough[] = [
     },
     steps: [
       { actor: 'attacker', title: { en: 'Trigger a resolution', it: 'Innesca una risoluzione' }, detail: { en: 'The attacker makes the resolver query a domain it doesn\'t have cached.', it: 'L\'attaccante fa interrogare al resolver un dominio non in cache.' } },
-      { actor: 'attacker', title: { en: 'Race a forged response', it: 'Anticipa con una risposta falsa' }, detail: { en: 'A spoofed answer with the attacker\'s IP is sent before the real one, guessing the query ID.', it: 'Una risposta spoofata con l\'IP dell\'attaccante è inviata prima di quella vera, indovinando l\'ID della query.' }, packet: 'A bank.com → 6.6.6.6 (spoofed)' },
+      { actor: 'attacker', title: { en: 'Race a forged response', it: 'Anticipa con una risposta falsa' }, detail: { en: 'A simulated spoofed answer is represented before the legitimate one; timing and query-ID details are omitted.', it: 'Una risposta spoofata simulata è rappresentata prima di quella legittima; i dettagli su tempistica e query ID sono omessi.' }, packet: 'A bank.example.test → 198.51.100.66 [simulated]' },
       { actor: 'victim', title: { en: 'Resolver caches the lie', it: 'Il resolver mette in cache la bugia' }, detail: { en: 'The fake mapping is stored and served to every client.', it: 'La mappatura falsa è memorizzata e servita a ogni client.' } },
       { actor: 'network', title: { en: 'Users routed to attacker', it: 'Utenti instradati all\'attaccante' }, detail: { en: 'Everyone visiting the domain lands on the malicious server.', it: 'Chiunque visiti il dominio finisce sul server malevolo.' } }
     ],
@@ -320,7 +320,7 @@ export const ATTACK_WALKTHROUGHS: AttackWalkthrough[] = [
     },
     steps: [
       { actor: 'attacker', title: { en: 'Find an exposed SSH port', it: 'Trova una porta SSH esposta' }, detail: { en: 'Port 22 is reachable from the Internet.', it: 'La porta 22 è raggiungibile da Internet.' }, packet: 'connect tcp/22' },
-      { actor: 'attacker', title: { en: 'Automate login attempts', it: 'Automatizza i tentativi di login' }, detail: { en: 'A bot cycles through common usernames and passwords.', it: 'Un bot scorre username e password comuni.' }, packet: 'admin:123456, root:toor, ...' },
+      { actor: 'attacker', title: { en: 'Automate login attempts', it: 'Automatizza i tentativi di login' }, detail: { en: 'A simulated bot cycles through redacted username and password pairs.', it: 'Un bot simulato scorre coppie di username e password redatte.' }, packet: '[simulated credential attempts — redacted]' },
       { actor: 'victim', title: { en: 'Server checks each attempt', it: 'Il server verifica ogni tentativo' }, detail: { en: 'With password auth enabled, every guess gets a yes/no.', it: 'Con l\'autenticazione a password attiva, ogni tentativo riceve un sì/no.' } },
       { actor: 'attacker', title: { en: 'A weak password falls', it: 'Una password debole cede' }, detail: { en: 'Given enough tries, a reused/weak credential is found.', it: 'Con abbastanza tentativi, si trova una credenziale debole/riutilizzata.' } }
     ],
@@ -454,7 +454,7 @@ export const ATTACK_WALKTHROUGHS: AttackWalkthrough[] = [
       it: 'Mappare quali porte e servizi sono aperti sul bersaglio prima di attaccare.'
     },
     steps: [
-      { actor: 'attacker', title: { en: 'Probe many ports', it: 'Sonda molte porte' }, detail: { en: 'Sends SYN packets to a range of TCP ports.', it: 'Invia pacchetti SYN a un intervallo di porte TCP.' }, packet: 'SYN → ports 1-1024' },
+      { actor: 'attacker', title: { en: 'Probe many ports', it: 'Sonda molte porte' }, detail: { en: 'The simulation represents SYN packets sent to a bounded lab-only set of TCP ports.', it: 'La simulazione rappresenta pacchetti SYN inviati a un insieme limitato di porte TCP del laboratorio.' }, packet: 'SYN → ports [simulated set]' },
       { actor: 'victim', title: { en: 'Open ports reply SYN-ACK', it: 'Le porte aperte rispondono SYN-ACK' }, detail: { en: 'Closed ports send RST; open ones answer, revealing services.', it: 'Le porte chiuse inviano RST; quelle aperte rispondono, rivelando i servizi.' } },
       { actor: 'attacker', title: { en: 'Build a service map', it: 'Costruisce una mappa dei servizi' }, detail: { en: 'The attacker learns what is running (SSH 22, HTTP 80…) to target next.', it: 'L\'attaccante scopre cosa gira (SSH 22, HTTP 80…) per il prossimo bersaglio.' } }
     ],
@@ -498,7 +498,7 @@ export const ATTACK_WALKTHROUGHS: AttackWalkthrough[] = [
       it: 'Ingannare un utente con un dominio-sosia per rubargli le credenziali.'
     },
     steps: [
-      { actor: 'attacker', title: { en: 'Register a lookalike domain', it: 'Registra un dominio-sosia' }, detail: { en: 'Uses Unicode characters identical to Latin ones (e.g. Cyrillic "а").', it: 'Usa caratteri Unicode identici a quelli latini (es. la "а" cirillica).' }, packet: 'аpple.com → xn--pple-43d.com' },
+      { actor: 'attacker', title: { en: 'Register a lookalike domain', it: 'Registra un dominio-sosia' }, detail: { en: 'Uses Unicode characters that can resemble Latin ones; the operational label is omitted.', it: 'Usa caratteri Unicode che possono somigliare a quelli latini; l\'etichetta operativa è omessa.' }, packet: '[lookalike].example.test → [punycode].example.test' },
       { actor: 'attacker', title: { en: 'Send a convincing link', it: 'Invia un link convincente' }, detail: { en: 'An email or message points to the fake domain.', it: 'Un\'email o un messaggio rimanda al dominio falso.' } },
       { actor: 'victim', title: { en: 'User sees a trusted name', it: 'L\'utente vede un nome fidato' }, detail: { en: 'The address looks legitimate at a glance.', it: 'L\'indirizzo sembra legittimo a colpo d\'occhio.' } },
       { actor: 'victim', title: { en: 'Credentials entered on fake site', it: 'Credenziali inserite sul sito falso' }, detail: { en: 'The user logs in and hands over their password.', it: 'L\'utente accede e consegna la sua password.' } }
@@ -544,7 +544,7 @@ export const ATTACK_WALKTHROUGHS: AttackWalkthrough[] = [
       it: 'Sfruttare un server di posta mal configurato per inviare spam/email contraffatte a nome altrui.'
     },
     steps: [
-      { actor: 'attacker', title: { en: 'Connect to an open relay', it: 'Si collega a un open relay' }, detail: { en: 'Finds a mail server that accepts mail for any domain.', it: 'Trova un server di posta che accetta mail per qualsiasi dominio.' }, packet: 'MAIL FROM:<ceo@bank.com>' },
+      { actor: 'attacker', title: { en: 'Connect to an open relay', it: 'Si collega a un open relay' }, detail: { en: 'The simulation represents a mail server that accepts mail for any domain.', it: 'La simulazione rappresenta un server di posta che accetta mail per qualsiasi dominio.' }, packet: 'MAIL FROM:<demo@bank.example.test> [simulated]' },
       { actor: 'victim', title: { en: 'Server accepts foreign mail', it: 'Il server accetta posta esterna' }, detail: { en: 'With no restrictions, it relays mail it should not.', it: 'Senza restrizioni, inoltra posta che non dovrebbe.' } },
       { actor: 'network', title: { en: 'Spam/spoofed mail goes out', it: 'Parte spam/posta contraffatta' }, detail: { en: 'Messages appear to come from a trusted sender.', it: 'I messaggi sembrano provenire da un mittente fidato.' } },
       { actor: 'victim', title: { en: 'Recipients deceived / IP blacklisted', it: 'Destinatari ingannati / IP in blacklist' }, detail: { en: 'Targets get phishing and the server\'s IP gets blacklisted.', it: 'I bersagli ricevono phishing e l\'IP del server finisce in blacklist.' } }
@@ -568,7 +568,7 @@ export const ATTACK_WALKTHROUGHS: AttackWalkthrough[] = [
     },
     steps: [
       { actor: 'victim', title: { en: 'User logs into FTP', it: 'L\'utente accede a FTP' }, detail: { en: 'The client sends its username and password to the server.', it: 'Il client invia username e password al server.' } },
-      { actor: 'network', title: { en: 'Credentials travel in cleartext', it: 'Le credenziali viaggiano in chiaro' }, detail: { en: 'FTP has no encryption at all.', it: 'FTP non ha alcuna cifratura.' }, packet: 'USER admin / PASS s3cr3t (plain)' },
+      { actor: 'network', title: { en: 'Credentials travel in cleartext', it: 'Le credenziali viaggiano in chiaro' }, detail: { en: 'FTP has no encryption at all.', it: 'FTP non ha alcuna cifratura.' }, packet: 'USER [demo-user] / PASS [redacted]' },
       { actor: 'attacker', title: { en: 'Sniff the packets', it: 'Sniffa i pacchetti' }, detail: { en: 'Anyone on the path reads the credentials directly.', it: 'Chiunque sul percorso legge le credenziali direttamente.' } },
       { actor: 'attacker', title: { en: 'Reuse the stolen login', it: 'Riusa il login rubato' }, detail: { en: 'The attacker logs in as the victim.', it: 'L\'attaccante accede come la vittima.' } }
     ],

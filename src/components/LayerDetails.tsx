@@ -279,8 +279,8 @@ const TUTOR_CORNER: Record<number, {
       it: "Come leggere il contenuto reale e le richieste scritte in una lettera (es. 'Consegna 1 caffè caldo' o 'Richiedi il saldo della stanza 42')."
     },
     commands: [
-      { description: "Inspect HTTP headers in real-time", code: "curl -Iv https://httpbin.org/get" },
-      { description: "Resolve DNS record diagnostic fields", code: "dig +short A google.com" }
+      { description: "Inspect HTTP headers in an authorized lab", code: "curl -Iv https://web.lab.example.test/" },
+      { description: "Resolve DNS record diagnostic fields", code: "dig +short A dns.lab.example.test" }
     ]
   },
   6: {
@@ -289,7 +289,7 @@ const TUTOR_CORNER: Record<number, {
       it: "Tradurre le parole in una lingua comune (inglese/italiano) o crittografare/comprimere la lettera in una cassaforte prima di spedirla."
     },
     commands: [
-      { description: "Check TLS handshake & TLS certificate chain details", code: "openssl s_client -connect google.com:443" },
+      { description: "Check a lab TLS handshake & certificate chain", code: "openssl s_client -connect tls.lab.example.test:443" },
       { description: "Verify payload JSON content-type parsing", code: "curl -H 'Content-Type: application/json'" }
     ]
   },
@@ -309,7 +309,7 @@ const TUTOR_CORNER: Record<number, {
       it: "Posta Raccomandata (TCP) con ricevuta che garantisce ordine e recapito, OPPURE una cartolina veloce (UDP) spedita senza tracciamento."
     },
     commands: [
-      { description: "Check if a remote service port socket is open & listening", code: "nc -zv 192.168.1.1 443" },
+      { description: "Check if an authorized lab service port is open", code: "nc -zv 192.0.2.10 443" },
       { description: "Display all active local network ports & sockets", code: "ss -tulnp" }
     ]
   },
@@ -319,8 +319,8 @@ const TUTOR_CORNER: Record<number, {
       it: "Smistare i pacchi su scala mondiale scrivendo gli indirizzi IP / Codici Postali per instradare le lettere da nazione a nazione."
     },
     commands: [
-      { description: "Trace hops and route paths across autonomous routers", code: "traceroute 8.8.8.8" },
-      { description: "Check standard reachability and routing roundtrip latency", code: "ping -c 4 8.8.8.8" },
+      { description: "Trace a route to a documentation-only target", code: "traceroute 203.0.113.8" },
+      { description: "Check reachability to a documentation-only target", code: "ping -c 4 203.0.113.8" },
       { description: "Examine system network gateway routing tables", code: "ip route show" }
     ]
   },
@@ -596,7 +596,7 @@ export default function LayerDetails() {
                         6: [{ key: 'Encoding', value: 'Base64' }, { key: 'Crypto', value: 'TLSv1.3' }, { key: 'Type', value: 'JSON' }],
                         5: [{ key: 'SID', value: 'SESS_9821' }, { key: 'Auth', value: 'Verified' }, { key: 'Sync', value: 'ACK' }],
                         4: [{ key: 'SrcPort', value: '54321' }, { key: 'DstPort', value: selectedProtocol === 'HTTP' ? '80' : '7' }, { key: 'Seq', value: '1024' }],
-                        3: [{ key: 'SrcIP', value: '192.168.1.10' }, { key: 'DstIP', value: '8.8.8.8' }, { key: 'TTL', value: '64' }],
+                        3: [{ key: 'SrcIP', value: '192.168.1.10' }, { key: 'DstIP', value: '203.0.113.8' }, { key: 'TTL', value: '64' }],
                         2: [{ key: 'SrcMAC', value: '00:0C:29:...' }, { key: 'DstMAC', value: '00:50:56:...' }, { key: 'Type', value: '0x0800' }],
                         1: [{ key: 'Signal', value: '0/1' }, { key: 'Media', value: 'Ethernet' }, { key: 'Clock', value: '1Gbps' }],
                       }[h.layer as keyof typeof headerFields] || []);
