@@ -11,11 +11,13 @@ import { normalizeMac, STP_LONG_PATH_COST, STP_SHORT_PATH_COST } from './network
  * because the Bridge ID carries the VLAN in its extended system ID, switching VLAN
  * shows PVST+ load balancing as a consequence rather than as a claim.
  *
- * It models 802.1D/PVST+ roles. RSTP adds the alternate/backup distinction and faster
- * transitions, but picks the same tree from the same priority vectors.
+ * It models one Cisco Rapid PVST+ instance: RSTP roles and states, one tree per VLAN,
+ * and the common STP/RSTP priority-vector election. Timers and transitions are out of
+ * scope, so the result is the stable tree rather than a packet-by-packet convergence.
  */
 
 export type StpPathCostMethod = 'short' | 'long';
+export type StpProtocolMode = 'rapid-pvst+';
 export type StpPortRole = 'root' | 'designated' | 'alternate';
 /**
  * RSTP state names, because the roles here are RSTP roles: `alternate` exists only in
@@ -73,12 +75,51 @@ export interface StpPort {
 export interface StpResult {
   vlan: number;
   method: StpPathCostMethod;
+  model: StpModel;
   rootId: string;
   bridgeIds: Record<string, StpBridgeId>;
   rootPathCosts: Record<string, number>;
   ports: StpPort[];
   /** Links with a discarding end: the redundant paths the tree has cut. */
   blockedLinkIds: string[];
+}
+
+export interface StpCostModel {
+  method: StpPathCostMethod;
+  standard: 'IEEE 802.1D-1998' | 'IEEE 802.1t / IEEE 802.1D-2004';
+  bits: 16 | 32;
+  maximum: 65_535 | 200_000_000;
+}
+
+export interface StpModel {
+  /** The simulator intentionally models one Cisco per-VLAN RSTP instance. */
+  mode: StpProtocolMode;
+  protocol: 'Cisco Rapid PVST+ (IEEE 802.1w rapid convergence)';
+  treeScope: 'one spanning-tree instance per VLAN';
+  stateVocabulary: 'RSTP: discarding, learning, forwarding';
+  bridgeId: 'IEEE 802.1t extended system ID: configured priority + VLAN ID';
+  cost: StpCostModel;
+}
+
+export type StpRootPortCriterion =
+  | 'root-path-cost'
+  | 'sender-bridge-id'
+  | 'sender-port-id'
+  | 'local-port-id'
+  | 'equal';
+
+/** The four fields compared when a non-root bridge elects its root port. */
+export interface StpRootPortCandidate {
+  rootPathCost: number;
+  senderBridgeId: StpBridgeId;
+  senderPortId: number;
+  localPortId: number;
+}
+
+export interface StpRootPortComparison {
+  /** Negative means `left` wins, positive means `right` wins, zero means equal. */
+  comparison: -1 | 0 | 1;
+  decidedBy: StpRootPortCriterion;
 }
 
 export interface StpOptions {
@@ -90,17 +131,48 @@ export interface StpOptions {
 
 const b = (it: string, en: string): Bilingual => ({ it, en });
 
+export const STP_COST_MODELS: Readonly<Record<StpPathCostMethod, StpCostModel>> = {
+  short: {
+    method: 'short',
+    standard: 'IEEE 802.1D-1998',
+    bits: 16,
+    maximum: 65_535
+  },
+  long: {
+    method: 'long',
+    standard: 'IEEE 802.1t / IEEE 802.1D-2004',
+    bits: 32,
+    maximum: 200_000_000
+  }
+};
+
+export function stpModelFor(method: StpPathCostMethod): StpModel {
+  return {
+    mode: 'rapid-pvst+',
+    protocol: 'Cisco Rapid PVST+ (IEEE 802.1w rapid convergence)',
+    treeScope: 'one spanning-tree instance per VLAN',
+    stateVocabulary: 'RSTP: discarding, learning, forwarding',
+    bridgeId: 'IEEE 802.1t extended system ID: configured priority + VLAN ID',
+    cost: STP_COST_MODELS[method]
+  };
+}
+
 /** Default port priority; uniform here, so only the port number breaks ties. */
 const PORT_PRIORITY = 128;
 
 /**
- * Port ID for tie-breaking: priority then port number. The number is the trailing
- * digits of the interface name, which is what the switch itself compares.
+ * Port ID for tie-breaking: the configured priority occupies the high nibble and the
+ * port number the low 12 bits. Cisco exposes the already-scaled priority (128 by
+ * default), hence `priority * 256 + port number`. The fixed lab maps its interface
+ * names to the trailing port number; larger platforms can supply a dedicated mapping
+ * if this topology is extended.
  */
 function portId(port: string): number {
   const digits = port.match(/(\d+)\s*$/);
   if (!digits) throw new Error('INVALID_PORT');
-  return PORT_PRIORITY * 100_000 + Number(digits[1]);
+  const portNumber = Number(digits[1]);
+  if (portNumber > 4095) throw new Error('INVALID_PORT');
+  return PORT_PRIORITY * 256 + portNumber;
 }
 
 export function pathCostFor(speed: string, method: StpPathCostMethod): number {
@@ -138,6 +210,31 @@ export function bridgeIdFor(candidate: StpSwitch, vlan: number): StpBridgeId {
 function compareBridgeIds(left: StpBridgeId, right: StpBridgeId): number {
   if (left.value !== right.value) return left.value - right.value;
   return left.mac < right.mac ? -1 : left.mac > right.mac ? 1 : 0;
+}
+
+/**
+ * Compare complete root-port priority vectors in wire order. The root ID is common
+ * to every candidate on one bridge, so the first varying field is root path cost,
+ * followed by the sender Bridge ID, sender Port ID and finally the local Port ID.
+ */
+export function compareRootPortCandidates(
+  left: StpRootPortCandidate,
+  right: StpRootPortCandidate
+): StpRootPortComparison {
+  if (left.rootPathCost !== right.rootPathCost) {
+    return { comparison: left.rootPathCost < right.rootPathCost ? -1 : 1, decidedBy: 'root-path-cost' };
+  }
+  const bridgeComparison = compareBridgeIds(left.senderBridgeId, right.senderBridgeId);
+  if (bridgeComparison !== 0) {
+    return { comparison: bridgeComparison < 0 ? -1 : 1, decidedBy: 'sender-bridge-id' };
+  }
+  if (left.senderPortId !== right.senderPortId) {
+    return { comparison: left.senderPortId < right.senderPortId ? -1 : 1, decidedBy: 'sender-port-id' };
+  }
+  if (left.localPortId !== right.localPortId) {
+    return { comparison: left.localPortId < right.localPortId ? -1 : 1, decidedBy: 'local-port-id' };
+  }
+  return { comparison: 0, decidedBy: 'equal' };
 }
 
 interface Adjacency {
@@ -199,15 +296,21 @@ export function convergeStp({ switches, links, vlan, method = 'short' }: StpOpti
     if (item.id === rootId) continue;
     const best = adjacency.get(item.id)!.reduce<Adjacency | null>((winner, edge) => {
       if (!winner) return edge;
-      const edgeTotal = rootPathCosts[edge.neighborId] + edge.cost;
-      const winnerTotal = rootPathCosts[winner.neighborId] + winner.cost;
-      if (edgeTotal !== winnerTotal) return edgeTotal < winnerTotal ? edge : winner;
-      const bridgeComparison = compareBridgeIds(bridgeIds[edge.neighborId], bridgeIds[winner.neighborId]);
-      if (bridgeComparison !== 0) return bridgeComparison < 0 ? edge : winner;
-      if (portId(edge.neighborPort) !== portId(winner.neighborPort)) {
-        return portId(edge.neighborPort) < portId(winner.neighborPort) ? edge : winner;
-      }
-      return portId(edge.port) < portId(winner.port) ? edge : winner;
+      const comparison = compareRootPortCandidates(
+        {
+          rootPathCost: rootPathCosts[edge.neighborId] + edge.cost,
+          senderBridgeId: bridgeIds[edge.neighborId],
+          senderPortId: portId(edge.neighborPort),
+          localPortId: portId(edge.port)
+        },
+        {
+          rootPathCost: rootPathCosts[winner.neighborId] + winner.cost,
+          senderBridgeId: bridgeIds[winner.neighborId],
+          senderPortId: portId(winner.neighborPort),
+          localPortId: portId(winner.port)
+        }
+      );
+      return comparison.comparison < 0 ? edge : winner;
     }, null);
     if (best) rootPortBySwitch.set(item.id, best);
   }
@@ -322,5 +425,5 @@ export function convergeStp({ switches, links, vlan, method = 'short' }: StpOpti
     }
   }
 
-  return { vlan, method, rootId, bridgeIds, rootPathCosts, ports, blockedLinkIds };
+  return { vlan, method, model: stpModelFor(method), rootId, bridgeIds, rootPathCosts, ports, blockedLinkIds };
 }

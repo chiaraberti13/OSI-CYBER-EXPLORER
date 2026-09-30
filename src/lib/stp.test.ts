@@ -1,5 +1,15 @@
 import { describe, expect, it } from 'vitest';
-import { bridgeIdFor, convergeStp, pathCostFor, type StpResult, type StpSwitch } from './stp';
+import {
+  STP_COST_MODELS,
+  bridgeIdFor,
+  compareRootPortCandidates,
+  convergeStp,
+  pathCostFor,
+  type StpBridgeId,
+  type StpResult,
+  type StpRootPortCandidate,
+  type StpSwitch
+} from './stp';
 import { STP_LINKS, STP_SWITCHES } from '../content/stpTopology';
 
 const converge = (vlan: number, overrides: Partial<Record<string, number>> = {}, method: 'short' | 'long' = 'short') =>
@@ -61,6 +71,29 @@ describe('root bridge election', () => {
 });
 
 describe('root path cost', () => {
+  it('identifies the exact standard and field width behind each displayed table', () => {
+    // Cisco documents the short range as 1..65,535 and the long range as
+    // 1..200,000,000. The roadmap names their IEEE origins explicitly.
+    expect(STP_COST_MODELS.short).toEqual({
+      method: 'short', standard: 'IEEE 802.1D-1998', bits: 16, maximum: 65_535
+    });
+    expect(STP_COST_MODELS.long).toEqual({
+      method: 'long', standard: 'IEEE 802.1t / IEEE 802.1D-2004', bits: 32, maximum: 200_000_000
+    });
+  });
+
+  it('carries the selected protocol and cost standard into every result', () => {
+    const short = converge(10);
+    const long = converge(10, {}, 'long');
+    expect(short.model).toMatchObject({
+      mode: 'rapid-pvst+',
+      protocol: 'Cisco Rapid PVST+ (IEEE 802.1w rapid convergence)',
+      treeScope: 'one spanning-tree instance per VLAN',
+      cost: STP_COST_MODELS.short
+    });
+    expect(long.model.cost).toEqual(STP_COST_MODELS.long);
+  });
+
   it('prefers two cheap hops over one expensive one', () => {
     // DSW2 could reach DSW1 through an access switch for 4 + 4, but the 10 Gb/s
     // link between the distribution pair costs 2.
@@ -80,6 +113,63 @@ describe('root path cost', () => {
   it('refuses a link speed the chosen method cannot cost', () => {
     expect(() => pathCostFor('40 Gb/s', 'short')).toThrow('UNKNOWN_LINK_SPEED');
     expect(pathCostFor('100 Gb/s', 'long')).toBe(200);
+  });
+});
+
+describe('complete root-port priority vector', () => {
+  const senderBridge = (value: number, mac: string): StpBridgeId => ({
+    priority: value,
+    value,
+    mac,
+    text: `${value}`
+  });
+  const candidate = (overrides: Partial<StpRootPortCandidate> = {}): StpRootPortCandidate => ({
+    rootPathCost: 20_000,
+    senderBridgeId: senderBridge(32_778, '000000000002'),
+    senderPortId: 32_769,
+    localPortId: 32_770,
+    ...overrides
+  });
+
+  it('first prefers the lowest root path cost', () => {
+    const decision = compareRootPortCandidates(
+      candidate({ rootPathCost: 10, senderBridgeId: senderBridge(60_000, 'ffffffffffff'), senderPortId: 600_000, localPortId: 600_000 }),
+      candidate({ rootPathCost: 20 })
+    );
+    expect(decision).toEqual({ comparison: -1, decidedBy: 'root-path-cost' });
+  });
+
+  it('then prefers the lowest sender Bridge ID', () => {
+    const decision = compareRootPortCandidates(
+      candidate({ senderBridgeId: senderBridge(32_778, '000000000001'), senderPortId: 600_000, localPortId: 600_000 }),
+      candidate({ senderBridgeId: senderBridge(32_778, '000000000002'), senderPortId: 500_000, localPortId: 500_000 })
+    );
+    expect(decision).toEqual({ comparison: -1, decidedBy: 'sender-bridge-id' });
+  });
+
+  it('then prefers the lowest sender Port ID', () => {
+    const decision = compareRootPortCandidates(
+      candidate({ senderPortId: 32_769, localPortId: 60_000 }),
+      candidate({ senderPortId: 32_770, localPortId: 30_000 })
+    );
+    expect(decision).toEqual({ comparison: -1, decidedBy: 'sender-port-id' });
+  });
+
+  it('uses the lowest local Port ID only after every received field ties', () => {
+    const decision = compareRootPortCandidates(
+      candidate({ localPortId: 32_769 }),
+      candidate({ localPortId: 32_770 })
+    );
+    expect(decision).toEqual({ comparison: -1, decidedBy: 'local-port-id' });
+  });
+
+  it('reports an exact tie and is antisymmetric for every winning field', () => {
+    const same = candidate();
+    expect(compareRootPortCandidates(same, { ...same })).toEqual({ comparison: 0, decidedBy: 'equal' });
+
+    const lowerSenderPort = candidate({ senderPortId: 32_768 });
+    expect(compareRootPortCandidates(same, lowerSenderPort).comparison).toBe(1);
+    expect(compareRootPortCandidates(lowerSenderPort, same).comparison).toBe(-1);
   });
 });
 

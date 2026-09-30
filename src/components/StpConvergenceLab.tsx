@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Network, TriangleAlert } from 'lucide-react';
-import { convergeStp, type StpPathCostMethod, type StpPort, type StpPortRole, type StpResult } from '../lib/stp';
+import { convergeStp, stpModelFor, type StpPathCostMethod, type StpPort, type StpPortRole, type StpResult } from '../lib/stp';
 import { STP_LINK_LABELS, STP_LINKS, STP_SWITCHES } from '../content/stpTopology';
 import { useStore } from '../store';
 import ResponsiveTable from './ResponsiveTable';
@@ -14,7 +14,7 @@ import ResponsiveTable from './ResponsiveTable';
  * table, and changing a priority changes both at once.
  */
 
-const PRIORITIES = [0, 4096, 8192, 16384, 24576, 32768, 40960, 49152, 61440];
+const PRIORITIES = Array.from({ length: 16 }, (_, index) => index * 4096);
 const VLAN_CHOICES = [10, 20, 30];
 
 /** Fixed positions for the four switches; the six links are every pair between them. */
@@ -34,9 +34,19 @@ const ROLE_STYLES: Record<StpPortRole, { badge: string; dot: string }> = {
 const COPY = {
   it: {
     title: 'Convergenza STP sulla topologia',
-    intro: 'Quattro switch collegati a maglia: tre loop fisici contemporaneamente. Scegli VLAN, metodo di costo e priorità, e guarda quale porta finisce in blocking — è la domanda che l’esame pone davvero.',
+    intro: 'Quattro switch collegati a maglia: tre loop fisici contemporaneamente. Scegli VLAN, metodo di costo e priorità, e guarda quale porta finisce in discarding — è la domanda che l’esame pone davvero.',
     vlan: 'VLAN', method: 'Metodo di costo', short: 'short (802.1D-1998)', long: 'long (802.1D-2004)',
     priorities: 'Priorità per la VLAN selezionata', priorityFor: 'Priorità STP', reset: 'Ripristina il progetto',
+    configuredPriority: 'Priorità configurata', effectivePriority: 'Priorità effettiva',
+    modelTitle: 'Modello applicato a questo risultato', protocol: 'Protocollo e stati', instance: 'Ambito dell’albero', costModel: 'Tabella dei costi', bridgeModel: 'Bridge ID',
+    modelProtocol: 'Cisco Rapid PVST+ · convergenza IEEE 802.1w · stati RSTP',
+    modelInstance: 'Una istanza STP per VLAN; qui è calcolata la VLAN selezionata',
+    modelBridge: 'IEEE 802.1t: priorità configurata (multipli di 4096) + VLAN ID',
+    tieVector: 'Vettore root-port completo: root path cost → sender Bridge ID → sender Port ID → porta locale.',
+    modes: 'PVST+, Rapid PVST+ e MST non sono sinonimi', currentModel: 'Modello attivo', notModelled: 'Non simulato',
+    pvstMode: 'PVST+', pvstModeBody: 'Estensione Cisco basata su IEEE 802.1D: un albero per VLAN e stati classici blocking/listening/learning/forwarding.',
+    rapidMode: 'Rapid PVST+', rapidModeBody: 'Estensione Cisco basata su IEEE 802.1w: un albero per VLAN e ruoli/stati RSTP. È il modello calcolato qui.',
+    mstMode: 'MST', mstModeBody: 'IEEE 802.1s, oggi in 802.1Q: più VLAN possono condividere una istanza MST. Il mapping regione/VLAN non è simulato qui.',
     root: 'Root bridge', bridgeId: 'Bridge ID', cost: 'Costo verso la root',
     diagram: 'Topologia e ruoli delle porte', blocked: 'Collegamenti interrotti dall’albero', none: 'Nessuno',
     portsLabel: 'Ruolo di ogni porta', showAll: 'Tutte le porte', showBlocking: 'Solo quelle in discarding',
@@ -53,9 +63,19 @@ const COPY = {
   },
   en: {
     title: 'STP convergence on the topology',
-    intro: 'Four switches in a mesh: three physical loops at once. Choose the VLAN, the cost method and the priorities, and watch which port ends up blocking — that is the question an exam actually asks.',
+    intro: 'Four switches in a mesh: three physical loops at once. Choose the VLAN, the cost method and the priorities, and watch which port ends up discarding — that is the question an exam actually asks.',
     vlan: 'VLAN', method: 'Cost method', short: 'short (802.1D-1998)', long: 'long (802.1D-2004)',
     priorities: 'Priorities for the selected VLAN', priorityFor: 'STP priority', reset: 'Restore the design',
+    configuredPriority: 'Configured priority', effectivePriority: 'Effective priority',
+    modelTitle: 'Model applied to this result', protocol: 'Protocol and states', instance: 'Tree scope', costModel: 'Cost table', bridgeModel: 'Bridge ID',
+    modelProtocol: 'Cisco Rapid PVST+ · IEEE 802.1w convergence · RSTP states',
+    modelInstance: 'One STP instance per VLAN; the selected VLAN is calculated here',
+    modelBridge: 'IEEE 802.1t: configured priority (multiples of 4096) + VLAN ID',
+    tieVector: 'Complete root-port vector: root path cost → sender Bridge ID → sender Port ID → local port.',
+    modes: 'PVST+, Rapid PVST+, and MST are not synonyms', currentModel: 'Current model', notModelled: 'Not simulated',
+    pvstMode: 'PVST+', pvstModeBody: 'Cisco extension based on IEEE 802.1D: one tree per VLAN and classic blocking/listening/learning/forwarding states.',
+    rapidMode: 'Rapid PVST+', rapidModeBody: 'Cisco extension based on IEEE 802.1w: one tree per VLAN with RSTP roles and states. This is the model calculated here.',
+    mstMode: 'MST', mstModeBody: 'IEEE 802.1s, now in 802.1Q: multiple VLANs can share one MST instance. Region/VLAN mapping is not simulated here.',
     root: 'Root bridge', bridgeId: 'Bridge ID', cost: 'Cost to the root',
     diagram: 'Topology and port roles', blocked: 'Links the tree has cut', none: 'None',
     portsLabel: 'Role of every port', showAll: 'All ports', showBlocking: 'Only the discarding ones',
@@ -164,6 +184,7 @@ export default function StpConvergenceLab() {
   }, [vlan, method, overrides]);
 
   const converged = result.value;
+  const model = converged?.model ?? stpModelFor(method);
   const selectClass = 'block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 font-mono text-sm text-slate-900 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100';
   const nameOf = (id: string) => STP_SWITCHES.find(item => item.id === id)?.name ?? id;
 
@@ -191,6 +212,31 @@ export default function StpConvergenceLab() {
         </label>
       </div>
 
+      <div className="mt-5 rounded-lg border border-indigo-200 bg-indigo-50 p-4" aria-label={copy.modelTitle}>
+        <h3 className="text-xs font-semibold uppercase tracking-wide text-indigo-700">{copy.modelTitle}</h3>
+        <dl className="mt-3 grid gap-3 text-xs sm:grid-cols-2 lg:grid-cols-4">
+          <div>
+            <dt className="font-semibold text-indigo-700">{copy.protocol}</dt>
+            <dd className="mt-1 leading-relaxed text-indigo-950">{copy.modelProtocol}</dd>
+          </div>
+          <div>
+            <dt className="font-semibold text-indigo-700">{copy.instance}</dt>
+            <dd className="mt-1 leading-relaxed text-indigo-950">{copy.modelInstance}</dd>
+          </div>
+          <div>
+            <dt className="font-semibold text-indigo-700">{copy.costModel}</dt>
+            <dd className="mt-1 font-mono leading-relaxed text-indigo-950">
+              {model.cost.method} · {model.cost.standard} · {model.cost.bits} bit · 1–{model.cost.maximum.toLocaleString(language)}
+            </dd>
+          </div>
+          <div>
+            <dt className="font-semibold text-indigo-700">{copy.bridgeModel}</dt>
+            <dd className="mt-1 leading-relaxed text-indigo-950">{copy.modelBridge}</dd>
+          </div>
+        </dl>
+        <p className="mt-3 border-t border-indigo-200 pt-3 font-mono text-[11px] leading-relaxed text-indigo-900">{copy.tieVector}</p>
+      </div>
+
       <div className="mt-5">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">{copy.priorities}</h3>
@@ -211,16 +257,20 @@ export default function StpConvergenceLab() {
                   {isRoot ? <span className="rounded-full bg-indigo-600 px-2 py-0.5 text-[10px] font-semibold text-white">ROOT</span> : null}
                 </div>
                 <p className="mt-1 text-[11px] leading-snug text-slate-500">{item.role[language]}</p>
+                <label className="mt-2 block text-[10px] font-semibold uppercase tracking-wide text-slate-500">
+                  {copy.configuredPriority}
                 <select
                   value={value}
                   aria-label={`${copy.priorityFor} ${item.name}`}
                   onChange={(event) => setOverrides(current => ({ ...current, [item.id]: Number(event.target.value) }))}
-                  className="mt-2 block w-full rounded-lg border border-slate-200 bg-white px-2 py-1.5 font-mono text-xs"
+                  className="mt-1 block w-full rounded-lg border border-slate-200 bg-white px-2 py-1.5 font-mono text-xs"
                 >
                   {PRIORITIES.map(option => <option key={option} value={option}>{option}</option>)}
                 </select>
-                <p className="mt-2 font-mono text-[10px] text-slate-500">
-                  {converged ? converged.bridgeIds[item.id].text : item.mac}
+                </label>
+                <p className="mt-2 text-[10px] text-slate-500">
+                  <span className="font-semibold uppercase tracking-wide">{copy.effectivePriority}: </span>
+                  <span className="font-mono">{converged ? converged.bridgeIds[item.id].text : item.mac}</span>
                 </p>
               </article>
             );
@@ -338,6 +388,27 @@ export default function StpConvergenceLab() {
             <div className="rounded-lg border border-amber-200 bg-amber-50 p-4">
               <h3 className="text-xs font-semibold uppercase tracking-wide text-amber-700">{copy.trap}</h3>
               <p className="mt-2 text-xs leading-relaxed text-amber-900">{copy.trapBody}</p>
+            </div>
+          </div>
+
+          <div>
+            <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">{copy.modes}</h3>
+            <div className="mt-3 grid gap-3 md:grid-cols-3">
+              {[
+                { name: copy.pvstMode, body: copy.pvstModeBody, active: false },
+                { name: copy.rapidMode, body: copy.rapidModeBody, active: true },
+                { name: copy.mstMode, body: copy.mstModeBody, active: false }
+              ].map(modeOption => (
+                <article key={modeOption.name} className={`rounded-lg border p-4 ${modeOption.active ? 'border-indigo-300 bg-indigo-50' : 'border-slate-200 bg-white'}`}>
+                  <div className="flex items-center justify-between gap-2">
+                    <h4 className="text-sm font-semibold text-slate-900">{modeOption.name}</h4>
+                    <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${modeOption.active ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600'}`}>
+                      {modeOption.active ? copy.currentModel : copy.notModelled}
+                    </span>
+                  </div>
+                  <p className="mt-2 text-xs leading-relaxed text-slate-600">{modeOption.body}</p>
+                </article>
+              ))}
             </div>
           </div>
         </div>

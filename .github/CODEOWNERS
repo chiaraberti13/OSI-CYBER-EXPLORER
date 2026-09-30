@@ -38,6 +38,11 @@
 /src/content/portRegistry.ts @chiaraberti13
 /src/content/portRegistry.test.ts @chiaraberti13
 /src/components/PortsExplorer.test.tsx @chiaraberti13
+/docs/STP_MODEL.md @chiaraberti13
+/src/lib/stp.ts @chiaraberti13
+/src/lib/stp.test.ts @chiaraberti13
+/src/components/StpConvergenceLab.tsx @chiaraberti13
+/src/components/StpConvergenceLab.test.tsx @chiaraberti13
 /vercel.json @chiaraberti13
 
 # Offensive and defensive educational content
