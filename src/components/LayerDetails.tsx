@@ -2,6 +2,7 @@ import { useState, Fragment } from 'react';
 import { OSI_LAYERS } from '../content/osiLayers';
 import { ATTACK_SCENARIOS } from '../content/attackScenarios';
 import { useStore } from '../store';
+import HeaderSpecificationSummary from './HeaderSpecificationSummary';
 
 const SCENARIO_FEEDBACK: Record<string, {
   attack: { it: string; en: string };
@@ -626,6 +627,15 @@ export default function LayerDetails() {
                              </div>
                            ))}
                         </div>
+                        {h.layer >= 2 && h.layer <= 4 && (
+                          <div className="mb-3">
+                            <HeaderSpecificationSummary
+                              language={language}
+                              layer={h.layer as 2 | 3 | 4}
+                              testId={`layer-details-header-specifications-l${h.layer}`}
+                            />
+                          </div>
+                        )}
                         <p className="text-[9px] text-slate-400 font-mono leading-relaxed">
                           {h.details}
                         </p>

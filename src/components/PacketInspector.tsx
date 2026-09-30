@@ -2,6 +2,7 @@ import { useStore } from '../store';
 import { OSI_LAYERS } from '../content/osiLayers';
 import { motion, AnimatePresence } from 'motion/react';
 import { Layers, ArrowDown } from 'lucide-react';
+import HeaderSpecificationSummary from './HeaderSpecificationSummary';
 
 /**
  * Packet Inspector — the core didactic artefact for encapsulation.
@@ -88,6 +89,15 @@ export default function PacketInspector() {
                               <span className="text-slate-700">{f.value}</span>
                             </span>
                           ))}
+                        </div>
+                      )}
+                      {h.layer >= 2 && h.layer <= 4 && (
+                        <div className="mt-1.5">
+                          <HeaderSpecificationSummary
+                            language={language}
+                            layer={h.layer as 2 | 3 | 4}
+                            testId={`packet-inspector-header-specifications-l${h.layer}`}
+                          />
                         </div>
                       )}
                     </motion.div>

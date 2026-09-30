@@ -7,6 +7,7 @@ import { Zap, Skull, ShieldCheck, Play, RotateCcw, Info, Pause, ChevronDown, Vol
 import { playAudioCue } from '../utils/audio';
 import { pduNameForLayer, l4ProtocolFor, type SimProtocol } from '../lib/osi';
 import { SIMULATION_SPEEDS } from '../lib/preferences';
+import HeaderSpecificationSummary from './HeaderSpecificationSummary';
 
 export default function PacketSimulator() {
   const { 
@@ -539,6 +540,10 @@ export default function PacketSimulator() {
                : (language === 'en' ? 'Defense off' : 'Difesa spenta')}
            </button>
         </div>
+      </div>
+
+      <div className="border-b border-slate-100 bg-slate-50/30 px-4 py-3 relative z-10">
+        <HeaderSpecificationSummary language={language} testId="packet-simulator-header-specifications" />
       </div>
 
       <div className="px-4 py-4 bg-slate-50/30 border-b border-slate-100 flex flex-col gap-3">
