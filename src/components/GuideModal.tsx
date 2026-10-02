@@ -1,5 +1,6 @@
-import { motion, AnimatePresence } from 'motion/react';
+import { useId } from 'react';
 import { X, Play, Shield, MousePointer2, Swords } from 'lucide-react';
+import ModalDialog from './ModalDialog';
 
 interface GuideModalProps {
   isOpen: boolean;
@@ -17,7 +18,8 @@ export default function GuideModal({ isOpen, onClose, language }: GuideModalProp
         { icon: Swords, title: 'Attack & Defense Lab', desc: 'Pick any attack to see its kill chain step by step, then turn on the Defense to watch exactly where and how it is neutralized.' },
         { icon: Shield, title: 'Cybersecurity Test', desc: 'Inject attacks like MitM or Spoofing. Toggle Defense to see how mitigation works in real-time.' },
       ],
-      close: 'Got it!'
+      close: 'Got it!',
+      closeLabel: 'Close the guide'
     },
     it: {
       title: 'Come usare il Laboratorio',
@@ -27,29 +29,25 @@ export default function GuideModal({ isOpen, onClose, language }: GuideModalProp
         { icon: Swords, title: 'Lab Attacco & Difesa', desc: 'Scegli un attacco per vederne la sequenza passo dopo passo, poi attiva la Difesa per vedere dove e come viene neutralizzato.' },
         { icon: Shield, title: 'Test Cybersecurity', desc: 'Inietta attacchi come MitM o Spoofing. Attiva la Difesa per vedere la mitigazione in tempo reale.' },
       ],
-      close: 'Ho capito!'
+      close: 'Ho capito!',
+      closeLabel: 'Chiudi la guida'
     }
   }[language];
+  const titleId = useId();
+  const descriptionId = useId();
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-            className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
-          />
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 10 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 10 }}
-            className="relative bg-white border border-slate-100 rounded-xl md:rounded-2xl p-6 md:p-10 max-w-2xl w-full shadow-lg overflow-y-auto max-h-[85vh] m-auto"
-          >
-            <button onClick={onClose} className="absolute top-4 right-4 md:top-8 md:right-8 text-slate-100 hover:text-slate-900 transition-colors p-2 hover:bg-slate-50 rounded-full z-20 bg-slate-900/40 md:bg-transparent">
-              <X className="w-5 h-5 md:w-6 md:h-6" />
+    <ModalDialog
+      isOpen={isOpen}
+      onClose={onClose}
+      labelledBy={titleId}
+      describedBy={descriptionId}
+      overlayClassName="fixed inset-0 z-[100] flex items-center justify-center p-4"
+      backdropClassName="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
+      panelClassName="relative bg-white border border-slate-100 rounded-xl md:rounded-2xl p-6 md:p-10 max-w-2xl w-full shadow-lg overflow-y-auto max-h-[85vh] m-auto"
+    >
+            <button type="button" onClick={onClose} aria-label={content.closeLabel} className="absolute top-4 right-4 md:top-8 md:right-8 text-slate-100 hover:text-slate-900 transition-colors p-2 hover:bg-slate-50 rounded-full z-20 bg-slate-900/40 md:bg-transparent">
+              <X aria-hidden="true" className="w-5 h-5 md:w-6 md:h-6" />
             </button>
 
             {/* Cyberpunk Repository Banner */}
@@ -62,12 +60,15 @@ export default function GuideModal({ isOpen, onClose, language }: GuideModalProp
               />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/30 to-transparent flex items-end p-6">
                 <div>
-                  <span className="text-[9px] font-semibold uppercase text-indigo-400 tracking-[0.25em] block mb-1">
+                  <span aria-hidden="true" className="text-[9px] font-semibold uppercase text-indigo-400 tracking-[0.25em] block mb-1">
                     OSI_CYBER_LAB // SECURITY_REPOSITORY_MANUAL_v2.5
                   </span>
-                  <h2 className="text-lg md:text-2xl font-semibold uppercase tracking-tight text-white">
+                  <h2 id={titleId} className="text-lg md:text-2xl font-semibold uppercase tracking-tight text-white">
                     {language === 'en' ? 'Laboratory Directory & Guide' : 'Manuale & Repository di Rete'}
                   </h2>
+                  <p id={descriptionId} className="mt-1 text-xs md:text-sm text-slate-200">
+                    {content.title}
+                  </p>
                 </div>
               </div>
             </div>
@@ -76,7 +77,7 @@ export default function GuideModal({ isOpen, onClose, language }: GuideModalProp
               {content.steps.map((step, i) => (
                 <div key={i} className="flex gap-4 md:gap-6 group">
                   <div className="w-10 h-10 md:w-14 md:h-14 rounded-xl md:rounded-lg bg-slate-50 flex items-center justify-center shrink-0 border border-slate-100 group-hover:border-emerald-200 group-hover:bg-emerald-50 transition-colors">
-                    <step.icon className="w-5 h-5 md:w-7 md:h-7 text-emerald-600" />
+                    <step.icon aria-hidden="true" className="w-5 h-5 md:w-7 md:h-7 text-emerald-600" />
                   </div>
                   <div className="pt-0.5 md:pt-1">
                     <h3 className="font-semibold text-slate-900 text-sm md:text-base uppercase mb-0.5 md:mb-1">{step.title}</h3>
@@ -87,14 +88,12 @@ export default function GuideModal({ isOpen, onClose, language }: GuideModalProp
             </div>
 
             <button
+              type="button"
               onClick={onClose}
               className="w-full mt-8 md:mt-10 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-3 md:py-4 rounded-xl transition-all shadow-emerald-500/20 uppercase tracking-wider text-xs md:text-sm"
             >
               {content.close}
             </button>
-          </motion.div>
-        </div>
-      )}
-    </AnimatePresence>
+    </ModalDialog>
   );
 }
