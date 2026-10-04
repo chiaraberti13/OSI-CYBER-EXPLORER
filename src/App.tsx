@@ -7,42 +7,34 @@ import Header from './components/Header';
 import Navigation from './components/Navigation';
 import { motion, AnimatePresence } from 'motion/react';
 import GuideModal from './components/GuideModal';
-import { lazy, Suspense, useEffect } from 'react';
+import { Suspense, useEffect } from 'react';
 import { useStore } from './store';
+import { VIEW_REGISTRY, type MotionPreset } from './content/viewRegistry';
 
-const GlossaryModal = lazy(() => import('./components/GlossaryModal'));
-const PortsModal = lazy(() => import('./components/PortsExplorer'));
-const SecurityDashboard = lazy(() => import('./components/SecurityDashboard'));
-const AttackLab = lazy(() => import('./components/AttackLab'));
-const CurriculumView = lazy(() => import('./components/CurriculumView'));
-const OsiLabView = lazy(() => import('./components/OsiLabView'));
-const PathTraceLab = lazy(() => import('./components/PathTraceLab'));
-const NetworkFundamentalsLab = lazy(() => import('./components/NetworkFundamentalsLab'));
-const NetworkAccessLab = lazy(() => import('./components/NetworkAccessLab'));
-const IpConnectivityLab = lazy(() => import('./components/IpConnectivityLab'));
-const IpServicesLab = lazy(() => import('./components/IpServicesLab'));
-const SecurityFundamentalsLab = lazy(() => import('./components/SecurityFundamentalsLab'));
-const AutomationLab = lazy(() => import('./components/AutomationLab'));
-const SecurityCoverageView = lazy(() => import('./components/SecurityCoverageView'));
-const AttackPathsLab = lazy(() => import('./components/AttackPathsLab'));
-const ConfigurationHardeningLab = lazy(() => import('./components/ConfigurationHardeningLab'));
-const DetectionEngineeringLab = lazy(() => import('./components/DetectionEngineeringLab'));
-const ResilienceRecoveryLab = lazy(() => import('./components/ResilienceRecoveryLab'));
-const Ipv6SecurityLab = lazy(() => import('./components/Ipv6SecurityLab'));
-const SegmentationLab = lazy(() => import('./components/SegmentationLab'));
-const IdentityTrustLab = lazy(() => import('./components/IdentityTrustLab'));
-const RoutingSecurityLab = lazy(() => import('./components/RoutingSecurityLab'));
-const WirelessSecurityLab = lazy(() => import('./components/WirelessSecurityLab'));
-const VpnPkiSecurityLab = lazy(() => import('./components/VpnPkiSecurityLab'));
-const AvailabilitySecurityLab = lazy(() => import('./components/AvailabilitySecurityLab'));
-const InspectionSecurityLab = lazy(() => import('./components/InspectionSecurityLab'));
-const ManagementTelemetryLab = lazy(() => import('./components/ManagementTelemetryLab'));
-const EndpointSecurityLab = lazy(() => import('./components/EndpointSecurityLab'));
-const ApplicationSecurityLab = lazy(() => import('./components/ApplicationSecurityLab'));
-const EmailHumanSecurityLab = lazy(() => import('./components/EmailHumanSecurityLab'));
-const Layer2SecurityLab = lazy(() => import('./components/Layer2SecurityLab'));
-const SecurityEvidenceLab = lazy(() => import('./components/SecurityEvidenceLab'));
-const DefenseControlsLab = lazy(() => import('./components/DefenseControlsLab'));
+/**
+ * Entrance/exit animations for a view switch, resolved from the `motion` preset each
+ * view declares in the registry. Keeping the concrete values here keeps presentation
+ * in the component while the registry stays declarative.
+ */
+const MOTION_PRESETS: Record<MotionPreset, {
+  initial: { opacity: number; y: number };
+  animate: { opacity: number; y: number };
+  exit: { opacity: number; y: number };
+  transition: { duration: number };
+}> = {
+  subtle: {
+    initial: { opacity: 0, y: 8 },
+    animate: { opacity: 1, y: 0 },
+    exit: { opacity: 0, y: -8 },
+    transition: { duration: 0.18 }
+  },
+  pronounced: {
+    initial: { opacity: 0, y: 15 },
+    animate: { opacity: 1, y: 0 },
+    exit: { opacity: 0, y: -15 },
+    transition: { duration: 0.2 }
+  }
+};
 
 function ViewFallback({ language }: { language: 'it' | 'en' }) {
   return (
@@ -69,6 +61,10 @@ export default function App() {
       : 'OSI Cyber Explorer — Interactive networking & cybersecurity lab';
   }, [language]);
 
+  const activeDefinition = VIEW_REGISTRY[activeView];
+  const ActiveView = activeDefinition.component;
+  const preset = MOTION_PRESETS[activeDefinition.motion ?? 'subtle'];
+
   return (
     <div className="min-h-screen bg-[#fafafa] text-slate-700 selection:bg-indigo-500/10">
       <Header />
@@ -76,282 +72,22 @@ export default function App() {
 
       <main className="max-w-7xl mx-auto p-4 md:p-6 min-h-[75vh]">
         <Suspense fallback={<ViewFallback language={language} />}>
-        <AnimatePresence mode="wait">
-          {activeView === 'curriculum' && (
+          <AnimatePresence mode="wait">
+            {/*
+              A single registry-driven switch replaces the former per-view blocks:
+              `key={activeView}` drives the exit/enter animation, the preset comes from
+              the view's declared motion, and only the embeddable views receive `inline`.
+            */}
             <motion.div
-              key="curriculum"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.18 }}
+              key={activeView}
+              initial={preset.initial}
+              animate={preset.animate}
+              exit={preset.exit}
+              transition={preset.transition}
             >
-              <CurriculumView />
+              {activeDefinition.inline ? <ActiveView inline={true} /> : <ActiveView />}
             </motion.div>
-          )}
-
-          {activeView === 'osi' && (
-            <motion.div
-              key="osi"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.18 }}
-            >
-              <OsiLabView />
-            </motion.div>
-          )}
-
-          {activeView === 'pathtrace' && (
-            <motion.div key="pathtrace" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.18 }}>
-              <PathTraceLab />
-            </motion.div>
-          )}
-
-          {activeView === 'fundamentals' && (
-            <motion.div
-              key="fundamentals"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.18 }}
-            >
-              <NetworkFundamentalsLab />
-            </motion.div>
-          )}
-
-          {activeView === 'access' && (
-            <motion.div
-              key="access"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.18 }}
-            >
-              <NetworkAccessLab />
-            </motion.div>
-          )}
-
-          {activeView === 'routing' && (
-            <motion.div
-              key="routing"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.18 }}
-            >
-              <IpConnectivityLab />
-            </motion.div>
-          )}
-
-          {activeView === 'services' && (
-            <motion.div
-              key="services"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.18 }}
-            >
-              <IpServicesLab />
-            </motion.div>
-          )}
-
-          {activeView === 'securitycore' && (
-            <motion.div
-              key="securitycore"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.18 }}
-            >
-              <SecurityFundamentalsLab />
-            </motion.div>
-          )}
-
-          {activeView === 'automation' && (
-            <motion.div
-              key="automation"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.18 }}
-            >
-              <AutomationLab />
-            </motion.div>
-          )}
-
-          {activeView === 'coverage' && (
-            <motion.div
-              key="coverage"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.18 }}
-            >
-              <SecurityCoverageView />
-            </motion.div>
-          )}
-
-          {activeView === 'attackpaths' && (
-            <motion.div key="attackpaths" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.18 }}>
-              <AttackPathsLab />
-            </motion.div>
-          )}
-
-          {activeView === 'hardening' && (
-            <motion.div key="hardening" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.18 }}>
-              <ConfigurationHardeningLab />
-            </motion.div>
-          )}
-
-          {activeView === 'detection' && (
-            <motion.div key="detection" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.18 }}>
-              <DetectionEngineeringLab />
-            </motion.div>
-          )}
-
-          {activeView === 'recovery' && (
-            <motion.div key="recovery" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.18 }}>
-              <ResilienceRecoveryLab />
-            </motion.div>
-          )}
-
-          {activeView === 'ipv6security' && (
-            <motion.div key="ipv6security" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.18 }}>
-              <Ipv6SecurityLab />
-            </motion.div>
-          )}
-
-          {activeView === 'segmentation' && (
-            <motion.div key="segmentation" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.18 }}>
-              <SegmentationLab />
-            </motion.div>
-          )}
-
-          {activeView === 'identitytrust' && (
-            <motion.div key="identitytrust" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.18 }}>
-              <IdentityTrustLab />
-            </motion.div>
-          )}
-
-          {activeView === 'routingsecurity' && (
-            <motion.div key="routingsecurity" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.18 }}>
-              <RoutingSecurityLab />
-            </motion.div>
-          )}
-
-          {activeView === 'wirelesssecurity' && (
-            <motion.div key="wirelesssecurity" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.18 }}>
-              <WirelessSecurityLab />
-            </motion.div>
-          )}
-
-          {activeView === 'vpnsecurity' && (
-            <motion.div key="vpnsecurity" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.18 }}>
-              <VpnPkiSecurityLab />
-            </motion.div>
-          )}
-
-          {activeView === 'availability' && (
-            <motion.div key="availability" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.18 }}>
-              <AvailabilitySecurityLab />
-            </motion.div>
-          )}
-
-          {activeView === 'inspection' && (
-            <motion.div key="inspection" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.18 }}>
-              <InspectionSecurityLab />
-            </motion.div>
-          )}
-
-          {activeView === 'managementsecurity' && (
-            <motion.div key="managementsecurity" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.18 }}>
-              <ManagementTelemetryLab />
-            </motion.div>
-          )}
-
-          {activeView === 'endpointsecurity' && (
-            <motion.div key="endpointsecurity" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.18 }}>
-              <EndpointSecurityLab />
-            </motion.div>
-          )}
-
-          {activeView === 'applicationsecurity' && (
-            <motion.div key="applicationsecurity" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.18 }}>
-              <ApplicationSecurityLab />
-            </motion.div>
-          )}
-
-          {activeView === 'emailsecurity' && (
-            <motion.div key="emailsecurity" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.18 }}>
-              <EmailHumanSecurityLab />
-            </motion.div>
-          )}
-
-          {activeView === 'layer2security' && (
-            <motion.div key="layer2security" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.18 }}>
-              <Layer2SecurityLab />
-            </motion.div>
-          )}
-
-          {activeView === 'evidence' && (
-            <motion.div key="evidence" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.18 }}>
-              <SecurityEvidenceLab />
-            </motion.div>
-          )}
-
-          {activeView === 'defense' && (
-            <motion.div key="defense" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.18 }}><DefenseControlsLab /></motion.div>
-          )}
-
-          {activeView === 'attacklab' && (
-            <motion.div
-              key="attacklab"
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              transition={{ duration: 0.2 }}
-            >
-              <AttackLab />
-            </motion.div>
-          )}
-
-          {activeView === 'ports' && (
-            <motion.div
-              key="ports"
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              transition={{ duration: 0.2 }}
-            >
-              <PortsModal inline={true} />
-            </motion.div>
-          )}
-
-          {activeView === 'security' && (
-            <motion.div
-              key="security"
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              transition={{ duration: 0.2 }}
-            >
-              <SecurityDashboard />
-            </motion.div>
-          )}
-
-          {activeView === 'glossary' && (
-            <motion.div
-              key="glossary"
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              transition={{ duration: 0.2 }}
-            >
-              <GlossaryModal inline={true} />
-            </motion.div>
-          )}
-
-        </AnimatePresence>
+          </AnimatePresence>
         </Suspense>
       </main>
 

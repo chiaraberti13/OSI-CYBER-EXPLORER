@@ -1,50 +1,8 @@
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import {
-  Activity, BookOpen, Cable, Calculator, ChevronDown, FileCode2, FileSearch, Fingerprint, Gauge,
-  Split,
-  GitBranch, GlobeLock, Hash, HeartPulse, KeyRound, Laptop, Layers, Layers3, LockKeyhole, Map,
-  MailWarning, Network, Radar, Radio, Route, Router, Search, ServerCog, Shield, ShieldAlert,
-  Swords, Workflow, X
-} from 'lucide-react';
+import { ChevronDown, Search, X } from 'lucide-react';
 import { NAV_GROUPS, navEntryOf, navGroupOf, searchNav } from '../lib/navigation';
-import { useStore, type AppView } from '../store';
-
-const VIEW_ICONS: Record<AppView, typeof Map> = {
-  curriculum: Map,
-  pathtrace: Split,
-  fundamentals: Calculator,
-  access: Cable,
-  routing: Route,
-  services: ServerCog,
-  securitycore: LockKeyhole,
-  automation: Workflow,
-  osi: Layers,
-  attacklab: Swords,
-  ports: Hash,
-  security: Shield,
-  glossary: BookOpen,
-  layer2security: Cable,
-  wirelesssecurity: Radio,
-  routingsecurity: Router,
-  ipv6security: Network,
-  segmentation: Layers3,
-  identitytrust: Fingerprint,
-  vpnsecurity: KeyRound,
-  inspection: ShieldAlert,
-  managementsecurity: ServerCog,
-  endpointsecurity: Laptop,
-  applicationsecurity: GlobeLock,
-  emailsecurity: MailWarning,
-  coverage: Activity,
-  attackpaths: GitBranch,
-  detection: Radar,
-  hardening: FileCode2,
-  availability: Gauge,
-  recovery: HeartPulse,
-  evidence: FileSearch,
-  defense: Shield
-};
+import { useStore } from '../store';
 
 export default function Navigation() {
   const { language, activeView, setActiveView } = useStore();
@@ -198,7 +156,7 @@ export default function Navigation() {
               <p className="eyebrow px-1 pb-2">{openGroup[language]}</p>
               <ul className="grid gap-1 sm:grid-cols-2 xl:grid-cols-3">
                 {openGroup.entries.map(entry => {
-                  const Icon = VIEW_ICONS[entry.view];
+                  const Icon = entry.icon;
                   const isActive = activeView === entry.view;
                   return (
                     <li key={entry.view}>
@@ -258,7 +216,7 @@ export default function Navigation() {
               ) : (
                 <ul id="nav-search-results" aria-label={labels.results} className="max-h-[60vh] overflow-y-auto p-1.5 custom-scrollbar">
                   {results.map((item, index) => {
-                    const Icon = VIEW_ICONS[item.entry.view];
+                    const Icon = item.entry.icon;
                     const isHighlighted = index === highlighted;
                     return (
                       <li key={item.entry.view}>
