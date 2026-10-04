@@ -23,7 +23,7 @@
   "ipv4LiteralExceptions": [
     {
       "address": "1.1.1.1",
-      "files": ["src/content/ospfTopology.ts", "src/components/IpConnectivityLab.tsx"],
+      "files": ["src/content/ospfTopology.ts", "src/content/ipConnectivityLab.ts", "src/components/IpConnectivityLab.tsx"],
       "purpose": "Conventional OSPF router ID, not a traffic destination"
     },
     {
