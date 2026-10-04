@@ -590,7 +590,7 @@ export default function LayerDetails() {
                 <div className="space-y-4">
                   {[...packetHeaders].reverse().map((h, idx) => {
                     const l = OSI_LAYERS.find(layer => layer.id === h.layer);
-                    const headerFields = (h.fields && h.fields.length > 0)
+                    const headerFields: { key: string; value: string }[] = (h.fields && h.fields.length > 0)
                       ? h.fields
                       : ({
                         7: [{ key: 'Method', value: 'GET' }, { key: 'Path', value: '/api/v1' }, { key: 'Agent', value: 'Lab_Core' }],
@@ -600,7 +600,7 @@ export default function LayerDetails() {
                         3: [{ key: 'SrcIP', value: '192.168.1.10' }, { key: 'DstIP', value: '203.0.113.8' }, { key: 'TTL', value: '64' }],
                         2: [{ key: 'SrcMAC', value: '00:0C:29:...' }, { key: 'DstMAC', value: '00:50:56:...' }, { key: 'Type', value: '0x0800' }],
                         1: [{ key: 'Signal', value: '0/1' }, { key: 'Media', value: 'Ethernet' }, { key: 'Clock', value: '1Gbps' }],
-                      }[h.layer as keyof typeof headerFields] || []);
+                      }[h.layer as 1 | 2 | 3 | 4 | 5 | 6 | 7] || []);
 
                     return (
                       <div key={`${h.layer}-${idx}`} className="p-3 rounded-md border border-slate-200/70 bg-white group transition-all">

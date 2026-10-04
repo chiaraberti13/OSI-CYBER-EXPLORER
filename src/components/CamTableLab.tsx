@@ -70,7 +70,7 @@ export default function CamTableLab() {
   const [scenarioId, setScenarioId] = useState(CAM_SCENARIOS[0].id);
   const [extraFrames, setExtraFrames] = useState<FrameInput[]>([]);
   const [selected, setSelected] = useState(0);
-  const [draft, setDraft] = useState({ srcMac: CAM_HOSTS[0].mac, dstMac: CAM_HOSTS[1].mac, ingressPort: 'Gi1/0/1', vlan: 10 });
+  const [draft, setDraft] = useState<{ srcMac: string; dstMac: string; ingressPort: string; vlan: number }>({ srcMac: CAM_HOSTS[0].mac, dstMac: CAM_HOSTS[1].mac, ingressPort: 'Gi1/0/1', vlan: 10 });
 
   const scenario = CAM_SCENARIOS.find(item => item.id === scenarioId) ?? CAM_SCENARIOS[0];
 
