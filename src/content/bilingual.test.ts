@@ -61,7 +61,10 @@ const PAIRS = bilingualPairs();
  * English plurals (VLANs/VLAN) and the decimal and thousands separators, which are
  * swapped between the two languages (15,4 W against 15.4 W; 65.535 against 65,535).
  */
-function technicalTokens(text: string): Set<string> {
+function technicalTokens(rawText: string): Set<string> {
+  // A terminal-style banner ("SIGNAL JAMMING DETECTED: ...") is an uppercase label, not an
+  // acronym list: its words are localised, so only the sentence after the colon is compared.
+  const text = rawText.replace(/^[A-ZÀ-Ý][A-ZÀ-Ý0-9 ()/&'’.,-]{5,}:\s*/, '');
   // The trailing `s?` matters: without it "APIs" does not match at all, so an English
   // plural reads as a fact the English side never stated.
   const acronyms = text.match(/\b[A-Z][A-Z0-9][A-Z0-9/.-]{1,14}s?\b/g) ?? [];
