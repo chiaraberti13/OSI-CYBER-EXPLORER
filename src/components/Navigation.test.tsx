@@ -1,12 +1,22 @@
 // @vitest-environment jsdom
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { cleanup, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Navigation from './Navigation';
 import { useStore } from '../store';
+import { connectViewRouting } from '../lib/viewRouting';
+
+let disconnect: (() => void) | undefined;
+
+beforeEach(() => {
+  window.history.replaceState(null, '', '#/osi');
+  disconnect = connectViewRouting(useStore, window);
+});
 
 afterEach(() => {
   cleanup();
+  disconnect?.();
+  window.history.replaceState(null, '', '/');
   useStore.setState({ activeView: 'osi', language: 'it' });
 });
 
@@ -20,10 +30,12 @@ describe('Navigation', () => {
     await user.click(group);
     expect(group.getAttribute('aria-expanded')).toBe('true');
 
-    const panel = screen.getByRole('button', { name: /^Connettività IP/ });
+    const panel = screen.getByRole('link', { name: /^Connettività IP/ });
+    expect(panel.getAttribute('href')).toBe('#/routing');
     await user.click(panel);
 
     expect(useStore.getState().activeView).toBe('routing');
+    expect(window.location.hash).toBe('#/routing');
     // Reaching the destination closes the chrome.
     expect(screen.getByRole('button', { name: /Percorso CCNA/ }).getAttribute('aria-expanded')).toBe('false');
   });
@@ -37,12 +49,13 @@ describe('Navigation', () => {
     await user.type(input, 'ospf');
 
     const results = screen.getByRole('list', { name: 'Risultati della ricerca' });
-    const options = within(results).getAllByRole('button');
+    const options = within(results).getAllByRole('link');
     expect(options.length).toBeGreaterThan(0);
     expect(options.length).toBeLessThan(10);
 
     await user.keyboard('{Enter}');
     expect(['routing', 'routingsecurity']).toContain(useStore.getState().activeView);
+    expect(window.location.hash).toBe(`#/${useStore.getState().activeView}`);
   });
 
   it('says so when nothing matches instead of showing an empty list', async () => {

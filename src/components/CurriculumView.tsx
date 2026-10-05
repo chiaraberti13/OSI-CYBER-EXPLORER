@@ -3,18 +3,12 @@ import { CCNA_DOMAINS } from '../content/ccna';
 import { DOMAIN_CHECKLISTS } from '../content/domainChecklists';
 import { ATTACK_FAMILIES } from '../content/securityTaxonomy';
 import { useStore } from '../store';
-import { useShallow } from 'zustand/react/shallow';
+import ViewLink from './ViewLink';
 
 const CHECKLIST_BY_DOMAIN = new Map<string, (typeof DOMAIN_CHECKLISTS)[number]>(DOMAIN_CHECKLISTS.map(list => [list.domainId, list]));
 
 export default function CurriculumView() {
-  const {
-  language,
-  setActiveView,
-} = useStore(useShallow((state) => ({
-  language: state.language,
-  setActiveView: state.setActiveView,
-})));
+  const language = useStore(state => state.language);
   const checklistLabels = language === 'it'
     ? { title: 'Concetti da saper spiegare', observe: 'Dove osservarlo', pitfall: 'Errore rivelatore', note: 'Non è un quiz e non produce un punteggio: è un elenco di concetti da usare per decidere cosa rivedere. Ogni voce dice dove nella piattaforma puoi vedere il concetto in funzione e quale errore rivela che non è ancora solido.' }
     : { title: 'Concepts you should be able to explain', observe: 'Where to observe it', pitfall: 'Revealing mistake', note: 'This is not a quiz and produces no score: it is a list of concepts to help you decide what to revisit. Each entry names where in the platform you can watch the concept at work and which mistake reveals it is not yet solid.' };
@@ -94,7 +88,7 @@ export default function CurriculumView() {
               </p>
 
               {CHECKLIST_BY_DOMAIN.has(domain.id) ? (
-                <details className="mt-4 rounded-lg border border-slate-200 bg-slate-50/60">
+                <details className="mt-4 inline-block rounded-lg border border-slate-200 bg-slate-50/60">
                   <summary className="flex cursor-pointer items-center gap-2 p-3 text-xs font-semibold text-slate-700">
                     <ListChecks className="h-4 w-4 shrink-0 text-indigo-600" aria-hidden="true" />
                     {checklistLabels.title}
@@ -115,58 +109,52 @@ export default function CurriculumView() {
                 </details>
               ) : null}
               {domain.id === 'network-fundamentals' ? (
-                <button
-                  type="button"
-                  onClick={() => setActiveView('fundamentals')}
-                  className="mt-4 rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-xs font-semibold text-indigo-700 transition-colors hover:bg-indigo-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
+                <ViewLink
+                  view="fundamentals"
+                  className="mt-4 inline-block rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-xs font-semibold text-indigo-700 transition-colors hover:bg-indigo-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
                 >
                   {language === 'it' ? 'Apri il laboratorio IPv4' : 'Open the IPv4 lab'}
-                </button>
+                </ViewLink>
               ) : null}
               {domain.id === 'network-access' ? (
-                <button
-                  type="button"
-                  onClick={() => setActiveView('access')}
-                  className="mt-4 rounded-lg border border-violet-200 bg-violet-50 px-3 py-2 text-xs font-semibold text-violet-700 transition-colors hover:bg-violet-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
+                <ViewLink
+                  view="access"
+                  className="mt-4 inline-block rounded-lg border border-violet-200 bg-violet-50 px-3 py-2 text-xs font-semibold text-violet-700 transition-colors hover:bg-violet-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
                 >
                   {language === 'it' ? 'Apri il laboratorio Network Access' : 'Open the Network Access lab'}
-                </button>
+                </ViewLink>
               ) : null}
               {domain.id === 'ip-connectivity' ? (
-                <button
-                  type="button"
-                  onClick={() => setActiveView('routing')}
-                  className="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-800 transition-colors hover:bg-amber-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
+                <ViewLink
+                  view="routing"
+                  className="mt-4 inline-block rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-800 transition-colors hover:bg-amber-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
                 >
                   {language === 'it' ? 'Apri il laboratorio IP Connectivity' : 'Open the IP Connectivity lab'}
-                </button>
+                </ViewLink>
               ) : null}
               {domain.id === 'ip-services' ? (
-                <button
-                  type="button"
-                  onClick={() => setActiveView('services')}
-                  className="mt-4 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-800 transition-colors hover:bg-emerald-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"
+                <ViewLink
+                  view="services"
+                  className="mt-4 inline-block rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-800 transition-colors hover:bg-emerald-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"
                 >
                   {language === 'it' ? 'Apri il laboratorio IP Services' : 'Open the IP Services lab'}
-                </button>
+                </ViewLink>
               ) : null}
               {domain.id === 'security-fundamentals' ? (
-                <button
-                  type="button"
-                  onClick={() => setActiveView('securitycore')}
-                  className="mt-4 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-800 transition-colors hover:bg-rose-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400"
+                <ViewLink
+                  view="securitycore"
+                  className="mt-4 inline-block rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-800 transition-colors hover:bg-rose-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400"
                 >
                   {language === 'it' ? 'Apri il laboratorio Security Fundamentals' : 'Open the Security Fundamentals lab'}
-                </button>
+                </ViewLink>
               ) : null}
               {domain.id === 'automation-programmability' ? (
-                <button
-                  type="button"
-                  onClick={() => setActiveView('automation')}
-                  className="mt-4 rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-xs font-semibold text-sky-800 transition-colors hover:bg-sky-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
+                <ViewLink
+                  view="automation"
+                  className="mt-4 inline-block rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-xs font-semibold text-sky-800 transition-colors hover:bg-sky-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
                 >
                   {language === 'it' ? 'Apri il laboratorio Automation' : 'Open the Automation lab'}
-                </button>
+                </ViewLink>
               ) : null}
             </article>
           ))}
@@ -186,13 +174,12 @@ export default function CurriculumView() {
               ? 'Consulta le tecniche per dominio, famiglia e piano, con prevenzione, rilevamento, risposta e verifica operativa.'
               : 'Browse techniques by domain, family, and plane, with prevention, detection, response, and operational verification.'}
           </p>
-          <button
-            type="button"
-            onClick={() => setActiveView('coverage')}
-            className="mt-3 shrink-0 rounded-lg border border-emerald-300 bg-white px-3 py-2 text-xs font-semibold text-emerald-800 transition-colors hover:bg-emerald-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 sm:mt-0"
+          <ViewLink
+            view="coverage"
+            className="mt-3 inline-block shrink-0 rounded-lg border border-emerald-300 bg-white px-3 py-2 text-xs font-semibold text-emerald-800 transition-colors hover:bg-emerald-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 sm:mt-0"
           >
             {language === 'it' ? 'Apri il catalogo completo' : 'Open the full catalog'}
-          </button>
+          </ViewLink>
         </div>
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
           {ATTACK_FAMILIES.map((family) => (

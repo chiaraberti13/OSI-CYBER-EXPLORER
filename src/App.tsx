@@ -12,6 +12,7 @@ import { Suspense, useEffect } from 'react';
 import { useStore } from './store';
 import { useShallow } from 'zustand/react/shallow';
 import { VIEW_REGISTRY, type MotionPreset } from './content/viewRegistry';
+import { viewTitle } from './lib/viewRouting';
 
 /**
  * Entrance/exit animations for a view switch, resolved from the `motion` preset each
@@ -61,14 +62,11 @@ export default function App() {
   language: state.language,
 })));
 
-  // Keep the document language + title in sync with the selected UI language.
-  // This helps screen readers, browser hyphenation/translation and SEO.
+  // Each deep-linked lab has a bilingual title, including after history traversal.
   useEffect(() => {
     document.documentElement.lang = language;
-    document.title = language === 'it'
-      ? 'OSI Cyber Explorer — Laboratorio interattivo di reti e cybersecurity'
-      : 'OSI Cyber Explorer — Interactive networking & cybersecurity lab';
-  }, [language]);
+    document.title = viewTitle(activeView, language);
+  }, [activeView, language]);
 
   const activeDefinition = VIEW_REGISTRY[activeView];
   const ActiveView = activeDefinition.component;

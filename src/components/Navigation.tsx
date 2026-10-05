@@ -4,6 +4,7 @@ import { ChevronDown, Search, X } from 'lucide-react';
 import { NAV_GROUPS, navEntryOf, navGroupOf, searchNav } from '../lib/navigation';
 import { useStore } from '../store';
 import { useShallow } from 'zustand/react/shallow';
+import ViewLink from './ViewLink';
 
 export default function Navigation() {
   const {
@@ -169,9 +170,9 @@ export default function Navigation() {
                   const isActive = activeView === entry.view;
                   return (
                     <li key={entry.view}>
-                      <button
-                        type="button"
-                        onClick={() => setActiveView(entry.view)}
+                      <ViewLink
+                        view={entry.view}
+                        onClick={() => setOpenGroupId(null)}
                         aria-current={isActive ? 'page' : undefined}
                         className={`flex w-full items-start gap-2.5 rounded-lg border p-2.5 text-left transition-colors ${
                           isActive ? 'border-indigo-200 bg-indigo-50/60' : 'border-transparent hover:border-slate-200 hover:bg-slate-50'
@@ -182,7 +183,7 @@ export default function Navigation() {
                           <span className={`block text-[13px] font-medium ${isActive ? 'text-indigo-900' : 'text-slate-800'}`}>{entry[language]}</span>
                           <span className="mt-0.5 block text-[11px] leading-snug text-slate-500">{language === 'it' ? entry.hintIt : entry.hintEn}</span>
                         </span>
-                      </button>
+                      </ViewLink>
                     </li>
                   );
                 })}
@@ -229,9 +230,9 @@ export default function Navigation() {
                     const isHighlighted = index === highlighted;
                     return (
                       <li key={item.entry.view}>
-                        <button
-                          type="button"
-                          onClick={() => setActiveView(item.entry.view)}
+                        <ViewLink
+                          view={item.entry.view}
+                          onClick={() => setIsSearchOpen(false)}
                           onMouseEnter={() => setHighlighted(index)}
                           aria-current={activeView === item.entry.view ? 'page' : undefined}
                           className={`flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left transition-colors ${isHighlighted ? 'bg-slate-100' : ''}`}
@@ -242,7 +243,7 @@ export default function Navigation() {
                             <span className="block truncate text-[11px] text-slate-500">{language === 'it' ? item.entry.hintIt : item.entry.hintEn}</span>
                           </span>
                           <span className="eyebrow shrink-0">{language === 'it' ? item.group.itShort : item.group.enShort}</span>
-                        </button>
+                        </ViewLink>
                       </li>
                     );
                   })}
