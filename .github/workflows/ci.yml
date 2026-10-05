@@ -39,6 +39,9 @@ jobs:
       - name: Validate lockfile with lockfile-lint
         run: npm run lint:lockfile
 
+      - name: Validate repository posture reporting and HSTS scope
+        run: npm run verify:repository-posture && npm run verify:deployment-security
+
       - name: Validate offensive educational content
         run: npm run verify:offensive-content
 

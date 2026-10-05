@@ -12,7 +12,9 @@
 
 > A bilingual networking and CCNA 200-301 lab for observing data flows, simulating attacks, and understanding the corresponding defenses.
 
-<p align="center"><a href="https://osi-cyber-explorer.vercel.app"><strong>Live demo</strong></a> · <a href="SECURITY.md">Security</a> · <a href="docs/THREAT_MODEL.md">Threat model</a> · <a href="LICENSE">Licence</a></p>
+<p align="center"><a href="https://osi-cyber-explorer.vercel.app"><strong>Live demo</strong></a> · <a href="SECURITY.md">Security</a> · <a href="docs/THREAT_MODEL.md">Threat model</a> · <a href="docs/REPOSITORY_POSTURE.md">Posture and previews</a> · <a href="LICENSE">Licence</a></p>
+
+<p align="center"><a href="https://scorecard.dev/viewer/?uri=github.com/chiaraberti13/OSI-CYBER-EXPLORER"><img src="https://api.scorecard.dev/projects/github.com/chiaraberti13/OSI-CYBER-EXPLORER/badge" alt="OpenSSF Scorecard: a trend indicator, not a certification"></a></p>
 
 ---
 

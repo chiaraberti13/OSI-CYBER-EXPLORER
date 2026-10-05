@@ -28,6 +28,12 @@
 /docs/SECURITY_SCANNING.md @chiaraberti13
 /docs/THREAT_MODEL.md @chiaraberti13
 /docs/RELEASING.md @chiaraberti13
+/docs/REPOSITORY_POSTURE.md @chiaraberti13
+/docs/scorecard/ @chiaraberti13
+/scripts/scorecard-report.mjs @chiaraberti13
+/scripts/scorecard-report.test.mjs @chiaraberti13
+/scripts/deployment-security.mjs @chiaraberti13
+/scripts/deployment-security.test.mjs @chiaraberti13
 /docs/OFFENSIVE_CONTENT_REVIEW.md @chiaraberti13
 /docs/offensive-content-reviews.json @chiaraberti13
 /docs/DOCUMENTATION_TARGETS.md @chiaraberti13

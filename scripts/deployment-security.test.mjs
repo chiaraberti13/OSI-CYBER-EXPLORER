@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 
 import {
@@ -104,6 +105,19 @@ test('requires HSTS only on the canonical production hostname', () => {
 
   assert.ok(production.findings.some(({ id }) => id === 'header-strict-transport-security'));
   assert.ok(!preview.findings.some(({ id }) => id === 'header-strict-transport-security'));
+});
+
+test('scopes application HSTS to the exact canonical host, without applying preload to previews', async () => {
+  const configuration = JSON.parse(await readFile(new URL('../vercel.json', import.meta.url), 'utf8'));
+  const hstsRules = configuration.headers.filter((rule) =>
+    rule.headers.some((header) => header.key.toLowerCase() === 'strict-transport-security'));
+  assert.equal(hstsRules.length, 1);
+  assert.equal(hstsRules[0].source, '/(.*)');
+  assert.deepEqual(hstsRules[0].has, [{ type: 'host', value: 'osi-cyber-explorer.vercel.app' }]);
+  const hsts = hstsRules[0].headers.find((header) => header.key.toLowerCase() === 'strict-transport-security');
+  assert.equal(hsts.value, secureHeaders['strict-transport-security']);
+  // Vercel adds its own HSTS on preview/authentication responses. That platform
+  // behavior is accepted; this assertion guards the policy controlled here.
 });
 
 test('produces a compact comparable Markdown summary', () => {

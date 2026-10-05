@@ -9,6 +9,8 @@ The workflow has two independent controls:
 1. `scripts/deployment-security.mjs` validates the target before any request, follows at most three allowlisted redirects, and checks the effective HTTP status, CSP, HSTS on the canonical production hostname, and the other security headers versioned in `vercel.json`.
 2. OWASP ZAP Baseline passively spiders the public application. It does not authenticate, run active attacks, create issues, or scan arbitrary hosts.
 
+Application HSTS is scoped to the exact canonical production host. Vercel may also add HSTS to preview or authentication responses; this platform behavior is explicitly accepted in [repository posture](REPOSITORY_POSTURE.md). The scanner requires HSTS on production and does not require its absence on previews.
+
 The automatic deployment event checks the canonical production URL after Vercel has promoted the new build. The target validator accepts only HTTPS URLs for `osi-cyber-explorer.vercel.app` and preview hostnames beginning with `osi-cyber-explorer-` and ending in `.vercel.app`. Credentials, custom ports, unrelated hosts, and redirects outside that boundary are rejected before ZAP runs. A Vercel preview protected by SSO therefore fails the manual unauthenticated preflight instead of scanning the Vercel login page; no protection-bypass secret is stored in this repository.
 
 Each run retains two artifacts for 90 days:
@@ -38,6 +40,8 @@ Il workflow applica due controlli indipendenti:
 
 1. `scripts/deployment-security.mjs` valida la destinazione prima di qualsiasi richiesta, segue al massimo tre redirect compresi nell'allowlist e verifica stato HTTP effettivo, CSP, HSTS sul solo hostname canonico di produzione e gli altri header di sicurezza versionati in `vercel.json`.
 2. OWASP ZAP Baseline esplora passivamente l'applicazione pubblica. Non effettua autenticazione, attacchi attivi, apertura automatica di issue o scansioni di host arbitrari.
+
+HSTS applicativo è limitato all'host canonico di produzione. Vercel può aggiungere HSTS anche alle risposte di preview o autenticazione: questa eccezione di piattaforma è accettata nella [postura del repository](REPOSITORY_POSTURE.md). Lo scanner richiede HSTS sulla produzione e non ne impone l'assenza sulle preview.
 
 L'evento automatico verifica l'URL canonico di produzione dopo che Vercel ha promosso la nuova build. Il validatore accetta soltanto URL HTTPS di `osi-cyber-explorer.vercel.app` e preview con hostname che iniziano per `osi-cyber-explorer-` e terminano in `.vercel.app`. Credenziali, porte personalizzate, host estranei e redirect fuori da questo confine vengono rifiutati prima dell'avvio di ZAP. Una preview protetta da SSO Vercel fallisce quindi il preflight manuale non autenticato invece di sottoporre a scansione la pagina di login Vercel; nel repository non viene conservato alcun segreto di bypass della protezione.
 
