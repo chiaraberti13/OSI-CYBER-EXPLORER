@@ -90,7 +90,7 @@ type TimelineEntry =
   | { kind: 'outcome'; success: boolean };
 
 export default function AttackLab() {
-  const { language } = useStore();
+  const language = useStore((state) => state.language);
   const t = T[language];
 
   const [selectedId, setSelectedId] = useState(ATTACK_WALKTHROUGHS[0].scenarioId);

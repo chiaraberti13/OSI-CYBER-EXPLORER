@@ -1,9 +1,18 @@
 import { useEffect, useRef } from 'react';
 import { useStore } from '../store';
+import { useShallow } from 'zustand/react/shallow';
 import { motion, AnimatePresence } from 'motion/react';
 
 export default function Terminal() {
-  const { logs, clearLogs, language } = useStore();
+  const {
+  logs,
+  clearLogs,
+  language,
+} = useStore(useShallow((state) => ({
+  logs: state.logs,
+  clearLogs: state.clearLogs,
+  language: state.language,
+})));
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

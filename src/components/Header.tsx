@@ -1,12 +1,17 @@
 import { useStore } from '../store';
+import { useShallow } from 'zustand/react/shallow';
 import { BookOpen } from 'lucide-react';
 
 export default function Header() {
-  const { 
-    language, 
-    setLanguage,
-    setIsGuideOpen
-  } = useStore();
+  const {
+  language,
+  setLanguage,
+  setIsGuideOpen,
+} = useStore(useShallow((state) => ({
+  language: state.language,
+  setLanguage: state.setLanguage,
+  setIsGuideOpen: state.setIsGuideOpen,
+})));
 
   return (
     <header className="border-b border-slate-200/60 bg-[#fafafa]/80 backdrop-blur-xl sticky top-0 z-50">

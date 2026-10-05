@@ -1,19 +1,29 @@
 import { OSI_LAYERS } from '../content/osiLayers';
 import { useStore } from '../store';
+import { useShallow } from 'zustand/react/shallow';
 import { motion } from 'motion/react';
 import { ShieldCheck, Skull } from 'lucide-react';
 
 export default function OsiStack() {
   const {
-    selectedLayerId,
-    setSelectedLayerId,
-    language,
-    currentStep,
-    simulationState,
-    activeAttack,
-    defenseEnabled,
-    activeScenarioId
-  } = useStore();
+  selectedLayerId,
+  setSelectedLayerId,
+  language,
+  currentStep,
+  simulationState,
+  activeAttack,
+  defenseEnabled,
+  activeScenarioId,
+} = useStore(useShallow((state) => ({
+  selectedLayerId: state.selectedLayerId,
+  setSelectedLayerId: state.setSelectedLayerId,
+  language: state.language,
+  currentStep: state.currentStep,
+  simulationState: state.simulationState,
+  activeAttack: state.activeAttack,
+  defenseEnabled: state.defenseEnabled,
+  activeScenarioId: state.activeScenarioId,
+})));
 
   return (
     <div className="flex flex-col w-full bg-white rounded-lg border border-slate-200/70 overflow-hidden divide-y divide-slate-100">

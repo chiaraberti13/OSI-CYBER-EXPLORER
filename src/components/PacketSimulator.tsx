@@ -1,4 +1,5 @@
 import { useStore } from '../store';
+import { useShallow } from 'zustand/react/shallow';
 import { motion, AnimatePresence } from 'motion/react';
 import { ATTACK_SCENARIOS } from '../content/attackScenarios';
 import { Zap, Skull, ShieldCheck, Play, RotateCcw, Info, Pause, ChevronDown, Volume2, VolumeX } from 'lucide-react';
@@ -10,26 +11,46 @@ import HeaderSpecificationSummary from './HeaderSpecificationSummary';
 
 export default function PacketSimulator() {
   const {
-    language,
-    simulationState,
-    addLog,
-    packetHeaders,
-    activeAttack,
-    setActiveAttack,
-    activeScenarioId,
-    setActiveScenarioId,
-    defenseEnabled,
-    setDefenseEnabled,
-    isPaused,
-    selectedProtocol,
-    setViewMode,
-    setSelectedLayerId,
-    setDetailTab,
-    audioEnabled,
-    setAudioEnabled,
-    simSpeed,
-    setSimSpeed
-  } = useStore();
+  language,
+  simulationState,
+  addLog,
+  packetHeaders,
+  activeAttack,
+  setActiveAttack,
+  activeScenarioId,
+  setActiveScenarioId,
+  defenseEnabled,
+  setDefenseEnabled,
+  isPaused,
+  selectedProtocol,
+  setViewMode,
+  setSelectedLayerId,
+  setDetailTab,
+  audioEnabled,
+  setAudioEnabled,
+  simSpeed,
+  setSimSpeed,
+} = useStore(useShallow((state) => ({
+  language: state.language,
+  simulationState: state.simulationState,
+  addLog: state.addLog,
+  packetHeaders: state.packetHeaders,
+  activeAttack: state.activeAttack,
+  setActiveAttack: state.setActiveAttack,
+  activeScenarioId: state.activeScenarioId,
+  setActiveScenarioId: state.setActiveScenarioId,
+  defenseEnabled: state.defenseEnabled,
+  setDefenseEnabled: state.setDefenseEnabled,
+  isPaused: state.isPaused,
+  selectedProtocol: state.selectedProtocol,
+  setViewMode: state.setViewMode,
+  setSelectedLayerId: state.setSelectedLayerId,
+  setDetailTab: state.setDetailTab,
+  audioEnabled: state.audioEnabled,
+  setAudioEnabled: state.setAudioEnabled,
+  simSpeed: state.simSpeed,
+  setSimSpeed: state.setSimSpeed,
+})));
 
   // Timer, OSI transitions and per-protocol header generation live in the pure
   // engine (src/lib/simulation.ts); this component only renders and dispatches.

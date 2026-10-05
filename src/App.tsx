@@ -9,6 +9,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import GuideModal from './components/GuideModal';
 import { Suspense, useEffect } from 'react';
 import { useStore } from './store';
+import { useShallow } from 'zustand/react/shallow';
 import { VIEW_REGISTRY, type MotionPreset } from './content/viewRegistry';
 
 /**
@@ -46,11 +47,16 @@ function ViewFallback({ language }: { language: 'it' | 'en' }) {
 
 export default function App() {
   const {
-    isGuideOpen,
-    setIsGuideOpen,
-    activeView,
-    language
-  } = useStore();
+  isGuideOpen,
+  setIsGuideOpen,
+  activeView,
+  language,
+} = useStore(useShallow((state) => ({
+  isGuideOpen: state.isGuideOpen,
+  setIsGuideOpen: state.setIsGuideOpen,
+  activeView: state.activeView,
+  language: state.language,
+})));
 
   // Keep the document language + title in sync with the selected UI language.
   // This helps screen readers, browser hyphenation/translation and SEO.

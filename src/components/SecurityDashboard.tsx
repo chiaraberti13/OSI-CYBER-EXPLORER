@@ -1,8 +1,15 @@
 import { Shield, Cpu, Network, Radio, Zap, Swords, ArrowRight } from 'lucide-react';
 import { useStore } from '../store';
+import { useShallow } from 'zustand/react/shallow';
 
 export default function SecurityDashboard() {
-  const { language, setActiveView } = useStore();
+  const {
+  language,
+  setActiveView,
+} = useStore(useShallow((state) => ({
+  language: state.language,
+  setActiveView: state.setActiveView,
+})));
 
   const securitySystems = [
     {

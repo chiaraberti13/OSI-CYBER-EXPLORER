@@ -3,9 +3,18 @@ import { AnimatePresence, motion } from 'motion/react';
 import { ChevronDown, Search, X } from 'lucide-react';
 import { NAV_GROUPS, navEntryOf, navGroupOf, searchNav } from '../lib/navigation';
 import { useStore } from '../store';
+import { useShallow } from 'zustand/react/shallow';
 
 export default function Navigation() {
-  const { language, activeView, setActiveView } = useStore();
+  const {
+  language,
+  activeView,
+  setActiveView,
+} = useStore(useShallow((state) => ({
+  language: state.language,
+  activeView: state.activeView,
+  setActiveView: state.setActiveView,
+})));
   const [openGroupId, setOpenGroupId] = useState<string | null>(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [query, setQuery] = useState('');

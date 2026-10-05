@@ -3,11 +3,18 @@ import { CCNA_DOMAINS } from '../content/ccna';
 import { DOMAIN_CHECKLISTS } from '../content/domainChecklists';
 import { ATTACK_FAMILIES } from '../content/securityTaxonomy';
 import { useStore } from '../store';
+import { useShallow } from 'zustand/react/shallow';
 
 const CHECKLIST_BY_DOMAIN = new Map<string, (typeof DOMAIN_CHECKLISTS)[number]>(DOMAIN_CHECKLISTS.map(list => [list.domainId, list]));
 
 export default function CurriculumView() {
-  const { language, setActiveView } = useStore();
+  const {
+  language,
+  setActiveView,
+} = useStore(useShallow((state) => ({
+  language: state.language,
+  setActiveView: state.setActiveView,
+})));
   const checklistLabels = language === 'it'
     ? { title: 'Concetti da saper spiegare', observe: 'Dove osservarlo', pitfall: 'Errore rivelatore', note: 'Non è un quiz e non produce un punteggio: è un elenco di concetti da usare per decidere cosa rivedere. Ogni voce dice dove nella piattaforma puoi vedere il concetto in funzione e quale errore rivela che non è ancora solido.' }
     : { title: 'Concepts you should be able to explain', observe: 'Where to observe it', pitfall: 'Revealing mistake', note: 'This is not a quiz and produces no score: it is a list of concepts to help you decide what to revisit. Each entry names where in the platform you can watch the concept at work and which mistake reveals it is not yet solid.' };

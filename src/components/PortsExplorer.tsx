@@ -24,7 +24,7 @@ import SecureAccessPanel from './ports/SecureAccessPanel';
 import TrainerPanel from './ports/TrainerPanel';
 
 export default function PortsExplorer({ isOpen = false, onClose = () => {}, inline = false }: { isOpen?: boolean; onClose?: () => void; inline?: boolean }) {
-  const { language } = useStore();
+  const language = useStore((state) => state.language);
   const [activeTab, setActiveTab] = useState<PortsTab>('ports');
   const [selectedRange, setSelectedRange] = useState<PortRangeFilter>('all');
   const [deviceCategory, setDeviceCategory] = useState<DeviceCategoryFilter>('all');

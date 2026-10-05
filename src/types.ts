@@ -1,5 +1,8 @@
 export type Language = 'it' | 'en';
 
+/** Closed domain for OSI layers used by navigation and simulation state. */
+export type OsiLayerId = 1 | 2 | 3 | 4 | 5 | 6 | 7;
+
 export type Severity = 'low' | 'medium' | 'high' | 'critical';
 
 export interface Attack {

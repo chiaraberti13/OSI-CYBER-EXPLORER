@@ -6,7 +6,7 @@ import { useStore } from '../store';
 import ModalDialog from './ModalDialog';
 
 export default function GlossaryModal({ isOpen = false, onClose = () => {}, inline = false }: { isOpen?: boolean; onClose?: () => void; inline?: boolean }) {
-  const { language } = useStore();
+  const language = useStore((state) => state.language);
   const [searchTerm, setSearchTerm] = useState('');
   const titleId = useId();
   const descriptionId = useId();

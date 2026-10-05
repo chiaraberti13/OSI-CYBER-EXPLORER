@@ -14,7 +14,7 @@
  */
 
 import { OSI_LAYERS } from '../content/osiLayers';
-import type { AttackType, Language, LogEntry, PacketHeader } from '../types';
+import type { AttackType, Language, LogEntry, OsiLayerId, PacketHeader } from '../types';
 import { l4ProtocolFor, pduNameForLayer, type SimProtocol } from './osi';
 
 /** Audio feedback cue identifiers, mirrored by `playAudioCue` in utils/audio. */
@@ -42,7 +42,7 @@ export type SimEffect =
   | { kind: 'clearAttack' }
   | { kind: 'log'; message: string; severity: LogSeverity }
   | { kind: 'addHeader'; header: PacketHeader }
-  | { kind: 'selectLayer'; layerId: number }
+  | { kind: 'selectLayer'; layerId: OsiLayerId }
   | { kind: 'audio'; cue: AudioCue };
 
 /**
@@ -68,7 +68,7 @@ export type SimAction =
 /** The engine's own state: phase, the OSI layer currently processed and pause flag. */
 export interface SimMachineState {
   phase: SimPhase;
-  currentStep: number;
+  currentStep: OsiLayerId;
   paused: boolean;
 }
 
@@ -79,11 +79,11 @@ export interface SimResult {
 }
 
 /** Top OSI layer (Application) — where encapsulation starts and decapsulation ends. */
-export const TOP_LAYER = 7;
+export const TOP_LAYER: OsiLayerId = 7;
 /** Bottom OSI layer (Physical) — the transmission boundary between TX and RX. */
-export const BOTTOM_LAYER = 1;
+export const BOTTOM_LAYER: OsiLayerId = 1;
 /** Step the machine resets to (Application layer). */
-export const INITIAL_STEP = TOP_LAYER;
+export const INITIAL_STEP: OsiLayerId = TOP_LAYER;
 
 /** The idle machine state used on first render and after a reset. */
 export const INITIAL_SIM_STATE: SimMachineState = {
@@ -408,7 +408,7 @@ function tickEncapsulating(state: SimMachineState, ctx: SimContext): SimResult {
         ? `L${currentStep} processed (${headerName}; conceptual OSI function)`
         : `L${currentStep} encapsulated (${headerName})`;
     return {
-      state: { ...state, currentStep: currentStep - 1 },
+      state: { ...state, currentStep: (currentStep - 1) as OsiLayerId },
       effects: [
         { kind: 'addHeader', header },
         { kind: 'log', message, severity: 'success' },
@@ -466,7 +466,7 @@ function tickDecapsulating(state: SimMachineState, ctx: SimContext): SimResult {
   const { currentStep } = state;
 
   if (currentStep < TOP_LAYER) {
-    const nextStep = currentStep + 1;
+    const nextStep = (currentStep + 1) as OsiLayerId;
     const pduName = pduNameForLayer(nextStep, ctx.protocol);
     return {
       state: { ...state, currentStep: nextStep },

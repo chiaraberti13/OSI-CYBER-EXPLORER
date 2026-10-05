@@ -1,4 +1,5 @@
 import { useStore } from '../store';
+import { useShallow } from 'zustand/react/shallow';
 import { OSI_LAYERS } from '../content/osiLayers';
 import { motion, AnimatePresence } from 'motion/react';
 import { Layers, ArrowDown } from 'lucide-react';
@@ -11,7 +12,17 @@ import HeaderSpecificationSummary from './HeaderSpecificationSummary';
  * learner literally sees a packet being wrapped layer by layer.
  */
 export default function PacketInspector() {
-  const { packetHeaders, language, currentStep, simulationState } = useStore();
+  const {
+  packetHeaders,
+  language,
+  currentStep,
+  simulationState,
+} = useStore(useShallow((state) => ({
+  packetHeaders: state.packetHeaders,
+  language: state.language,
+  currentStep: state.currentStep,
+  simulationState: state.simulationState,
+})));
 
   const t = {
     it: {

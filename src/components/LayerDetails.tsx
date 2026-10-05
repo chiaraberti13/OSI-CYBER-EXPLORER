@@ -2,6 +2,7 @@ import { useState, Fragment } from 'react';
 import { OSI_LAYERS } from '../content/osiLayers';
 import { ATTACK_SCENARIOS } from '../content/attackScenarios';
 import { useStore } from '../store';
+import { useShallow } from 'zustand/react/shallow';
 import { SCENARIO_FEEDBACK } from '../content/scenarioFeedback';
 import HeaderSpecificationSummary from './HeaderSpecificationSummary';
 import { Attack, Defense, Severity } from '../types';
@@ -193,21 +194,35 @@ function DefenseCard({ defense }: { defense: Defense }) {
 }
 
 export default function LayerDetails() {
-  const { 
-    selectedLayerId, 
-    language, 
-    viewMode, 
-    setViewMode, 
-    packetHeaders, 
-    selectedProtocol, 
-    simulationState, 
-    activeAttack, 
-    activeScenarioId,
-    detailTab, 
-    setDetailTab,
-    hasSimulated,
-    defenseEnabled
-  } = useStore();
+  const {
+  selectedLayerId,
+  language,
+  viewMode,
+  setViewMode,
+  packetHeaders,
+  selectedProtocol,
+  simulationState,
+  activeAttack,
+  activeScenarioId,
+  detailTab,
+  setDetailTab,
+  hasSimulated,
+  defenseEnabled,
+} = useStore(useShallow((state) => ({
+  selectedLayerId: state.selectedLayerId,
+  language: state.language,
+  viewMode: state.viewMode,
+  setViewMode: state.setViewMode,
+  packetHeaders: state.packetHeaders,
+  selectedProtocol: state.selectedProtocol,
+  simulationState: state.simulationState,
+  activeAttack: state.activeAttack,
+  activeScenarioId: state.activeScenarioId,
+  detailTab: state.detailTab,
+  setDetailTab: state.setDetailTab,
+  hasSimulated: state.hasSimulated,
+  defenseEnabled: state.defenseEnabled,
+})));
 
   const layer = OSI_LAYERS.find(l => l.id === selectedLayerId);
 
