@@ -7,6 +7,7 @@ import Header from './components/Header';
 import Navigation from './components/Navigation';
 import { motion, AnimatePresence } from 'motion/react';
 import GuideModal from './components/GuideModal';
+import ChunkErrorBoundary from './components/ChunkErrorBoundary';
 import { Suspense, useEffect } from 'react';
 import { useStore } from './store';
 import { useShallow } from 'zustand/react/shallow';
@@ -50,11 +51,13 @@ export default function App() {
   isGuideOpen,
   setIsGuideOpen,
   activeView,
+  setActiveView,
   language,
 } = useStore(useShallow((state) => ({
   isGuideOpen: state.isGuideOpen,
   setIsGuideOpen: state.setIsGuideOpen,
   activeView: state.activeView,
+  setActiveView: state.setActiveView,
   language: state.language,
 })));
 
@@ -77,24 +80,40 @@ export default function App() {
       <Navigation />
 
       <main className="max-w-7xl mx-auto p-4 md:p-6 min-h-[75vh]">
-        <Suspense fallback={<ViewFallback language={language} />}>
-          <AnimatePresence mode="wait">
-            {/*
-              A single registry-driven switch replaces the former per-view blocks:
-              `key={activeView}` drives the exit/enter animation, the preset comes from
-              the view's declared motion, and only the embeddable views receive `inline`.
-            */}
-            <motion.div
-              key={activeView}
-              initial={preset.initial}
-              animate={preset.animate}
-              exit={preset.exit}
-              transition={preset.transition}
-            >
-              {activeDefinition.inline ? <ActiveView inline={true} /> : <ActiveView />}
-            </motion.div>
-          </AnimatePresence>
-        </Suspense>
+        {/*
+          ENG-09: a lazy chunk that fails to download throws during render. The boundary
+          wraps Suspense so it catches that rejection (and any render error in the view)
+          and shows a recoverable panel instead of a blank page. `resetKeys={[activeView]}`
+          clears the error when the user navigates elsewhere; the safe return sends them
+          back to the always-available OSI overview without a reload.
+        */}
+        <ChunkErrorBoundary
+          language={language}
+          resetKeys={[activeView]}
+          safeReturn={{
+            label: language === 'it' ? 'Torna alla panoramica OSI' : 'Back to the OSI overview',
+            onAction: () => setActiveView('osi')
+          }}
+        >
+          <Suspense fallback={<ViewFallback language={language} />}>
+            <AnimatePresence mode="wait">
+              {/*
+                A single registry-driven switch replaces the former per-view blocks:
+                `key={activeView}` drives the exit/enter animation, the preset comes from
+                the view's declared motion, and only the embeddable views receive `inline`.
+              */}
+              <motion.div
+                key={activeView}
+                initial={preset.initial}
+                animate={preset.animate}
+                exit={preset.exit}
+                transition={preset.transition}
+              >
+                {activeDefinition.inline ? <ActiveView inline={true} /> : <ActiveView />}
+              </motion.div>
+            </AnimatePresence>
+          </Suspense>
+        </ChunkErrorBoundary>
       </main>
 
       {/* Footer */}

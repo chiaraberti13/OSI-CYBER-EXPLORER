@@ -11,6 +11,7 @@ import {
   Split, Swords, Workflow, type LucideIcon
 } from 'lucide-react';
 import type { AppView } from '../store';
+import { importWithRetry } from '../lib/lazyWithRetry';
 
 /**
  * The single, typed registry of every view the app can render.
@@ -81,7 +82,10 @@ export interface ViewDefinition {
  * registry stays a homogeneous `Record` the render switch can index without casts.
  */
 function view(loader: () => Promise<{ default: ComponentType<ViewProps> }>): LazyExoticComponent<ComponentType<ViewProps>> {
-  return lazy(loader);
+  // `importWithRetry` absorbs transient chunk-fetch failures (a dropped connection, a
+  // chunk still propagating after a deploy) before React.lazy caches the result. A
+  // failure that survives the retries surfaces to the ChunkErrorBoundary (ENG-09).
+  return lazy(() => importWithRetry(loader));
 }
 
 export const VIEW_REGISTRY: Record<AppView, ViewDefinition> = {
