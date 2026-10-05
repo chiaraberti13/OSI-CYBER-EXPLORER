@@ -60,4 +60,32 @@ describe('importWithRetry (ENG-09 loader-level chunk retry)', () => {
     await expect(importWithRetry(factory, { delayMs: 0 })).rejects.toThrow('boom');
     expect(factory).toHaveBeenCalledTimes(3);
   });
+
+  it('waits for the default backoff before the second retry', async () => {
+    vi.useFakeTimers();
+    try {
+      const factory = vi.fn<() => Promise<string>>()
+        .mockRejectedValueOnce(new Error('first blip'))
+        .mockRejectedValueOnce(new Error('second blip'))
+        .mockResolvedValueOnce('loaded');
+      const result = importWithRetry(factory);
+
+      await vi.advanceTimersByTimeAsync(0);
+      expect(factory).toHaveBeenCalledTimes(2);
+      await vi.advanceTimersByTimeAsync(149);
+      expect(factory).toHaveBeenCalledTimes(2);
+      await vi.advanceTimersByTimeAsync(1);
+      await expect(result).resolves.toBe('loaded');
+      expect(factory).toHaveBeenCalledTimes(3);
+      expect(vi.getTimerCount()).toBe(0);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('clamps negative retry and delay budgets to zero', async () => {
+    const factory = vi.fn<() => Promise<never>>().mockRejectedValue(new Error('offline'));
+    await expect(importWithRetry(factory, { retries: -1, delayMs: -150 })).rejects.toThrow('offline');
+    expect(factory).toHaveBeenCalledTimes(1);
+  });
 });

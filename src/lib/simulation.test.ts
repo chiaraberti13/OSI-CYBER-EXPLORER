@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import type { SimProtocol } from './osi';
 import {
   INITIAL_SIM_STATE,
   INITIAL_STEP,
@@ -31,6 +32,18 @@ function run(start: SimMachineState, actions: SimAction[], ctx: SimContext) {
 }
 
 const ticks = (n: number): SimAction[] => Array.from({ length: n }, () => ({ type: 'TICK' }) as const);
+
+// The selected application profiles must keep their transport and service port
+// throughout a complete run, not only when the header builder is called alone.
+const PROFILES = [
+  { protocol: 'HTTP', transport: 'TCP', port: '80', pdu: 'Segment' },
+  { protocol: 'HTTPS', transport: 'TCP', port: '443', pdu: 'Segment' },
+  { protocol: 'SSH', transport: 'TCP', port: '22', pdu: 'Segment' },
+  { protocol: 'FTP', transport: 'TCP', port: '21', pdu: 'Segment' },
+  { protocol: 'SMTP', transport: 'TCP', port: '25', pdu: 'Segment' },
+  { protocol: 'DNS', transport: 'UDP', port: '53 (DNS)', pdu: 'Datagram' },
+  { protocol: 'BGP', transport: 'TCP', port: '179', pdu: 'Segment' },
+] satisfies { protocol: SimProtocol; transport: string; port: string; pdu: string }[];
 
 describe('headerNameForLayer', () => {
   it('maps the application layer to the protocol itself', () => {
@@ -130,6 +143,21 @@ describe('simulationReducer — lifecycle', () => {
     expect(state).toBe(paused);
     expect(effects).toHaveLength(0);
   });
+
+  it.each(['idle', 'interrupted'] as const)('ignores ticks in the %s phase', (phase) => {
+    const state: SimMachineState = { phase, currentStep: 1, paused: false };
+    const result = simulationReducer(state, { type: 'TICK' }, EN);
+    expect(result.state).toBe(state);
+    expect(result.effects).toEqual([]);
+  });
+
+  it('resets an English session even when paused', () => {
+    const state: SimMachineState = { phase: 'decapsulating', currentStep: 3, paused: true };
+    const result = simulationReducer(state, { type: 'RESET' }, EN);
+    expect(result.state).toEqual(INITIAL_SIM_STATE);
+    expect(logs(result.effects)).toEqual(['Simulation reset.']);
+    expect(state).toEqual({ phase: 'decapsulating', currentStep: 3, paused: true });
+  });
 });
 
 describe('simulationReducer — full encapsulation / decapsulation', () => {
@@ -175,5 +203,42 @@ describe('simulationReducer — full encapsulation / decapsulation', () => {
     expect(state.phase).toBe('idle');
     const headers = effects.filter((e) => e.kind === 'addHeader');
     expect(headers).toHaveLength(6);
+  });
+});
+
+describe.each(['en', 'it'] as const)('simulation protocol journeys (%s)', (language) => {
+  it.each(PROFILES)('delivers $protocol with the correct transport and port', ({ protocol, transport, port, pdu }) => {
+    const ctx: SimContext = { ...EN, protocol, language };
+    const initial = { ...INITIAL_SIM_STATE };
+    const { state, effects } = run(initial, [{ type: 'START' }, ...ticks(14)], ctx);
+    const headers = effects
+      .filter((effect): effect is Extract<SimEffect, { kind: 'addHeader' }> => effect.kind === 'addHeader')
+      .map((effect) => effect.header);
+
+    expect(state).toEqual(INITIAL_SIM_STATE);
+    expect(initial).toEqual(INITIAL_SIM_STATE);
+    expect(headers.map((header) => header.layer)).toEqual([7, 6, 5, 4, 3, 2]);
+    expect(headers.find((header) => header.layer === 7)).toMatchObject({ protocol, pduName: 'Data' });
+    expect(headers.find((header) => header.layer === 7)?.fields?.length).toBeGreaterThan(0);
+    expect(headers.find((header) => header.layer === 4)).toMatchObject({
+      protocol: transport,
+      pduName: pdu,
+      fields: expect.arrayContaining([{ key: 'DstPort', value: port }]),
+    });
+    expect(effects).toContainEqual({ kind: 'audio', cue: 'success' });
+    expect(logs(effects)).toContain(language === 'en'
+      ? 'Data successfully delivered to Application Layer.'
+      : 'Dati consegnati con successo al Livello Applicazione.');
+  });
+
+  it.each([false, true])('applies the attack outcome when defenseEnabled=%s', (defenseEnabled) => {
+    const ctx: SimContext = { ...EN, attack: 'mitm', defenseEnabled, language };
+    const { state, effects } = run(INITIAL_SIM_STATE, [{ type: 'START' }, ...ticks(14)], ctx);
+    expect(state.phase).toBe(defenseEnabled ? 'idle' : 'interrupted');
+    expect(effects).toContainEqual({ kind: 'audio', cue: defenseEnabled ? 'success' : 'alert' });
+    expect(logs(effects).some((message) => message.includes('MITM'))).toBe(true);
+    expect(logs(effects).includes(language === 'en'
+      ? 'Data successfully delivered to Application Layer.'
+      : 'Dati consegnati con successo al Livello Applicazione.')).toBe(defenseEnabled);
   });
 });

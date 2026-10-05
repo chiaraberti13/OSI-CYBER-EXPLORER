@@ -104,10 +104,12 @@ npm run dev      # start on loopback only: http://127.0.0.1:3000
 npm run dev:network # explicitly allow access from the local network
 npm run build    # production build
 npm test         # run the test suite (Vitest)
+npm run test:coverage # test suite, logic coverage reports and blocking thresholds
 npm run typecheck # TypeScript type-check
-npm run verify   # type-check, lint, tests and build, as in CI
+npm run verify   # type-check, lint, tests with coverage and build, as in CI
 ```
 Dependency and audit policy: [docs/DEPENDENCIES.md](docs/DEPENDENCIES.md).
+Coverage scope, thresholds and CI reports: [docs/TEST_COVERAGE.md](docs/TEST_COVERAGE.md#english).
 
 `npm run dev` is the secure default and does not expose Vite to other devices. `npm run dev:network` binds the development server to every network interface; use it only when LAN access is required, on a trusted network and with an appropriate host firewall. The Vite development server is not intended for public or production exposure.
 

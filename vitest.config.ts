@@ -13,6 +13,27 @@ export default defineConfig({
     environment: 'node',
     globals: false,
     restoreMocks: true,
-    include: ['src/**/*.test.{ts,tsx}']
+    include: ['src/**/*.test.{ts,tsx}'],
+    coverage: {
+      provider: 'v8',
+      // Include unimported logic too: a new module must not silently disappear
+      // from the denominator. Educational datasets and UI are outside this gate.
+      include: ['src/lib/**/*.{ts,tsx}'],
+      exclude: ['src/lib/**/*.{test,spec}.{ts,tsx}', 'src/lib/**/*.d.ts'],
+      reportsDirectory: 'coverage',
+      reporter: ['text', 'html', 'lcov', 'json-summary'],
+      reportOnFailure: true,
+      thresholds: {
+        // ENG-11 baseline (24 modules): 97.58% lines, 95.21% statements,
+        // 91.87% branches, 99.59% functions. Keep changes to this policy explicit.
+        lines: 95,
+        statements: 92,
+        branches: 90,
+        functions: 98,
+        autoUpdate: false,
+        // A well-tested large module must not mask an untested small one.
+        perFile: { lines: 80, statements: 80, branches: 70, functions: 90 }
+      }
+    }
   }
 });

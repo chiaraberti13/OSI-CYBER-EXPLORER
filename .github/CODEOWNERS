@@ -10,6 +10,8 @@
 /.nvmrc @chiaraberti13
 /package.json @chiaraberti13
 /package-lock.json @chiaraberti13
+/vitest.config.ts @chiaraberti13
+/docs/TEST_COVERAGE.md @chiaraberti13
 /scripts/verify-lockfile.mjs @chiaraberti13
 /scripts/verify-lockfile.test.mjs @chiaraberti13
 /scripts/release-metadata.mjs @chiaraberti13

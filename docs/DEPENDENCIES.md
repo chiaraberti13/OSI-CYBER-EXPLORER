@@ -15,7 +15,7 @@
 - Use `npm ci --ignore-scripts`, locally and in CI. It installs exactly what `package-lock.json` records, fails if the lockfile and `package.json` disagree and does not execute dependency lifecycle scripts.
 - Run `npm run verify:lockfile:bootstrap` before installing. This zero-dependency check rejects non-HTTPS or unexpected registries, missing tarball URLs, non-SHA512 integrity values and unsupported lockfile structures before third-party code is available.
 - Use `npm install <package>` only when you intend to add or update a dependency.
-- `npm run verify` runs both lockfile checks, type-check, lint, tests and build: the same sequence as CI.
+- `npm run verify` runs both lockfile checks, type-check, lint, tests with blocking logic coverage and build: the same sequence as CI. See [TEST_COVERAGE.md](TEST_COVERAGE.md#english) for scope, thresholds and reports.
 
 Dependency lifecycle scripts are disabled globally by `.npmrc`. The current lockfile contains no required install script: only the optional macOS package `fsevents` declares one. If a future dependency genuinely needs a lifecycle script, document and review a narrow allowlist before enabling it.
 
@@ -51,7 +51,7 @@ A new High/Critical advisory must be fixed before merging. A temporary exception
 - Usare `npm ci --ignore-scripts`, in locale e in CI: installa esattamente ciò che è registrato in `package-lock.json`, fallisce se lockfile e `package.json` non coincidono e non esegue i lifecycle script delle dipendenze.
 - Eseguire `npm run verify:lockfile:bootstrap` prima dell'installazione. Questo controllo senza dipendenze rifiuta registry non HTTPS o inattesi, URL dei tarball mancanti, integrità diversa da SHA-512 e strutture lockfile non supportate prima che sia disponibile codice di terze parti.
 - Usare `npm install <pacchetto>` solo quando si vuole aggiungere o aggiornare una dipendenza.
-- `npm run verify` esegue entrambi i controlli del lockfile, type-check, lint, test e build: la stessa sequenza della CI.
+- `npm run verify` esegue entrambi i controlli del lockfile, type-check, lint, test con coverage bloccante della logica e build: la stessa sequenza della CI. Ambito, soglie e report sono descritti in [TEST_COVERAGE.md](TEST_COVERAGE.md#italiano).
 
 I lifecycle script delle dipendenze sono disabilitati globalmente da `.npmrc`. Il lockfile attuale non contiene script necessari all'installazione: soltanto il pacchetto macOS opzionale `fsevents` ne dichiara uno. Se una dipendenza futura ne avrà realmente bisogno, prima di abilitarlo andrà documentata e revisionata un'allowlist ristretta.
 

@@ -54,8 +54,43 @@ jobs:
       - name: Lint
         run: npm run lint
 
-      - name: Test
-        run: npm test
+      - name: Test with blocking logic coverage
+        run: npm run test:coverage
+
+      - name: Summarize logic coverage
+        if: ${{ !cancelled() && hashFiles('coverage/coverage-summary.json') != '' }}
+        run: |
+          node --input-type=module <<'NODE'
+          import { appendFileSync, readFileSync } from 'node:fs';
+          const report = JSON.parse(readFileSync('coverage/coverage-summary.json', 'utf8'));
+          const rows = ['lines', 'statements', 'branches', 'functions'].map((metric) => {
+            const { covered, total, pct } = report.total[metric];
+            return `| ${metric} | ${covered}/${total} | ${pct}% |`;
+          });
+          appendFileSync(process.env.GITHUB_STEP_SUMMARY, [
+            '### Coverage — src/lib',
+            '',
+            `${Object.keys(report).length - 1} logic modules; datasets and UI excluded.`,
+            '',
+            '| Metric | Covered/total | Coverage |',
+            '|---|---:|---:|',
+            ...rows,
+            '',
+            'See the coverage artifact for HTML, LCOV and JSON reports, including uncovered lines.',
+            ''
+          ].join('\n'));
+          NODE
+
+      - name: Upload logic coverage reports
+        # Preserve diagnostics when tests or thresholds fail, without making the
+        # coverage command non-blocking. Fresh runners cannot upload stale reports.
+        if: ${{ !cancelled() && hashFiles('coverage/coverage-summary.json') != '' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: coverage-node-${{ matrix.node-version }}
+          path: coverage/
+          if-no-files-found: error
+          retention-days: 14
 
       - name: Build
         run: npm run build
