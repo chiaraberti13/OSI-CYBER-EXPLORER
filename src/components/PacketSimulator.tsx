@@ -1,25 +1,19 @@
-import { useCallback, useEffect } from 'react';
 import { useStore } from '../store';
 import { motion, AnimatePresence } from 'motion/react';
-import { OSI_LAYERS } from '../content/osiLayers';
 import { ATTACK_SCENARIOS } from '../content/attackScenarios';
 import { Zap, Skull, ShieldCheck, Play, RotateCcw, Info, Pause, ChevronDown, Volume2, VolumeX } from 'lucide-react';
 import { playAudioCue } from '../utils/audio';
-import { pduNameForLayer, l4ProtocolFor, type SimProtocol } from '../lib/osi';
+import type { SimProtocol } from '../lib/osi';
 import { SIMULATION_SPEEDS } from '../lib/preferences';
+import { usePacketSimulation } from './usePacketSimulation';
 import HeaderSpecificationSummary from './HeaderSpecificationSummary';
 
 export default function PacketSimulator() {
-  const { 
-    language, 
-    simulationState, 
-    setSimulationState, 
-    addLog, 
-    packetHeaders, 
-    addPacketHeader, 
-    clearPacketHeaders,
-    currentStep,
-    setCurrentStep,
+  const {
+    language,
+    simulationState,
+    addLog,
+    packetHeaders,
     activeAttack,
     setActiveAttack,
     activeScenarioId,
@@ -27,7 +21,6 @@ export default function PacketSimulator() {
     defenseEnabled,
     setDefenseEnabled,
     isPaused,
-    setIsPaused,
     selectedProtocol,
     setViewMode,
     setSelectedLayerId,
@@ -38,7 +31,9 @@ export default function PacketSimulator() {
     setSimSpeed
   } = useStore();
 
-  const stepInterval = Math.round(1000 / simSpeed);
+  // Timer, OSI transitions and per-protocol header generation live in the pure
+  // engine (src/lib/simulation.ts); this component only renders and dispatches.
+  const { start, reset, togglePause } = usePacketSimulation();
 
   const labels = {
     en: {
@@ -70,325 +65,6 @@ export default function PacketSimulator() {
       none: 'Nessuno'
     }
   }[language];
-
-  const handleStart = async () => {
-    if (simulationState !== 'idle') return;
-    
-    clearPacketHeaders();
-    setIsPaused(false);
-    setSimulationState('encapsulating');
-    setCurrentStep(7);
-    
-    if (selectedProtocol === 'HTTP') {
-      addLog(language === 'en' ? 'HTTP: TCP session established; preparing a cleartext request.' : 'HTTP: sessione TCP stabilita; preparazione della richiesta in chiaro.', 'info');
-    } else if (selectedProtocol === 'HTTPS') {
-      addLog(language === 'en' ? 'HTTPS: TCP and TLS sessions established; preparing encrypted application data.' : 'HTTPS: sessioni TCP e TLS stabilite; preparazione dei dati applicativi cifrati.', 'info');
-    } else if (selectedProtocol === 'SSH') {
-      addLog(language === 'en' ? 'SSH Session: Initiating Diffie-Hellman Key Exchange...' : 'Sessione SSH: Avvio scambio chiavi Diffie-Hellman...', 'info');
-    } else if (selectedProtocol === 'FTP') {
-      addLog(language === 'en' ? 'FTP Control: Connecting to command port 21...' : 'Controllo FTP: Connessione alla porta comandi 21...', 'info');
-    } else if (selectedProtocol === 'SMTP') {
-      addLog(language === 'en' ? 'SMTP Session: Sending EHLO to mail gateway...' : 'Sessione SMTP: Invio EHLO al gateway di posta...', 'info');
-    } else if (selectedProtocol === 'DNS') {
-      addLog(language === 'en' ? 'DNS Query: Resolving domain name...' : 'Query DNS: Risoluzione nome dominio...', 'info');
-    } else if (selectedProtocol === 'BGP') {
-      addLog(language === 'en' ? 'BGP Update: Announcing IP prefix...' : 'Update BGP: Annuncio prefisso IP...', 'info');
-    } else {
-      addLog(language === 'en' ? 'Packet Preparation: Initializing new sequence...' : 'Preparazione Pacchetto: Inizializzazione nuova sequenza...', 'info');
-    }
-    
-    addLog(language === 'en' ? 'Starting packet encapsulation...' : 'Inizio incapsulamento pacchetto...', 'info');
-    if (audioEnabled) playAudioCue('start');
-  };
-
-  const handleReset = () => {
-    setSimulationState('idle');
-    setIsPaused(false);
-    setCurrentStep(7);
-    clearPacketHeaders();
-    setActiveAttack('none');
-    addLog(language === 'en' ? 'Simulation reset.' : 'Simulazione resettata.', 'warning');
-  };
-
-  const getPduName = useCallback((layerId: number) => pduNameForLayer(layerId, selectedProtocol), [selectedProtocol]);
-
-  const getHeaderForLayer = useCallback((layerId: number) => {
-    const layer = OSI_LAYERS.find(l => l.id === layerId);
-    if (!layer) return 'Data';
-    if (layerId === 7) return selectedProtocol;
-    if (layerId === 6) return selectedProtocol === 'HTTPS' ? 'TLS' : (language === 'it' ? 'Rappresentazione' : 'Representation');
-    if (layerId === 5) return language === 'it' ? 'Funzioni di sessione' : 'Session functions';
-    if (layerId === 4) return l4ProtocolFor(selectedProtocol); // TCP / UDP
-    if (layerId === 3) return 'IP';
-    if (layerId === 2) return 'Ethernet II';
-    return layer.translations[language].protocols?.[0] || 'Data';
-  }, [language, selectedProtocol]);
-
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    
-    if (simulationState === 'encapsulating' && !isPaused) {
-      interval = setInterval(() => {
-        if (currentStep > 1) {
-          const headerName = getHeaderForLayer(currentStep);
-          const pduName = getPduName(currentStep);
-          
-          let details = `L${currentStep} Header Added`;
-          let fields: { key: string; value: string }[] = [];
-
-          if (selectedProtocol === 'HTTP' || selectedProtocol === 'HTTPS') {
-            const secureWeb = selectedProtocol === 'HTTPS';
-            if (currentStep === 7) {
-              details = 'GET /index.html HTTP/1.1';
-              fields = [
-                { key: 'Method', value: 'GET' },
-                { key: 'Path', value: '/index.html' },
-                { key: 'Host', value: 'example.com' },
-                { key: 'Agent', value: 'Mozilla/5.0' }
-              ];
-            } else if (currentStep === 6) {
-              details = secureWeb
-                ? 'TLS 1.3 record: encrypted HTTP application data'
-                : 'Representation: UTF-8 content, no generic L6 header';
-              fields = secureWeb
-                ? [
-                    { key: 'Record', value: 'Application Data' },
-                    { key: 'Version', value: 'TLS 1.3' },
-                    { key: 'Content', value: 'Encrypted' }
-                  ]
-                : [
-                    { key: 'Charset', value: 'UTF-8' },
-                    { key: 'Encryption', value: 'None' }
-                  ];
-            } else if (currentStep === 5) {
-              details = 'Session semantics: no universal OSI Layer 5 header';
-              fields = [
-                { key: 'Model', value: 'Conceptual OSI function' },
-                { key: 'State', value: 'Established' }
-              ];
-            } else if (currentStep === 4) {
-              details = `TCP: PSH, ACK, destination port ${secureWeb ? '443' : '80'}`;
-              fields = [
-                { key: 'SrcPort', value: '54321' },
-                { key: 'DstPort', value: secureWeb ? '443' : '80' },
-                { key: 'SeqNo', value: '120485' },
-                { key: 'Flags', value: 'PSH, ACK' }
-              ];
-            } else if (currentStep === 3) {
-              details = 'IPv4: 192.168.1.10 -> 198.51.100.14';
-              fields = [
-                { key: 'SrcIP', value: '192.168.1.10' },
-                { key: 'DstIP', value: '198.51.100.14' },
-                { key: 'TTL', value: '64' },
-                { key: 'Proto', value: '0x06 (TCP)' }
-              ];
-            } else if (currentStep === 2) {
-              details = 'MAC: 00:0C:29... -> 00:50:56...';
-              fields = [
-                { key: 'SrcMAC', value: '00:0C:29:C0:00:08' },
-                { key: 'DstMAC', value: '00:50:56:C0:00:01' },
-                { key: 'VLAN', value: '10' }
-              ];
-            }
-          } else if (selectedProtocol === 'SSH') {
-             if (currentStep === 7) {
-              details = 'SSH-2.0-OpenSSH_8.9: Encrypted Payload';
-              fields = [
-                { key: 'MsgId', value: '34' },
-                { key: 'EncData', value: '4f2a...88bc' },
-                { key: 'MAC', value: 'SHA256' }
-              ];
-            } else if (currentStep === 4) {
-              details = 'TCP Port 22 (SSH)';
-              fields = [
-                { key: 'SrcPort', value: '55231' },
-                { key: 'DstPort', value: '22' },
-                { key: 'SeqNo', value: '1001' }
-              ];
-            } else {
-              details = `L${currentStep} Overhead`;
-            }
-          } else if (selectedProtocol === 'FTP') {
-            if (currentStep === 7) {
-              details = 'FTP Command: USER anonymous';
-              fields = [
-                { key: 'Prefix', value: 'USER' },
-                { key: 'Arg', value: 'anonymous' },
-                { key: 'EOL', value: 'CRLF' }
-              ];
-            } else if (currentStep === 4) {
-              details = 'TCP Port 21 (FTP-Control)';
-              fields = [
-                { key: 'SrcPort', value: '55678' },
-                { key: 'DstPort', value: '21' }
-              ];
-            } else {
-              details = `L${currentStep} Overhead`;
-            }
-          } else if (selectedProtocol === 'SMTP') {
-            if (currentStep === 7) {
-              details = 'SMTP: MAIL FROM:<sender@example.com>';
-              fields = [
-                { key: 'Command', value: 'MAIL FROM' },
-                { key: 'Sender', value: 'sender@example.com' }
-              ];
-            } else if (currentStep === 4) {
-              details = 'TCP Port 25 (SMTP)';
-              fields = [
-                { key: 'SrcPort', value: '5590' },
-                { key: 'DstPort', value: '25' }
-              ];
-            } else {
-              details = `L${currentStep} Overhead`;
-            }
-          } else if (selectedProtocol === 'DNS') {
-            if (currentStep === 7) {
-              details = 'DNS Query: example.com (A Record)';
-              fields = [
-                { key: 'ID', value: '0x3a4b' },
-                { key: 'Flags', value: 'Standard Query' },
-                { key: 'Name', value: 'example.com' },
-                { key: 'Type', value: 'A (IPv4 Address)' }
-              ];
-            } else if (currentStep === 4) {
-              details = 'UDP Port 53';
-              fields = [
-                { key: 'SrcPort', value: '55667' },
-                { key: 'DstPort', value: '53 (DNS)' },
-                { key: 'Len', value: '38' }
-              ];
-            } else if (currentStep === 3) {
-              details = 'IP Dest: 203.0.113.8';
-              fields = [
-                { key: 'SrcIP', value: '192.168.1.10' },
-                { key: 'DstIP', value: '203.0.113.8' },
-                { key: 'TTL', value: '64' }
-              ];
-            } else if (currentStep === 2) {
-              details = 'Ethernet II: ARP Resolved';
-              fields = [
-                { key: 'SrcMAC', value: '00:0C:29:C0:00:08' },
-                { key: 'DstMAC', value: '00:50:56:C0:00:01' }
-              ];
-            } else {
-              details = `L${currentStep} Overhead`;
-            }
-          } else if (selectedProtocol === 'BGP') {
-             if (currentStep === 7) {
-              details = 'BGP Update: Prefix 192.168.100.0/24';
-              fields = [
-                { key: 'MsgType', value: 'UPDATE' },
-                { key: 'Prefix', value: '192.168.100.0/24' },
-                { key: 'Origin', value: 'IGP' },
-                { key: 'AS_PATH', value: '65001 65002' }
-              ];
-            } else if (currentStep === 4) {
-              details = 'TCP Port 179 (BGP)';
-              fields = [
-                { key: 'SrcPort', value: '49172' },
-                { key: 'DstPort', value: '179' },
-                { key: 'Flags', value: 'PUSH, ACK' }
-              ];
-            } else if (currentStep === 3) {
-              details = 'IP: Internal Routing';
-              fields = [
-                { key: 'SrcIP', value: '10.0.0.1' },
-                { key: 'DstIP', value: '10.0.0.2' }
-              ];
-            } else if (currentStep === 2) {
-              details = 'Ethernet II frame toward the next-hop router';
-              fields = [
-                { key: 'SrcMAC', value: '00:1B:54:AA:10:01' },
-                { key: 'DstMAC', value: '00:1B:54:AA:10:02' },
-                { key: 'EtherType', value: '0x0800 (IPv4)' }
-              ];
-            } else {
-              details = `L${currentStep} Routing Overhead`;
-            }
-          } else {
-            if (currentStep === 7) {
-              details = 'ICMP Echo Request: Data payload';
-              fields = [
-                { key: 'Type', value: '8 (Echo Request)' },
-                { key: 'Code', value: '0' },
-                { key: 'Payload', value: '32 Bytes' }
-              ];
-            } else if (currentStep === 4) {
-              details = 'UDP: Checksum 0xAC3F';
-              fields = [
-                { key: 'SrcPort', value: '32768' },
-                { key: 'DstPort', value: '7' },
-                { key: 'Length', value: '40' }
-              ];
-            } else if (currentStep === 3) {
-              details = 'ICMP Over IP: Type 8, Code 0';
-              fields = [
-                { key: 'SrcIP', value: '192.168.1.5' },
-                { key: 'DstIP', value: '203.0.113.8' },
-                { key: 'TTL', value: '128' }
-              ];
-            } else if (currentStep === 2) {
-              details = 'Ethernet II: IPv4 Payload';
-              fields = [
-                { key: 'SrcMAC', value: 'B4:2E:99:A1:C2:E0' },
-                { key: 'DstMAC', value: 'E4:F4:C6:D1:B2:A1' },
-                { key: 'Type', value: '0x0800' }
-              ];
-            }
-          }
-
-          addPacketHeader({
-            layer: currentStep,
-            protocol: headerName,
-            details: details,
-            pduName: pduName,
-            fields: fields
-          });
-          addLog(
-            currentStep === 5 || currentStep === 6
-              ? `L${currentStep} processed (${headerName}; conceptual OSI function)`
-              : `L${currentStep} encapsulated (${headerName})`,
-            'success'
-          );
-          setSelectedLayerId(currentStep);
-          setCurrentStep(currentStep - 1);
-          if (audioEnabled) playAudioCue('step');
-        } else {
-          addLog(language === 'en' ? 'Transmitting via Physical Media...' : 'Trasmissione via Media Fisico...', 'info');
-          
-          if (activeAttack !== 'none' && !defenseEnabled) {
-            setSimulationState('interrupted');
-            addLog(language === 'en' ? `CRITICAL: ${activeAttack.toUpperCase()} attack successful! Connection dropped.` : `CRITICO: Attacco ${activeAttack.toUpperCase()} riuscito! Connessione interrotta.`, 'danger');
-            if (audioEnabled) playAudioCue('alert');
-          } else {
-             if (activeAttack !== 'none' && defenseEnabled) {
-               addLog(language === 'en' ? `Defense mitigated ${activeAttack.toUpperCase()} attack.` : `La difesa ha mitigato l'attacco ${activeAttack.toUpperCase()}.`, 'success');
-             }
-             setSimulationState('decapsulating');
-             addLog(language === 'en' ? 'Packet reaching destination. Starting decapsulation...' : 'Il pacchetto raggiunge il destinatario. Inizio decapsulamento...', 'info');
-          }
-        }
-      }, stepInterval);
-    } else if (simulationState === 'decapsulating' && !isPaused) {
-      interval = setInterval(() => {
-        if (currentStep < 7) {
-          const nextStep = currentStep + 1;
-          const pduName = getPduName(nextStep);
-          addLog(`L${currentStep} decapsulated (${pduName})`, 'success');
-          setSelectedLayerId(nextStep);
-          setCurrentStep(nextStep);
-          if (audioEnabled) playAudioCue('step');
-        } else {
-          addLog(language === 'en' ? 'Data successfully delivered to Application Layer.' : 'Dati consegnati con successo al Livello Applicazione.', 'success');
-          setSimulationState('idle');
-          if (audioEnabled) playAudioCue('success');
-        }
-      }, stepInterval);
-    }
-
-    return () => clearInterval(interval);
-  }, [simulationState, currentStep, activeAttack, defenseEnabled, isPaused, selectedProtocol, language, audioEnabled, stepInterval,
-      addLog, addPacketHeader, getHeaderForLayer, getPduName, setCurrentStep, setSelectedLayerId, setSimulationState]);
 
   const threatLevel = activeAttack === 'none' ? 0 : defenseEnabled ? 40 : 100;
   const threatBg = activeAttack === 'none' ? 'bg-emerald-500' : defenseEnabled ? 'bg-orange-500' : 'bg-red-500';
@@ -477,7 +153,7 @@ export default function PacketSimulator() {
         <div className="flex items-center gap-2.5">
           {simulationState === 'idle' ? (
             <button
-              onClick={handleStart}
+              onClick={start}
               className="flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-3.5 py-2 rounded-md font-medium text-xs transition-all active:scale-95"
             >
               <Play className="w-3.5 h-3.5 fill-white" />
@@ -485,7 +161,7 @@ export default function PacketSimulator() {
             </button>
           ) : (
             <button
-              onClick={() => setIsPaused(!isPaused)}
+              onClick={togglePause}
               disabled={simulationState === 'interrupted'}
               className="flex items-center gap-2 bg-white hover:bg-slate-50 disabled:opacity-30 text-slate-700 px-3.5 py-2 rounded-md font-medium text-xs transition-all border border-slate-200"
             >
@@ -495,7 +171,7 @@ export default function PacketSimulator() {
           )}
 
           <button
-            onClick={handleReset}
+            onClick={reset}
             aria-label={labels.reset}
             title={labels.reset}
             className="flex items-center justify-center w-9 h-9 bg-white hover:bg-slate-50 text-slate-400 hover:text-slate-700 rounded-md transition-all border border-slate-200 group"
