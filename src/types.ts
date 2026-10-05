@@ -36,7 +36,7 @@ export interface Translation {
 }
 
 export interface LayerData {
-  id: number;
+  id: OsiLayerId;
   name: string;
   color: string;
   pdu: string;
@@ -97,7 +97,7 @@ export interface AttackScenario {
   name: { it: string; en: string };
   description: { it: string; en: string };
   recommendedDefense: { it: string; en: string };
-  targetLayer: number;
+  targetLayer: OsiLayerId;
   attackType: AttackType;
   defenseEnabled?: boolean;
 }
