@@ -83,7 +83,7 @@ Codes: L - local, C - connected, S - static, R - RIP, O - OSPF,
 Gateway of last resort is 198.51.100.1 to network 0.0.0.0
 
 S*    0.0.0.0/0 [1/0] via 198.51.100.1
-      10.0.0.0/8 is variably subnetted, 3 subnets, 3 masks
+      10.0.0.0/8 is variably subnetted, 4 subnets, 4 masks
 S        10.0.0.0/8 [1/0] via 192.0.2.6
 O        10.10.0.0/16 [110/20] via 192.0.2.2, 00:04:11, GigabitEthernet0/0
 C        10.10.10.0/24 is directly connected, GigabitEthernet0/1
