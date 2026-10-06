@@ -128,5 +128,17 @@ export default tseslint.config(
       'no-script-url': 'off',
       'no-restricted-syntax': ['error', ...unsafeFrontendSyntax]
     }
+  },
+  {
+    // ENG-12 end-to-end specs and the Playwright config are Node-run harness
+    // code, not shipped components. They drive the browser through Playwright's
+    // API and touch the DOM only inside `page.evaluate`, so they keep the unsafe
+    // DOM-sink guardrails but drop the component and persistence restrictions.
+    files: ['e2e/**/*.ts', 'playwright.config.ts'],
+    languageOptions: { globals: { ...globals.browser, ...globals.node } },
+    rules: {
+      'react-refresh/only-export-components': 'off',
+      'no-restricted-syntax': ['error', ...unsafeFrontendSyntax]
+    }
   }
 );

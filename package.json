@@ -20,6 +20,8 @@
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "test:e2e:report": "playwright show-report",
     "verify": "npm run verify:lockfile && npm run verify:release && npm run verify:deployment-security && npm run verify:repository-posture && npm run verify:documentation-targets && npm run verify:offensive-content && npm run typecheck && npm run lint && npm run test:coverage && npm run build",
     "verify:release": "node --test scripts/release-metadata.test.mjs",
     "verify:deployment-security": "node --test scripts/deployment-security.test.mjs",
@@ -43,6 +45,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@playwright/test": "1.56.1",
     "@tailwindcss/vite": "^4.1.14",
     "@testing-library/react": "^16.3.3",
     "@testing-library/user-event": "^14.6.7",

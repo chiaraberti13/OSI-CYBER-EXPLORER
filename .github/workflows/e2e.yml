@@ -1,0 +1,57 @@
+name: E2E
+
+# ENG-12: end-to-end smoke tests. Kept in a separate workflow from the unit/build
+# matrix so the Chromium install and browser run stay isolated and the fast build
+# job is unaffected. Chromium only for now; Firefox/WebKit follow once stable.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    name: e2e (chromium)
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24.x'
+          cache: npm
+
+      - name: Bootstrap lockfile policy
+        run: node --test scripts/verify-lockfile.test.mjs && node scripts/verify-lockfile.mjs
+
+      - name: Install dependencies without lifecycle scripts
+        run: npm ci --ignore-scripts
+
+      - name: Validate lockfile with lockfile-lint
+        run: npm run lint:lockfile
+
+      # Install only the Chromium build pinned by @playwright/test, with its OS deps.
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      # The Playwright config's webServer builds the production bundle and serves it
+      # with `vite preview`, so this runs against the real shipped app.
+      - name: Run end-to-end smoke tests
+        run: npm run test:e2e
+
+      - name: Upload Playwright report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: playwright-report
+          path: playwright-report/
+          if-no-files-found: ignore
+          retention-days: 14
