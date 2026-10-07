@@ -1,6 +1,43 @@
 # Test coverage — ENG-11
 
-<p align="center"><a href="#italiano">🇮🇹 Italiano</a> · <a href="#english">🇬🇧 English</a></p>
+<p align="center"><a href="#english">🇬🇧 English</a> · <a href="#italiano">🇮🇹 Italiano</a></p>
+
+## English
+
+`npm run test:coverage` runs the entire Vitest suite with the V8 provider and fails when tests or any threshold fail. `npm run verify` uses the same command before building; `npm test` remains the faster, uninstrumented suite.
+
+The gate measures **all production `src/lib/**/*.{ts,tsx}` modules, including files never imported by tests**. Tests, specs and type declarations are excluded. UI, store and large educational datasets are outside this denominator; their tests still run. Coverage measures executed paths; assertions and content checks establish behavior and educational correctness.
+
+### Baseline and thresholds
+
+Measured on 5 October 2026: 24 modules, Node 24.19.0, Vitest and `@vitest/coverage-v8` 5.0.1. The initial report exposed missing simulator protocol journeys and chunk retry timing. Added assertions cover all seven protocols in both languages, service ports and PDUs, defense outcomes, inactive phases, reset and backoff with fake timers.
+
+| Metric | Before | Final baseline | Aggregate minimum | Minimum for every module |
+|---|---:|---:|---:|---:|
+| Lines | 93.97% | 97.58% (1214/1244) | 95% | 80% |
+| Statements | 92.19% | 95.21% (1452/1525) | 92% | 80% |
+| Branches | 88.11% | 91.87% (1198/1304) | 90% | 70% |
+| Functions | 99.19% | 99.59% (248/249) | 98% | 90% |
+
+Aggregate thresholds leave room below the measured baseline. Per-module minima prevent highly covered files from masking an untested function or module. Small modules are more sensitive to a single uncovered path: `navigation.ts` starts at 75% branches, `osi.ts` at 87.5% lines and `simulation.ts` at 90% functions. There are no per-file exceptions or automatic threshold updates.
+
+`vitest.config.ts` owns the thresholds and is protected by CODEOWNERS. Raise minima explicitly as coverage improves; investigate uncovered paths and add behavioral assertions when a gate fails. Update the Vitest runner and V8 provider together: their versions must match. Regenerate the lockfile with dependency lifecycle scripts disabled.
+
+### Local and CI reports
+
+```bash
+npm test                 # full suite without coverage
+npm run test:coverage    # full suite, reports and blocking thresholds
+npm run verify           # all gates, coverage and build
+```
+
+Git ignores `coverage/`, and Vitest cleans it before each run. It contains the navigable HTML report (`index.html` and assets), `lcov.info` and `coverage-summary.json` with aggregate and per-module counts. The command also prints a coverage table.
+
+CI runs the gate on Node `22.22.x` and `24.x`, adds a table to each job summary and retains full reports for 14 days as `coverage-node-22.22.x` and `coverage-node-24.x`. `reportOnFailure: true` and conditional publishing steps preserve diagnostics after failing tests or thresholds. Failures remain blocking and prevent the build. Reports are not committed.
+
+To check the failure path without editing the configuration, run `npm run test:coverage -- --coverage.thresholds.lines=100`. With this baseline tests pass, the command fails below 100% lines and reports remain available. Run the normal command afterward to restore the configured reports. ENG-11 also verified an unimported temporary module (0% coverage, per-module gate failure) and an intentionally failing temporary test (reports still generated); both fixtures were removed.
+
+---
 
 ## Italiano
 
@@ -47,38 +84,3 @@ npm run test:coverage -- --coverage.thresholds.lines=100
 ```
 
 Con questa baseline i test passano, il comando termina con errore sulle righe sotto il 100% e i report sono disponibili. Eseguire poi il comando normale per ripristinare i report della configurazione versionata. ENG-11 è stato verificato anche aggiungendo temporaneamente un modulo mai importato (coverage 0%, gate per modulo fallito) e un test fallente (report comunque generati); entrambe le fixture sono state rimosse.
-
-## English
-
-`npm run test:coverage` runs the entire Vitest suite with the V8 provider and fails when tests or any threshold fail. `npm run verify` uses the same command before building; `npm test` remains the faster, uninstrumented suite.
-
-The gate measures **all production `src/lib/**/*.{ts,tsx}` modules, including files never imported by tests**. Tests, specs and type declarations are excluded. UI, store and large educational datasets are outside this denominator; their tests still run. Coverage measures executed paths; assertions and content checks establish behavior and educational correctness.
-
-### Baseline and thresholds
-
-Measured on 5 October 2026: 24 modules, Node 24.19.0, Vitest and `@vitest/coverage-v8` 5.0.1. The initial report exposed missing simulator protocol journeys and chunk retry timing. Added assertions cover all seven protocols in both languages, service ports and PDUs, defense outcomes, inactive phases, reset and backoff with fake timers.
-
-| Metric | Before | Final baseline | Aggregate minimum | Minimum for every module |
-|---|---:|---:|---:|---:|
-| Lines | 93.97% | 97.58% (1214/1244) | 95% | 80% |
-| Statements | 92.19% | 95.21% (1452/1525) | 92% | 80% |
-| Branches | 88.11% | 91.87% (1198/1304) | 90% | 70% |
-| Functions | 99.19% | 99.59% (248/249) | 98% | 90% |
-
-Aggregate thresholds leave room below the measured baseline. Per-module minima prevent highly covered files from masking an untested function or module. Small modules are more sensitive to a single uncovered path: `navigation.ts` starts at 75% branches, `osi.ts` at 87.5% lines and `simulation.ts` at 90% functions. There are no per-file exceptions or automatic threshold updates.
-
-`vitest.config.ts` owns the thresholds and is protected by CODEOWNERS. Raise minima explicitly as coverage improves; investigate uncovered paths and add behavioral assertions when a gate fails. Update the Vitest runner and V8 provider together: their versions must match. Regenerate the lockfile with dependency lifecycle scripts disabled.
-
-### Local and CI reports
-
-```bash
-npm test                 # full suite without coverage
-npm run test:coverage    # full suite, reports and blocking thresholds
-npm run verify           # all gates, coverage and build
-```
-
-Git ignores `coverage/`, and Vitest cleans it before each run. It contains the navigable HTML report (`index.html` and assets), `lcov.info` and `coverage-summary.json` with aggregate and per-module counts. The command also prints a coverage table.
-
-CI runs the gate on Node `22.22.x` and `24.x`, adds a table to each job summary and retains full reports for 14 days as `coverage-node-22.22.x` and `coverage-node-24.x`. `reportOnFailure: true` and conditional publishing steps preserve diagnostics after failing tests or thresholds. Failures remain blocking and prevent the build. Reports are not committed.
-
-To check the failure path without editing the configuration, run `npm run test:coverage -- --coverage.thresholds.lines=100`. With this baseline tests pass, the command fails below 100% lines and reports remain available. Run the normal command afterward to restore the configured reports. ENG-11 also verified an unimported temporary module (0% coverage, per-module gate failure) and an intentionally failing temporary test (reports still generated); both fixtures were removed.
