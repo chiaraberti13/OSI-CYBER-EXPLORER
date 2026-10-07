@@ -32,7 +32,7 @@ Il progetto dispone già di:
 - stato globale Zustand con persistenza limitata alle preferenze;
 - ESLint, TypeScript, Vitest e CI GitHub Actions;
 - 38 file di test e 239 test superati localmente con Node 24;
-- `SECURITY.md`, licenza MIT e lockfile npm.
+- `SECURITY.md`, licenza GPL-3.0 e lockfile npm.
 
 ### Problemi verificati nella baseline
 
