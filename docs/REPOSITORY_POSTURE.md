@@ -1,4 +1,45 @@
-# Postura del repository e preview / Repository posture and previews
+# Repository posture and previews / Postura del repository e preview
+
+## English
+
+**Reviewed on 5 October 2026; owner: @chiaraberti13.** This public educational SPA has no backend, application accounts or client secrets. Scorecard is a trend indicator, not a certification or merge threshold.
+
+The immutable [baseline JSON](scorecard/2026-10-05.json) comes from the public OpenSSF API: **7/10**, engine **v5.5.0**, commit `a73cf8812f84283278b8f146dd6f28e1e6b2fb8d`, scan `2026-10-05T10:28:54Z`. The matching successful [run](https://github.com/chiaraberti13/OSI-CYBER-EXPLORER/actions/runs/37296816591) archived SARIF artifact `11339366582`; ZIP SHA-256 `ca26c908d2db7c6d3d1979a30a2f934b46e3e7c15a19173c56e9395cf0ebedd8`. Earlier SARIF artifacts remain until expiry. SARIF does not contain every numerical check; never reconstruct an aggregate from alerts.
+
+Future runs retain complete JSON and per-check Markdown comparisons for **90 days**, with date, commit and engine version, and show the report in the run summary. Preserve additional dated JSON snapshots in `docs/scorecard/` during reviews/releases for longer history. The workflow runs on `main` pushes, classic protection changes, Tuesdays and manual dispatch; ruleset changes are detected by the next periodic/manual scan. It is not a required branch check and scores never fail a gate; technical failures remain visible. The action-only OIDC job stays separate from dependency-free, read-only processing; all actions are SHA-pinned.
+
+The CLI may omit the API aggregate; the reporter never substitutes a mean. **`-1` is inconclusive**, not zero or a pass. Added/removed checks and transitions to/from `-1` represent coverage changes; engine upgrades can change criteria. The command above reproduces the comparison offline.
+
+| Residual check | Score | Explicit disposition (owner: @chiaraberti13, 05/10/2026) |
+| --- | --- | --- |
+| Branch-Protection | 0 | **Scheduled under SEC-13 by 12/10/2026:** reconcile configuration and documentation. Rulesets API returned `[]`; classic protection returned integration `403`, so neither total absence nor the old ruleset is confirmed. Temporarily accept direct-maintainer `main` pushes with CI/scanners afterwards; do not broaden the Scorecard token. |
+| Code-Review | 0 | **Accepted for current workflow:** 0 approved changesets among the last 30. Reassess with SEC-13 by 12/10/2026 or when an independent reviewer joins; no artificial approvals. |
+| CI-Tests | -1 | **Accepted as inconclusive:** no sampled PR; CI tests push/PR on Node 22/24 and baseline CI succeeded. Reassess on the next real PR. |
+| Maintained | 0 | **Accepted:** younger than 90 days; weekly scans reassess naturally. |
+| Contributors | 3 | **Accepted:** personal project with one contributing organization; reassess if collaboration changes. |
+| CII-Best-Practices | 0 | **Accepted:** no badge claimed or required; revisit for public releases/community governance. |
+| Packaging | -1 | **Accepted as currently inapplicable:** static SPA, not a public npm package; revisit for installable distribution. |
+| Signed-Releases | -1 | **Scheduled for the first requested SemVer release:** existing workflow creates SBOM, checksums and attestations; no score-driven release. |
+
+The other ten checks score 10/10, as listed above. Vulnerabilities covers Scorecard’s queried sources, not all possible application vulnerabilities.
+
+Vercel API confirmed project `prj_hXl9ys9HNQY2tdE8aXvxYkFAEuLS` in team `chiara11`, Vite/Node 24. Undecrypted inventory returned **`envs: []`**; source/configuration do not export environment variables. Provider system variables are separate from application secrets. No values or bypass links are retained. Review future variables; never put secrets in `VITE_*`, bundles or shared Production/Preview scope.
+
+Authentication is enabled with `all_except_custom_domains`; password/IP restrictions are disabled. Canonical production returned anonymous **200**; READY non-main preview `osi-cyber-explorer-rlk752gx0-chiara11.vercel.app` (commit `073f7ec3bd192e73f6670203ab2362ed06097f02`) returned **302** to Vercel SSO. **Accepted choice:** public canonical demo, authenticated previews, no weakened protection or SSO-page scan.
+
+Application HSTS is now restricted to the exact canonical host by `vercel.json`, guarded by CI; other application headers retain their scope. **Accepted platform exception:** Vercel adds HSTS automatically, including the observed preview SSO redirect (`max-age=63072000; includeSubDomains; preload`). Production-only refers to application-controlled policy, not removal of Vercel HTTPS/HSTS.
+
+This is dated evidence, not continuous administrative monitoring. Dynamic Deployment Security checks production after deployment and weekly. Recheck inventory/protection after variable, domain, protection or hosting changes; routine review due by **05/04/2027**. Offline tests verify source policy; inventory and SSO evidence come from API and anonymous requests.
+
+## Fonti / Sources
+
+- [OpenSSF publishing restrictions and formats, pinned action version](https://github.com/ossf/scorecard-action/blob/2d1146689b8cda280b9bc96326124645441f03bc/README.md#publishing-results)
+- [Check definitions at the scanned engine commit](https://github.com/ossf/scorecard/blob/c395761df6afe1a69e476bc60a013a94bcbc153f/docs/checks.md)
+- [Vercel response headers](https://vercel.com/docs/headers/response-headers)
+- [Vercel conditional headers](https://vercel.com/docs/project-configuration/vercel-json#headers)
+- [Vite client environment exposure](https://vite.dev/guide/env-and-mode.html)
+
+---
 
 ## Italiano
 
@@ -54,42 +95,3 @@ API: progetto `osi-cyber-explorer`, ID `prj_hXl9ys9HNQY2tdE8aXvxYkFAEuLS`, team 
 | HSTS del provider | Vercel [aggiunge HSTS automaticamente](https://vercel.com/docs/headers/response-headers#strict-transport-security). Osservato anche sul redirect SSO della preview: `max-age=63072000; includeSubDomains; preload`. L’autenticazione precede l’applicazione. | **Eccezione di piattaforma accettata:** “solo produzione” riguarda la policy controllata in `vercel.json`, non l’assenza di HSTS sui domini o sulle pagine di autenticazione Vercel. Non disabilitare HTTPS/HSTS del provider. |
 
 È una fotografia datata, non un monitor amministrativo continuo. [Dynamic Deployment Security](DYNAMIC_SECURITY.md) verifica la produzione dopo i deployment e settimanalmente. Ripetere inventario e protezione dopo modifiche a variabili, domini, Deployment Protection o hosting; revisione ordinaria entro **05/04/2027**. I test offline verificano la configurazione applicativa; inventario e SSO provengono da API Vercel e GET anonimi.
-
-## English
-
-**Reviewed on 5 October 2026; owner: @chiaraberti13.** This public educational SPA has no backend, application accounts or client secrets. Scorecard is a trend indicator, not a certification or merge threshold.
-
-The immutable [baseline JSON](scorecard/2026-10-05.json) comes from the public OpenSSF API: **7/10**, engine **v5.5.0**, commit `a73cf8812f84283278b8f146dd6f28e1e6b2fb8d`, scan `2026-10-05T10:28:54Z`. The matching successful [run](https://github.com/chiaraberti13/OSI-CYBER-EXPLORER/actions/runs/37296816591) archived SARIF artifact `11339366582`; ZIP SHA-256 `ca26c908d2db7c6d3d1979a30a2f934b46e3e7c15a19173c56e9395cf0ebedd8`. Earlier SARIF artifacts remain until expiry. SARIF does not contain every numerical check; never reconstruct an aggregate from alerts.
-
-Future runs retain complete JSON and per-check Markdown comparisons for **90 days**, with date, commit and engine version, and show the report in the run summary. Preserve additional dated JSON snapshots in `docs/scorecard/` during reviews/releases for longer history. The workflow runs on `main` pushes, classic protection changes, Tuesdays and manual dispatch; ruleset changes are detected by the next periodic/manual scan. It is not a required branch check and scores never fail a gate; technical failures remain visible. The action-only OIDC job stays separate from dependency-free, read-only processing; all actions are SHA-pinned.
-
-The CLI may omit the API aggregate; the reporter never substitutes a mean. **`-1` is inconclusive**, not zero or a pass. Added/removed checks and transitions to/from `-1` represent coverage changes; engine upgrades can change criteria. The command above reproduces the comparison offline.
-
-| Residual check | Score | Explicit disposition (owner: @chiaraberti13, 05/10/2026) |
-| --- | --- | --- |
-| Branch-Protection | 0 | **Scheduled under SEC-13 by 12/10/2026:** reconcile configuration and documentation. Rulesets API returned `[]`; classic protection returned integration `403`, so neither total absence nor the old ruleset is confirmed. Temporarily accept direct-maintainer `main` pushes with CI/scanners afterwards; do not broaden the Scorecard token. |
-| Code-Review | 0 | **Accepted for current workflow:** 0 approved changesets among the last 30. Reassess with SEC-13 by 12/10/2026 or when an independent reviewer joins; no artificial approvals. |
-| CI-Tests | -1 | **Accepted as inconclusive:** no sampled PR; CI tests push/PR on Node 22/24 and baseline CI succeeded. Reassess on the next real PR. |
-| Maintained | 0 | **Accepted:** younger than 90 days; weekly scans reassess naturally. |
-| Contributors | 3 | **Accepted:** personal project with one contributing organization; reassess if collaboration changes. |
-| CII-Best-Practices | 0 | **Accepted:** no badge claimed or required; revisit for public releases/community governance. |
-| Packaging | -1 | **Accepted as currently inapplicable:** static SPA, not a public npm package; revisit for installable distribution. |
-| Signed-Releases | -1 | **Scheduled for the first requested SemVer release:** existing workflow creates SBOM, checksums and attestations; no score-driven release. |
-
-The other ten checks score 10/10, as listed above. Vulnerabilities covers Scorecard’s queried sources, not all possible application vulnerabilities.
-
-Vercel API confirmed project `prj_hXl9ys9HNQY2tdE8aXvxYkFAEuLS` in team `chiara11`, Vite/Node 24. Undecrypted inventory returned **`envs: []`**; source/configuration do not export environment variables. Provider system variables are separate from application secrets. No values or bypass links are retained. Review future variables; never put secrets in `VITE_*`, bundles or shared Production/Preview scope.
-
-Authentication is enabled with `all_except_custom_domains`; password/IP restrictions are disabled. Canonical production returned anonymous **200**; READY non-main preview `osi-cyber-explorer-rlk752gx0-chiara11.vercel.app` (commit `073f7ec3bd192e73f6670203ab2362ed06097f02`) returned **302** to Vercel SSO. **Accepted choice:** public canonical demo, authenticated previews, no weakened protection or SSO-page scan.
-
-Application HSTS is now restricted to the exact canonical host by `vercel.json`, guarded by CI; other application headers retain their scope. **Accepted platform exception:** Vercel adds HSTS automatically, including the observed preview SSO redirect (`max-age=63072000; includeSubDomains; preload`). Production-only refers to application-controlled policy, not removal of Vercel HTTPS/HSTS.
-
-This is dated evidence, not continuous administrative monitoring. Dynamic Deployment Security checks production after deployment and weekly. Recheck inventory/protection after variable, domain, protection or hosting changes; routine review due by **05/04/2027**. Offline tests verify source policy; inventory and SSO evidence come from API and anonymous requests.
-
-## Fonti / Sources
-
-- [OpenSSF publishing restrictions and formats, pinned action version](https://github.com/ossf/scorecard-action/blob/2d1146689b8cda280b9bc96326124645441f03bc/README.md#publishing-results)
-- [Check definitions at the scanned engine commit](https://github.com/ossf/scorecard/blob/c395761df6afe1a69e476bc60a013a94bcbc153f/docs/checks.md)
-- [Vercel response headers](https://vercel.com/docs/headers/response-headers)
-- [Vercel conditional headers](https://vercel.com/docs/project-configuration/vercel-json#headers)
-- [Vite client environment exposure](https://vite.dev/guide/env-and-mode.html)
