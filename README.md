@@ -7,7 +7,7 @@
   <img src="https://img.shields.io/badge/status-active-F2C94C?style=flat-square" alt="Active">
   <img src="https://img.shields.io/badge/category-CYBERSECURITY-22D3EE?style=flat-square" alt="Cybersecurity">
   <img src="https://img.shields.io/badge/stack-React%20%2B%20TypeScript-8B949E?style=flat-square" alt="React and TypeScript">
-  <img src="https://img.shields.io/badge/licence-MIT-2EA043?style=flat-square" alt="MIT">
+  <img src="https://img.shields.io/badge/licence-GPL--3.0-2EA043?style=flat-square" alt="GPL-3.0">
 </p>
 
 > A bilingual networking and CCNA 200-301 lab for observing data flows, simulating attacks, and understanding the corresponding defenses.
@@ -129,7 +129,7 @@ Tagged releases follow Semantic Versioning and include a deterministic applicati
 - Solid networking & security domain knowledge across all 7 OSI layers.
 
 ## License & terms of use
-Released under the [MIT License](LICENSE). You may use, study, modify and
+Released under the [GNU GPL-3.0 License](LICENSE). You may use, study, modify and
 redistribute the project while preserving the copyright and licence notice.
 
 ---
