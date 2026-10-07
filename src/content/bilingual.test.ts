@@ -1,5 +1,28 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
+import { ATTACK_FAMILIES } from './securityTaxonomy';
+import { SECURITY_TECHNIQUES } from './securityCoverage';
+import { DEFENSE_CONTROLS } from './defenseControls';
+import { DETECTION_USE_CASES } from './detectionUseCases';
+import { SECURITY_PLAYBOOKS } from './securityPlaybooks';
+import { DOMAIN_CHECKLISTS } from './domainChecklists';
+import { ATTACK_PATHS } from './attackPaths';
+import { SECURITY_EVIDENCE_CASES } from './securityEvidence';
+import { CCNA_DOMAINS } from './ccna';
+import { APPLICATION_SECURITY_SCENARIOS } from './applicationSecurityScenarios';
+import { AVAILABILITY_SCENARIOS } from './availabilityScenarios';
+import { EMAIL_HUMAN_SECURITY_SCENARIOS } from './emailHumanSecurityScenarios';
+import { ENDPOINT_SECURITY_SCENARIOS } from './endpointSecurityScenarios';
+import { IDENTITY_TRUST_SCENARIOS } from './identityTrustScenarios';
+import { INSPECTION_SCENARIOS } from './inspectionScenarios';
+import { IPV6_SECURITY_SCENARIOS } from './ipv6Security';
+import { LAYER2_SECURITY_SCENARIOS } from './layer2SecurityScenarios';
+import { MANAGEMENT_TELEMETRY_SCENARIOS } from './managementTelemetryScenarios';
+import { RECOVERY_SCENARIOS } from './recoveryScenarios';
+import { ROUTING_SECURITY_SCENARIOS } from './routingSecurityScenarios';
+import { SEGMENTATION_SCENARIOS } from './segmentationScenarios';
+import { VPN_PKI_SCENARIOS } from './vpnPkiScenarios';
+import { WIRELESS_SECURITY_SCENARIOS } from './wirelessSecurityScenarios';
 
 /**
  * A guard against the one bilingual failure that reading cannot catch reliably.
@@ -107,5 +130,99 @@ describe('bilingual content', () => {
       }
     }
     expect(offenders, 'a term or figure appears in one language only').toEqual([]);
+  });
+});
+
+/**
+ * ENG-13 — Structured IT/EN parity for the typed security datasets.
+ *
+ * The file scan above is a heuristic over source text; it cannot tell that a specific
+ * `Bilingual` field is present but empty, nor that one language of a pair was dropped
+ * entirely. These checks walk the real runtime objects and fail when any `{ it, en }`
+ * pair (a `Bilingual` or a `Record<Language, string>`) is missing a side or holds an
+ * empty string — the "una traduzione mancante fallisce in CI" half of ENG-13.
+ */
+
+const SECURITY_DATASETS: ReadonlyArray<readonly [string, unknown]> = [
+  ['ATTACK_FAMILIES', ATTACK_FAMILIES],
+  ['SECURITY_TECHNIQUES', SECURITY_TECHNIQUES],
+  ['DEFENSE_CONTROLS', DEFENSE_CONTROLS],
+  ['DETECTION_USE_CASES', DETECTION_USE_CASES],
+  ['SECURITY_PLAYBOOKS', SECURITY_PLAYBOOKS],
+  ['DOMAIN_CHECKLISTS', DOMAIN_CHECKLISTS],
+  ['ATTACK_PATHS', ATTACK_PATHS],
+  ['SECURITY_EVIDENCE_CASES', SECURITY_EVIDENCE_CASES],
+  ['CCNA_DOMAINS', CCNA_DOMAINS],
+  ['APPLICATION_SECURITY_SCENARIOS', APPLICATION_SECURITY_SCENARIOS],
+  ['AVAILABILITY_SCENARIOS', AVAILABILITY_SCENARIOS],
+  ['EMAIL_HUMAN_SECURITY_SCENARIOS', EMAIL_HUMAN_SECURITY_SCENARIOS],
+  ['ENDPOINT_SECURITY_SCENARIOS', ENDPOINT_SECURITY_SCENARIOS],
+  ['IDENTITY_TRUST_SCENARIOS', IDENTITY_TRUST_SCENARIOS],
+  ['INSPECTION_SCENARIOS', INSPECTION_SCENARIOS],
+  ['IPV6_SECURITY_SCENARIOS', IPV6_SECURITY_SCENARIOS],
+  ['LAYER2_SECURITY_SCENARIOS', LAYER2_SECURITY_SCENARIOS],
+  ['MANAGEMENT_TELEMETRY_SCENARIOS', MANAGEMENT_TELEMETRY_SCENARIOS],
+  ['RECOVERY_SCENARIOS', RECOVERY_SCENARIOS],
+  ['ROUTING_SECURITY_SCENARIOS', ROUTING_SECURITY_SCENARIOS],
+  ['SEGMENTATION_SCENARIOS', SEGMENTATION_SCENARIOS],
+  ['VPN_PKI_SCENARIOS', VPN_PKI_SCENARIOS],
+  ['WIRELESS_SECURITY_SCENARIOS', WIRELESS_SECURITY_SCENARIOS],
+];
+
+/** An object is a translation pair when it carries both `it` and `en` as strings. */
+function isBilingualPair(value: Record<string, unknown>): boolean {
+  return 'it' in value && 'en' in value
+    && (typeof value.it === 'string' || typeof value.it === 'undefined')
+    && (typeof value.en === 'string' || typeof value.en === 'undefined');
+}
+
+/** Walks a value and records every `{ it, en }` pair whose sides are missing or empty. */
+function collectEmptyTranslations(value: unknown, path: string, offenders: string[]): void {
+  if (Array.isArray(value)) {
+    value.forEach((item, index) => collectEmptyTranslations(item, `${path}[${index}]`, offenders));
+    return;
+  }
+  if (value === null || typeof value !== 'object') return;
+
+  const record = value as Record<string, unknown>;
+  if (isBilingualPair(record)) {
+    for (const lang of ['it', 'en'] as const) {
+      const side = record[lang];
+      if (typeof side !== 'string' || side.trim() === '') offenders.push(`${path}.${lang}`);
+    }
+    // A Bilingual/Localized pair carries nothing else to translate, but an object may
+    // legitimately own an `it`/`en` field alongside more content, so keep descending.
+    for (const key of Object.keys(record)) {
+      if (key !== 'it' && key !== 'en') collectEmptyTranslations(record[key], `${path}.${key}`, offenders);
+    }
+    return;
+  }
+  for (const key of Object.keys(record)) collectEmptyTranslations(record[key], `${path}.${key}`, offenders);
+}
+
+describe('bilingual security datasets', () => {
+  it('fills both languages of every translation pair', () => {
+    const offenders: string[] = [];
+    for (const [name, dataset] of SECURITY_DATASETS) {
+      collectEmptyTranslations(dataset, name, offenders);
+    }
+    expect(offenders, 'a translation pair is missing a language or is empty').toEqual([]);
+  });
+
+  it('actually visits a large number of pairs, so a silent no-op cannot pass', () => {
+    const seen = { n: 0 };
+    const count = (value: unknown): void => {
+      if (Array.isArray(value)) return value.forEach(count);
+      if (value === null || typeof value !== 'object') return;
+      const record = value as Record<string, unknown>;
+      const pair = isBilingualPair(record);
+      if (pair) seen.n += 1;
+      for (const key of Object.keys(record)) {
+        if (pair && (key === 'it' || key === 'en')) continue;
+        count(record[key]);
+      }
+    };
+    for (const [, dataset] of SECURITY_DATASETS) count(dataset);
+    expect(seen.n).toBeGreaterThan(500);
   });
 });
