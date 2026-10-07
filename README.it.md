@@ -7,7 +7,7 @@
   <img src="https://img.shields.io/badge/status-active-F2C94C?style=flat-square" alt="Active">
   <img src="https://img.shields.io/badge/category-CYBERSECURITY-22D3EE?style=flat-square" alt="Cybersecurity">
   <img src="https://img.shields.io/badge/stack-React%20%2B%20TypeScript-8B949E?style=flat-square" alt="React and TypeScript">
-  <img src="https://img.shields.io/badge/licence-MIT-2EA043?style=flat-square" alt="MIT">
+  <img src="https://img.shields.io/badge/licence-GPL--3.0-2EA043?style=flat-square" alt="GPL-3.0">
 </p>
 
 > Laboratorio bilingue per studiare networking e CCNA 200-301, osservare il viaggio dei dati, simulare attacchi e comprendere le difese corrispondenti.
@@ -99,7 +99,7 @@ Le release da tag seguono il versionamento semantico e includono archivio applic
 - Solide conoscenze di rete e sicurezza su tutti i 7 livelli OSI.
 
 ## Licenza e termini d'uso
-Distribuito con [licenza MIT](LICENSE). Il progetto può essere utilizzato,
+Distribuito con [licenza GNU GPL-3.0](LICENSE). Il progetto può essere utilizzato,
 studiato, modificato e ridistribuito mantenendo l'avviso di copyright e licenza.
 
 ---
