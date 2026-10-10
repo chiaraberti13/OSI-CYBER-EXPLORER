@@ -27,6 +27,8 @@ export const it = {
     resultsCount: 'risultati',
     copyLink: 'Copia il link di questo laboratorio',
     linkCopied: 'Link copiato',
+    scrollLabsLeft: 'Scorri i laboratori verso sinistra',
+    scrollLabsRight: 'Scorri i laboratori verso destra',
   },
   error: {
     chunkTitle: 'Impossibile caricare questa sezione',

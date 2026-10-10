@@ -4,6 +4,8 @@ All notable changes to OSI Cyber Explorer are documented in this file. The proje
 
 ## [Unreleased]
 
+- Navigation: on narrow screens the group tabs now show a fade and an explicit scroll-arrow button (with a bilingual label) whenever content is hidden off either edge, so every group is reachable without a blind horizontal swipe; search and copy-link stay visible (UX-07).
+- Navigazione: su schermi stretti le tab dei gruppi mostrano ora una dissolvenza e un pulsante freccia esplicito (con etichetta bilingue) quando c'è contenuto nascosto oltre un bordo, così ogni gruppo è raggiungibile senza uno swipe orizzontale alla cieca; ricerca e copia-link restano visibili (UX-07).
 - Navigation: a copy-link control in the lab navigation copies a shareable URL to the current lab (built from its hash route) and confirms the copy through an `aria-live` region; the strings live in the typed i18n catalog (UX-06).
 - Navigazione: un pulsante nella barra dei laboratori copia un URL condivisibile del lab corrente (costruito dalla sua rotta hash) e conferma la copia tramite una regione `aria-live`; le stringhe sono nel catalogo i18n tipizzato (UX-06).
 - Accessibility: OSI stack layers are now buttons with `aria-pressed` for selection, and the transforming/compromised/hardened states are rendered as localised text (plus icons) rather than colour alone; purely decorative colour accents are `aria-hidden` (UX-05).

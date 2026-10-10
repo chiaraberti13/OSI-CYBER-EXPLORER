@@ -105,6 +105,33 @@ export function searchNav(query: string, language: 'it' | 'en'): ReadonlyArray<{
 }
 
 /**
+ * UX-07: whether a horizontally scrollable tab row has content hidden off either
+ * edge. The nav hides its scrollbar, so these flags drive the visible overflow
+ * affordances (fade + scroll buttons) that make every group reachable without a
+ * blind swipe. Pure and layout-free so it is unit-tested without a browser; the
+ * component feeds it live scroll metrics. A small tolerance absorbs sub-pixel
+ * rounding and over-scroll bounce.
+ */
+export interface ScrollMetrics {
+  scrollLeft: number;
+  scrollWidth: number;
+  clientWidth: number;
+}
+
+export function navOverflow(metrics: ScrollMetrics, tolerance = 2): { canScrollLeft: boolean; canScrollRight: boolean } {
+  const maxScroll = metrics.scrollWidth - metrics.clientWidth;
+  if (maxScroll <= tolerance) {
+    return { canScrollLeft: false, canScrollRight: false };
+  }
+  // Over-scroll (rubber-band) can push scrollLeft slightly negative or past max.
+  const scrollLeft = Math.max(0, Math.min(metrics.scrollLeft, maxScroll));
+  return {
+    canScrollLeft: scrollLeft > tolerance,
+    canScrollRight: scrollLeft < maxScroll - tolerance,
+  };
+}
+
+/**
  * Which lab a CCNA domain opens. Kept next to the navigation model because it maps
  * content identifiers onto views, exactly like the groups above.
  */

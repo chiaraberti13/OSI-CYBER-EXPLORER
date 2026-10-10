@@ -138,4 +138,19 @@ test.describe('navigation at phone width', () => {
     await expect(page).toHaveURL(/#\/attacklab$/);
     await expect(page).toHaveTitle(/Attacco & Difesa — OSI Cyber Explorer/);
   });
+
+  test('exposes an overflow scroll affordance for the group tabs (UX-07)', async ({ page }) => {
+    await openApp(page);
+
+    // At phone width the group tabs overflow, so the right scroll button is shown
+    // while the left one is not (nothing is hidden to the left yet).
+    const scrollRight = page.getByRole('button', { name: 'Scorri i laboratori verso destra' });
+    const scrollLeft = page.getByRole('button', { name: 'Scorri i laboratori verso sinistra' });
+    await expect(scrollRight).toBeVisible();
+    await expect(scrollLeft).toHaveCount(0);
+
+    // Using it reveals the content hidden to the right, so the left affordance appears.
+    await scrollRight.click();
+    await expect(scrollLeft).toBeVisible();
+  });
 });

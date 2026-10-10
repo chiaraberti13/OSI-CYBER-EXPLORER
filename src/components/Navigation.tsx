@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { Check, ChevronDown, Link2, Search, X } from 'lucide-react';
-import { NAV_GROUPS, navEntryOf, navGroupOf, searchNav } from '../lib/navigation';
+import { Check, ChevronDown, ChevronLeft, ChevronRight, Link2, Search, X } from 'lucide-react';
+import { NAV_GROUPS, navEntryOf, navGroupOf, navOverflow, searchNav } from '../lib/navigation';
 import { useStore } from '../store';
 import { useShallow } from 'zustand/react/shallow';
 import ViewLink from './ViewLink';
@@ -27,6 +27,8 @@ export default function Navigation() {
   const navRef = useRef<HTMLElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const tabScrollRef = useRef<HTMLDivElement>(null);
+  const [tabOverflow, setTabOverflow] = useState({ canScrollLeft: false, canScrollRight: false });
 
   const activeGroup = navGroupOf(activeView);
   const activeEntry = navEntryOf(activeView);
@@ -101,6 +103,36 @@ export default function Navigation() {
     if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
   }, []);
 
+  // UX-07: the tab row hides its scrollbar, so track whether content is hidden off
+  // either edge and expose it through visible fade + scroll-button affordances.
+  // Metrics come straight from the DOM; the pure navOverflow decides the flags.
+  useEffect(() => {
+    const el = tabScrollRef.current;
+    if (!el) return;
+    const update = () => setTabOverflow(navOverflow({
+      scrollLeft: el.scrollLeft,
+      scrollWidth: el.scrollWidth,
+      clientWidth: el.clientWidth,
+    }));
+    update();
+    el.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    // ResizeObserver catches label/width changes (e.g. language switch) without a resize.
+    const observer = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(update) : null;
+    observer?.observe(el);
+    return () => {
+      el.removeEventListener('scroll', update);
+      window.removeEventListener('resize', update);
+      observer?.disconnect();
+    };
+  }, [language]);
+
+  const scrollTabs = (direction: 1 | -1) => {
+    const el = tabScrollRef.current;
+    if (!el) return;
+    el.scrollBy({ left: direction * el.clientWidth * 0.8, behavior: 'smooth' });
+  };
+
   // UX-06: copy a shareable link to the current lab. The hash already encodes the
   // view (ENG-10), but building it from the active view is deterministic and does
   // not depend on the hash having been written yet. Clipboard access can be denied
@@ -138,7 +170,36 @@ export default function Navigation() {
     <nav ref={navRef} aria-label={labels.label} className="sticky top-14 z-40 w-full border-b border-slate-200/60 bg-[#fafafa]/85 backdrop-blur-md">
       <div className="relative mx-auto max-w-7xl px-6">
         <div className="flex h-12 items-center gap-1.5">
-          <div className="flex min-w-0 flex-1 items-center gap-1 overflow-x-auto no-scrollbar">
+          <div className="relative min-w-0 flex-1">
+            {/* Left overflow affordance: fade + explicit scroll button, shown only when
+                content is hidden to the left, so groups are reachable without a blind swipe. */}
+            {tabOverflow.canScrollLeft && (
+              <>
+                <span aria-hidden="true" className="pointer-events-none absolute inset-y-0 left-0 z-10 w-10 bg-gradient-to-r from-[#fafafa] to-transparent" />
+                <button
+                  type="button"
+                  onClick={() => scrollTabs(-1)}
+                  aria-label={labels.scrollLabsLeft}
+                  className="absolute left-0 top-1/2 z-20 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-sm transition-colors hover:text-slate-800"
+                >
+                  <ChevronLeft className="h-4 w-4" aria-hidden="true" />
+                </button>
+              </>
+            )}
+            {tabOverflow.canScrollRight && (
+              <>
+                <span aria-hidden="true" className="pointer-events-none absolute inset-y-0 right-0 z-10 w-10 bg-gradient-to-l from-[#fafafa] to-transparent" />
+                <button
+                  type="button"
+                  onClick={() => scrollTabs(1)}
+                  aria-label={labels.scrollLabsRight}
+                  className="absolute right-0 top-1/2 z-20 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-sm transition-colors hover:text-slate-800"
+                >
+                  <ChevronRight className="h-4 w-4" aria-hidden="true" />
+                </button>
+              </>
+            )}
+            <div ref={tabScrollRef} className="flex items-center gap-1 overflow-x-auto no-scrollbar">
             {NAV_GROUPS.map(group => {
               const isOpen = openGroupId === group.id;
               const holdsActiveView = activeGroup?.id === group.id;
@@ -166,6 +227,7 @@ export default function Navigation() {
                 </button>
               );
             })}
+            </div>
           </div>
 
           {activeEntry ? (

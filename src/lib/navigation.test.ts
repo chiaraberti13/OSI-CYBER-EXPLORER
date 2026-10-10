@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { NAV_ENTRIES, NAV_GROUPS, navEntryOf, navGroupOf, searchNav } from './navigation';
+import { NAV_ENTRIES, NAV_GROUPS, navEntryOf, navGroupOf, navOverflow, searchNav } from './navigation';
 import type { AppView } from '../store';
 
 /** Every view the app can render, mirrored from the AppView union in the store. */
@@ -96,5 +96,31 @@ describe('navigation model', () => {
 
   it('returns nothing for a query that matches no view', () => {
     expect(searchNav('zzzznotathing', 'it')).toHaveLength(0);
+  });
+});
+
+describe('navOverflow (UX-07 tab overflow affordance)', () => {
+  it('reports no overflow when content fits', () => {
+    expect(navOverflow({ scrollLeft: 0, scrollWidth: 300, clientWidth: 300 })).toEqual({ canScrollLeft: false, canScrollRight: false });
+    // Sub-pixel difference within tolerance is still "fits".
+    expect(navOverflow({ scrollLeft: 0, scrollWidth: 301, clientWidth: 300 })).toEqual({ canScrollLeft: false, canScrollRight: false });
+  });
+
+  it('shows only the right affordance at the start of an overflowing row', () => {
+    expect(navOverflow({ scrollLeft: 0, scrollWidth: 800, clientWidth: 300 })).toEqual({ canScrollLeft: false, canScrollRight: true });
+  });
+
+  it('shows both affordances in the middle', () => {
+    expect(navOverflow({ scrollLeft: 200, scrollWidth: 800, clientWidth: 300 })).toEqual({ canScrollLeft: true, canScrollRight: true });
+  });
+
+  it('shows only the left affordance at the end', () => {
+    expect(navOverflow({ scrollLeft: 500, scrollWidth: 800, clientWidth: 300 })).toEqual({ canScrollLeft: true, canScrollRight: false });
+  });
+
+  it('clamps rubber-band over-scroll past either edge', () => {
+    // Negative (bounce left) and beyond-max (bounce right) must not flip the flags.
+    expect(navOverflow({ scrollLeft: -20, scrollWidth: 800, clientWidth: 300 })).toEqual({ canScrollLeft: false, canScrollRight: true });
+    expect(navOverflow({ scrollLeft: 520, scrollWidth: 800, clientWidth: 300 })).toEqual({ canScrollLeft: true, canScrollRight: false });
   });
 });
