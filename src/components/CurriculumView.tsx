@@ -1,7 +1,9 @@
 import { BookOpen, ListChecks, Network, ShieldCheck } from 'lucide-react';
 import { CCNA_DOMAINS } from '../content/ccna';
+import { CCNA_BLUEPRINT, CCNA_BLUEPRINT_DOMAINS, CCNA_BLUEPRINT_TOPICS } from '../content/ccnaBlueprint';
 import { DOMAIN_CHECKLISTS } from '../content/domainChecklists';
 import { ATTACK_FAMILIES } from '../content/securityTaxonomy';
+import { VIEW_REGISTRY } from '../content/viewRegistry';
 import { useStore } from '../store';
 import ViewLink from './ViewLink';
 
@@ -38,6 +40,65 @@ export default function CurriculumView() {
           </div>
         </div>
       </header>
+
+      <section aria-labelledby="blueprint-coverage-title" className="space-y-4">
+        <div className="flex items-center gap-2">
+          <ListChecks className="h-5 w-5 text-indigo-600" />
+          <h2 id="blueprint-coverage-title" className="text-lg font-semibold text-slate-900">
+            {language === 'it' ? 'Copertura del blueprint' : 'Blueprint coverage'}
+          </h2>
+        </div>
+        <div className="rounded-xl border border-slate-200 bg-white p-5">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <p className="text-sm font-semibold text-slate-900">
+                CCNA {CCNA_BLUEPRINT.exam} v{CCNA_BLUEPRINT.version}
+              </p>
+              <p className="mt-1 text-xs leading-relaxed text-slate-600">
+                {language === 'it'
+                  ? `${CCNA_BLUEPRINT_TOPICS.length} obiettivi numerati, ciascuno collegato ad almeno una vista di studio. Ultima verifica: ${CCNA_BLUEPRINT.reviewedOn}.`
+                  : `${CCNA_BLUEPRINT_TOPICS.length} numbered objectives, each linked to at least one study view. Last reviewed: ${CCNA_BLUEPRINT.reviewedOn}.`}
+              </p>
+            </div>
+            <a
+              href={CCNA_BLUEPRINT.source.url}
+              target="_blank"
+              rel="noreferrer"
+              className="text-xs font-semibold text-indigo-700 underline decoration-indigo-300 underline-offset-2 hover:text-indigo-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
+            >
+              {language === 'it' ? 'Fonte ufficiale Cisco (PDF)' : 'Official Cisco source (PDF)'}
+            </a>
+          </div>
+          <div className="mt-4 grid gap-3 lg:grid-cols-2">
+            {CCNA_BLUEPRINT_DOMAINS.map(domain => (
+              <details key={domain.number} className="rounded-lg border border-slate-200 bg-slate-50/60">
+                <summary className="flex cursor-pointer items-center gap-2 p-3 text-xs font-semibold text-slate-800">
+                  <span>{domain.number}. {domain.title[language]}</span>
+                  <span className="ml-auto font-normal text-slate-500">{domain.topics.length} · {domain.weight}%</span>
+                </summary>
+                <ul className="space-y-3 border-t border-slate-200 p-3">
+                  {domain.topics.map(entry => (
+                    <li key={entry.id} className="text-xs leading-relaxed text-slate-700">
+                      <p><span className="font-mono font-semibold text-indigo-700">{entry.id}</span> {entry.title[language]}</p>
+                      <div className="mt-1 flex flex-wrap gap-1.5">
+                        {entry.destinations.map(destination => (
+                          <ViewLink
+                            key={destination}
+                            view={destination}
+                            className="rounded-full border border-indigo-200 bg-white px-2 py-0.5 text-[11px] font-medium text-indigo-700 hover:bg-indigo-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
+                          >
+                            {VIEW_REGISTRY[destination][language]}
+                          </ViewLink>
+                        ))}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
 
       <section aria-labelledby="ccna-domains-title" className="space-y-4">
         <div className="flex items-center gap-2">

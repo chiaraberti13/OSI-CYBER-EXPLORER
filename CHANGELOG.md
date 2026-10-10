@@ -4,6 +4,8 @@ All notable changes to OSI Cyber Explorer are documented in this file. The proje
 
 ## [Unreleased]
 
+- Added a versioned CCNA 200-301 v1.1 blueprint matrix that maps all 53 numbered topics to registered study views. The bilingual CCNA Map exposes the links and official source, while automated checks reject uncovered, stale, duplicated, untranslated, or invalid destinations.
+- Aggiunta una matrice versionata del blueprint CCNA 200-301 v1.1 che collega tutti i 53 argomenti numerati alle viste di studio registrate. La Mappa CCNA bilingue mostra collegamenti e fonte ufficiale, mentre i controlli automatici rifiutano destinazioni scoperte, obsolete, duplicate, non tradotte o non valide.
 - Added structured, validated RFC/IEEE/NIST/MITRE ATT&CK/Cisco references for every Attack & Defense scenario and defensive control. MITRE ATT&CK is pinned to v19.2, authoritative URLs are generated centrally, and CI rejects missing, malformed, duplicate, non-HTTPS, or unapproved references.
 - Aggiunti riferimenti strutturati e validati RFC/IEEE/NIST/MITRE ATT&CK/Cisco per ogni scenario Attacco & Difesa e controllo difensivo. MITRE ATT&CK è fissato alla v19.2, gli URL autorevoli sono generati centralmente e la CI rifiuta riferimenti mancanti, malformati, duplicati, non HTTPS o non approvati.
 

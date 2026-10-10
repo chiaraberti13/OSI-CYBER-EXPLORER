@@ -6,6 +6,7 @@ import ViewLink from './ViewLink';
 import CurriculumView from './CurriculumView';
 import { useStore } from '../store';
 import { DOMAIN_LAB_VIEWS } from '../lib/navigation';
+import { CCNA_BLUEPRINT, CCNA_BLUEPRINT_TOPICS } from '../content/ccnaBlueprint';
 
 afterEach(() => {
   cleanup();
@@ -49,11 +50,15 @@ describe('ViewLink', () => {
     expect(useStore.getState().activeView).toBe('osi');
   });
 
-  it('makes every curriculum destination a real lab link', () => {
+  it('makes every curriculum and blueprint destination a real link', () => {
     render(<CurriculumView />);
     const hashes = screen.getAllByRole('link').map(link => link.getAttribute('href'));
     expect(hashes.sort()).toEqual([
-      ...Object.values(DOMAIN_LAB_VIEWS).map(view => `#/${view}`), '#/coverage',
+      ...Object.values(DOMAIN_LAB_VIEWS).map(view => `#/${view}`),
+      '#/coverage',
+      ...CCNA_BLUEPRINT_TOPICS.flatMap(entry => entry.destinations.map(view => `#/${view}`)),
+      CCNA_BLUEPRINT.source.url
     ].sort());
+    expect(screen.getByRole('link', { name: 'Fonte ufficiale Cisco (PDF)' })).toHaveProperty('target', '_blank');
   });
 });

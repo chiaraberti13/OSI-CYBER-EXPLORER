@@ -19,14 +19,14 @@ Copyable examples and OSI Cyber Explorer simulations must not send traffic to re
 Il registro `docs/documentation-target-allowlist.json` contiene solo eccezioni legate a un file e a uno scopo verificabile:
 
 - router-ID OSPF convenzionali `1.1.1.1`–`5.5.5.5`, usati come identificatori e non come destinazioni;
-- `learningnetwork.cisco.com`, citato come fonte ufficiale del programma CCNA;
+- `learningnetwork.cisco.com` e `learningcontent.cisco.com`, citati come fonti ufficiali del programma e del blueprint CCNA;
 - `datatracker.ietf.org`, `standards.ieee.org`, `csrc.nist.gov`, `attack.mitre.org` e `www.cisco.com`, autorità ufficiali usate esclusivamente dal resolver delle citazioni strutturate;
 - `images.unsplash.com`, dipendenza immagine già governata dalla CSP e tracciata separatamente da UX-11.
 
 The `docs/documentation-target-allowlist.json` registry contains only file-bound exceptions with a verifiable purpose:
 
 - conventional OSPF router IDs `1.1.1.1`–`5.5.5.5`, used as identifiers rather than destinations;
-- `learningnetwork.cisco.com`, cited as the official CCNA curriculum source;
+- `learningnetwork.cisco.com` and `learningcontent.cisco.com`, cited as official CCNA curriculum and blueprint sources;
 - `datatracker.ietf.org`, `standards.ieee.org`, `csrc.nist.gov`, `attack.mitre.org`, and `www.cisco.com`, official authorities used only by the structured-citation resolver;
 - `images.unsplash.com`, an image dependency already governed by CSP and tracked separately by UX-11.
 

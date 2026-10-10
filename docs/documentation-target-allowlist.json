@@ -40,6 +40,11 @@
       "purpose": "Official CCNA curriculum reference; never used as a lab target"
     },
     {
+      "domain": "learningcontent.cisco.com",
+      "file": "src/content/ccnaBlueprint.ts",
+      "purpose": "Official Cisco CCNA 200-301 v1.1 blueprint PDF; never used as a lab target"
+    },
+    {
       "domain": "images.unsplash.com",
       "file": "src/components/GuideModal.tsx",
       "purpose": "Read-only guide image governed by the production CSP and tracked by UX-11"
