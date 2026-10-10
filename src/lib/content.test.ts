@@ -26,6 +26,13 @@ import { ROUTING_SECURITY_SCENARIOS } from '../content/routingSecurityScenarios'
 import { SEGMENTATION_SCENARIOS } from '../content/segmentationScenarios';
 import { VPN_PKI_SCENARIOS } from '../content/vpnPkiScenarios';
 import { WIRELESS_SECURITY_SCENARIOS } from '../content/wirelessSecurityScenarios';
+import {
+  MITRE_ATTACK_REVIEWED_ON,
+  MITRE_ATTACK_VERSION,
+  securityReferenceUrl,
+  type SecurityReference,
+  type SecurityReferenceKind,
+} from '../content/securityReferences';
 
 /** A value that must carry both an Italian and an English string. */
 function expectBilingual(value: { it?: string; en?: string } | undefined, label: string) {
@@ -69,6 +76,57 @@ describe('ATTACK_SCENARIOS', () => {
       expectBilingual(s.name, `${s.id} name`);
       expectBilingual(s.description, `${s.id} description`);
       expectBilingual(s.recommendedDefense, `${s.id} recommendedDefense`);
+    }
+  });
+
+  it('gives every attack scenario at least one structured authoritative reference', () => {
+    for (const scenario of ATTACK_SCENARIOS) {
+      expect(scenario.references.length, `${scenario.id} references`).toBeGreaterThan(0);
+    }
+  });
+});
+
+const REFERENCE_PATTERNS = {
+  rfc: /^RFC [1-9]\d*$/,
+  ieee: /^IEEE 802(?:\.\d+)+(?:-[12]\d{3})?$/,
+  nist: /^SP \d+-\d+[A-Z]?(?: Rev\. \d+)?$/,
+  attack: /^T\d{4}(?:\.\d{3})?$/,
+  cisco: /^Cisco [A-Za-z0-9][A-Za-z0-9 .:/_-]*$/,
+} as const satisfies Record<SecurityReferenceKind, RegExp>;
+
+function expectValidReferences(references: readonly SecurityReference[], owner: string) {
+  const unique = new Set<string>();
+  for (const reference of references) {
+    expect(REFERENCE_PATTERNS[reference.kind].test(reference.id), `${owner}: invalid ${reference.kind} id '${reference.id}'`).toBe(true);
+    const key = `${reference.kind}:${reference.id}`;
+    expect(unique.has(key), `${owner}: duplicate reference '${key}'`).toBe(false);
+    unique.add(key);
+
+    const url = new URL(securityReferenceUrl(reference));
+    expect(url.protocol, `${owner}: ${key} must resolve over HTTPS`).toBe('https:');
+    expect(
+      ['datatracker.ietf.org', 'standards.ieee.org', 'csrc.nist.gov', 'attack.mitre.org', 'www.cisco.com'],
+      `${owner}: ${key} has an unapproved authority`,
+    ).toContain(url.hostname);
+  }
+}
+
+describe('structured security references', () => {
+  it('pins the current reviewed MITRE ATT&CK release', () => {
+    expect(MITRE_ATTACK_VERSION).toBe('19.2');
+    expect(MITRE_ATTACK_REVIEWED_ON).toBe('2026-10-10');
+  });
+
+  it('validates every attack-scenario reference and its authoritative URL', () => {
+    for (const scenario of ATTACK_SCENARIOS) {
+      expectValidReferences(scenario.references, `attack scenario '${scenario.id}'`);
+    }
+  });
+
+  it('gives every defensive control a valid authoritative reference', () => {
+    for (const control of DEFENSE_CONTROLS) {
+      expect(control.references.length, `${control.id} references`).toBeGreaterThan(0);
+      expectValidReferences(control.references, `defensive control '${control.id}'`);
     }
   });
 });

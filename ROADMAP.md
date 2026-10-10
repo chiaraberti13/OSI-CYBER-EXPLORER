@@ -1,7 +1,7 @@
 # 🚀 Roadmap di Sviluppo: OSI-CYBER-EXPLORER
 
 > **Baseline analizzata:** branch `main`, commit `8f91a2c` del 20 settembre 2026  
-> **Ultima revisione della roadmap:** 5 ottobre 2026 (rev. 7 — coverage della logica)
+> **Ultima revisione della roadmap:** 10 ottobre 2026 (rev. 8 — riferimenti normativi)
 > **Metodo di revisione:** baseline rieseguita localmente con Node 22.22.2 (`npm ci`, `vitest run`, `npm audit`, `vite build`) e ispezione mirata del codice; i task già presenti sono stati conservati con la stessa numerazione e arricchiti solo dove la verifica ha fatto emergere dettagli mancanti.
 
 ## Legenda
@@ -198,7 +198,7 @@ La mappatura serve a spiegare *perché* esiste un controllo, non a dichiarare co
 
 - [x] **NET-05 — Unica fonte per dimensioni e campi degli header.** Centralizzare in `src/content` le costanti usate da `PacketSimulator.tsx`, `LayerDetails.tsx` e `PacketInspector.tsx`: Ethernet II 14 byte + FCS 4, tag 802.1Q 4 byte, frame 64–1518 byte (1522 con tag), MTU 1500, header IPv4 20–60 byte e IPv6 40 byte fissi, TCP 20–60 byte e UDP 8 byte, quindi MSS tipico 1460 (IPv4) / 1440 (IPv6); TTL iniziali tipici (64/128/255) presentati come default di sistema, non come costanti di protocollo. **Completato il 30 settembre 2026:** `src/content/headerSpecifications.ts` è l'unica fonte tipizzata; le tre viste rendono lo stesso profilo condiviso e i test ne verificano valori, semantica TTL e coerenza inter-componente.
 
-- [ ] **NET-06 — Riferimenti normativi strutturati.** Aggiungere ai contenuti un campo opzionale `references` tipizzato (`{ kind: 'rfc' | 'ieee' | 'nist' | 'attack' | 'cisco'; id: string }`) e validarne il formato in `content.test.ts` (ad es. `RFC 5952`, `T1557.002`). Fissare la versione di MITRE ATT&CK usata. **Completato quando:** ogni scenario di attacco e ogni controllo difensivo ha almeno un riferimento verificabile.
+- [x] **NET-06 — Riferimenti normativi strutturati.** Aggiungere ai contenuti un campo opzionale `references` tipizzato (`{ kind: 'rfc' | 'ieee' | 'nist' | 'attack' | 'cisco'; id: string }`) e validarne il formato in `content.test.ts` (ad es. `RFC 5952`, `T1557.002`). Fissare la versione di MITRE ATT&CK usata. **Completato quando:** ogni scenario di attacco e ogni controllo difensivo ha almeno un riferimento verificabile. **Esito (10/10/2026):** introdotti il tipo chiuso `SecurityReference`, il resolver verso sole autorità ufficiali e una registry per tutti i 25 scenari del laboratorio Attacco & Difesa; i 25 controlli difensivi espongono almeno il catalogo base NIST SP 800-53 Rev. 5, mantenendo i collegamenti puntuali alle tecniche già validati dal grafo dei contenuti. RFC e tecniche ATT&CK sono associati allo scenario specifico; ATT&CK Enterprise è fissato alla versione corrente verificata **v19.2** (6 agosto 2026), con data di review. `content.test.ts` blocca riferimenti mancanti, ID malformati, duplicati, URL non HTTPS e domini non autorevoli. Metodo e regole editoriali sono documentati in `docs/SECURITY_CONTENT_REFERENCES.md`.
 
 - [ ] **NET-07 — Tracciare la copertura del blueprint CCNA 200-301.** Versionare una matrice *exam topic → laboratorio/sezione* allineata alla versione corrente dell'esame e testare che ogni topic dichiarato abbia almeno una destinazione esistente nella registry delle viste (ENG-06). **Completato quando:** un aggiornamento del blueprint mostra immediatamente i topic scoperti.
 

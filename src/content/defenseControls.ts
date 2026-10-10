@@ -1,6 +1,7 @@
 import type { Bilingual } from '../types';
 import type { CcnaDomainId } from './securityCoverage';
 import type { SecurityPlane } from './securityTaxonomy';
+import { DEFENSIVE_CONTROL_BASELINE_REFERENCES, type SecurityReference } from './securityReferences';
 
 export type DefenseFunction = 'prevent' | 'detect' | 'contain' | 'recover' | 'compensate';
 
@@ -15,10 +16,14 @@ export interface DefenseControl {
   dependsOn: Bilingual;
   verify: Bilingual;
   limitation: Bilingual;
+  references: SecurityReference[];
 }
 
 const b = (it: string, en: string): Bilingual => ({ it, en });
-const d = (id: string, name: Bilingual, functions: DefenseFunction[], planes: SecurityPlane[], domains: CcnaDomainId[], techniqueIds: string[], enforcement: Bilingual, dependsOn: Bilingual, verify: Bilingual, limitation: Bilingual): DefenseControl => ({ id, name, functions, planes, domains, techniqueIds, enforcement, dependsOn, verify, limitation });
+const d = (id: string, name: Bilingual, functions: DefenseFunction[], planes: SecurityPlane[], domains: CcnaDomainId[], techniqueIds: string[], enforcement: Bilingual, dependsOn: Bilingual, verify: Bilingual, limitation: Bilingual): DefenseControl => ({
+  id, name, functions, planes, domains, techniqueIds, enforcement, dependsOn, verify, limitation,
+  references: [...DEFENSIVE_CONTROL_BASELINE_REFERENCES],
+});
 
 export const DEFENSE_CONTROLS: DefenseControl[] = [
   d('physical-media-hardening', b('Hardening fisico e del mezzo', 'Physical and media hardening'), ['prevent', 'detect', 'recover'], ['physical'], ['network-fundamentals'], ['physical-tapping', 'rf-jamming', 'rogue-device'], b('Armadi, porte, cablaggi, alimentazione, sensori e controllo dell’accesso fisico.', 'Racks, ports, cabling, power, sensors, and physical access control.'), b('Inventario, ownership, percorsi ridondanti e procedure di ispezione.', 'Inventory, ownership, redundant paths, and inspection procedures.'), b('Audit fisico, tamper evidence, DOM/transceiver e test del percorso alternativo.', 'Physical audit, tamper evidence, DOM/transceiver data, and alternate-path tests.'), b('Non protegge il contenuto intercettato su infrastruttura autorizzata: serve cifratura end-to-end.', 'It does not protect content intercepted on authorized infrastructure: end-to-end encryption is required.')),

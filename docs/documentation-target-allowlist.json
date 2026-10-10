@@ -10,6 +10,31 @@
   ],
   "externalDomainExceptions": [
     {
+      "domain": "attack.mitre.org",
+      "file": "src/content/securityReferences.ts",
+      "purpose": "Official MITRE ATT&CK citation authority; never used as a lab target"
+    },
+    {
+      "domain": "csrc.nist.gov",
+      "file": "src/content/securityReferences.ts",
+      "purpose": "Official NIST publication citation authority; never used as a lab target"
+    },
+    {
+      "domain": "datatracker.ietf.org",
+      "file": "src/content/securityReferences.ts",
+      "purpose": "Official IETF RFC citation authority; never used as a lab target"
+    },
+    {
+      "domain": "standards.ieee.org",
+      "file": "src/content/securityReferences.ts",
+      "purpose": "Official IEEE standard citation authority; never used as a lab target"
+    },
+    {
+      "domain": "www.cisco.com",
+      "file": "src/content/securityReferences.ts",
+      "purpose": "Official Cisco reference search authority; never used as a lab target"
+    },
+    {
       "domain": "learningnetwork.cisco.com",
       "file": "src/components/CurriculumView.tsx",
       "purpose": "Official CCNA curriculum reference; never used as a lab target"

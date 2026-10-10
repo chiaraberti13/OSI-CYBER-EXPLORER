@@ -4,6 +4,9 @@ All notable changes to OSI Cyber Explorer are documented in this file. The proje
 
 ## [Unreleased]
 
+- Added structured, validated RFC/IEEE/NIST/MITRE ATT&CK/Cisco references for every Attack & Defense scenario and defensive control. MITRE ATT&CK is pinned to v19.2, authoritative URLs are generated centrally, and CI rejects missing, malformed, duplicate, non-HTTPS, or unapproved references.
+- Aggiunti riferimenti strutturati e validati RFC/IEEE/NIST/MITRE ATT&CK/Cisco per ogni scenario Attacco & Difesa e controllo difensivo. MITRE ATT&CK è fissato alla v19.2, gli URL autorevoli sono generati centralmente e la CI rifiuta riferimenti mancanti, malformati, duplicati, non HTTPS o non approvati.
+
 Use this section only for changes already merged into `main` but not yet included in a tagged release.
 
 ### Added

@@ -1,4 +1,5 @@
 import type { AttackScenario } from '../types';
+import { ATTACK_SCENARIO_REFERENCES } from './securityReferences';
 
 /**
  * Split out of the old src/constants.ts.
@@ -8,7 +9,7 @@ import type { AttackScenario } from '../types';
  * dataset now lives on its own and is imported only where it is used.
  */
 
-export const ATTACK_SCENARIOS: AttackScenario[] = [
+const ATTACK_SCENARIO_DATA: Omit<AttackScenario, 'references'>[] = [
   {
     id: 'l1-jamming',
     name: { en: 'Signal Jamming', it: 'Disturbo del Segnale' },
@@ -238,3 +239,8 @@ export const ATTACK_SCENARIOS: AttackScenario[] = [
     defenseEnabled: false
   }
 ];
+
+export const ATTACK_SCENARIOS: AttackScenario[] = ATTACK_SCENARIO_DATA.map((scenario) => ({
+  ...scenario,
+  references: [...ATTACK_SCENARIO_REFERENCES[scenario.id as keyof typeof ATTACK_SCENARIO_REFERENCES]],
+}));

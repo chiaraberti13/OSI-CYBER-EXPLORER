@@ -1,3 +1,5 @@
+import type { SecurityReference } from './content/securityReferences';
+
 export type Language = 'it' | 'en';
 
 /** Closed domain for OSI layers used by navigation and simulation state. */
@@ -100,4 +102,5 @@ export interface AttackScenario {
   targetLayer: OsiLayerId;
   attackType: AttackType;
   defenseEnabled?: boolean;
+  references: SecurityReference[];
 }
