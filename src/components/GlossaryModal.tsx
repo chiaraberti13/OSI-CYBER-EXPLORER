@@ -9,12 +9,24 @@ export default function GlossaryModal({ isOpen = false, onClose = () => {}, inli
   const [searchTerm, setSearchTerm] = useState('');
   const titleId = useId();
   const descriptionId = useId();
+  const statusId = useId();
   const searchRef = useRef<HTMLInputElement>(null);
 
   const filteredTerms = GLOSSARY_TERMS.filter(item =>
     item.term.toLowerCase().includes(searchTerm.toLowerCase()) ||
     item.definition[language].toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // UX-04: the result count is announced through a live region so screen-reader
+  // users hear the list narrow as they type; it also serves as the input's
+  // description. Zero results reuse the visible empty-state wording.
+  const count = filteredTerms.length;
+  const searchLabel = language === 'en' ? 'Search glossary terms or definitions' : 'Cerca termini o definizioni del glossario';
+  const resultAnnouncement = count === 0
+    ? (language === 'en' ? 'No terms found.' : 'Nessun termine trovato.')
+    : language === 'en'
+      ? `${count} ${count === 1 ? 'term' : 'terms'}`
+      : `${count} ${count === 1 ? 'termine' : 'termini'}`;
 
   const renderWrapper = (children: React.ReactNode) => {
     if (inline) {
@@ -72,18 +84,32 @@ export default function GlossaryModal({ isOpen = false, onClose = () => {}, inli
             {/* Search Bar */}
             <div className="px-6 py-4 bg-slate-50 border-b border-slate-100">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <Search aria-hidden="true" className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                 <input
                   ref={searchRef}
                   type="text"
                   placeholder={language === 'en' ? 'Search terms or definitions...' : 'Cerca termini o definizioni...'}
+                  aria-label={searchLabel}
+                  aria-describedby={statusId}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-sm outline-none focus:border-blue-400 focus:ring-4 focus:ring-blue-50 transition-all"
+                  className="w-full pl-10 pr-10 py-2 bg-white border border-slate-200 rounded-xl text-sm outline-none focus:border-blue-400 focus:ring-4 focus:ring-blue-50 transition-all"
                   // In the modal, ModalDialog moves focus here through initialFocusRef.
                   autoFocus={inline}
                 />
+                {searchTerm && (
+                  <button
+                    type="button"
+                    onClick={() => { setSearchTerm(''); searchRef.current?.focus(); }}
+                    aria-label={language === 'en' ? 'Clear the search' : 'Cancella la ricerca'}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-600 focus-visible:text-slate-600"
+                  >
+                    <X aria-hidden="true" className="w-4 h-4" />
+                  </button>
+                )}
               </div>
+              {/* Off-screen live region: announces the result count (or no-results). */}
+              <span id={statusId} role="status" aria-live="polite" className="sr-only">{resultAnnouncement}</span>
             </div>
 
             {/* Terms List */}
@@ -103,7 +129,7 @@ export default function GlossaryModal({ isOpen = false, onClose = () => {}, inli
                 </dl>
               ) : (
                 <div className="text-center py-12">
-                  <BookOpen className="w-12 h-12 text-slate-100 mx-auto mb-3" />
+                  <BookOpen aria-hidden="true" className="w-12 h-12 text-slate-100 mx-auto mb-3" />
                   <p className="text-slate-400 text-sm">{language === 'en' ? 'No terms found.' : 'Nessun termine trovato.'}</p>
                 </div>
               )}
