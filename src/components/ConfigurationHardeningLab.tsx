@@ -5,6 +5,7 @@ import { CCNA_DOMAINS } from '../content/ccna';
 import { SECURITY_TECHNIQUES } from '../content/securityCoverage';
 import { DEFENSE_CONTROLS } from '../content/defenseControls';
 import { useStore } from '../store';
+import { uiMessages } from '../i18n';
 
 const AREAS: HardeningArea[] = ['layer2', 'routing', 'services', 'management', 'security', 'automation'];
 const RISKS: ChangeRisk[] = ['low', 'medium', 'high'];
@@ -48,7 +49,7 @@ export default function ConfigurationHardeningLab() {
       <section className="rounded-xl border border-slate-200 bg-white p-4" aria-labelledby="hardening-filter-title">
         <h2 id="hardening-filter-title" className="flex items-center gap-2 text-sm font-semibold text-slate-900"><Filter className="h-4 w-4 text-indigo-600" aria-hidden="true" />{language === 'it' ? 'Filtra e seleziona' : 'Filter and select'}</h2>
         <div className="mt-3 grid gap-3 md:grid-cols-3">
-          <label className="text-xs text-slate-600">{language === 'it' ? 'Area' : 'Area'}<select value={area} onChange={event => setArea(event.target.value as 'all' | HardeningArea)} className="mt-1 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-100"><option value="all">{language === 'it' ? 'Tutte le aree' : 'All areas'}</option>{AREAS.map(item => <option key={item} value={item}>{AREA_LABELS[item][language]}</option>)}</select></label>
+          <label className="text-xs text-slate-600">{language === 'it' ? 'Area' : 'Area'}<select value={area} onChange={event => setArea(event.target.value as 'all' | HardeningArea)} className="mt-1 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-100"><option value="all">{uiMessages(language).shared.allAreas}</option>{AREAS.map(item => <option key={item} value={item}>{AREA_LABELS[item][language]}</option>)}</select></label>
           <label className="text-xs text-slate-600">{language === 'it' ? 'Rischio della modifica' : 'Change risk'}<select value={risk} onChange={event => setRisk(event.target.value as 'all' | ChangeRisk)} className="mt-1 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-100"><option value="all">{language === 'it' ? 'Tutti i livelli' : 'All levels'}</option>{RISKS.map(item => <option key={item} value={item}>{RISK_LABELS[item][language]}</option>)}</select></label>
           <label className="text-xs text-slate-600">{language === 'it' ? 'Configurazione' : 'Configuration'}<select value={selected?.id ?? ''} onChange={event => setSelectedId(event.target.value)} className="mt-1 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-100">{filtered.map(item => <option key={item.id} value={item.id}>{item.title[language]}</option>)}</select></label>
         </div>
@@ -71,7 +72,7 @@ export default function ConfigurationHardeningLab() {
           </div>
 
           <section className="mt-5 rounded-xl border border-sky-100 bg-sky-50/50 p-4" aria-labelledby="verify-config-title">
-            <h3 id="verify-config-title" className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-sky-900"><TerminalSquare className="h-4 w-4" aria-hidden="true" />{language === 'it' ? 'Verifica operativa' : 'Operational verification'}</h3>
+            <h3 id="verify-config-title" className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-sky-900"><TerminalSquare className="h-4 w-4" aria-hidden="true" />{uiMessages(language).shared.operationalVerification}</h3>
             <div className="mt-3 grid gap-4 lg:grid-cols-2"><CodeBlock lines={selected.verifyCommands} label={language === 'it' ? 'Comandi show' : 'Show commands'} /><div><p className="text-[10px] font-semibold uppercase tracking-wider text-sky-800">{language === 'it' ? 'Evidenza attesa' : 'Expected evidence'}</p><p className="mt-2 text-xs leading-relaxed text-sky-950">{selected.expectedEvidence[language]}</p></div></div>
           </section>
 

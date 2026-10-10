@@ -1,0 +1,58 @@
+import type { UiMessages } from './it';
+
+/** English catalog must satisfy every key declared by the canonical catalog. */
+export const en = {
+  app: {
+    loadingModule: 'Loading module…',
+    skipToContent: 'Skip to content',
+    backToOsi: 'Back to the OSI overview',
+    footer: 'Educational app · © 2026 Chiara Berti',
+  },
+  header: {
+    openGuide: 'Open the guide',
+    guide: 'Guide',
+    language: 'Language',
+  },
+  navigation: {
+    label: 'Lab navigation',
+    search: 'Search for a lab',
+    searchHint: 'Search by name, protocol, or topic…',
+    close: 'Close',
+    noResults: 'No lab matches your search.',
+    current: 'You are here',
+    open: 'Open menu',
+    results: 'Search results',
+    result: 'result',
+    resultsCount: 'results',
+  },
+  error: {
+    chunkTitle: 'This section could not be loaded',
+    chunkBody: 'The module failed to download, most likely because of a temporary network issue. Your data and preferences have not been lost.',
+    reload: 'Reload the page',
+    role: 'Error message',
+  },
+  shared: {
+    results: 'results',
+    allPlanes: 'All planes',
+    securityPlane: 'Security plane',
+    filterScenarios: 'Filter scenarios',
+    allAreas: 'All areas',
+    techniques: 'Techniques:',
+    noScenarioMatches: 'No scenario matches the filters.',
+    controls: 'Controls',
+    defenses: 'Defenses:',
+    operationalVerification: 'Operational verification',
+    evidence: 'Evidence',
+    technicalCaveat: 'Technical caveat',
+    threatOrFailureMode: 'Threat or failure mode',
+    allFamilies: 'All families',
+    horizontalScrollHint: 'Scroll the table horizontally to see every column.',
+    verificationRule: 'Verification rule',
+    domains: 'Domains',
+    operationalArea: 'Operational area',
+    ccnaDomain: 'CCNA domain',
+    attackFamily: 'Attack family',
+    simulationOnly: 'Simulation only.',
+    normalBehavior: 'Normal behavior',
+  },
+} as const satisfies UiMessages;

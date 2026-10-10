@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import type { LucideIcon } from 'lucide-react';
 import { useStore } from '../store';
+import { uiMessages } from '../i18n';
 import { motion, AnimatePresence } from 'motion/react';
 import { OSI_LAYERS } from '../content/osiLayers';
 import { ATTACK_SCENARIOS } from '../content/attackScenarios';
@@ -203,7 +204,7 @@ export default function AttackLab() {
           <p className="text-slate-400 text-sm mt-2 max-w-2xl leading-relaxed">{t.subtitle}</p>
           <div className="mt-4 flex max-w-3xl items-start gap-2 rounded-lg border border-amber-300/30 bg-amber-300/10 px-3 py-2 text-xs leading-relaxed text-amber-100" role="note">
             <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
-            <span><strong>{language === 'it' ? 'Solo simulazione.' : 'Simulation only.'}</strong> {t.simulationNotice}</span>
+            <span><strong>{uiMessages(language).shared.simulationOnly}</strong> {t.simulationNotice}</span>
           </div>
         </div>
       </div>

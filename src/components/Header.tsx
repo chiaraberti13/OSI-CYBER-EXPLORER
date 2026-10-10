@@ -1,6 +1,7 @@
 import { useStore } from '../store';
 import { useShallow } from 'zustand/react/shallow';
 import { BookOpen } from 'lucide-react';
+import { uiMessages } from '../i18n';
 
 export default function Header() {
   const {
@@ -12,6 +13,7 @@ export default function Header() {
   setLanguage: state.setLanguage,
   setIsGuideOpen: state.setIsGuideOpen,
 })));
+  const copy = uiMessages(language).header;
 
   return (
     <header className="border-b border-slate-200/60 bg-[#fafafa]/80 backdrop-blur-xl sticky top-0 z-50">
@@ -30,14 +32,14 @@ export default function Header() {
             type="button"
             onClick={() => setIsGuideOpen(true)}
             aria-haspopup="dialog"
-            aria-label={language === 'it' ? 'Apri la guida' : 'Open the guide'}
+            aria-label={copy.openGuide}
             className="flex items-center gap-1.5 px-3 py-1.5 text-slate-600 rounded-lg text-xs font-medium hover:bg-slate-100 transition-colors"
           >
             <BookOpen aria-hidden="true" className="w-4 h-4" />
-            <span className="hidden sm:inline">{language === 'it' ? 'Guida' : 'Guide'}</span>
+            <span className="hidden sm:inline">{copy.guide}</span>
           </button>
 
-          <div className="flex bg-slate-100 p-0.5 rounded-lg" role="group" aria-label={language === 'it' ? 'Lingua' : 'Language'}>
+          <div className="flex bg-slate-100 p-0.5 rounded-lg" role="group" aria-label={copy.language}>
             <button
               onClick={() => setLanguage('en')}
               aria-pressed={language === 'en'}

@@ -13,6 +13,7 @@ import { useStore } from './store';
 import { useShallow } from 'zustand/react/shallow';
 import { VIEW_REGISTRY, type MotionPreset } from './content/viewRegistry';
 import { viewTitle } from './lib/viewRouting';
+import { uiMessages } from './i18n';
 
 /**
  * Entrance/exit animations for a view switch, resolved from the `motion` preset each
@@ -42,7 +43,7 @@ const MOTION_PRESETS: Record<MotionPreset, {
 function ViewFallback({ language }: { language: 'it' | 'en' }) {
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-8 text-center text-sm text-slate-500" role="status">
-      {language === 'it' ? 'Caricamento del modulo…' : 'Loading module…'}
+      {uiMessages(language).app.loadingModule}
     </div>
   );
 }
@@ -71,6 +72,7 @@ export default function App() {
   const activeDefinition = VIEW_REGISTRY[activeView];
   const ActiveView = activeDefinition.component;
   const preset = MOTION_PRESETS[activeDefinition.motion ?? 'subtle'];
+  const copy = uiMessages(language).app;
 
   return (
     <div className="min-h-screen bg-[#fafafa] text-slate-700 selection:bg-indigo-500/10">
@@ -96,7 +98,7 @@ export default function App() {
           }
         }}
       >
-        {language === 'it' ? 'Vai al contenuto' : 'Skip to content'}
+        {copy.skipToContent}
       </a>
       <Header />
       <Navigation />
@@ -113,7 +115,7 @@ export default function App() {
           language={language}
           resetKeys={[activeView]}
           safeReturn={{
-            label: language === 'it' ? 'Torna alla panoramica OSI' : 'Back to the OSI overview',
+            label: copy.backToOsi,
             onAction: () => setActiveView('osi')
           }}
         >
@@ -142,9 +144,7 @@ export default function App() {
       <footer className="max-w-7xl mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-2 border-t border-slate-200/60 mt-12 text-xs text-slate-400">
          <span className="font-medium text-slate-500 font-mono tracking-tight">osi·cyber·explorer</span>
          <span>
-           {language === 'it'
-             ? 'App didattica · © 2026 Chiara Berti'
-             : 'Educational app · © 2026 Chiara Berti'}
+           {copy.footer}
          </span>
       </footer>
 

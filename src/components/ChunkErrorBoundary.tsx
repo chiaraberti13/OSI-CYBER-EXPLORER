@@ -5,6 +5,7 @@
 
 import { Component, type ErrorInfo, type ReactNode } from 'react';
 import { AlertTriangle, RefreshCw, Undo2 } from 'lucide-react';
+import { uiMessages } from '../i18n';
 
 /**
  * A minimal, bilingual error boundary for the lazily-loaded views (ENG-09).
@@ -60,21 +61,6 @@ interface ChunkErrorBoundaryState {
   hasError: boolean;
 }
 
-const COPY = {
-  it: {
-    title: 'Impossibile caricare questa sezione',
-    body: 'Il modulo non è stato scaricato correttamente, probabilmente per un problema di rete temporaneo. I tuoi dati e le tue preferenze non sono andati persi.',
-    reload: 'Ricarica la pagina',
-    role: 'Messaggio di errore'
-  },
-  en: {
-    title: 'This section could not be loaded',
-    body: 'The module failed to download, most likely because of a temporary network issue. Your data and preferences have not been lost.',
-    reload: 'Reload the page',
-    role: 'Error message'
-  }
-} as const;
-
 function defaultReload(): void {
   if (typeof window !== 'undefined' && typeof window.location?.reload === 'function') {
     window.location.reload();
@@ -125,7 +111,7 @@ export default class ChunkErrorBoundary extends Component<ChunkErrorBoundaryProp
       return this.props.children;
     }
 
-    const copy = COPY[this.props.language];
+    const copy = uiMessages(this.props.language).error;
     const { safeReturn } = this.props;
 
     return (
@@ -135,8 +121,8 @@ export default class ChunkErrorBoundary extends Component<ChunkErrorBoundaryProp
         className="rounded-xl border border-amber-200 bg-amber-50 p-8 text-center"
       >
         <AlertTriangle className="mx-auto mb-3 h-8 w-8 text-amber-500" aria-hidden="true" />
-        <h2 className="text-base font-semibold text-slate-800">{copy.title}</h2>
-        <p className="mx-auto mt-2 max-w-md text-sm text-slate-600">{copy.body}</p>
+        <h2 className="text-base font-semibold text-slate-800">{copy.chunkTitle}</h2>
+        <p className="mx-auto mt-2 max-w-md text-sm text-slate-600">{copy.chunkBody}</p>
         <div className="mt-5 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <button
             type="button"

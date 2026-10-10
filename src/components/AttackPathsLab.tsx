@@ -7,6 +7,7 @@ import { SECURITY_TECHNIQUES } from '../content/securityCoverage';
 import { DEFENSE_CONTROLS } from '../content/defenseControls';
 import { CCNA_DOMAINS } from '../content/ccna';
 import { useStore } from '../store';
+import { uiMessages } from '../i18n';
 
 const FAMILY_BY_ID = new Map(ATTACK_FAMILIES.map(item => [item.id, item]));
 const TECHNIQUE_BY_ID = new Map(SECURITY_TECHNIQUES.map(item => [item.id, item]));
@@ -38,7 +39,7 @@ export default function AttackPathsLab() {
             </p>
             <div className="mt-4 flex max-w-4xl items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs leading-relaxed text-amber-950" role="note">
               <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-700" aria-hidden="true" />
-              <span><strong>{language === 'it' ? 'Solo simulazione.' : 'Simulation only.'}</strong> {language === 'it'
+              <span><strong>{uiMessages(language).shared.simulationOnly}</strong> {language === 'it'
                 ? ' Modello locale e non esecutivo per ambienti posseduti o esplicitamente autorizzati. Non genera traffico né esegue comandi; le fasi sono semplificate e omettono prerequisiti e payload operativi.'
                 : ' Local, non-executing model for owned or explicitly authorised environments. It generates no traffic and runs no commands; stages are simplified and omit operational prerequisites and payloads.'}</span>
             </div>
@@ -59,7 +60,7 @@ export default function AttackPathsLab() {
           <label className="min-w-56 text-xs text-slate-600">
             <span className="font-semibold" id="path-selection-title">{language === 'it' ? 'Filtra per famiglia' : 'Filter by family'}</span>
             <select value={familyId} onChange={event => setFamilyId(event.target.value)} className="mt-1 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-100">
-              <option value="all">{language === 'it' ? 'Tutte le famiglie' : 'All families'}</option>
+              <option value="all">{uiMessages(language).shared.allFamilies}</option>
               {ATTACK_FAMILIES.map(family => <option key={family.id} value={family.id}>{family.name[language]}</option>)}
             </select>
           </label>

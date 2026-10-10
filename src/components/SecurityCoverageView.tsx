@@ -4,6 +4,7 @@ import { CCNA_DOMAINS } from '../content/ccna';
 import { SECURITY_TECHNIQUES, type CcnaDomainId } from '../content/securityCoverage';
 import { ATTACK_FAMILIES, type SecurityPlane } from '../content/securityTaxonomy';
 import { useStore } from '../store';
+import { uiMessages } from '../i18n';
 import SecurityCoverageMatrix from './SecurityCoverageMatrix';
 import { DOMAIN_LAB_VIEWS } from '../lib/navigation';
 import SecurityResponsePlaybooks from './SecurityResponsePlaybooks';
@@ -145,23 +146,23 @@ export default function SecurityCoverageView() {
             <input value={query} onChange={event => setQuery(event.target.value)} placeholder={language === 'it' ? 'Cerca tecnica o difesa…' : 'Search technique or defense…'} className="w-full rounded-lg border border-slate-200 py-2 pl-9 pr-3 text-sm text-slate-700 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" />
           </label>
           <label>
-            <span className="sr-only">{language === 'it' ? 'Dominio CCNA' : 'CCNA domain'}</span>
+            <span className="sr-only">{uiMessages(language).shared.ccnaDomain}</span>
             <select value={domain} onChange={event => setDomain(event.target.value as 'all' | CcnaDomainId)} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-100">
               <option value="all">{language === 'it' ? 'Tutti i domini CCNA' : 'All CCNA domains'}</option>
               {CCNA_DOMAINS.map(item => <option key={item.id} value={item.id}>{item.number}. {item.title[language]}</option>)}
             </select>
           </label>
           <label>
-            <span className="sr-only">{language === 'it' ? 'Famiglia di attacco' : 'Attack family'}</span>
+            <span className="sr-only">{uiMessages(language).shared.attackFamily}</span>
             <select value={family} onChange={event => setFamily(event.target.value)} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-100">
-              <option value="all">{language === 'it' ? 'Tutte le famiglie' : 'All families'}</option>
+              <option value="all">{uiMessages(language).shared.allFamilies}</option>
               {ATTACK_FAMILIES.map(item => <option key={item.id} value={item.id}>{item.name[language]}</option>)}
             </select>
           </label>
           <label>
-            <span className="sr-only">{language === 'it' ? 'Piano di sicurezza' : 'Security plane'}</span>
+            <span className="sr-only">{uiMessages(language).shared.securityPlane}</span>
             <select value={plane} onChange={event => setPlane(event.target.value as 'all' | SecurityPlane)} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-100">
-              <option value="all">{language === 'it' ? 'Tutti i piani' : 'All planes'}</option>
+              <option value="all">{uiMessages(language).shared.allPlanes}</option>
               {PLANES.map(item => <option key={item} value={item}>{PLANE_LABELS[item][language]}</option>)}
             </select>
           </label>
@@ -171,7 +172,7 @@ export default function SecurityCoverageView() {
       <div className="flex items-center justify-between gap-4">
         <h2 className="text-lg font-semibold text-slate-900">{language === 'it' ? 'Tecniche e contromisure' : 'Techniques and countermeasures'}</h2>
         <p className="text-xs font-semibold text-slate-500" aria-live="polite">
-          {filteredTechniques.length} {language === 'it' ? 'risultati' : 'results'}
+          {filteredTechniques.length} {uiMessages(language).shared.results}
         </p>
       </div>
 
@@ -199,11 +200,11 @@ export default function SecurityCoverageView() {
                 </div>
 
                 <div className="mt-3 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
-                  <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">{language === 'it' ? 'Verifica operativa' : 'Operational verification'}</p>
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">{uiMessages(language).shared.operationalVerification}</p>
                   <p className="mt-1 font-mono text-xs leading-relaxed text-slate-700">{technique.verify[language]}</p>
                 </div>
                 <p className="mt-3 text-[10px] text-slate-400">
-                  {language === 'it' ? 'Domini' : 'Domains'}: {technique.domains.map(id => DOMAIN_BY_ID.get(id)?.title[language]).join(' · ')}
+                  {uiMessages(language).shared.domains}: {technique.domains.map(id => DOMAIN_BY_ID.get(id)?.title[language]).join(' · ')}
                 </p>
               </article>
             );

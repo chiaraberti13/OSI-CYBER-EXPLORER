@@ -4,6 +4,8 @@ All notable changes to OSI Cyber Explorer are documented in this file. The proje
 
 ## [Unreleased]
 
+- Consolidated repeated application chrome and shared security-lab labels into typed Italian/English UI catalogs. TypeScript rejects missing English keys, while catalog tests enforce exact key parity, non-empty values, and bilingual result-count formatting without adding a runtime i18n dependency.
+- Consolidate le etichette ripetute del guscio applicativo e dei laboratori di sicurezza in cataloghi UI italiano/inglese tipizzati. TypeScript rifiuta chiavi inglesi mancanti, mentre i test impongono parità esatta, valori non vuoti e formattazione bilingue del conteggio risultati senza aggiungere dipendenze i18n a runtime.
 - Profiled the large collections before optimisation and removed the glossary's 114 staggered row animations: visual settling fell from 3.69 s to zero and median cold-search latency from 19.22 ms to 12.37 ms, while semantic definition-list markup replaced index keys without adding virtualisation.
 - Profilate le collezioni grandi prima dell’ottimizzazione e rimosse le 114 animazioni scaglionate del glossario: completamento visivo da 3,69 s a zero e latenza mediana della ricerca a freddo da 19,22 ms a 12,37 ms, con elenco di definizioni semantico e senza introdurre virtualizzazione.
 - Added enforced performance budgets for initial JavaScript and every lazy route, a reproducible bundle treemap, and Lighthouse CI checks for the OSI and Ports paths without adding its vulnerable CLI dependency tree to the application lockfile.

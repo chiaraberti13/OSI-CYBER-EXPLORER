@@ -5,6 +5,7 @@ import { NAV_GROUPS, navEntryOf, navGroupOf, searchNav } from '../lib/navigation
 import { useStore } from '../store';
 import { useShallow } from 'zustand/react/shallow';
 import ViewLink from './ViewLink';
+import { formatSearchResultCount, uiMessages } from '../i18n';
 
 export default function Navigation() {
   const {
@@ -28,9 +29,7 @@ export default function Navigation() {
   const activeEntry = navEntryOf(activeView);
   const results = useMemo(() => searchNav(query, language), [query, language]);
 
-  const labels = language === 'it'
-    ? { nav: 'Navigazione dei laboratori', search: 'Cerca un laboratorio', searchHint: 'Cerca per nome, protocollo o argomento…', close: 'Chiudi', noResults: 'Nessun laboratorio corrisponde alla ricerca.', current: 'Sei qui', open: 'Apri il menu', results: 'Risultati della ricerca' }
-    : { nav: 'Lab navigation', search: 'Search for a lab', searchHint: 'Search by name, protocol, or topic…', close: 'Close', noResults: 'No lab matches your search.', current: 'You are here', open: 'Open menu', results: 'Search results' };
+  const labels = uiMessages(language).navigation;
 
   // UX-03: an editable combobox owns a listbox popup. Each option needs a stable id
   // so `aria-activedescendant` on the input can point at the highlighted one while
@@ -41,9 +40,7 @@ export default function Navigation() {
   const activeOptionId = results.length > 0 ? optionId(results[highlighted]?.entry.view) : undefined;
   const resultAnnouncement = results.length === 0
     ? labels.noResults
-    : language === 'it'
-      ? `${results.length} ${results.length === 1 ? 'risultato' : 'risultati'}`
-      : `${results.length} ${results.length === 1 ? 'result' : 'results'}`;
+    : formatSearchResultCount(language, results.length);
 
   // Close the menus whenever the view changes: the destination is reached, so the chrome
   // gets out of the way. The view can also change from another component, so this is
@@ -113,7 +110,7 @@ export default function Navigation() {
   const openGroup = NAV_GROUPS.find(group => group.id === openGroupId) ?? null;
 
   return (
-    <nav ref={navRef} aria-label={labels.nav} className="sticky top-14 z-40 w-full border-b border-slate-200/60 bg-[#fafafa]/85 backdrop-blur-md">
+    <nav ref={navRef} aria-label={labels.label} className="sticky top-14 z-40 w-full border-b border-slate-200/60 bg-[#fafafa]/85 backdrop-blur-md">
       <div className="relative mx-auto max-w-7xl px-6">
         <div className="flex h-12 items-center gap-1.5">
           <div className="flex min-w-0 flex-1 items-center gap-1 overflow-x-auto no-scrollbar">
