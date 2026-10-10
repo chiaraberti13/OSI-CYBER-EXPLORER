@@ -6,7 +6,7 @@
 import { lazy, type ComponentType, type LazyExoticComponent } from 'react';
 import {
   Activity, BookOpen, Cable, Calculator, FileCode2, FileSearch, Fingerprint, Gauge,
-  GitBranch, GlobeLock, Hash, HeartPulse, KeyRound, Laptop, Layers, Layers3, LockKeyhole, Map,
+  GitBranch, GlobeLock, GraduationCap, Hash, HeartPulse, KeyRound, Laptop, Layers, Layers3, LockKeyhole, Map,
   MailWarning, Network, Radar, Radio, Route, Router, ServerCog, Shield, ShieldAlert,
   Split, Swords, Workflow, type LucideIcon
 } from 'lucide-react';
@@ -90,6 +90,16 @@ function view(loader: () => Promise<{ default: ComponentType<ViewProps> }>): Laz
 
 export const VIEW_REGISTRY: Record<AppView, ViewDefinition> = {
   // --- CCNA path --------------------------------------------------------------
+  manual: {
+    group: 'ccna',
+    icon: GraduationCap,
+    component: view(() => import('../components/StudyManualView')),
+    it: 'Manuale di studio',
+    en: 'Study manual',
+    hintIt: 'Gli argomenti spiegati passo passo, con esempi, errori comuni e laboratori guidati.',
+    hintEn: 'The topics explained step by step, with examples, common mistakes, and guided labs.',
+    keywords: 'manuale manual guida teoria studio capitoli argomenti spiegazione esercitazioni laboratori guidati osi incapsulamento handbook theory study chapters'
+  },
   curriculum: {
     group: 'ccna',
     icon: Map,

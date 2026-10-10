@@ -5,7 +5,7 @@ import type { AppView } from '../store';
 
 /** Every view the app can render, mirrored from the AppView union in the store. */
 const ALL_APP_VIEWS: AppView[] = [
-  'curriculum', 'pathtrace', 'fundamentals', 'access', 'routing', 'services', 'securitycore', 'automation',
+  'manual', 'curriculum', 'pathtrace', 'fundamentals', 'access', 'routing', 'services', 'securitycore', 'automation',
   'coverage', 'attackpaths', 'hardening', 'detection', 'recovery', 'ipv6security', 'segmentation',
   'identitytrust', 'routingsecurity', 'wirelesssecurity', 'vpnsecurity', 'availability', 'inspection',
   'managementsecurity', 'endpointsecurity', 'applicationsecurity', 'emailsecurity', 'layer2security',

@@ -88,6 +88,21 @@ test.describe('application shell', () => {
     await expect(page).toHaveURL(/#\/osi$/);
   });
 
+  test('the study manual opens, reveals a solution and links into a lab (EDU-01)', async ({ page }) => {
+    await page.goto('/#/manual');
+    await expect(page).toHaveTitle(/Manuale di studio — OSI Cyber Explorer/);
+    await expect(page.getByRole('heading', { level: 2, name: 'Manuale di studio' })).toBeVisible();
+
+    // A guided-lab solution is disclosed on demand.
+    const disclosure = page.getByText('Mostra la soluzione commentata').first();
+    await disclosure.click();
+    await expect(page.getByText('Soluzione commentata').first()).toBeVisible();
+
+    // A guided lab links into the OSI stack lab.
+    await page.getByRole('link', { name: /Apri il laboratorio/ }).first().click();
+    await expect(page).toHaveURL(/#\/(osi|ports)$/);
+  });
+
   test('deep links, reload and invalid routes behave predictably', async ({ page }) => {
     // A deep link opens its destination directly.
     await page.goto('/#/ports');

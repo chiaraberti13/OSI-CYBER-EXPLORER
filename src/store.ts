@@ -19,7 +19,7 @@ import {
 } from './lib/preferences';
 import type { SimulationSpeed } from './lib/preferences';
 
-export type AppView = 'curriculum' | 'pathtrace' | 'fundamentals' | 'access' | 'routing' | 'services' | 'securitycore' | 'automation' | 'coverage' | 'attackpaths' | 'hardening' | 'detection' | 'recovery' | 'ipv6security' | 'segmentation' | 'identitytrust' | 'routingsecurity' | 'wirelesssecurity' | 'vpnsecurity' | 'availability' | 'inspection' | 'managementsecurity' | 'endpointsecurity' | 'applicationsecurity' | 'emailsecurity' | 'layer2security' | 'defense' | 'evidence' | 'osi' | 'attacklab' | 'ports' | 'security' | 'glossary';
+export type AppView = 'manual' | 'curriculum' | 'pathtrace' | 'fundamentals' | 'access' | 'routing' | 'services' | 'securitycore' | 'automation' | 'coverage' | 'attackpaths' | 'hardening' | 'detection' | 'recovery' | 'ipv6security' | 'segmentation' | 'identitytrust' | 'routingsecurity' | 'wirelesssecurity' | 'vpnsecurity' | 'availability' | 'inspection' | 'managementsecurity' | 'endpointsecurity' | 'applicationsecurity' | 'emailsecurity' | 'layer2security' | 'defense' | 'evidence' | 'osi' | 'attacklab' | 'ports' | 'security' | 'glossary';
 
 export interface PreferencesSlice {
   language: Language;

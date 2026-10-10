@@ -252,6 +252,31 @@ La mappatura serve a spiegare *perché* esiste un controllo, non a dichiarare co
 
 ---
 
+## 🎓 Contenuti didattici e percorso di studio (A cura dell'Instructional Designer)
+
+**Priorità complessiva: alta.** L'app aveva molti laboratori interattivi ma la teoria era sparsa dentro i lab e non esisteva un testo di studio continuo né esercitazioni con consegna e soluzione. Questo track introduce il **Manuale di studio**: un handbook bilingue, allineato a CCNA 200-301 e CompTIA Security+ SY0-701, in cui ogni argomento ha obiettivi, prerequisiti, spiegazione progressiva, esempio, errori comuni e **laboratori guidati** (esercitazioni che aprono i lab interattivi esistenti con una consegna e una soluzione commentata). Ogni capitolo è un incremento verticale completo e verificato.
+
+### Impianto e primo capitolo
+
+- [x] **EDU-01 — Impianto del Manuale di studio + Capitolo 1 (Modello OSI e incapsulamento).** Modello dati tipizzato (`src/content/studyManual.ts`), selettori puri (`src/lib/studyManual.ts`), vista `manual` registrata nel `viewRegistry` e raggiungibile da menu/ricerca/URL, stringhe nel catalogo i18n. Capitolo 1 con quattro argomenti (perché i livelli; i sette livelli e le funzioni; incapsulamento e PDU; OSI vs TCP/IP), esempi, errori comuni, riferimenti RFC e due laboratori guidati collegati a «Pila OSI» e «Porte & Protocolli». **Completato quando:** il manuale è navigabile, bilingue, con soluzione rivelabile e link ai lab; contenuti validati (id unici, parità IT/EN, lab referenziati esistenti) e coperti da test unitari, di componente ed E2E. **Esito (10/10/2026):** fatto e verificato — `npm run verify` verde (75 file/633 test) e 11/11 E2E su Chromium.
+
+### Estensione dei capitoli (piano dei contenuti, cert-aligned)
+
+- [ ] **EDU-02 — Capitolo: Ethernet, switching e tabella CAM** (CCNA). Frame Ethernet, apprendimento MAC, dominio di collisione/broadcast; lab guidati su «Accesso alla rete». **Completato quando:** argomenti, esempi, errori comuni e ≥1 lab guidato, con contenuti validati e testati.
+- [ ] **EDU-03 — Capitolo: Indirizzamento IPv4 e subnetting/VLSM** (CCNA). Classi, maschere, CIDR, VLSM, wildcard; lab guidati su «Fondamenti di rete» (pianificatore VLSM). **Completato quando:** come sopra, con almeno un esercizio di subnetting a soluzione commentata.
+- [ ] **EDU-04 — Capitolo: VLAN, trunk 802.1Q e STP** (CCNA). Segmentazione L2, trunk, elezione root e convergenza; lab guidati su «Accesso alla rete» e il lab STP. **Completato quando:** come sopra.
+- [ ] **EDU-05 — Capitolo: Routing IP statico e OSPF** (CCNA). Tabella di routing, longest-prefix match, costo OSPF, DR/BDR; lab guidati su «Connettività IP» e «Tracciatore di percorso». **Completato quando:** come sopra.
+- [ ] **EDU-06 — Capitolo: Servizi IP (DHCP, DNS, NAT, NTP)** (CCNA). Flusso DORA, risoluzione DNS, PAT; lab guidati su «Servizi IP». **Completato quando:** come sopra.
+- [ ] **EDU-07 — Capitolo: Fondamenti di sicurezza (CIA, minaccia/vulnerabilità/rischio)** (Security+). Terminologia di base, superficie d'attacco, difesa in profondità; lab guidati su «Controlli difensivi». **Completato quando:** come sopra.
+- [ ] **EDU-08 — Capitolo: Attacchi per livello OSI e kill chain** (Security+). Mappa attacco→livello, fasi della kill chain; lab guidati su «Attacco & Difesa» e «Percorsi d'attacco». **Completato quando:** come sopra.
+- [ ] **EDU-09 — Capitolo: Difese di rete (ACL, firewall, IDS/IPS, segmentazione, Zero Trust)** (Security+). Enforcement, ordine delle regole, inline vs out-of-band; lab guidati su «Sicurezza CCNA», «Firewall e ispezione», «IDS e IPS». **Completato quando:** come sopra.
+- [ ] **EDU-10 — Capitolo: Crittografia, VPN/IPsec, PKI e TLS** (Security+). Riservatezza/integrità/autenticità, IKEv2, catena dei certificati; lab guidati su «VPN, IPsec e PKI». **Completato quando:** come sopra.
+- [ ] **EDU-11 — Capitolo: Identità e AAA (802.1X, RADIUS/TACACS+)** (Security+). AAA, EAP-TLS, MAB, fallback; lab guidati su «Identità e AAA». **Completato quando:** come sopra.
+- [ ] **EDU-12 — Capitolo: Hardening, detection e incident response** (Security+). Baseline di configurazione, telemetria, prima risposta; lab guidati su «Hardening», «Detection engineering», «Evidenze operative». **Completato quando:** come sopra.
+- [ ] **EDU-13 — IPv6, Wireless e Automazione** (CCNA, capitoli brevi). Completare la copertura del blueprint CCNA; lab guidati su «IPv6 e dual-stack», «Wireless e RF», «Automazione». **Completato quando:** come sopra.
+
+---
+
 ## 📅 Pianificazione Temporale
 
 | Fase | Orizzonte indicativo | Obiettivo | Task principali | Criterio di uscita |
