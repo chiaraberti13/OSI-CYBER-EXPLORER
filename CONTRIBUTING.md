@@ -14,12 +14,17 @@ This repository covers a bilingual React/TypeScript networking, CCNA and attack-
 
 ### Setup
 ```bash
-npm ci\nnpm run dev
+npm ci
+npm run dev
 ```
 
 ### Required checks
 ```bash
-npm run typecheck\nnpm run lint\nnpm run test:coverage\nnpm run build\nnpm run test:e2e
+npm run typecheck
+npm run lint
+npm run test:coverage
+npm run build
+npm run test:e2e
 ```
 Offensive examples must remain inert/non-executing, use documentation-reserved/private targets, include defensive context and comply with the repository's offensive-content review policy.
 
@@ -30,7 +35,7 @@ Preserve scope/authorization guards, validate untrusted input, fail safely, keep
 Describe what changed, why, how it was tested, affected security boundaries, compatibility impact and rollback/migration notes. Participation follows `CODE_OF_CONDUCT.md`.
 
 ## Italiano
-Questo repository riguarda a bilingual React/TypeScript networking, CCNA and attack-defense learning lab with deterministic client-side simulations.
+Questo repository ospita un laboratorio didattico bilingue di networking, CCNA e sicurezza offensiva/difensiva, sviluppato con React e TypeScript e basato su simulazioni deterministiche eseguite nel browser.
 
 ### Prima di iniziare
 1. Leggi `README.md`, `SECURITY.md`, roadmap e documentazione di architettura pertinente.
@@ -41,14 +46,19 @@ Questo repository riguarda a bilingual React/TypeScript networking, CCNA and att
 
 ### Setup
 ```bash
-npm ci\nnpm run dev
+npm ci
+npm run dev
 ```
 
 ### Controlli richiesti
 ```bash
-npm run typecheck\nnpm run lint\nnpm run test:coverage\nnpm run build\nnpm run test:e2e
+npm run typecheck
+npm run lint
+npm run test:coverage
+npm run build
+npm run test:e2e
 ```
-Offensive examples must remain inert/non-executing, use documentation-reserved/private targets, include defensive context and comply with the repository's offensive-content review policy.
+Gli esempi offensivi devono rimanere inerti e non eseguibili, utilizzare esclusivamente indirizzi privati o riservati alla documentazione, includere il contesto difensivo e rispettare la policy di revisione dei contenuti offensivi del repository.
 
 ### Aspettative tecniche
 Mantieni i controlli di scope/autorizzazione, valida gli input, usa comportamenti fail-safe, conserva i segreti fuori dal repository, aggiorna i test e documenta modifiche di compatibilità/schema. Le funzioni di sicurezza non devono indebolire logging, provenienza, auditabilità o isolamento. Aggiorna prima la documentazione inglese e mantieni quella italiana equivalente.
