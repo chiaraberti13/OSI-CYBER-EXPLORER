@@ -373,5 +373,161 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
         lab: 'fundamentals'
       }
     ]
+  },
+  {
+    id: 'ipv4-subnetting',
+    cert: 'ccna',
+    order: 3,
+    title: { it: 'Indirizzamento IPv4 e subnetting', en: 'IPv4 addressing and subnetting' },
+    summary: {
+      it: 'Il livello 3 che instrada tra reti: come è fatto un indirizzo IPv4, cosa significano maschera e notazione CIDR, come si calcolano rete, broadcast e host, e come il VLSM assegna subnet di dimensioni diverse senza sprechi.',
+      en: 'The layer-3 addressing that routes between networks: how an IPv4 address is built, what the mask and CIDR notation mean, how to compute network, broadcast and hosts, and how VLSM assigns differently sized subnets without waste.'
+    },
+    topics: [
+      {
+        id: 'ipv4-address-mask',
+        title: { it: 'Indirizzo IPv4, maschera e notazione CIDR', en: 'IPv4 address, mask, and CIDR notation' },
+        objectives: [
+          { it: 'Descrivere la struttura di un indirizzo IPv4 e separare porzione di rete e porzione host tramite la maschera.', en: 'Describe the structure of an IPv4 address and separate the network portion from the host portion using the mask.' },
+          { it: 'Leggere la notazione CIDR /n e riconoscere indirizzi privati (RFC 1918) e di documentazione (RFC 5737).', en: 'Read CIDR /n notation and recognise private (RFC 1918) and documentation (RFC 5737) addresses.' }
+        ],
+        prerequisites: [
+          { it: 'Sapere che il livello 3 instrada i pacchetti tra reti diverse (vedi capitolo sul modello OSI).', en: 'Know that layer 3 routes packets between different networks (see the OSI model chapter).' }
+        ],
+        theory: [
+          { it: 'Un indirizzo IPv4 è lungo 32 bit, scritto come quattro ottetti decimali separati da punti (es. 192.168.1.10), ciascuno da 0 a 255. L’indirizzo non basta da solo: serve la maschera di sottorete per sapere quanti bit, a partire da sinistra, identificano la rete e quanti restano per gli host.', en: 'An IPv4 address is 32 bits long, written as four decimal octets separated by dots (e.g. 192.168.1.10), each from 0 to 255. The address alone is not enough: the subnet mask is needed to know how many bits, from the left, identify the network and how many remain for hosts.' },
+          { it: 'La maschera è anch’essa 32 bit: i bit a 1 coprono la porzione di rete, quelli a 0 la porzione host. La notazione CIDR riassume la maschera con /n, dove n è il numero di bit a 1: 255.255.255.0 equivale a /24, cioè 24 bit di rete e 8 di host.', en: 'The mask is also 32 bits: the 1 bits cover the network portion, the 0 bits the host portion. CIDR notation summarises the mask as /n, where n is the number of 1 bits: 255.255.255.0 equals /24, that is 24 network bits and 8 host bits.' },
+          { it: 'Alcuni blocchi sono riservati: gli indirizzi privati RFC 1918 (10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16) non sono instradati su Internet e si usano nelle LAN dietro NAT; i blocchi di documentazione RFC 5737 (192.0.2.0/24, 198.51.100.0/24, 203.0.113.0/24) servono per esempi e manuali, e sono quelli usati in questa app proprio per non puntare a sistemi reali.', en: 'Some blocks are reserved: RFC 1918 private addresses (10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16) are not routed on the Internet and are used in LANs behind NAT; RFC 5737 documentation blocks (192.0.2.0/24, 198.51.100.0/24, 203.0.113.0/24) are for examples and manuals, and are the ones this app uses precisely so as not to point at real systems.' }
+        ],
+        example: {
+          it: 'In 203.0.113.10/24 la maschera è 255.255.255.0: i primi 24 bit (203.0.113) sono la rete, l’ultimo ottetto (10) è l’host. Cambiando la maschera in /26 (255.255.255.192) la stessa rete viene divisa in quattro sottoreti più piccole.', en: 'In 203.0.113.10/24 the mask is 255.255.255.0: the first 24 bits (203.0.113) are the network, the last octet (10) is the host. Changing the mask to /26 (255.255.255.192) splits the same network into four smaller subnets.' }
+        ,
+        commonMistakes: [
+          { it: 'Leggere l’indirizzo senza la maschera: lo stesso 203.0.113.10 appartiene a reti diverse con /24 o /26. La maschera non è un dettaglio opzionale.', en: 'Reading the address without the mask: the same 203.0.113.10 belongs to different networks with /24 or /26. The mask is not an optional detail.' },
+          { it: 'Confondere privati e pubblici: un 192.168.x.x non è instradabile su Internet, deve passare per il NAT.', en: 'Confusing private and public: a 192.168.x.x is not routable on the Internet, it must go through NAT.' }
+        ],
+        lab: 'fundamentals',
+        references: [{ kind: 'rfc', id: 'RFC 4632' }]
+      },
+      {
+        id: 'ipv4-subnet-math',
+        title: { it: 'Calcolare rete, broadcast e host', en: 'Computing network, broadcast, and hosts' },
+        objectives: [
+          { it: 'Dato un indirizzo con prefisso, calcolare indirizzo di rete, broadcast, primo e ultimo host e numero di host utilizzabili.', en: 'Given an address with a prefix, compute the network address, broadcast, first and last host, and the number of usable hosts.' },
+          { it: 'Spiegare perché gli host utilizzabili sono 2^h − 2 e le eccezioni /31 e /32.', en: 'Explain why usable hosts are 2^h − 2 and the /31 and /32 exceptions.' }
+        ],
+        prerequisites: [
+          { it: 'Conoscere maschera e notazione CIDR.', en: 'Know the mask and CIDR notation.' }
+        ],
+        theory: [
+          { it: 'Con h bit host, una sottorete contiene 2^h indirizzi totali. Due sono riservati: l’indirizzo di rete (tutti i bit host a 0), che identifica la sottorete, e l’indirizzo di broadcast (tutti i bit host a 1), che raggiunge tutti gli host. Gli host utilizzabili sono quindi 2^h − 2.', en: 'With h host bits, a subnet contains 2^h total addresses. Two are reserved: the network address (all host bits 0), which identifies the subnet, and the broadcast address (all host bits 1), which reaches every host. Usable hosts are therefore 2^h − 2.' },
+          { it: 'Il “block size” dell’ottetto interessante è 256 meno il valore della maschera in quell’ottetto: per /26 la maschera è 255.255.255.192, 256 − 192 = 64, quindi le sottoreti partono da .0, .64, .128, .192. L’indirizzo di rete è il multiplo del block size immediatamente ≤ all’host; il broadcast è l’indirizzo prima della rete successiva.', en: 'The “block size” of the interesting octet is 256 minus the mask value in that octet: for /26 the mask is 255.255.255.192, 256 − 192 = 64, so the subnets start at .0, .64, .128, .192. The network address is the multiple of the block size just ≤ the host; the broadcast is the address before the next network.' },
+          { it: 'Due eccezioni: un /31 (RFC 3021) ha solo 2 indirizzi e nessun broadcast, usati entrambi come host sui collegamenti punto-punto; un /32 è un singolo indirizzo (host route), usato ad esempio per una loopback.', en: 'Two exceptions: a /31 (RFC 3021) has only 2 addresses and no broadcast, both used as hosts on point-to-point links; a /32 is a single address (host route), used for example for a loopback.' }
+        ],
+        example: {
+          it: 'Per 203.0.113.80/26: block size 64, quindi la sottorete è 203.0.113.64, il broadcast 203.0.113.127, il primo host 203.0.113.65 e l’ultimo 203.0.113.126, per 62 host utilizzabili (2^6 − 2).', en: 'For 203.0.113.80/26: block size 64, so the subnet is 203.0.113.64, the broadcast 203.0.113.127, the first host 203.0.113.65 and the last 203.0.113.126, for 62 usable hosts (2^6 − 2).' }
+        ,
+        commonMistakes: [
+          { it: 'Dimenticare di sottrarre i due indirizzi riservati: un /24 ha 256 indirizzi ma 254 host utilizzabili.', en: 'Forgetting to subtract the two reserved addresses: a /24 has 256 addresses but 254 usable hosts.' },
+          { it: 'Applicare la regola 2^h − 2 anche al /31: lì vale l’eccezione RFC 3021 con 2 host e nessun broadcast.', en: 'Applying the 2^h − 2 rule to a /31 too: there the RFC 3021 exception applies, with 2 hosts and no broadcast.' },
+          { it: 'Scegliere il block size dall’ottetto sbagliato: va individuato l’ottetto dove la maschera non è né 255 né 0.', en: 'Picking the block size from the wrong octet: it must be taken from the octet where the mask is neither 255 nor 0.' }
+        ],
+        lab: 'fundamentals',
+        references: [{ kind: 'rfc', id: 'RFC 3021' }],
+        guidedLabs: [
+          {
+            id: 'gl-subnet-calc',
+            title: { it: 'Calcola la sottorete di un host', en: 'Work out a host’s subnet' },
+            difficulty: 'core',
+            lab: 'fundamentals',
+            scenario: {
+              it: 'Il laboratorio «Fondamenti di rete» include un esploratore IPv4 che, dato indirizzo e prefisso, mostra rete, broadcast, range host, maschera e wildcard.',
+              en: 'The “Network fundamentals” lab includes an IPv4 explorer that, given an address and prefix, shows the network, broadcast, host range, mask and wildcard.'
+            },
+            task: {
+              it: 'Per 203.0.113.80/26 calcola a mano rete, broadcast, primo e ultimo host e numero di host, poi verifica con l’esploratore.',
+              en: 'For 203.0.113.80/26 work out by hand the network, broadcast, first and last host, and host count, then check with the explorer.'
+            },
+            steps: [
+              { it: 'Trova il block size: 256 − 192 (il valore della maschera /26 nell’ultimo ottetto) = 64.', en: 'Find the block size: 256 − 192 (the /26 mask value in the last octet) = 64.' },
+              { it: 'Individua il multiplo di 64 immediatamente ≤ 80: è 64, quindi la rete è 203.0.113.64.', en: 'Find the multiple of 64 just ≤ 80: it is 64, so the network is 203.0.113.64.' },
+              { it: 'Il broadcast è l’indirizzo prima della rete successiva (.128), cioè 203.0.113.127; host da .65 a .126.', en: 'The broadcast is the address before the next network (.128), i.e. 203.0.113.127; hosts from .65 to .126.' },
+              { it: 'Apri l’esploratore IPv4, inserisci 203.0.113.80/26 e confronta i valori.', en: 'Open the IPv4 explorer, enter 203.0.113.80/26 and compare the values.' }
+            ],
+            challenge: {
+              it: 'Ripeti con 203.0.113.80/28 e con un /30 punto-punto: come cambiano block size, numero di host e broadcast?',
+              en: 'Repeat with 203.0.113.80/28 and with a point-to-point /30: how do the block size, host count and broadcast change?'
+            },
+            solution: [
+              { it: 'Per /26: block size 64, rete 203.0.113.64, broadcast 203.0.113.127, host 203.0.113.65–126, 62 host utilizzabili (2^6 − 2).', en: 'For /26: block size 64, network 203.0.113.64, broadcast 203.0.113.127, hosts 203.0.113.65–126, 62 usable hosts (2^6 − 2).' },
+              { it: 'Sfida /28: block size 16, rete 203.0.113.80, broadcast 203.0.113.95, host .81–.94, 14 host. Sfida /30: block size 4, rete 203.0.113.80, broadcast .83, host .81–.82, 2 host — tipico collegamento punto-punto.', en: 'Challenge /28: block size 16, network 203.0.113.80, broadcast 203.0.113.95, hosts .81–.94, 14 hosts. Challenge /30: block size 4, network 203.0.113.80, broadcast .83, hosts .81–.82, 2 hosts — a typical point-to-point link.' }
+            ],
+            selfCheck: [
+              { it: 'So ricavare rete e broadcast dal block size senza convertire tutto in binario.', en: 'I can derive the network and broadcast from the block size without converting everything to binary.' },
+              { it: 'I miei valori coincidono con quelli dell’esploratore IPv4 per ogni prefisso provato.', en: 'My values match the IPv4 explorer’s for every prefix I tried.' }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'ipv4-vlsm',
+        title: { it: 'VLSM: subnet di dimensioni diverse', en: 'VLSM: differently sized subnets' },
+        objectives: [
+          { it: 'Applicare il VLSM per assegnare a ogni rete una subnet della dimensione giusta, partendo dal requisito più grande.', en: 'Apply VLSM to give each network a right-sized subnet, starting from the largest requirement.' },
+          { it: 'Spiegare perché l’ordine di allocazione dal più grande al più piccolo evita sovrapposizioni e sprechi.', en: 'Explain why allocating from largest to smallest avoids overlaps and waste.' }
+        ],
+        prerequisites: [
+          { it: 'Saper calcolare rete, broadcast e host di una sottorete.', en: 'Be able to compute a subnet’s network, broadcast and hosts.' }
+        ],
+        theory: [
+          { it: 'Il VLSM (Variable Length Subnet Mask) usa maschere di lunghezza diversa all’interno dello stesso blocco, così ogni sottorete ha solo gli indirizzi che le servono. È il modo con cui si evita di sprecare un intero /24 per un collegamento con due soli host.', en: 'VLSM (Variable Length Subnet Mask) uses masks of different lengths within the same block, so each subnet has only the addresses it needs. It is how you avoid wasting a whole /24 on a link with just two hosts.' },
+          { it: 'La regola pratica è allocare dal requisito più grande al più piccolo: per ciascuno si sceglie il prefisso più lungo (la subnet più piccola) che offre abbastanza host, e si parte dalla prima subnet libera. Ordinare al contrario frammenta il blocco e crea sovrapposizioni difficili da correggere.', en: 'The practical rule is to allocate from the largest requirement to the smallest: for each one you pick the longest prefix (the smallest subnet) that still provides enough hosts, starting from the first free subnet. Ordering the other way fragments the block and creates overlaps that are hard to fix.' },
+          { it: 'La wildcard mask, usata ad esempio nelle ACL e in OSPF, è il complemento della maschera: 255.255.255.192 (/26) ha wildcard 0.0.0.63. Indica quali bit “non contano” nel confronto.', en: 'The wildcard mask, used for example in ACLs and OSPF, is the complement of the mask: 255.255.255.192 (/26) has wildcard 0.0.0.63. It indicates which bits “do not matter” in the comparison.' }
+        ],
+        example: {
+          it: 'Dovendo servire 100, 50, 20 e 2 host dal blocco 203.0.113.0/24: 100 → /25 (203.0.113.0, 126 host), 50 → /26 (203.0.113.128, 62 host), 20 → /27 (203.0.113.192, 30 host), 2 → /30 (203.0.113.224). Ogni rete ha spazio sufficiente e nessuna si sovrappone.', en: 'To serve 100, 50, 20 and 2 hosts from the 203.0.113.0/24 block: 100 → /25 (203.0.113.0, 126 hosts), 50 → /26 (203.0.113.128, 62 hosts), 20 → /27 (203.0.113.192, 30 hosts), 2 → /30 (203.0.113.224). Each network has enough room and none overlaps.' }
+        ,
+        commonMistakes: [
+          { it: 'Allocare in ordine arbitrario invece che dal più grande: si finisce per non far entrare più le reti grandi.', en: 'Allocating in arbitrary order instead of largest-first: you end up unable to fit the large networks any more.' },
+          { it: 'Scegliere un prefisso troppo corto “per sicurezza”: spreca indirizzi e riduce il numero di subnet ottenibili dal blocco.', en: 'Choosing too short a prefix “to be safe”: it wastes addresses and reduces how many subnets the block can yield.' }
+        ],
+        lab: 'fundamentals',
+        references: [{ kind: 'rfc', id: 'RFC 4632' }],
+        guidedLabs: [
+          {
+            id: 'gl-vlsm-plan',
+            title: { it: 'Pianifica un indirizzamento VLSM', en: 'Plan a VLSM addressing scheme' },
+            difficulty: 'advanced',
+            lab: 'fundamentals',
+            scenario: {
+              it: 'Il laboratorio «Fondamenti di rete» contiene un pianificatore VLSM che, dato un blocco e una lista di requisiti, propone le subnet e segnala gli indirizzi sprecati.',
+              en: 'The “Network fundamentals” lab contains a VLSM planner that, given a block and a list of requirements, proposes the subnets and flags wasted addresses.'
+            },
+            task: {
+              it: 'Dal blocco 203.0.113.0/24, pianifica a mano le subnet per 100, 50, 20 e 2 host, poi verifica con il pianificatore.',
+              en: 'From the 203.0.113.0/24 block, plan by hand the subnets for 100, 50, 20 and 2 hosts, then check with the planner.'
+            },
+            steps: [
+              { it: 'Ordina i requisiti dal più grande al più piccolo: 100, 50, 20, 2.', en: 'Order the requirements from largest to smallest: 100, 50, 20, 2.' },
+              { it: 'Per ciascuno scegli il prefisso più lungo con host sufficienti: 100→/25, 50→/26, 20→/27, 2→/30.', en: 'For each, pick the longest prefix with enough hosts: 100→/25, 50→/26, 20→/27, 2→/30.' },
+              { it: 'Alloca in sequenza dalla prima subnet libera e annota rete e broadcast di ognuna.', en: 'Allocate in sequence from the first free subnet and note each one’s network and broadcast.' },
+              { it: 'Inserisci blocco e requisiti nel pianificatore VLSM e confronta il piano e gli sprechi.', en: 'Enter the block and requirements into the VLSM planner and compare the plan and the waste.' }
+            ],
+            challenge: {
+              it: 'Aggiungi un quinto requisito da 2 host: entra ancora nel /24? Quanti indirizzi restano liberi dopo tutte le allocazioni?',
+              en: 'Add a fifth requirement of 2 hosts: does it still fit in the /24? How many addresses remain free after all allocations?'
+            },
+            solution: [
+              { it: '100→203.0.113.0/25 (.0–.127), 50→203.0.113.128/26 (.128–.191), 20→203.0.113.192/27 (.192–.223), 2→203.0.113.224/30 (.224–.227). Restano liberi .228–.255.', en: '100→203.0.113.0/25 (.0–.127), 50→203.0.113.128/26 (.128–.191), 20→203.0.113.192/27 (.192–.223), 2→203.0.113.224/30 (.224–.227). Addresses .228–.255 remain free.' },
+              { it: 'Sfida: un secondo /30 entra a 203.0.113.228/30 (.228–.231); dopo le cinque reti restano liberi 203.0.113.232–255, cioè 24 indirizzi.', en: 'Challenge: a second /30 fits at 203.0.113.228/30 (.228–.231); after the five networks, 203.0.113.232–255 remain free, i.e. 24 addresses.' }
+            ],
+            selfCheck: [
+              { it: 'Ho allocato dal requisito più grande e nessuna subnet si sovrappone.', en: 'I allocated from the largest requirement first and no subnet overlaps.' },
+              { it: 'Il piano e gli indirizzi sprecati coincidono con quelli del pianificatore VLSM.', en: 'My plan and the wasted addresses match those of the VLSM planner.' }
+            ]
+          }
+        ]
+      }
+    ]
   }
 ];
