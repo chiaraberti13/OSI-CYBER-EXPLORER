@@ -4,6 +4,8 @@ All notable changes to OSI Cyber Explorer are documented in this file. The proje
 
 ## [Unreleased]
 
+- Accessibility: OSI stack layers are now buttons with `aria-pressed` for selection, and the transforming/compromised/hardened states are rendered as localised text (plus icons) rather than colour alone; purely decorative colour accents are `aria-hidden` (UX-05).
+- Accessibilità: i livelli dello stack OSI sono ora pulsanti con `aria-pressed` per la selezione e gli stati «in trasformazione/compromesso/protetto» sono resi come testo localizzato (oltre alle icone) invece che solo con il colore; gli accenti puramente cromatici sono `aria-hidden` (UX-05).
 - Accessibility: the glossary search now has a real accessible name via a bilingual `aria-label` (no longer the placeholder alone), an `aria-live` region that announces the result count or no-results and describes the field, and a reset button that clears the query and returns focus; decorative icons are `aria-hidden` (UX-04).
 - Accessibilità: la ricerca del glossario ha ora un nome accessibile reale tramite `aria-label` bilingue (non più il solo placeholder), una regione `aria-live` che annuncia il conteggio dei risultati o l'assenza di corrispondenze e descrive il campo, e un pulsante di reset che svuota la ricerca e riporta il focus; le icone decorative sono `aria-hidden` (UX-04).
 - Consolidated repeated application chrome and shared security-lab labels into typed Italian/English UI catalogs. TypeScript rejects missing English keys, while catalog tests enforce exact key parity, non-empty values, and bilingual result-count formatting without adding a runtime i18n dependency.

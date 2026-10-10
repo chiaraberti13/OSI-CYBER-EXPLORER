@@ -25,6 +25,14 @@ export default function OsiStack() {
   activeScenarioId: state.activeScenarioId,
 })));
 
+  // UX-05: the layer states were shown only through colour and English-only words.
+  // These labels localise them and are rendered as text (plus icons) so the state
+  // is understandable without colour perception; selection is exposed with
+  // aria-pressed below.
+  const stateLabels = language === 'it'
+    ? { transforming: 'in trasformazione', compromised: 'compromesso', hardened: 'protetto' }
+    : { transforming: 'transforming', compromised: 'compromised', hardened: 'hardened' };
+
   return (
     <div className="flex flex-col w-full bg-white rounded-lg border border-slate-200/70 overflow-hidden divide-y divide-slate-100">
       {OSI_LAYERS.map((layer) => {
@@ -55,6 +63,8 @@ export default function OsiStack() {
         return (
           <motion.button
             key={layer.id}
+            type="button"
+            aria-pressed={isSelected}
             whileTap={{ scale: 0.995 }}
             onClick={() => setSelectedLayerId(layer.id)}
             className={`
@@ -64,8 +74,9 @@ export default function OsiStack() {
               ${isMitigated ? 'bg-emerald-50/50' : ''}
             `}
           >
-            {/* Left state accent */}
+            {/* Left state accent (decorative: state is also conveyed by text below) */}
             <span
+              aria-hidden="true"
               className={`absolute left-0 top-0 bottom-0 w-0.5 transition-colors ${
                 isTargeted ? 'bg-red-400' : isActive ? 'bg-emerald-400' : isSelected ? 'bg-slate-900' : 'bg-transparent'
               }`}
@@ -91,16 +102,16 @@ export default function OsiStack() {
                     {layerInfo.protocols?.[0] || 'N/A'}
                   </span>
                   {isActive && (
-                    <span className="text-[10px] font-mono text-emerald-600">transforming</span>
+                    <span className="text-[10px] font-mono text-emerald-600">{stateLabels.transforming}</span>
                   )}
                   {isTargeted && (
                     <span className="inline-flex items-center gap-1 text-[10px] font-mono text-red-500">
-                      <Skull className="w-2.5 h-2.5" /> compromised
+                      <Skull aria-hidden="true" className="w-2.5 h-2.5" /> {stateLabels.compromised}
                     </span>
                   )}
                   {isMitigated && (
                     <span className="inline-flex items-center gap-1 text-[10px] font-mono text-emerald-600">
-                      <ShieldCheck className="w-2.5 h-2.5" /> hardened
+                      <ShieldCheck aria-hidden="true" className="w-2.5 h-2.5" /> {stateLabels.hardened}
                     </span>
                   )}
                 </div>
@@ -108,6 +119,7 @@ export default function OsiStack() {
             </div>
 
             <span
+              aria-hidden="true"
               className={`w-2 h-2 rounded-full shrink-0 transition-opacity ${isSelected ? 'opacity-100' : 'opacity-40'}`}
               style={{ backgroundColor: isTargeted ? '#ef4444' : layer.color }}
             />
