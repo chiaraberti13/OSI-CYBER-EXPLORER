@@ -6,6 +6,7 @@
 
 import { afterEach, describe, expect, it } from 'vitest';
 import { cleanup, render, screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import StudyManualView from './StudyManualView';
 import { useStore } from '../store';
 
@@ -41,6 +42,18 @@ describe('StudyManualView (EDU-01)', () => {
     expect(screen.getByRole('heading', { level: 3, name: /OSI model/ })).toBeTruthy();
     // Guided-lab disclosure and lab link are localised too.
     expect(screen.getAllByText('Show the commented solution').length).toBeGreaterThan(0);
+  });
+
+  it('navigates between chapters through the chapter navigation', async () => {
+    const user = userEvent.setup();
+    render(<StudyManualView />);
+
+    const chapterNav = screen.getByRole('navigation', { name: 'Capitoli del manuale' });
+    const secondChapter = within(chapterNav).getByRole('button', { name: /Ethernet/ });
+    await user.click(secondChapter);
+
+    expect(screen.getByRole('heading', { level: 3, name: /Ethernet/ })).toBeTruthy();
+    expect(secondChapter.getAttribute('aria-current')).toBe('true');
   });
 
   it('reveals the commented solution when the disclosure is opened', () => {

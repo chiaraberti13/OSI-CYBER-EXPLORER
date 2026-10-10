@@ -255,5 +255,123 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
         references: [{ kind: 'rfc', id: 'RFC 1122' }]
       }
     ]
+  },
+  {
+    id: 'ethernet-switching',
+    cert: 'ccna',
+    order: 2,
+    title: { it: 'Ethernet, switching e tabella CAM', en: 'Ethernet, switching, and the CAM table' },
+    summary: {
+      it: 'Come funziona la rete locale al livello 2: il frame Ethernet e gli indirizzi MAC, come lo switch impara e inoltra, e perché domini di collisione e di broadcast cambiano il modo di progettare la rete.',
+      en: 'How the local network works at layer 2: the Ethernet frame and MAC addresses, how a switch learns and forwards, and why collision and broadcast domains shape the way a network is designed.'
+    },
+    topics: [
+      {
+        id: 'ethernet-frame-mac',
+        title: { it: 'Il frame Ethernet e l’indirizzo MAC', en: 'The Ethernet frame and the MAC address' },
+        objectives: [
+          { it: 'Descrivere i campi principali di un frame Ethernet II e il ruolo dell’FCS.', en: 'Describe the main fields of an Ethernet II frame and the role of the FCS.' },
+          { it: 'Riconoscere struttura e tipi di indirizzo MAC: unicast, broadcast e la parte OUI.', en: 'Recognise the structure and types of MAC address: unicast, broadcast, and the OUI portion.' }
+        ],
+        prerequisites: [
+          { it: 'Sapere che il livello 2 consegna i frame nella rete locale (vedi capitolo sul modello OSI).', en: 'Know that layer 2 delivers frames within the local network (see the OSI model chapter).' }
+        ],
+        theory: [
+          { it: 'Un frame Ethernet II trasporta, nell’ordine: l’indirizzo MAC di destinazione (6 byte), l’indirizzo MAC sorgente (6 byte), un campo EtherType (2 byte) che indica il protocollo del payload — ad esempio 0x0800 per IPv4, 0x0806 per ARP, 0x86DD per IPv6 — poi il payload (da 46 a 1500 byte) e infine l’FCS (4 byte), il trailer di controllo d’errore.', en: 'An Ethernet II frame carries, in order: the destination MAC address (6 bytes), the source MAC address (6 bytes), an EtherType field (2 bytes) that names the payload protocol — for example 0x0800 for IPv4, 0x0806 for ARP, 0x86DD for IPv6 — then the payload (46 to 1500 bytes) and finally the FCS (4 bytes), the error-check trailer.' },
+          { it: 'L’indirizzo MAC è lungo 48 bit (6 byte), scritto in esadecimale, es. 00:1A:2B:3C:4D:5E. I primi 24 bit sono l’OUI (Organizationally Unique Identifier) assegnato al produttore; i restanti 24 identificano la singola scheda. L’indirizzo di broadcast è FF:FF:FF:FF:FF:FF: un frame con quella destinazione è destinato a tutti gli host del dominio di broadcast.', en: 'A MAC address is 48 bits (6 bytes) long, written in hexadecimal, e.g. 00:1A:2B:3C:4D:5E. The first 24 bits are the OUI (Organizationally Unique Identifier) assigned to the vendor; the remaining 24 identify the individual card. The broadcast address is FF:FF:FF:FF:FF:FF: a frame with that destination is meant for every host in the broadcast domain.' },
+          { it: 'L’FCS contiene un CRC calcolato sul frame: il ricevente lo ricalcola e, se non corrisponde, scarta il frame silenziosamente. Ethernet non ritrasmette: il recupero dell’errore, se serve, è compito dei livelli superiori come TCP.', en: 'The FCS holds a CRC computed over the frame: the receiver recomputes it and, if it does not match, silently discards the frame. Ethernet does not retransmit: error recovery, when needed, is the job of higher layers such as TCP.' }
+        ],
+        example: {
+          it: 'Un payload IPv4 viaggia in un frame con EtherType 0x0800; una richiesta ARP nello stesso segmento usa EtherType 0x0806 e destinazione broadcast FF:FF:FF:FF:FF:FF, perché chiede “chi ha questo IP?” a tutti.', en: 'An IPv4 payload travels in a frame with EtherType 0x0800; an ARP request on the same segment uses EtherType 0x0806 and the broadcast destination FF:FF:FF:FF:FF:FF, because it asks “who has this IP?” of everyone.' }
+        ,
+        commonMistakes: [
+          { it: 'Confondere indirizzo MAC e indirizzo IP: il MAC è fisico e locale al segmento (L2), l’IP è logico e instradabile tra reti (L3).', en: 'Confusing MAC and IP addresses: the MAC is physical and local to the segment (L2), the IP is logical and routable between networks (L3).' },
+          { it: 'Pensare che Ethernet garantisca la consegna: l’FCS rileva gli errori e fa scartare il frame, ma non lo ritrasmette.', en: 'Thinking Ethernet guarantees delivery: the FCS detects errors and causes the frame to be dropped, but it does not retransmit it.' }
+        ],
+        lab: 'fundamentals'
+      },
+      {
+        id: 'switch-cam-learning',
+        title: { it: 'Come lo switch impara: la tabella CAM', en: 'How a switch learns: the CAM table' },
+        objectives: [
+          { it: 'Spiegare come lo switch popola la tabella CAM e come decide forwarding, flooding e filtering.', en: 'Explain how a switch populates the CAM table and how it decides forwarding, flooding, and filtering.' },
+          { it: 'Prevedere il comportamento con unknown unicast, broadcast e aging della tabella.', en: 'Predict the behaviour with unknown unicast, broadcast, and table aging.' }
+        ],
+        prerequisites: [
+          { it: 'Conoscere la struttura del frame Ethernet e l’indirizzo MAC.', en: 'Know the structure of the Ethernet frame and the MAC address.' }
+        ],
+        theory: [
+          { it: 'Lo switch impara osservando l’indirizzo MAC *sorgente* dei frame in ingresso: associa quel MAC alla porta da cui è arrivato e lo registra nella tabella CAM (in IOS, la MAC address-table), insieme alla VLAN. È un apprendimento passivo e continuo.', en: 'A switch learns by observing the *source* MAC address of incoming frames: it associates that MAC with the port it arrived on and records it in the CAM table (in IOS, the MAC address-table), together with the VLAN. The learning is passive and continuous.' },
+          { it: 'Per inoltrare, lo switch guarda il MAC di *destinazione*: se è noto in tabella, invia il frame solo sulla porta giusta (forwarding); se non è noto (unknown unicast) o è un broadcast/multicast, lo inonda su tutte le porte della VLAN tranne quella di ingresso (flooding); se destinazione e sorgente sono sulla stessa porta, non lo inoltra (filtering).', en: 'To forward, the switch looks at the *destination* MAC: if it is known in the table, it sends the frame only out of the correct port (forwarding); if it is unknown (unknown unicast) or is a broadcast/multicast, it floods it out of every port in the VLAN except the ingress port (flooding); if the destination and source are on the same port, it does not forward it (filtering).' },
+          { it: 'Le voci apprese dinamicamente scadono dopo un tempo di inattività (per default 300 secondi su IOS): se da quel MAC non arrivano più frame, la voce viene rimossa. L’aging misura l’inattività, non l’età assoluta della voce.', en: 'Dynamically learned entries expire after an idle time (300 seconds by default on IOS): if no more frames arrive from that MAC, the entry is removed. Aging measures inactivity, not the absolute age of the entry.' }
+        ],
+        example: {
+          it: 'Il primo frame verso un host mai sentito prima viene inondato su tutta la VLAN (unknown unicast): non è un broadcast, ma si comporta come tale finché lo switch non impara dove si trova quell’host dalla sua risposta.', en: 'The first frame toward a host never heard from before is flooded across the whole VLAN (unknown unicast): it is not a broadcast, but behaves like one until the switch learns where that host is from its reply.' }
+        ,
+        commonMistakes: [
+          { it: 'Credere che lo switch impari dall’indirizzo di destinazione: impara dalla *sorgente*, e usa la destinazione solo per decidere dove inoltrare.', en: 'Believing the switch learns from the destination address: it learns from the *source*, and uses the destination only to decide where to forward.' },
+          { it: 'Confondere unknown unicast e broadcast: il primo viene inondato per necessità (manca la voce in CAM), il secondo per definizione (destinazione a tutti).', en: 'Confusing unknown unicast and broadcast: the first is flooded out of necessity (no CAM entry), the second by definition (destined to everyone).' },
+          { it: 'Pensare che l’aging scatti a tempo fisso: riparte ogni volta che arriva traffico da quel MAC.', en: 'Thinking aging fires on a fixed timer: it restarts every time traffic arrives from that MAC.' }
+        ],
+        lab: 'access',
+        guidedLabs: [
+          {
+            id: 'gl-cam-decisions',
+            title: { it: 'Forwarding, flooding o filtering?', en: 'Forwarding, flooding, or filtering?' },
+            difficulty: 'core',
+            lab: 'access',
+            scenario: {
+              it: 'Il laboratorio “Accesso alla rete” include un’esercitazione sulla CAM table che riesegue una sequenza di frame ed etichetta ogni decisione dello switch con il motivo.',
+              en: 'The “Network access” lab includes a CAM-table exercise that replays a sequence of frames and labels each switch decision with its reason.'
+            },
+            task: {
+              it: 'Per ciascun frame della sequenza, prevedi se lo switch farà forwarding, flooding o filtering e perché, poi confronta con l’esito mostrato.',
+              en: 'For each frame in the sequence, predict whether the switch will forward, flood, or filter, and why, then compare with the shown outcome.'
+            },
+            steps: [
+              { it: 'Apri “Accesso alla rete” e avvia l’esercitazione sulla CAM table.', en: 'Open “Network access” and start the CAM-table exercise.' },
+              { it: 'Per ogni frame guarda prima il MAC sorgente (cosa impara lo switch) e poi il MAC destinazione (come decide).', en: 'For each frame look first at the source MAC (what the switch learns) and then at the destination MAC (how it decides).' },
+              { it: 'Classifica la decisione: destinazione nota → forwarding; sconosciuta o broadcast → flooding; stessa porta della sorgente → filtering.', en: 'Classify the decision: destination known → forwarding; unknown or broadcast → flooding; same port as the source → filtering.' }
+            ],
+            challenge: {
+              it: 'Introduci uno spostamento di MAC (lo stesso host appare su una porta diversa) e un’attesa oltre l’aging: come cambiano le voci in tabella e le decisioni successive?',
+              en: 'Introduce a MAC move (the same host appears on a different port) and a wait beyond the aging time: how do the table entries and later decisions change?'
+            },
+            solution: [
+              { it: 'Ogni frame prima aggiorna la CAM con la coppia (MAC sorgente, porta, VLAN), poi la decisione dipende dalla destinazione: nota → una sola porta (forwarding); unknown unicast o broadcast → tutte le porte della VLAN tranne l’ingresso (flooding); destinazione sulla stessa porta della sorgente → scartato (filtering).', en: 'Each frame first updates the CAM with the (source MAC, port, VLAN) tuple, then the decision depends on the destination: known → a single port (forwarding); unknown unicast or broadcast → every port in the VLAN except the ingress (flooding); destination on the same port as the source → dropped (filtering).' },
+              { it: 'Sfida: uno spostamento di MAC riscrive la porta associata a quel MAC (lo switch “segue” l’host); superato l’aging per inattività, la voce sparisce e il successivo frame verso quell’host torna a essere un unknown unicast inondato.', en: 'Challenge: a MAC move rewrites the port associated with that MAC (the switch “follows” the host); once the idle aging elapses, the entry disappears and the next frame toward that host becomes a flooded unknown unicast again.' }
+            ],
+            selfCheck: [
+              { it: 'So indicare, per ogni frame, sia cosa lo switch ha imparato sia perché ha inoltrato, inondato o filtrato.', en: 'I can state, for each frame, both what the switch learned and why it forwarded, flooded, or filtered.' },
+              { it: 'Le mie previsioni coincidono con gli esiti etichettati nell’esercitazione.', en: 'My predictions match the labelled outcomes in the exercise.' }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'collision-broadcast-domains',
+        title: { it: 'Domini di collisione e di broadcast', en: 'Collision and broadcast domains' },
+        objectives: [
+          { it: 'Distinguere un dominio di collisione da un dominio di broadcast e dire quale dispositivo delimita ciascuno.', en: 'Distinguish a collision domain from a broadcast domain and say which device bounds each.' },
+          { it: 'Spiegare perché hub, switch e router hanno effetti diversi sulla segmentazione.', en: 'Explain why hubs, switches, and routers have different effects on segmentation.' }
+        ],
+        prerequisites: [
+          { it: 'Sapere come lo switch inoltra e inonda i frame.', en: 'Know how a switch forwards and floods frames.' }
+        ],
+        theory: [
+          { it: 'Un dominio di collisione è l’insieme di dispositivi che condividono lo stesso mezzo e possono quindi “collidere” se trasmettono insieme. Un hub crea un unico grande dominio di collisione, half-duplex, governato da CSMA/CD. Ogni porta di uno switch, invece, è un dominio di collisione separato e in full-duplex le collisioni spariscono del tutto.', en: 'A collision domain is the set of devices that share the same medium and can therefore “collide” if they transmit at once. A hub creates one large collision domain, half-duplex, governed by CSMA/CD. Each switch port, by contrast, is a separate collision domain, and in full-duplex collisions disappear entirely.' },
+          { it: 'Un dominio di broadcast è l’insieme di dispositivi che ricevono un frame di broadcast di livello 2. Uno switch, da solo, propaga i broadcast su tutte le sue porte: tutte appartengono allo stesso dominio di broadcast, a meno di suddividerlo in VLAN. È il router (o una SVI di livello 3) a delimitare i domini di broadcast, perché non inoltra i broadcast di livello 2.', en: 'A broadcast domain is the set of devices that receive a layer-2 broadcast frame. A switch on its own propagates broadcasts out of all its ports: they all belong to the same broadcast domain, unless it is split into VLANs. It is the router (or a layer-3 SVI) that bounds broadcast domains, because it does not forward layer-2 broadcasts.' },
+          { it: 'In sintesi: lo switch aumenta il numero di domini di collisione (uno per porta) ma non quello di broadcast; le VLAN suddividono un dominio di broadcast in più domini logici; il router separa i domini di broadcast e instrada tra loro.', en: 'In short: a switch increases the number of collision domains (one per port) but not of broadcast domains; VLANs split one broadcast domain into several logical ones; the router separates broadcast domains and routes between them.' }
+        ],
+        example: {
+          it: 'Dieci PC su un hub condividono un solo dominio di collisione (e uno di broadcast). Spostandoli su uno switch si ottengono dieci domini di collisione ma ancora un solo dominio di broadcast; creando due VLAN si ottengono due domini di broadcast, che solo un instradamento di livello 3 può mettere in comunicazione.', en: 'Ten PCs on a hub share a single collision domain (and one broadcast domain). Moving them to a switch yields ten collision domains but still one broadcast domain; creating two VLANs yields two broadcast domains, which only layer-3 routing can connect.' }
+        ,
+        commonMistakes: [
+          { it: 'Pensare che uno switch separi i domini di broadcast: senza VLAN e senza routing, tutte le sue porte restano nello stesso dominio di broadcast.', en: 'Thinking a switch separates broadcast domains: without VLANs and without routing, all its ports stay in the same broadcast domain.' },
+          { it: 'Attribuire ancora le collisioni a una rete tutta in full-duplex su switch: lì CSMA/CD non interviene perché le collisioni non si verificano.', en: 'Still attributing collisions to an all-full-duplex switched network: there CSMA/CD does not kick in because collisions do not occur.' }
+        ],
+        lab: 'fundamentals'
+      }
+    ]
   }
 ];
