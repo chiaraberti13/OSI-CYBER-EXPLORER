@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { ChevronDown, Search, X } from 'lucide-react';
+import { Check, ChevronDown, Link2, Search, X } from 'lucide-react';
 import { NAV_GROUPS, navEntryOf, navGroupOf, searchNav } from '../lib/navigation';
 import { useStore } from '../store';
 import { useShallow } from 'zustand/react/shallow';
 import ViewLink from './ViewLink';
+import { viewHash } from '../lib/viewRouting';
 import { formatSearchResultCount, uiMessages } from '../i18n';
 
 export default function Navigation() {
@@ -21,9 +22,11 @@ export default function Navigation() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [highlighted, setHighlighted] = useState(0);
+  const [linkCopied, setLinkCopied] = useState(false);
 
   const navRef = useRef<HTMLElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const activeGroup = navGroupOf(activeView);
   const activeEntry = navEntryOf(activeView);
@@ -93,6 +96,28 @@ export default function Navigation() {
     if (isSearchOpen) searchInputRef.current?.focus();
   }, [isSearchOpen]);
 
+  // Clear the "copied" feedback timer on unmount so it never fires into a gone component.
+  useEffect(() => () => {
+    if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+  }, []);
+
+  // UX-06: copy a shareable link to the current lab. The hash already encodes the
+  // view (ENG-10), but building it from the active view is deterministic and does
+  // not depend on the hash having been written yet. Clipboard access can be denied
+  // (insecure context, permissions); failing quietly keeps the control harmless.
+  const copyCurrentLink = async () => {
+    const { origin, pathname, search } = window.location;
+    const url = `${origin}${pathname}${search}${viewHash(activeView)}`;
+    try {
+      await navigator.clipboard?.writeText(url);
+      setLinkCopied(true);
+      if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+      copyTimerRef.current = setTimeout(() => setLinkCopied(false), 2000);
+    } catch {
+      // Clipboard unavailable: leave the affordance unchanged rather than erroring.
+    }
+  };
+
   const onSearchKeyDown = (event: ReactKeyboardEvent<HTMLInputElement>) => {
     if (results.length === 0) return;
     if (event.key === 'ArrowDown') {
@@ -152,6 +177,18 @@ export default function Navigation() {
 
           <button
             type="button"
+            onClick={copyCurrentLink}
+            aria-label={labels.copyLink}
+            className="flex shrink-0 items-center gap-1.5 rounded-md border border-slate-200/70 bg-white px-2.5 py-1.5 text-[13px] font-medium text-slate-500 transition-colors hover:text-slate-800"
+          >
+            {linkCopied
+              ? <Check className="h-3.5 w-3.5 text-emerald-600" aria-hidden="true" />
+              : <Link2 className="h-3.5 w-3.5" aria-hidden="true" />}
+            <span className="hidden xl:inline">{linkCopied ? labels.linkCopied : labels.copyLink}</span>
+          </button>
+
+          <button
+            type="button"
             onClick={() => { setOpenGroupId(null); setIsSearchOpen(open => !open); }}
             aria-expanded={isSearchOpen}
             aria-label={labels.search}
@@ -161,6 +198,9 @@ export default function Navigation() {
             <kbd className="hidden font-mono text-[10px] text-slate-400 xl:inline">⌘K</kbd>
           </button>
         </div>
+
+        {/* Off-screen live region: confirms the copy without moving focus. */}
+        <span className="sr-only" role="status" aria-live="polite">{linkCopied ? labels.linkCopied : ''}</span>
 
         <AnimatePresence>
           {openGroup ? (

@@ -24,6 +24,8 @@ export const en = {
     results: 'Search results',
     result: 'result',
     resultsCount: 'results',
+    copyLink: 'Copy link to this lab',
+    linkCopied: 'Link copied',
   },
   error: {
     chunkTitle: 'This section could not be loaded',

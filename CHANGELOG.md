@@ -4,6 +4,8 @@ All notable changes to OSI Cyber Explorer are documented in this file. The proje
 
 ## [Unreleased]
 
+- Navigation: a copy-link control in the lab navigation copies a shareable URL to the current lab (built from its hash route) and confirms the copy through an `aria-live` region; the strings live in the typed i18n catalog (UX-06).
+- Navigazione: un pulsante nella barra dei laboratori copia un URL condivisibile del lab corrente (costruito dalla sua rotta hash) e conferma la copia tramite una regione `aria-live`; le stringhe sono nel catalogo i18n tipizzato (UX-06).
 - Accessibility: OSI stack layers are now buttons with `aria-pressed` for selection, and the transforming/compromised/hardened states are rendered as localised text (plus icons) rather than colour alone; purely decorative colour accents are `aria-hidden` (UX-05).
 - Accessibilità: i livelli dello stack OSI sono ora pulsanti con `aria-pressed` per la selezione e gli stati «in trasformazione/compromesso/protetto» sono resi come testo localizzato (oltre alle icone) invece che solo con il colore; gli accenti puramente cromatici sono `aria-hidden` (UX-05).
 - Accessibility: the glossary search now has a real accessible name via a bilingual `aria-label` (no longer the placeholder alone), an `aria-live` region that announces the result count or no-results and describes the field, and a reset button that clears the query and returns focus; decorative icons are `aria-hidden` (UX-04).

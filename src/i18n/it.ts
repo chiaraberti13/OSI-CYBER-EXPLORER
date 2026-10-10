@@ -25,6 +25,8 @@ export const it = {
     results: 'Risultati della ricerca',
     result: 'risultato',
     resultsCount: 'risultati',
+    copyLink: 'Copia il link di questo laboratorio',
+    linkCopied: 'Link copiato',
   },
   error: {
     chunkTitle: 'Impossibile caricare questa sezione',

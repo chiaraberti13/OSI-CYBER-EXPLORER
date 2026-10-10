@@ -84,8 +84,8 @@ describe('Navigation', () => {
     expect(afterDown[0].getAttribute('aria-selected')).toBe('false');
     expect(input.getAttribute('aria-activedescendant')).toBe(afterDown[1].id);
 
-    // A live region announces the count without moving focus.
-    expect(screen.getByRole('status').textContent).toMatch(/\d+ risultat/);
+    // A live region inside the search dialog announces the count without moving focus.
+    expect(within(screen.getByRole('dialog')).getByRole('status').textContent).toMatch(/\d+ risultat/);
   });
 
   it('says so when nothing matches instead of showing an empty list', async () => {
@@ -99,7 +99,7 @@ describe('Navigation', () => {
     // With no options the listbox collapses and the live region says so.
     expect(input.getAttribute('aria-expanded')).toBe('false');
     expect(input.getAttribute('aria-activedescendant')).toBeNull();
-    expect(screen.getByRole('status').textContent).toMatch(/Nessun laboratorio/);
+    expect(within(screen.getByRole('dialog')).getByRole('status').textContent).toMatch(/Nessun laboratorio/);
   });
 
   it('marks the group that holds the active view', () => {
@@ -114,5 +114,26 @@ describe('Navigation', () => {
     render(<Navigation />);
     expect(screen.getByRole('button', { name: /CCNA path/ })).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Search for a lab' })).toBeTruthy();
+  });
+
+  it('copies a shareable link to the current lab and confirms it (UX-06)', async () => {
+    const user = userEvent.setup();
+    useStore.setState({ activeView: 'routing' });
+    window.history.replaceState(null, '', '#/routing');
+    render(<Navigation />);
+
+    const copy = screen.getByRole('button', { name: 'Copia il link di questo laboratorio' });
+    await user.click(copy);
+
+    // The copied URL points at the current view's hash route.
+    expect(await navigator.clipboard.readText()).toMatch(/#\/routing$/);
+    // A live region confirms the copy without moving focus.
+    expect(screen.getByRole('status').textContent).toBe('Link copiato');
+  });
+
+  it('localises the copy-link control to English', () => {
+    useStore.setState({ language: 'en' });
+    render(<Navigation />);
+    expect(screen.getByRole('button', { name: 'Copy link to this lab' })).toBeTruthy();
   });
 });
