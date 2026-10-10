@@ -21,6 +21,8 @@ Performance is treated as a versioned constraint, not as a reason for speculativ
 
 Run `npm run analyze:bundle` to create the ignored `dist/bundle-report.html` treemap with raw, gzip, and Brotli attribution. Before changing chunking, memoisation, indexing, or virtualisation, retain the report or CI artifact, identify the modules or interaction responsible, and record the same measurement after the change. A budget increase requires an explicit update to this document, `performance-budgets.json`, and the roadmap decision log; a failing limit must not be bypassed by deleting coverage or excluding a route.
 
+Runtime list profiling and the ENG-15 before/after decision are recorded in [`LIST_PERFORMANCE_PROFILE.md`](LIST_PERFORMANCE_PROFILE.md#english).
+
 Lighthouse CI stays outside the application lockfile: its current CLI dependency tree contains unresolved high-severity development advisories. The workflow uses the action pinned to a full commit SHA, with read-only permissions and no public report upload. Deterministic local gates therefore remain auditable with `npm audit` at zero findings.
 
 ## Italiano
@@ -43,5 +45,7 @@ La performance è un vincolo versionato, non un pretesto per refactoring ipoteti
 3. Il workflow dedicato read-only esegue Lighthouse CI tre volte su `#/osi` e `#/ports`, imponendo le soglie della baseline misurata Performance ≥ 0,75 e CLS ≤ 0,60, oltre ai budget delle risorse di rete. Un marcatore nella query mantiene separate le route anche se l’app usa l’hash. LCP ≤ 2,5 s e TTI ≤ 3 s sono warning perché i tempi dei runner condivisi sono più variabili; la crescita di bundle e trasferimenti resta bloccante. Questi sono budget anti-regressione, non l’affermazione che il CLS OSI attuale sia buono: l’obiettivo orientato WCAG resta CLS ≤ 0,10 e richiede un intervento successivo basato sul profiling, non l’indebolimento di questo registro.
 
 `npm run analyze:bundle` crea il treemap ignorato `dist/bundle-report.html`, con attribuzione raw, gzip e Brotli. Prima di cambiare chunking, memoizzazione, indicizzazione o virtualizzazione, occorre conservare il report o l’artifact CI, identificare moduli o interazione responsabili e registrare la stessa misura dopo la modifica. Alzare un budget richiede una decisione esplicita in questo documento, in `performance-budgets.json` e nel registro della roadmap; un limite fallito non va aggirato eliminando copertura o escludendo una route.
+
+Il profiling runtime delle liste e la decisione prima/dopo di ENG-15 sono registrati in [`LIST_PERFORMANCE_PROFILE.md`](LIST_PERFORMANCE_PROFILE.md#italiano).
 
 Lighthouse CI resta fuori dal lockfile dell’app: l’albero dipendenze attuale della CLI contiene advisory di sviluppo High non risolti. Il workflow usa l’action fissata a SHA completo, permessi read-only e nessun caricamento pubblico dei report. I gate locali deterministici restano così verificabili con `npm audit` a zero finding.

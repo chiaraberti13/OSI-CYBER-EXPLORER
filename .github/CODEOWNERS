@@ -27,6 +27,7 @@
 /lighthouserc.json @chiaraberti13
 /vite.config.ts @chiaraberti13
 /docs/PERFORMANCE_BUDGETS.md @chiaraberti13
+/docs/LIST_PERFORMANCE_PROFILE.md @chiaraberti13
 /scripts/performance-budget.mjs @chiaraberti13
 /scripts/performance-budget.test.mjs @chiaraberti13
 

@@ -6,6 +6,7 @@ import userEvent from '@testing-library/user-event';
 import ModalDialog from './ModalDialog';
 import GuideModal from './GuideModal';
 import GlossaryModal from './GlossaryModal';
+import { GLOSSARY_TERMS } from '../content/glossaryTerms';
 import Header from './Header';
 import { useStore } from '../store';
 
@@ -161,5 +162,7 @@ describe('Glossary', () => {
     render(<GlossaryModal inline />);
     expect(screen.queryByRole('dialog')).toBeNull();
     expect(screen.getByRole('region', { name: 'Glossario di Rete' })).toBeTruthy();
+    expect(screen.getAllByRole('term')).toHaveLength(GLOSSARY_TERMS.length);
+    expect(screen.getAllByRole('definition')).toHaveLength(GLOSSARY_TERMS.length);
   });
 });

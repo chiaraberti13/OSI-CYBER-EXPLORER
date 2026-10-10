@@ -1,5 +1,4 @@
 import React, { useId, useRef, useState } from 'react';
-import { motion } from 'motion/react';
 import { X, Search, BookOpen } from 'lucide-react';
 import { GLOSSARY_TERMS } from '../content/glossaryTerms';
 import { useStore } from '../store';
@@ -88,24 +87,20 @@ export default function GlossaryModal({ isOpen = false, onClose = () => {}, inli
             </div>
 
             {/* Terms List */}
-            <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-white">
+            <div className="flex-1 overflow-y-auto p-6 bg-white">
               {filteredTerms.length > 0 ? (
-                filteredTerms.map((item, idx) => (
-                  <motion.div
-                    key={idx}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: idx * 0.03 }}
-                    className="group"
-                  >
-                    <div className="text-sm font-semibold text-blue-600 mb-1 group-hover:translate-x-1 transition-transform">
-                      {item.term}
+                <dl className="space-y-4">
+                  {filteredTerms.map((item) => (
+                    <div key={item.term} className="group">
+                      <dt className="text-sm font-semibold text-blue-600 mb-1 group-hover:translate-x-1 transition-transform">
+                        {item.term}
+                      </dt>
+                      <dd className="text-[13px] text-slate-600 leading-relaxed bg-slate-50/50 p-3 rounded-lg border border-slate-100 group-hover:border-blue-100 group-hover:bg-blue-50/30 transition-all">
+                        {item.definition[language]}
+                      </dd>
                     </div>
-                    <div className="text-[13px] text-slate-600 leading-relaxed bg-slate-50/50 p-3 rounded-lg border border-slate-100 group-hover:border-blue-100 group-hover:bg-blue-50/30 transition-all">
-                      {item.definition[language]}
-                    </div>
-                  </motion.div>
-                ))
+                  ))}
+                </dl>
               ) : (
                 <div className="text-center py-12">
                   <BookOpen className="w-12 h-12 text-slate-100 mx-auto mb-3" />

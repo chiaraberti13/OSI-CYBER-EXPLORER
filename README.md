@@ -29,7 +29,7 @@ Network examples use private, local, or [documentation-reserved targets](docs/DO
 
 Ports, platform commands, deprecated protocols, cryptographic guidance, CCNA, and ATT&CK references follow an enforced [six-month technical-content review](docs/TECHNICAL_CONTENT_REVIEW.md#english). Every completed review is append-only, evidence-backed, and version-pinned; CI rejects expired records or source-version drift without a new decision.
 
-Initial and lazy-route JavaScript are protected by versioned [performance budgets](docs/PERFORMANCE_BUDGETS.md#english). Size Limit and the Vite manifest block bundle regressions locally, while Lighthouse CI checks the real OSI and Ports routes; the bundle treemap keeps future optimisation evidence-based.
+Initial and lazy-route JavaScript are protected by versioned [performance budgets](docs/PERFORMANCE_BUDGETS.md#english). Size Limit and the Vite manifest block bundle regressions locally, while Lighthouse CI checks the real OSI and Ports routes; the bundle treemap keeps future optimisation evidence-based. The [list-performance profile](docs/LIST_PERFORMANCE_PROFILE.md#english) records the measured glossary improvement and why virtualisation was not introduced.
 
 ## Features
 - **Shareable lab URLs** — Every view has a registry-derived `#/<id>` route, bilingual page title, native links and predictable refresh/Back/Forward behavior. Unknown routes return to the OSI overview. See [lab URL behavior](docs/VIEW_ROUTING.md#english).

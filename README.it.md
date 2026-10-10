@@ -25,7 +25,7 @@
 
 Porte, comandi di piattaforma, protocolli deprecati, raccomandazioni crittografiche e riferimenti CCNA/ATT&CK seguono una [revisione tecnica semestrale](docs/TECHNICAL_CONTENT_REVIEW.md#italiano) applicata automaticamente. Ogni revisione completata è append-only, supportata da evidenze e versionata; la CI rifiuta record scaduti o variazioni delle versioni senza una nuova decisione.
 
-Il JavaScript iniziale e delle route lazy è protetto da [budget prestazionali versionati](docs/PERFORMANCE_BUDGETS.md#italiano). Size Limit e il manifest Vite bloccano localmente le regressioni del bundle, Lighthouse CI controlla le route reali OSI e Porte e il treemap rende ogni futura ottimizzazione basata su evidenze.
+Il JavaScript iniziale e delle route lazy è protetto da [budget prestazionali versionati](docs/PERFORMANCE_BUDGETS.md#italiano). Size Limit e il manifest Vite bloccano localmente le regressioni del bundle, Lighthouse CI controlla le route reali OSI e Porte e il treemap rende ogni futura ottimizzazione basata su evidenze. Il [profilo prestazionale delle liste](docs/LIST_PERFORMANCE_PROFILE.md#italiano) registra il miglioramento misurato del glossario e perché non è stata introdotta la virtualizzazione.
 
 ## Funzionalità
 - **URL condivisibili dei laboratori** — Ogni vista ha una route `#/<id>` derivata dalla registry, titolo bilingue, link nativi e comportamento prevedibile su refresh e Indietro/Avanti. Le route sconosciute tornano alla panoramica OSI. Vedi [comportamento degli URL](docs/VIEW_ROUTING.md#italiano).

@@ -4,6 +4,8 @@ All notable changes to OSI Cyber Explorer are documented in this file. The proje
 
 ## [Unreleased]
 
+- Profiled the large collections before optimisation and removed the glossary's 114 staggered row animations: visual settling fell from 3.69 s to zero and median cold-search latency from 19.22 ms to 12.37 ms, while semantic definition-list markup replaced index keys without adding virtualisation.
+- Profilate le collezioni grandi prima dell’ottimizzazione e rimosse le 114 animazioni scaglionate del glossario: completamento visivo da 3,69 s a zero e latenza mediana della ricerca a freddo da 19,22 ms a 12,37 ms, con elenco di definizioni semantico e senza introdurre virtualizzazione.
 - Added enforced performance budgets for initial JavaScript and every lazy route, a reproducible bundle treemap, and Lighthouse CI checks for the OSI and Ports paths without adding its vulnerable CLI dependency tree to the application lockfile.
 - Aggiunti budget prestazionali bloccanti per il JavaScript iniziale e ogni route lazy, un treemap riproducibile del bundle e controlli Lighthouse CI sui percorsi OSI e Porte senza inserire nel lockfile dell’app l’albero vulnerabile della CLI.
 - Added an enforced six-month technical-content review for ports, platform commands, deprecated protocols, cryptography, CCNA, and MITRE ATT&CK. An append-only bilingual ledger, CI gate, and scheduled workflow reject expired reviews, missing evidence, unapproved sources, and pinned-version drift; the baseline review also makes the SSHv1 prohibition explicit and corrects the ATT&CK v19.2 release date.
