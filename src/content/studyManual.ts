@@ -683,5 +683,157 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
         ]
       }
     ]
+  },
+  {
+    id: 'ip-routing-ospf',
+    cert: 'ccna',
+    order: 5,
+    title: { it: 'Routing IP: rotte statiche e OSPF', en: 'IP routing: static routes and OSPF' },
+    summary: {
+      it: 'Come un router decide dove inoltrare un pacchetto: la tabella di routing e il longest prefix match, le rotte statiche e di default, e OSPF come protocollo dinamico link-state con il suo costo e le adiacenze.',
+      en: 'How a router decides where to forward a packet: the routing table and longest prefix match, static and default routes, and OSPF as a dynamic link-state protocol with its cost and adjacencies.'
+    },
+    topics: [
+      {
+        id: 'routing-table-lpm',
+        title: { it: 'La tabella di routing e il longest prefix match', en: 'The routing table and longest prefix match' },
+        objectives: [
+          { it: 'Spiegare come il router sceglie la rotta per una destinazione applicando il longest prefix match.', en: 'Explain how the router chooses the route for a destination by applying longest prefix match.' },
+          { it: 'Distinguere il ruolo di distanza amministrativa e metrica quando esistono più rotte.', en: 'Distinguish the role of administrative distance and metric when multiple routes exist.' }
+        ],
+        prerequisites: [
+          { it: 'Conoscere indirizzamento IPv4, maschere e prefissi CIDR (capitolo sul subnetting).', en: 'Know IPv4 addressing, masks and CIDR prefixes (subnetting chapter).' }
+        ],
+        theory: [
+          { it: 'La tabella di routing elenca le reti note e come raggiungerle. Per ogni pacchetto il router confronta l’indirizzo di destinazione con tutte le rotte e sceglie quella con il prefisso più lungo (la più specifica): è il longest prefix match. Una rotta /26 vince su una /24 che pure conterrebbe la destinazione, perché descrive la destinazione con più precisione.', en: 'The routing table lists the known networks and how to reach them. For each packet the router compares the destination address with all routes and chooses the one with the longest prefix (the most specific): this is longest prefix match. A /26 route beats a /24 that would also contain the destination, because it describes the destination more precisely.' },
+          { it: 'La distanza amministrativa (AD) interviene prima, quando due *sorgenti* diverse offrono la stessa rete: è l’affidabilità della sorgente. Valori tipici: connessa 0, statica 1, OSPF 110, RIP 120. A parità di sorgente (stesso protocollo) decide la metrica interna del protocollo (per OSPF il costo, per RIP il numero di hop).', en: 'Administrative distance (AD) comes first, when two different *sources* offer the same network: it is the trustworthiness of the source. Typical values: connected 0, static 1, OSPF 110, RIP 120. For the same source (same protocol) the protocol’s internal metric decides (OSPF cost, RIP hop count).' },
+          { it: 'Il longest prefix match viene però *prima* di AD e metrica: la specificità del prefisso ha la precedenza assoluta. Solo tra rotte con lo stesso identico prefisso si confrontano AD e poi metrica.', en: 'Longest prefix match, however, comes *before* AD and metric: prefix specificity has absolute priority. Only among routes with the exact same prefix are AD and then metric compared.' }
+        ],
+        example: {
+          it: 'Con in tabella 203.0.113.0/24 via A e 203.0.113.0/26 via B, un pacchetto per 203.0.113.10 segue la /26 via B (prefisso più lungo), anche se la /24 avesse distanza amministrativa migliore.', en: 'With 203.0.113.0/24 via A and 203.0.113.0/26 via B in the table, a packet for 203.0.113.10 follows the /26 via B (longer prefix), even if the /24 had a better administrative distance.' }
+        ,
+        commonMistakes: [
+          { it: 'Credere che la distanza amministrativa batta un prefisso più specifico: il longest prefix match decide per primo, sempre.', en: 'Believing administrative distance beats a more specific prefix: longest prefix match decides first, always.' },
+          { it: 'Confondere distanza amministrativa (tra protocolli/sorgenti diverse) e metrica (all’interno dello stesso protocollo).', en: 'Confusing administrative distance (between different protocols/sources) and metric (within the same protocol).' }
+        ],
+        lab: 'routing',
+        guidedLabs: [
+          {
+            id: 'gl-route-lookup',
+            title: { it: 'Quale rotta sceglie il router?', en: 'Which route does the router pick?' },
+            difficulty: 'core',
+            lab: 'routing',
+            scenario: {
+              it: 'Il laboratorio «Connettività IP» mostra un output annotato di show ip route e permette di cercare quale rotta serve una destinazione.',
+              en: 'The “IP connectivity” lab shows annotated show ip route output and lets you look up which route serves a destination.'
+            },
+            task: {
+              it: 'Data una tabella con una rotta di default, una /24 e una /26 che si sovrappongono, determina quale rotta serve 203.0.113.10 e quale serve 198.51.100.5.',
+              en: 'Given a table with a default route, a /24 and an overlapping /26, determine which route serves 203.0.113.10 and which serves 198.51.100.5.'
+            },
+            steps: [
+              { it: 'Apri «Connettività IP» e usa il lookup interattivo della tabella di routing.', en: 'Open “IP connectivity” and use the interactive routing-table lookup.' },
+              { it: 'Per ogni destinazione individua tutte le rotte che la contengono, poi scegli quella col prefisso più lungo.', en: 'For each destination find all routes that contain it, then pick the one with the longest prefix.' },
+              { it: 'Verifica cosa accade a una destinazione non coperta da alcuna rotta specifica (ricade sulla default 0.0.0.0/0).', en: 'Check what happens to a destination not covered by any specific route (it falls back to the default 0.0.0.0/0).' }
+            ],
+            challenge: {
+              it: 'Aggiungi mentalmente una seconda /26 identica da una sorgente diversa (statica vs OSPF): ora quale criterio decide e perché?',
+              en: 'Mentally add a second identical /26 from a different source (static vs OSPF): which criterion decides now and why?'
+            },
+            solution: [
+              { it: '203.0.113.10 è coperto sia dalla /24 sia dalla /26: vince la /26 per longest prefix match. 198.51.100.5, non coperto da rotte specifiche, segue la default 0.0.0.0/0 (gateway of last resort).', en: '203.0.113.10 is covered by both the /24 and the /26: the /26 wins by longest prefix match. 198.51.100.5, not covered by specific routes, follows the default 0.0.0.0/0 (gateway of last resort).' },
+              { it: 'Sfida: due /26 identiche hanno lo stesso prefisso, quindi il longest prefix match non basta; decide la distanza amministrativa (statica 1 batte OSPF 110), e solo a parità di sorgente si userebbe la metrica.', en: 'Challenge: two identical /26 routes share the same prefix, so longest prefix match is not enough; administrative distance decides (static 1 beats OSPF 110), and only for the same source would the metric be used.' }
+            ],
+            selfCheck: [
+              { it: 'So elencare tutte le rotte che contengono una destinazione e scegliere la più specifica.', en: 'I can list every route that contains a destination and pick the most specific one.' },
+              { it: 'So dire quando entra in gioco la distanza amministrativa invece del prefisso.', en: 'I can say when administrative distance comes into play instead of the prefix.' }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'static-default-routes',
+        title: { it: 'Rotte statiche e di default', en: 'Static and default routes' },
+        objectives: [
+          { it: 'Configurare concettualmente una rotta statica e una rotta di default, scegliendo tra next-hop e interfaccia di uscita.', en: 'Conceptually configure a static route and a default route, choosing between next-hop and exit interface.' },
+          { it: 'Spiegare a cosa serve una floating static route.', en: 'Explain what a floating static route is for.' }
+        ],
+        prerequisites: [
+          { it: 'Capire la tabella di routing e il longest prefix match.', en: 'Understand the routing table and longest prefix match.' }
+        ],
+        theory: [
+          { it: 'Una rotta statica è inserita a mano dall’amministratore: “per raggiungere la rete X usa il next-hop Y”. Si può specificare l’indirizzo del prossimo salto, l’interfaccia di uscita, o entrambi. È semplice e prevedibile, ma non si adatta da sola ai cambiamenti della topologia.', en: 'A static route is entered by hand by the administrator: “to reach network X use next-hop Y”. You can specify the next-hop address, the exit interface, or both. It is simple and predictable, but it does not adapt on its own to topology changes.' },
+          { it: 'La rotta di default 0.0.0.0/0 è la rotta meno specifica possibile: cattura tutte le destinazioni non coperte da rotte più precise ed è il “gateway of last resort”, tipicamente verso Internet. Per il longest prefix match è l’ultima scelta, perché ha prefisso /0.', en: 'The default route 0.0.0.0/0 is the least specific route possible: it catches every destination not covered by more precise routes and is the “gateway of last resort”, typically toward the Internet. For longest prefix match it is the last resort, because its prefix is /0.' },
+          { it: 'Una floating static route è una statica con distanza amministrativa aumentata a bella posta (più alta di quella del protocollo dinamico): resta “a galleggiare” inattiva finché la rotta preferita esiste, e subentra solo se questa sparisce. È un backup manuale.', en: 'A floating static route is a static route with a deliberately raised administrative distance (higher than the dynamic protocol’s): it stays “floating” inactive while the preferred route exists, and takes over only if that route disappears. It is a manual backup.' }
+        ],
+        example: {
+          it: 'ip route 0.0.0.0 0.0.0.0 198.51.100.1 manda tutto il traffico sconosciuto al next-hop 198.51.100.1. Una seconda default via un altro ISP con distanza amministrativa 10 resta inattiva finché la prima (distanza 1) è valida.', en: 'ip route 0.0.0.0 0.0.0.0 198.51.100.1 sends all unknown traffic to next-hop 198.51.100.1. A second default via another ISP with administrative distance 10 stays inactive while the first (distance 1) is valid.' }
+        ,
+        commonMistakes: [
+          { it: 'Dare alla floating static la stessa distanza della rotta primaria: così finiscono entrambe in tabella (o in load-sharing) invece di fare da backup.', en: 'Giving the floating static the same distance as the primary route: then both end up in the table (or load-sharing) instead of acting as a backup.' },
+          { it: 'Usare solo l’interfaccia di uscita su link multiaccesso (Ethernet) senza next-hop: può generare problemi di risoluzione ARP; sui punto-punto è invece naturale.', en: 'Using only the exit interface on multiaccess links (Ethernet) without a next-hop: it can cause ARP resolution issues; on point-to-point links it is natural instead.' }
+        ],
+        lab: 'routing'
+      },
+      {
+        id: 'ospf-basics',
+        title: { it: 'OSPF: routing dinamico link-state', en: 'OSPF: dynamic link-state routing' },
+        objectives: [
+          { it: 'Descrivere come OSPF costruisce le adiacenze e calcola i percorsi con il costo e l’algoritmo SPF.', en: 'Describe how OSPF builds adjacencies and computes paths with the cost and the SPF algorithm.' },
+          { it: 'Spiegare il calcolo del costo OSPF e perché su link veloci serve regolare la reference bandwidth.', en: 'Explain OSPF cost computation and why fast links require adjusting the reference bandwidth.' }
+        ],
+        prerequisites: [
+          { it: 'Conoscere la tabella di routing, distanza amministrativa e metrica.', en: 'Know the routing table, administrative distance and metric.' }
+        ],
+        theory: [
+          { it: 'OSPFv2 è un protocollo link-state: ogni router descrive i propri collegamenti in annunci (LSA), tutti i router costruiscono la stessa mappa della rete (il link-state database) e ciascuno esegue l’algoritmo SPF (Dijkstra) per calcolare i percorsi più brevi verso ogni rete. La distanza amministrativa di OSPF è 110.', en: 'OSPFv2 is a link-state protocol: each router describes its links in advertisements (LSAs), all routers build the same map of the network (the link-state database), and each runs the SPF (Dijkstra) algorithm to compute the shortest paths to every network. OSPF’s administrative distance is 110.' },
+          { it: 'La metrica OSPF è il costo, inversamente proporzionale alla banda: costo = reference-bandwidth / banda dell’interfaccia (minimo 1). Con la reference bandwidth di default (100 Mbps), Fast Ethernet e tutto ciò che è ≥ 100 Mbps ottengono costo 1 e diventano indistinguibili: per questo su reti moderne si alza la reference bandwidth (auto-cost reference-bandwidth) in modo coerente su tutti i router.', en: 'The OSPF metric is cost, inversely proportional to bandwidth: cost = reference-bandwidth / interface bandwidth (minimum 1). With the default reference bandwidth (100 Mbps), Fast Ethernet and anything ≥ 100 Mbps get cost 1 and become indistinguishable: this is why on modern networks the reference bandwidth is raised (auto-cost reference-bandwidth) consistently on all routers.' },
+          { it: 'I router diventano vicini scambiando pacchetti Hello; ogni router ha un router-ID (il valore più alto tra le loopback, altrimenti l’interfaccia attiva più alta, o impostato a mano). Su segmenti multiaccesso (Ethernet) si eleggono un DR e un BDR per ridurre il numero di adiacenze: vince la priorità OSPF più alta, poi il router-ID più alto, e l’elezione non è preemptive.', en: 'Routers become neighbours by exchanging Hello packets; each router has a router-ID (the highest loopback, otherwise the highest active interface, or set manually). On multiaccess segments (Ethernet) a DR and a BDR are elected to reduce the number of adjacencies: the highest OSPF priority wins, then the highest router-ID, and the election is non-preemptive.' }
+        ],
+        example: {
+          it: 'Con reference bandwidth di default, due percorsi verso la stessa rete — uno a 1 Gbps e uno a 100 Mbps — hanno entrambi costo 1 e OSPF li usa in load-sharing; alzando la reference bandwidth a 1000 il percorso a 1 Gbps ottiene costo 1 e quello a 100 Mbps costo 10, così SPF sceglie il più veloce.', en: 'With the default reference bandwidth, two paths to the same network — one at 1 Gbps and one at 100 Mbps — both have cost 1 and OSPF uses them in load-sharing; raising the reference bandwidth to 1000 gives the 1 Gbps path cost 1 and the 100 Mbps path cost 10, so SPF picks the faster one.' }
+        ,
+        commonMistakes: [
+          { it: 'Lasciare la reference bandwidth di default su reti con link ≥ 100 Mbps: percorsi di velocità diversa sembrano equivalenti e SPF non distingue il migliore.', en: 'Leaving the default reference bandwidth on networks with links ≥ 100 Mbps: paths of different speed look equivalent and SPF cannot tell the best one apart.' },
+          { it: 'Credere che il DR sia “il router che instrada per gli altri”: il DR riduce solo il numero di adiacenze sul segmento multiaccesso, non inoltra al posto degli altri.', en: 'Believing the DR is “the router that routes for the others”: the DR only reduces the number of adjacencies on the multiaccess segment, it does not forward on the others’ behalf.' },
+          { it: 'Pensare che l’elezione DR/BDR sia preemptive: un router con priorità più alta che si aggiunge dopo non scalza il DR già eletto.', en: 'Thinking the DR/BDR election is preemptive: a higher-priority router that joins later does not displace the already-elected DR.' }
+        ],
+        lab: 'routing',
+        references: [{ kind: 'rfc', id: 'RFC 2328' }],
+        guidedLabs: [
+          {
+            id: 'gl-ospf-cost',
+            title: { it: 'Calcola il costo e sciogli il pareggio OSPF', en: 'Compute OSPF cost and break the tie' },
+            difficulty: 'advanced',
+            lab: 'routing',
+            scenario: {
+              it: 'Il laboratorio «Connettività IP» esegue SPF su una topologia a cinque router mantenendo i predecessori a costo uguale, così l’ECMP è visibile, e consente di cambiare la reference bandwidth.',
+              en: 'The “IP connectivity” lab runs SPF on a five-router topology keeping equal-cost predecessors, so ECMP is visible, and lets you change the reference bandwidth.'
+            },
+            task: {
+              it: 'Con reference bandwidth di default, individua i percorsi a costo uguale verso una rete; poi alza la reference bandwidth e verifica se il pareggio si scioglie.',
+              en: 'With the default reference bandwidth, find the equal-cost paths to a network; then raise the reference bandwidth and check whether the tie is broken.'
+            },
+            steps: [
+              { it: 'Apri «Connettività IP» e avvia l’esercitazione SPF sulla topologia.', en: 'Open “IP connectivity” and start the SPF exercise on the topology.' },
+              { it: 'Per ogni percorso somma i costi delle interfacce attraversate (costo = reference / banda).', en: 'For each path add the costs of the interfaces crossed (cost = reference / bandwidth).' },
+              { it: 'Osserva i percorsi che pareggiano con la reference di default, poi alza auto-cost reference-bandwidth e ricalcola.', en: 'Observe the paths that tie with the default reference, then raise auto-cost reference-bandwidth and recompute.' }
+            ],
+            challenge: {
+              it: 'Perché la reference bandwidth va impostata uguale su tutti i router? Cosa accade se un solo router la lascia al valore di default?',
+              en: 'Why must the reference bandwidth be set the same on all routers? What happens if just one router leaves it at the default?'
+            },
+            solution: [
+              { it: 'Con reference 100 Mbps due percorsi di banda diversa ma entrambi ≥ 100 Mbps hanno costo 1 per salto e possono pareggiare: SPF li tiene entrambi (ECMP). Alzando la reference (es. a 1000) i costi tornano a differenziarsi e SPF sceglie il percorso complessivamente più veloce.', en: 'With a 100 Mbps reference, two paths of different bandwidth but both ≥ 100 Mbps have cost 1 per hop and can tie: SPF keeps both (ECMP). Raising the reference (e.g. to 1000) makes the costs differ again and SPF picks the overall faster path.' },
+              { it: 'Sfida: la reference bandwidth deve essere identica su tutti i router perché il costo è un numero confrontabile solo se calcolato con lo stesso riferimento; se un router la lascia al default, i suoi costi non sono comparabili con quelli degli altri e SPF può scegliere percorsi incoerenti.', en: 'Challenge: the reference bandwidth must be identical on all routers because the cost is only comparable if computed against the same reference; if one router leaves it at the default, its costs are not comparable with the others’ and SPF can choose inconsistent paths.' }
+            ],
+            selfCheck: [
+              { it: 'So calcolare il costo totale di un percorso OSPF e spiegare perché due percorsi pareggiano.', en: 'I can compute the total cost of an OSPF path and explain why two paths tie.' },
+              { it: 'So spiegare l’effetto della reference bandwidth e perché va uniformata su tutti i router.', en: 'I can explain the effect of the reference bandwidth and why it must be uniform across all routers.' }
+            ]
+          }
+        ]
+      }
+    ]
   }
 ];
