@@ -15,6 +15,8 @@ Use this section only for changes already merged into `main` but not yet include
 
 ### Added
 
+- Accessibility: the quick search (Ctrl/⌘+K) now follows the ARIA combobox pattern — `role="combobox"` with `aria-autocomplete`, `aria-expanded`, `aria-controls`, and `aria-activedescendant`; results as a `listbox` of `option`s with `aria-selected`; arrow keys move the active option without moving DOM focus; and an `aria-live` region announces the result count (UX-03).
+- Accessibilità: la ricerca rapida (Ctrl/⌘+K) segue ora il pattern combobox ARIA — `role="combobox"` con `aria-autocomplete`, `aria-expanded`, `aria-controls` e `aria-activedescendant`; risultati come `listbox` di `option` con `aria-selected`; le frecce spostano l'opzione attiva senza muovere il focus DOM; una regione `aria-live` annuncia il numero di risultati (UX-03).
 - Accessibility: a bilingual skip link ("Skip to content" / "Vai al contenuto") as the first focusable element, jumping past the sticky header and navigation to the `main` landmark without disturbing the hash route (UX-02).
 
 ### Fixed

@@ -45,11 +45,11 @@ describe('Navigation', () => {
     render(<Navigation />);
 
     await user.click(screen.getByRole('button', { name: 'Cerca un laboratorio' }));
-    const input = screen.getByRole('textbox', { name: 'Cerca un laboratorio' });
+    const input = screen.getByRole('combobox', { name: 'Cerca un laboratorio' });
     await user.type(input, 'ospf');
 
-    const results = screen.getByRole('list', { name: 'Risultati della ricerca' });
-    const options = within(results).getAllByRole('link');
+    const results = screen.getByRole('listbox', { name: 'Risultati della ricerca' });
+    const options = within(results).getAllByRole('option');
     expect(options.length).toBeGreaterThan(0);
     expect(options.length).toBeLessThan(10);
 
@@ -58,12 +58,48 @@ describe('Navigation', () => {
     expect(window.location.hash).toBe(`#/${useStore.getState().activeView}`);
   });
 
+  it('exposes the combobox ARIA pattern and tracks the active option with the arrows', async () => {
+    const user = userEvent.setup();
+    render(<Navigation />);
+
+    await user.click(screen.getByRole('button', { name: 'Cerca un laboratorio' }));
+    const input = screen.getByRole('combobox', { name: 'Cerca un laboratorio' });
+
+    // An empty query lists every lab, so the combobox is expanded on open.
+    expect(input.getAttribute('aria-autocomplete')).toBe('list');
+    expect(input.getAttribute('aria-expanded')).toBe('true');
+    const listbox = screen.getByRole('listbox', { name: 'Risultati della ricerca' });
+    expect(input.getAttribute('aria-controls')).toBe(listbox.id);
+
+    const options = within(listbox).getAllByRole('option');
+    expect(options.length).toBeGreaterThan(1);
+    // The first option is active; focus stays in the field (activedescendant, not focus).
+    expect(options[0].getAttribute('aria-selected')).toBe('true');
+    expect(input.getAttribute('aria-activedescendant')).toBe(options[0].id);
+    expect(document.activeElement).toBe(input);
+
+    await user.keyboard('{ArrowDown}');
+    const afterDown = within(screen.getByRole('listbox')).getAllByRole('option');
+    expect(afterDown[1].getAttribute('aria-selected')).toBe('true');
+    expect(afterDown[0].getAttribute('aria-selected')).toBe('false');
+    expect(input.getAttribute('aria-activedescendant')).toBe(afterDown[1].id);
+
+    // A live region announces the count without moving focus.
+    expect(screen.getByRole('status').textContent).toMatch(/\d+ risultat/);
+  });
+
   it('says so when nothing matches instead of showing an empty list', async () => {
     const user = userEvent.setup();
     render(<Navigation />);
     await user.click(screen.getByRole('button', { name: 'Cerca un laboratorio' }));
-    await user.type(screen.getByRole('textbox', { name: 'Cerca un laboratorio' }), 'zzzznotathing');
-    expect(screen.getByText(/Nessun laboratorio corrisponde/)).toBeTruthy();
+    const input = screen.getByRole('combobox', { name: 'Cerca un laboratorio' });
+    await user.type(input, 'zzzznotathing');
+    // The visible panel and the off-screen live region both carry the message.
+    expect(screen.getAllByText(/Nessun laboratorio corrisponde/).length).toBeGreaterThanOrEqual(1);
+    // With no options the listbox collapses and the live region says so.
+    expect(input.getAttribute('aria-expanded')).toBe('false');
+    expect(input.getAttribute('aria-activedescendant')).toBeNull();
+    expect(screen.getByRole('status').textContent).toMatch(/Nessun laboratorio/);
   });
 
   it('marks the group that holds the active view', () => {

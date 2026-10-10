@@ -32,6 +32,19 @@ export default function Navigation() {
     ? { nav: 'Navigazione dei laboratori', search: 'Cerca un laboratorio', searchHint: 'Cerca per nome, protocollo o argomento…', close: 'Chiudi', noResults: 'Nessun laboratorio corrisponde alla ricerca.', current: 'Sei qui', open: 'Apri il menu', results: 'Risultati della ricerca' }
     : { nav: 'Lab navigation', search: 'Search for a lab', searchHint: 'Search by name, protocol, or topic…', close: 'Close', noResults: 'No lab matches your search.', current: 'You are here', open: 'Open menu', results: 'Search results' };
 
+  // UX-03: an editable combobox owns a listbox popup. Each option needs a stable id
+  // so `aria-activedescendant` on the input can point at the highlighted one while
+  // DOM focus stays in the field. Keyed by the view id, not the row index, so the id
+  // is stable as the filtered set changes.
+  const SEARCH_LISTBOX_ID = 'nav-search-results';
+  const optionId = (view: string) => `nav-search-option-${view}`;
+  const activeOptionId = results.length > 0 ? optionId(results[highlighted]?.entry.view) : undefined;
+  const resultAnnouncement = results.length === 0
+    ? labels.noResults
+    : language === 'it'
+      ? `${results.length} ${results.length === 1 ? 'risultato' : 'risultati'}`
+      : `${results.length} ${results.length === 1 ? 'result' : 'results'}`;
+
   // Close the menus whenever the view changes: the destination is reached, so the chrome
   // gets out of the way. The view can also change from another component, so this is
   // adjusted during render rather than in an effect, which would commit an open panel
@@ -212,7 +225,11 @@ export default function Navigation() {
                   onKeyDown={onSearchKeyDown}
                   placeholder={labels.searchHint}
                   aria-label={labels.search}
-                  aria-controls="nav-search-results"
+                  role="combobox"
+                  aria-autocomplete="list"
+                  aria-expanded={results.length > 0}
+                  aria-controls={results.length > 0 ? SEARCH_LISTBOX_ID : undefined}
+                  aria-activedescendant={activeOptionId}
                   spellCheck={false}
                   className="min-w-0 flex-1 bg-transparent text-sm text-slate-800 outline-none placeholder:text-slate-400"
                 />
@@ -221,10 +238,15 @@ export default function Navigation() {
                 </button>
               </div>
 
+              {/* Off-screen live region: announces the result count (or no-results) as
+                  the query changes, so screen-reader users hear the list update without
+                  moving focus. The visible panel below is not itself a live region. */}
+              <span className="sr-only" role="status" aria-live="polite">{resultAnnouncement}</span>
+
               {results.length === 0 ? (
                 <p className="px-4 py-6 text-center text-sm text-slate-500">{labels.noResults}</p>
               ) : (
-                <ul id="nav-search-results" aria-label={labels.results} className="max-h-[60vh] overflow-y-auto p-1.5 custom-scrollbar">
+                <ul id={SEARCH_LISTBOX_ID} role="listbox" aria-label={labels.results} className="max-h-[60vh] overflow-y-auto p-1.5 custom-scrollbar">
                   {results.map((item, index) => {
                     const Icon = item.entry.icon;
                     const isHighlighted = index === highlighted;
@@ -232,6 +254,9 @@ export default function Navigation() {
                       <li key={item.entry.view}>
                         <ViewLink
                           view={item.entry.view}
+                          role="option"
+                          id={optionId(item.entry.view)}
+                          aria-selected={isHighlighted}
                           onClick={() => setIsSearchOpen(false)}
                           onMouseEnter={() => setHighlighted(index)}
                           aria-current={activeView === item.entry.view ? 'page' : undefined}

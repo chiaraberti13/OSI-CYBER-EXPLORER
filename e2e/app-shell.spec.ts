@@ -44,13 +44,18 @@ test.describe('application shell', () => {
     await openApp(page);
 
     await page.keyboard.press('Control+k');
-    const search = page.getByRole('textbox', { name: 'Cerca un laboratorio' });
+    const search = page.getByRole('combobox', { name: 'Cerca un laboratorio' });
     await expect(search).toBeFocused();
 
     // "vlsm" only matches the Network fundamentals lab's keywords.
     await search.fill('vlsm');
-    const results = page.locator('#nav-search-results');
-    await expect(results.getByRole('link')).toHaveCount(1);
+    const listbox = page.getByRole('listbox', { name: 'Risultati della ricerca' });
+    await expect(listbox.getByRole('option')).toHaveCount(1);
+    // The combobox points at the single active option without moving DOM focus.
+    await expect(search).toHaveAttribute('aria-expanded', 'true');
+    const optionId = await listbox.getByRole('option').getAttribute('id');
+    await expect(search).toHaveAttribute('aria-activedescendant', optionId ?? '');
+    await expect(search).toBeFocused();
 
     // Arrow + Enter selects the highlighted result entirely from the keyboard.
     await page.keyboard.press('Enter');
@@ -103,7 +108,7 @@ test.describe('application shell', () => {
 
     // SPA navigation via the quick search pushes a history entry.
     await page.keyboard.press('Control+k');
-    await page.getByRole('textbox', { name: 'Cerca un laboratorio' }).fill('vlsm');
+    await page.getByRole('combobox', { name: 'Cerca un laboratorio' }).fill('vlsm');
     await page.keyboard.press('Enter');
     await expect(page).toHaveURL(/#\/fundamentals$/);
 
