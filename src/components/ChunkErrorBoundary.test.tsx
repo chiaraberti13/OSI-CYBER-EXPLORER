@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 /**
  * @license
- * SPDX-License-Identifier: MIT
+ * SPDX-License-Identifier: GPL-3.0-only
  */
 
 import { useState } from 'react';

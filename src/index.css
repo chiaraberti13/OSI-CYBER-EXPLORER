@@ -64,6 +64,39 @@ body {
   display: none;
 }
 
+/* Accessibility (UX-02): skip link. The first Tab must reach a control that jumps
+   past the sticky header and navigation straight to the main content. It stays
+   focusable (not display:none) but sits just off the top edge until focused, then
+   slides into view above the header (which is z-50). position:fixed keeps it
+   anchored to the viewport regardless of scroll. The slide is covered by the
+   prefers-reduced-motion block below. */
+.skip-link {
+  position: fixed;
+  left: 12px;
+  top: -56px;
+  z-index: 100;
+  padding: 8px 16px;
+  background: #1e293b;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: top 0.15s ease;
+}
+.skip-link:focus {
+  top: 12px;
+}
+
+/* The main landmark is programmatically focusable (tabindex=-1) so activating the
+   skip link lands focus there. The user deliberately triggered the jump, so the
+   large container itself needs no ring; the next Tab focuses the first control
+   inside it, which does show the focus-visible outline below. */
+#main-content:focus,
+#main-content:focus-visible {
+  outline: none;
+}
+
 /* Accessibility: clear, consistent keyboard focus outline for interactive elements.
    Uses :focus-visible so the ring only appears for keyboard users, not on mouse click. */
 a:focus-visible,

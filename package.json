@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "type": "module",
   "description": "Bilingual, interactive lab to study the OSI model, packet encapsulation and layer-by-layer network security.",
+  "license": "GPL-3.0-only",
   "engines": {
     "node": "^22.22.2 || ^24.15.0 || >=26.0.0"
   },

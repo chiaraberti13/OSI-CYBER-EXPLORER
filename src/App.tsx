@@ -1,6 +1,6 @@
 /**
  * @license
- * SPDX-License-Identifier: MIT
+ * SPDX-License-Identifier: GPL-3.0-only
  */
 
 import Header from './components/Header';
@@ -74,10 +74,34 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#fafafa] text-slate-700 selection:bg-indigo-500/10">
+      {/*
+        UX-02: the skip link is the first focusable element, so the first Tab offers
+        to jump past the sticky header and navigation. It targets the main landmark
+        by id, but must not mutate the router hash (`#/<view>`): writing `#main-content`
+        to location.hash would fire the hashchange handler, resolve to an unknown
+        route and canonicalise the user back to the OSI view. So it keeps the href for
+        link semantics and no-JS crawlers, prevents the default jump, and moves focus
+        to the main landmark programmatically instead.
+      */}
+      <a
+        href="#main-content"
+        className="skip-link"
+        onClick={(event) => {
+          event.preventDefault();
+          const main = document.getElementById('main-content');
+          if (main) {
+            main.focus();
+            // scrollIntoView is unavailable in some non-browser test DOMs.
+            main.scrollIntoView?.();
+          }
+        }}
+      >
+        {language === 'it' ? 'Vai al contenuto' : 'Skip to content'}
+      </a>
       <Header />
       <Navigation />
 
-      <main className="max-w-7xl mx-auto p-4 md:p-6 min-h-[75vh]">
+      <main id="main-content" tabIndex={-1} className="max-w-7xl mx-auto p-4 md:p-6 min-h-[75vh]">
         {/*
           ENG-09: a lazy chunk that fails to download throws during render. The boundary
           wraps Suspense so it catches that rejection (and any render error in the view)

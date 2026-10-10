@@ -69,6 +69,20 @@ test.describe('application shell', () => {
     await expect(dialog).toBeHidden();
   });
 
+  test('the first Tab reaches the skip link and it jumps to the main content', async ({ page }) => {
+    await openApp(page);
+
+    // The skip link must be the first thing a keyboard user reaches.
+    await page.keyboard.press('Tab');
+    const skip = page.getByRole('link', { name: 'Vai al contenuto' });
+    await expect(skip).toBeFocused();
+
+    // Activating it lands focus on the main landmark without disturbing the route.
+    await page.keyboard.press('Enter');
+    await expect(page.locator('#main-content')).toBeFocused();
+    await expect(page).toHaveURL(/#\/osi$/);
+  });
+
   test('deep links, reload and invalid routes behave predictably', async ({ page }) => {
     // A deep link opens its destination directly.
     await page.goto('/#/ports');

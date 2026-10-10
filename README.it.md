@@ -93,7 +93,7 @@ Le release da tag seguono il versionamento semantico e includono archivio applic
 ## Competenze dimostrate
 - Sviluppo front-end con **React 19 + TypeScript**, stato centralizzato (Zustand) e netta separazione dati/logica/UI.
 - Una **macchina a stati** deterministica per incapsulamento/decapsulamento e logica pura e testabile (`src/lib`).
-- **Internazionalizzazione** (IT/EN) senza librerie esterne, con attenzione all'accessibilità (focus, `aria`, riduzione animazioni).
+- **Internazionalizzazione** (IT/EN) senza librerie esterne, con attenzione all'accessibilità (skip link al contenuto principale, focus, `aria`, riduzione animazioni).
 - **Layout responsive** verificato a 390 px e 768 px: nessuno scorrimento orizzontale della pagina, tabelle di confronto che diventano schede su schermo stretto e codice CLI che resta monospaziato in un'area scorrevole dedicata.
 - Igiene ingegneristica: **test unitari**, **CI** (type-check + test + build), nessuna dipendenza morta.
 - Solide conoscenze di rete e sicurezza su tutti i 7 livelli OSI.
