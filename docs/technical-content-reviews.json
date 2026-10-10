@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "cadenceDays": 180,
+  "scheduledWarningDays": 30,
+  "requiredScopes": [
+    "port-registry",
+    "platform-commands",
+    "deprecated-protocols",
+    "cryptography",
+    "ccna-blueprint",
+    "mitre-attack"
+  ],
+  "reviews": [
+    {
+      "id": "2026-10-10-baseline",
+      "reviewedOn": "2026-10-10",
+      "nextReviewBy": "2027-04-08",
+      "reviewer": "@chiaraberti13",
+      "versions": {
+        "portRegistryVerifiedOn": "2026-09-30",
+        "ccnaBlueprint": "200-301 v1.1",
+        "mitreAttack": "19.2",
+        "mitreAttackReleasedOn": "2026-04-28",
+        "cryptographyGuidance": "NIST SP 800-131A Rev. 2"
+      },
+      "decisions": [
+        {
+          "scope": "port-registry",
+          "status": "confirmed",
+          "summary": {
+            "it": "Confermata la registry didattica verificata su IANA, incluse le ambiguità de facto e le alternative cifrate.",
+            "en": "Confirmed the teaching registry checked against IANA, including de-facto ambiguities and encrypted alternatives."
+          },
+          "sources": ["https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml"],
+          "evidence": ["src/content/portRegistry.ts", "docs/PORT_REGISTRY.md"]
+        },
+        {
+          "scope": "platform-commands",
+          "status": "confirmed",
+          "summary": {
+            "it": "Ricontrollati comandi Cisco IOS/IOS XE e Linux esposti nei laboratori; restano esempi contestuali con verifica e rollback.",
+            "en": "Rechecked Cisco IOS/IOS XE and Linux commands exposed by the labs; they remain contextual examples with verification and rollback."
+          },
+          "sources": ["https://www.cisco.com/c/en/us/support/ios-nx-os-software/ios-xe-17/products-command-reference-list.html", "https://man7.org/linux/man-pages/"],
+          "evidence": ["src/content/hardeningConfigs.ts", "src/content/ipServicesLab.ts", "src/content/networkAccessLab.ts"]
+        },
+        {
+          "scope": "deprecated-protocols",
+          "status": "corrected",
+          "summary": {
+            "it": "TLS 1.0/1.1 e SNMPv1/v2c erano già indicati come legacy; aggiunto il divieto esplicito di SSHv1 e mantenute le alternative TLS moderne, SSHv2 e SNMPv3 authPriv.",
+            "en": "TLS 1.0/1.1 and SNMPv1/v2c were already marked legacy; added an explicit SSHv1 prohibition and retained modern TLS, SSHv2, and SNMPv3 authPriv alternatives."
+          },
+          "sources": ["https://www.rfc-editor.org/rfc/rfc8996.html", "https://www.rfc-editor.org/rfc/rfc4253.html", "https://www.rfc-editor.org/rfc/rfc3414.html"],
+          "evidence": ["src/content/protocolRegistry.ts", "src/content/ipServicesLab.ts"]
+        },
+        {
+          "scope": "cryptography",
+          "status": "confirmed",
+          "summary": {
+            "it": "Confermati TLS 1.2/1.3, chiavi RSA da almeno 2048 bit negli esempi e l’uso didattico di SHA-1/3DES/WEP solo come tecnologie legacy o deboli.",
+            "en": "Confirmed TLS 1.2/1.3, RSA keys of at least 2048 bits in examples, and SHA-1/3DES/WEP only as legacy or weak teaching material."
+          },
+          "sources": ["https://csrc.nist.gov/pubs/sp/800/131/a/r2/final", "https://www.rfc-editor.org/rfc/rfc8446.html"],
+          "evidence": ["src/content/hardeningConfigs.ts", "src/content/securityFundamentalsLab.ts", "src/content/protocolRegistry.ts"]
+        },
+        {
+          "scope": "ccna-blueprint",
+          "status": "confirmed",
+          "summary": {
+            "it": "Confermati versione 200-301 v1.1, sei domini, pesi e 53 obiettivi numerati collegati alle viste reali.",
+            "en": "Confirmed version 200-301 v1.1, six domains, weights, and 53 numbered objectives linked to real views."
+          },
+          "sources": ["https://learningcontent.cisco.com/documents/marketing/exam-topics/200-301-CCNA-v1.1.pdf"],
+          "evidence": ["src/content/ccnaBlueprint.ts", "docs/CCNA_BLUEPRINT_COVERAGE.md"]
+        },
+        {
+          "scope": "mitre-attack",
+          "status": "corrected",
+          "summary": {
+            "it": "Confermata ATT&CK v19.2 come versione corrente, corretta la data di rilascio al 28 aprile 2026 e ricontrollati gli identificativi delle tecniche referenziate.",
+            "en": "Confirmed ATT&CK v19.2 as the current version, corrected its release date to 28 April 2026, and rechecked the referenced technique identifiers."
+          },
+          "sources": ["https://attack.mitre.org/resources/versions/"],
+          "evidence": ["src/content/securityReferences.ts", "docs/SECURITY_CONTENT_REFERENCES.md"]
+        }
+      ]
+    }
+  ]
+}

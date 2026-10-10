@@ -23,6 +23,8 @@
 ## Panoramica
 **OSI Cyber Explorer** trasforma il networking, l'incapsulamento e la sicurezza di rete in un laboratorio visuale. La piattaforma collega i sei domini del **CCNA 200-301 v1.1** alle famiglie di attacco e alle relative difese. Distingue gli header realmente presenti dalle funzioni concettuali dei livelli OSI superiori. Tutto è deterministico e lato client: nessun backend, nessuna AI.
 
+Porte, comandi di piattaforma, protocolli deprecati, raccomandazioni crittografiche e riferimenti CCNA/ATT&CK seguono una [revisione tecnica semestrale](docs/TECHNICAL_CONTENT_REVIEW.md#italiano) applicata automaticamente. Ogni revisione completata è append-only, supportata da evidenze e versionata; la CI rifiuta record scaduti o variazioni delle versioni senza una nuova decisione.
+
 ## Funzionalità
 - **URL condivisibili dei laboratori** — Ogni vista ha una route `#/<id>` derivata dalla registry, titolo bilingue, link nativi e comportamento prevedibile su refresh e Indietro/Avanti. Le route sconosciute tornano alla panoramica OSI. Vedi [comportamento degli URL](docs/VIEW_ROUTING.md#italiano).
 - **Mappa CCNA** — I sei domini ufficiali, con peso, obiettivi, argomenti e collegamenti alle famiglie di attacco e difesa. La [matrice versionata del blueprint](docs/CCNA_BLUEPRINT_COVERAGE.md#italiano) collega tutti i 53 argomenti numerati CCNA 200-301 v1.1 a viste di studio reali ed è protetta contro voci scoperte o obsolete. Ogni dominio ha inoltre una **checklist di concetti da saper spiegare**: per ogni voce, dove osservare il concetto in funzione nella piattaforma e quale errore rivela che non è ancora solido. È una guida esplorativa senza quiz, voti o simulazione d'esame: la checklist non assegna punteggi.

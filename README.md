@@ -27,6 +27,8 @@ Attack content is a non-executing simulation for owned or explicitly authorised 
 
 Network examples use private, local, or [documentation-reserved targets](docs/DOCUMENTATION_TARGETS.md). A repository-wide CI gate prevents public IPv4/IPv6 addresses or unapproved domains from becoming copyable lab targets.
 
+Ports, platform commands, deprecated protocols, cryptographic guidance, CCNA, and ATT&CK references follow an enforced [six-month technical-content review](docs/TECHNICAL_CONTENT_REVIEW.md#english). Every completed review is append-only, evidence-backed, and version-pinned; CI rejects expired records or source-version drift without a new decision.
+
 ## Features
 - **Shareable lab URLs** — Every view has a registry-derived `#/<id>` route, bilingual page title, native links and predictable refresh/Back/Forward behavior. Unknown routes return to the OSI overview. See [lab URL behavior](docs/VIEW_ROUTING.md#english).
 - **CCNA Map** — The six official domains with their weights, objectives, topics, and links to attack and defense families. Its [versioned blueprint matrix](docs/CCNA_BLUEPRINT_COVERAGE.md#english) maps all 53 numbered CCNA 200-301 v1.1 topics to real study views and is guarded against uncovered or stale entries. Each domain also carries a **checklist of concepts you should be able to explain**: for every entry, where to observe the concept at work in the platform and which mistake reveals it is not yet solid. It is an exploratory guide with no quizzes, scores, or exam simulation: the checklist assigns no score.

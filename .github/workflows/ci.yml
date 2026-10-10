@@ -45,6 +45,9 @@ jobs:
       - name: Validate offensive educational content
         run: npm run verify:offensive-content
 
+      - name: Validate technical-content review ledger
+        run: npm run verify:technical-content
+
       - name: Validate documentation-only targets
         run: npm run verify:documentation-targets
 

@@ -27,6 +27,7 @@ import { SEGMENTATION_SCENARIOS } from '../content/segmentationScenarios';
 import { VPN_PKI_SCENARIOS } from '../content/vpnPkiScenarios';
 import { WIRELESS_SECURITY_SCENARIOS } from '../content/wirelessSecurityScenarios';
 import {
+  MITRE_ATTACK_RELEASED_ON,
   MITRE_ATTACK_REVIEWED_ON,
   MITRE_ATTACK_VERSION,
   securityReferenceUrl,
@@ -114,6 +115,7 @@ function expectValidReferences(references: readonly SecurityReference[], owner: 
 describe('structured security references', () => {
   it('pins the current reviewed MITRE ATT&CK release', () => {
     expect(MITRE_ATTACK_VERSION).toBe('19.2');
+    expect(MITRE_ATTACK_RELEASED_ON).toBe('2026-04-28');
     expect(MITRE_ATTACK_REVIEWED_ON).toBe('2026-10-10');
   });
 

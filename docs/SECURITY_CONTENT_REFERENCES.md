@@ -23,7 +23,7 @@ type SecurityReference = {
 
 ## Review baseline
 
-- MITRE ATT&CK Enterprise: **v19.2**, released 6 August 2026 and reviewed 10 October 2026.
+- MITRE ATT&CK Enterprise: **v19.2**, released 28 April 2026 and reviewed 10 October 2026.
 - NIST SP 800-53 Rev. 5 is the minimum defensive-control catalog baseline.
 - RFC links resolve through the IETF Datatracker; IEEE, NIST, ATT&CK, and Cisco links resolve only to their official domains.
 

@@ -53,8 +53,8 @@ export const PROTOCOL_REGISTRY: ProtocolInfo[] = [
       it: 'Amministrazione remota di server Linux via linea di comando, script automatizzati e passaggi SFTP.'
     },
     security: {
-      en: 'Protects passwords and tokens by wrapping sessions in state-of-the-art public-key cryptography.',
-      it: 'Protegge le sessioni avvolgendole in sistemi crittografici avanzati a chiave pubblica.'
+      en: 'SSHv1 is obsolete and must not be enabled. Require SSHv2 with modern host keys, key exchange and ciphers; restrict management sources and prefer key-based or centralized authentication.',
+      it: 'SSHv1 è obsoleto e non deve essere abilitato. Richiedere SSHv2 con host key, scambio chiavi e cifrari moderni; limitare le sorgenti di gestione e preferire autenticazione a chiave o centralizzata.'
     },
     isSecure: true
   },

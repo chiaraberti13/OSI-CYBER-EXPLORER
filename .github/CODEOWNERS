@@ -18,6 +18,8 @@
 /scripts/release-metadata.test.mjs @chiaraberti13
 /scripts/offensive-content-review.mjs @chiaraberti13
 /scripts/offensive-content-review.test.mjs @chiaraberti13
+/scripts/technical-content-review.mjs @chiaraberti13
+/scripts/technical-content-review.test.mjs @chiaraberti13
 /scripts/documentation-targets.mjs @chiaraberti13
 /scripts/documentation-targets.test.mjs @chiaraberti13
 
@@ -38,6 +40,8 @@
 /scripts/deployment-security.test.mjs @chiaraberti13
 /docs/OFFENSIVE_CONTENT_REVIEW.md @chiaraberti13
 /docs/offensive-content-reviews.json @chiaraberti13
+/docs/TECHNICAL_CONTENT_REVIEW.md @chiaraberti13
+/docs/technical-content-reviews.json @chiaraberti13
 /docs/DOCUMENTATION_TARGETS.md @chiaraberti13
 /docs/documentation-target-allowlist.json @chiaraberti13
 /docs/NETWORKING_CONFORMANCE.md @chiaraberti13

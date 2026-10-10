@@ -1,0 +1,36 @@
+name: Technical Content Review
+
+on:
+  schedule:
+    # Open the six-month review window on 1 April and 1 October (UTC).
+    - cron: '17 6 1 4,10 *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: technical-content-review-${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  review:
+    name: Review ledger and pinned sources
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24.x
+
+      - name: Test review policy
+        run: node --test scripts/technical-content-review.test.mjs
+
+      - name: Require a completed review in the scheduled window
+        run: node scripts/technical-content-review.mjs --scheduled

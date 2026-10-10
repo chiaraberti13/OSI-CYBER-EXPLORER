@@ -7,6 +7,7 @@ export interface SecurityReference {
 
 /** Version reviewed for the ATT&CK technique identifiers used by the app. */
 export const MITRE_ATTACK_VERSION = '19.2' as const;
+export const MITRE_ATTACK_RELEASED_ON = '2026-04-28' as const;
 export const MITRE_ATTACK_REVIEWED_ON = '2026-10-10' as const;
 
 const nistSlug = (id: string): string => {
