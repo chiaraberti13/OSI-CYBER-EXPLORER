@@ -23,7 +23,9 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "test:e2e:report": "playwright show-report",
-    "verify": "npm run verify:lockfile && npm run verify:release && npm run verify:deployment-security && npm run verify:repository-posture && npm run verify:documentation-targets && npm run verify:offensive-content && npm run verify:technical-content && npm run typecheck && npm run lint && npm run test:coverage && npm run build",
+    "analyze:bundle": "vite build --mode analyze",
+    "verify": "npm run verify:lockfile && npm run verify:release && npm run verify:deployment-security && npm run verify:repository-posture && npm run verify:documentation-targets && npm run verify:offensive-content && npm run verify:technical-content && npm run typecheck && npm run lint && npm run test:coverage && npm run build && npm run verify:performance",
+    "verify:performance": "node --test scripts/performance-budget.test.mjs && size-limit && node scripts/performance-budget.mjs",
     "verify:release": "node --test scripts/release-metadata.test.mjs",
     "verify:deployment-security": "node --test scripts/deployment-security.test.mjs",
     "verify:repository-posture": "node --test scripts/scorecard-report.test.mjs",
@@ -48,6 +50,7 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@playwright/test": "1.56.1",
+    "@size-limit/file": "14.2.0",
     "@tailwindcss/vite": "^4.1.14",
     "@testing-library/react": "^16.3.3",
     "@testing-library/user-event": "^14.6.7",
@@ -64,10 +67,26 @@
     "globals": "^17.12.0",
     "jsdom": "^30.1.0",
     "lockfile-lint": "5.0.1",
+    "rollup-plugin-visualizer": "7.1.1",
+    "size-limit": "14.2.0",
     "tailwindcss": "^4.1.14",
     "typescript": "~5.8.2",
     "typescript-eslint": "^8.70.0",
     "vite": "^8.3.1",
     "vitest": "^5.0.1"
-  }
+  },
+  "size-limit": [
+    {
+      "name": "Initial JavaScript (gzip)",
+      "path": "dist/assets/index-*.js",
+      "gzip": true,
+      "limit": "125 kB"
+    },
+    {
+      "name": "Largest route chunk: Ports Explorer (gzip)",
+      "path": "dist/assets/PortsExplorer-*.js",
+      "gzip": true,
+      "limit": "55 kB"
+    }
+  ]
 }

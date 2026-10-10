@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "baseline": {
+    "measuredOn": "2026-10-10",
+    "commit": "1060a22c9ba6362f19f6e47a35113c6e9209dcef",
+    "initialJsGzipBytes": 116060,
+    "largestRoute": "src/components/PortsExplorer.tsx",
+    "largestRouteGzipBytes": 51325
+  },
+  "budgets": {
+    "initialJsGzipBytes": 125000,
+    "routeChunkGzipBytes": 55000
+  }
+}

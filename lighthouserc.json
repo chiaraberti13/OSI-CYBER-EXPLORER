@@ -1,0 +1,25 @@
+{
+  "ci": {
+    "collect": {
+      "staticDistDir": "./dist",
+      "url": [
+        "http://localhost/?audit=osi#/osi",
+        "http://localhost/?audit=ports#/ports"
+      ],
+      "numberOfRuns": 3,
+      "settings": {
+        "preset": "desktop",
+        "chromeFlags": "--no-sandbox --disable-dev-shm-usage"
+      }
+    },
+    "assert": {
+      "assertions": {
+        "categories:performance": ["error", { "minScore": 0.75 }],
+        "resource-summary:script:size": ["error", { "maxNumericValue": 614400 }],
+        "cumulative-layout-shift": ["error", { "maxNumericValue": 0.6 }],
+        "largest-contentful-paint": ["warn", { "maxNumericValue": 2500 }],
+        "interactive": ["warn", { "maxNumericValue": 3000 }]
+      }
+    }
+  }
+}

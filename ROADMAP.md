@@ -1,7 +1,7 @@
 # 🚀 Roadmap di Sviluppo: OSI-CYBER-EXPLORER
 
 > **Baseline analizzata:** branch `main`, commit `8f91a2c` del 20 settembre 2026  
-> **Ultima revisione della roadmap:** 10 ottobre 2026 (rev. 10 — revisione tecnica periodica)
+> **Ultima revisione della roadmap:** 10 ottobre 2026 (rev. 11 — budget prestazionali)
 > **Metodo di revisione:** baseline rieseguita localmente con Node 22.22.2 (`npm ci`, `vitest run`, `npm audit`, `vite build`) e ispezione mirata del codice; i task già presenti sono stati conservati con la stessa numerazione e arricchiti solo dove la verifica ha fatto emergere dettagli mancanti.
 
 ## Legenda
@@ -51,7 +51,7 @@ Il progetto dispone già di:
 | `vitest run` (Node 22.22.2) | 38 file, 239 test superati | conferma che il problema della CI è la versione di Node, non il codice |
 | `npm audit` completo | 0 vulnerabilità dopo SEC-01 | Vite 8.3.1, Vitest 5.0.1, plugin React 6.1.1 e dipendenze transitive aggiornate senza `npm audit fix --force` |
 | `npm audit --omit=dev` | 0 vulnerabilità | il bundle servito agli utenti non include le dipendenze vulnerabili |
-| `vite build` | chunk iniziale 385 KB (123 KB gzip), Porte 171 KB (50 KB gzip) | valori usati come baseline di ENG-14 |
+| `vite build` | entry iniziale 360,54 KB (116.060 B gzip livello 9), Porte 181,04 KB (51.325 B gzip livello 9) | baseline versionata e gate CI introdotti da ENG-14 |
 | Sink pericolosi (`dangerouslySetInnerHTML`, `eval`, `new Function`, `innerHTML`, `fetch`) | nessuno nel codice sorgente | l'unica risorsa remota a runtime è l'immagine Unsplash in `GuideModal.tsx` (UX-11) |
 | Persistenza | solo `localStorage` tramite `zustand/persist` con `partialize` | coerente con SEC-08 |
 
@@ -168,7 +168,7 @@ La mappatura serve a spiegare *perché* esiste un controllo, non a dichiarare co
 
 ### P2/P3 — Performance e collaborazione
 
-- [ ] **ENG-14 — Definire budget prestazionali.** Misurare con `rollup-plugin-visualizer` o `vite-bundle-visualizer`, `size-limit` e Lighthouse CI. La build attuale produce un chunk iniziale di circa 385 KB (123 KB gzip) e il chunk Porte di circa 171 KB (50 KB gzip). **Completato quando:** esistono budget per initial JS e route; ogni ottimizzazione deriva da profiling.
+- [x] **ENG-14 — Definire budget prestazionali.** Misurare con `rollup-plugin-visualizer` o `vite-bundle-visualizer`, `size-limit` e Lighthouse CI. La build attuale produce un chunk iniziale di circa 385 KB (123 KB gzip) e il chunk Porte di circa 171 KB (50 KB gzip). **Completato quando:** esistono budget per initial JS e route; ogni ottimizzazione deriva da profiling. **Esito (10/10/2026):** rimisurata la build corrente con gzip livello 9: entry 116.060 B e route più grande Porte 51.325 B. I budget bloccanti sono 125.000 B per l’entry e 55.000 B per ciascuna delle 33 route lazy. Size Limit presidia i due chunk sentinella; un gate basato sul manifest Vite misura tutte le route e cinque test ne provano il fail-closed. `analyze:bundle` genera un treemap raw/gzip/Brotli per attribuire il peso prima di ENG-15. Un workflow read-only, con action fissata a SHA e report non pubblico, esegue Lighthouse CI tre volte sulle route OSI e Porte. La baseline reale è Performance 0,78/0,98 e CLS 0,547/0,082: i gate anti-regressione sono quindi Performance ≥0,75, CLS ≤0,60, script ≤600 KiB e totale ≤750 KiB, mantenendo CLS ≤0,10 come obiettivo successivo dichiarato. La CLI Lighthouse non entra nel lockfile perché il suo albero corrente introduce advisory High; processo, baseline e regole di modifica sono documentati in `docs/PERFORMANCE_BUDGETS.md`.
 
 - [ ] **ENG-15 — Ottimizzare liste solo dopo misurazione.** Valutare memoizzazione, indicizzazione della ricerca o virtualizzazione (`react-window`) per glossario/porte soltanto se profiler e Web Vitals mostrano un problema reale. **Completato quando:** il miglioramento è dimostrato da una metrica prima/dopo.
 
@@ -282,7 +282,8 @@ La mappatura serve a spiegare *perché* esiste un controllo, non a dichiarare co
 | Advisory `npm audit` High/Critical | 0 dopo SEC-01 (baseline: 5 solo dev) | 0 non documentati | SEC-01, SEC-06 |
 | Advisory runtime (`--omit=dev`) | 0 | 0, controllo bloccante in CI da ENG-02 | SEC-01, ENG-02 |
 | Action non fissate a SHA | 2 su 2 | 0 | SEC-04 |
-| JS iniziale (gzip) | 123 KB | ≤ 123 KB, poi budget ridotto dopo ENG-06/ENG-10 | ENG-14 |
+| JS iniziale (gzip) | 116.060 B (10/10/2026) | ≤ 125.000 B, budget bloccante | ENG-14 |
+| Route lazy più grande (gzip) | Porte 51.325 B (10/10/2026) | ≤ 55.000 B per route | ENG-14 |
 | Coverage righe `src/lib` | 97,58% dopo ENG-11 (24 moduli, 05/10/2026) | ≥ 95% aggregata e ≥ 80% per modulo | ENG-11 |
 | IP pubblici reali negli esempi | 0 fuori allowlist dopo NET-01 (gate su 111 sorgenti) | 0 fuori allowlist | NET-01 |
 | Lighthouse Accessibility | non misurato | ≥ 95 | UX-16, UX-17 |
@@ -348,5 +349,6 @@ La roadmap può considerarsi completata quando:
 | 2026-10-05 | ENG-11: coverage V8 limitata alla logica, con soglie aggregate e per modulo | Misurare anche i moduli mai importati evita denominatori incompleti; i minimi per file impediscono che la media nasconda regressioni, mentre dataset e UI continuano ad avere test senza gonfiare il gate; report e artifact conservano le diagnosi anche in caso di errore |
 | 2026-10-06 | ENG-12: smoke E2E Playwright su Chromium contro il bundle di `vite preview`, in un workflow CI separato | Testare il bundle reale copre lazy chunk, hash routing e asset sotto CSP che i test jsdom non vedono; un solo browser e un workflow isolato tengono stabile la matrice build e rispettano il criterio «almeno Chromium stabile» prima di aggiungere Firefox/WebKit |
 | 2026-10-07 | ENG-13: validazione del grafo contenuti a runtime senza Zod/Valibot | I nodi di sicurezza sono collegati da id stringa che il type system non verifica; test di integrità referenziale, insiemi chiusi via `satisfies` e parità IT/EN ricorsiva catturano un riferimento rotto o una traduzione mancante senza aggiungere una dipendenza di validazione |
+| 2026-10-10 | ENG-14: budget gzip dal manifest Vite e Lighthouse CI isolato dal lockfile | Il manifest rende stabile il controllo nonostante gli hash; Size Limit protegge i chunk sentinella, il gate in-repo copre tutte le route e l’action Lighthouse fissata a SHA misura il caricamento reale senza importare advisory High nella toolchain dell’app |
 | 2026-10-05 | ENG-09: boundary interno minimo + retry a livello di loader, senza `react-error-boundary` | Il boundary serve solo ai chunk lazy e al rendering delle viste: un componente classe in-repo evita una dipendenza per così poco codice; il retry transitorio nel loader assorbe i blip di rete, mentre il reload resta l'unico retry affidabile perché `React.lazy` memorizza in modo permanente un import rifiutato |
 | 2026-10-02 | UX-01: un solo guscio di dialog accessibile, con `inert` sul resto della pagina | Un componente condiviso evita che Guida e Glossario divergano; `inert` rende il contenuto di sfondo irraggiungibile anche per mouse e screen reader che ignorano `aria-modal` |

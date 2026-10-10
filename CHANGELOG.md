@@ -4,6 +4,8 @@ All notable changes to OSI Cyber Explorer are documented in this file. The proje
 
 ## [Unreleased]
 
+- Added enforced performance budgets for initial JavaScript and every lazy route, a reproducible bundle treemap, and Lighthouse CI checks for the OSI and Ports paths without adding its vulnerable CLI dependency tree to the application lockfile.
+- Aggiunti budget prestazionali bloccanti per il JavaScript iniziale e ogni route lazy, un treemap riproducibile del bundle e controlli Lighthouse CI sui percorsi OSI e Porte senza inserire nel lockfile dell’app l’albero vulnerabile della CLI.
 - Added an enforced six-month technical-content review for ports, platform commands, deprecated protocols, cryptography, CCNA, and MITRE ATT&CK. An append-only bilingual ledger, CI gate, and scheduled workflow reject expired reviews, missing evidence, unapproved sources, and pinned-version drift; the baseline review also makes the SSHv1 prohibition explicit and corrects the ATT&CK v19.2 release date.
 - Aggiunta una revisione tecnica semestrale applicata a porte, comandi di piattaforma, protocolli deprecati, crittografia, CCNA e MITRE ATT&CK. Registro bilingue append-only, gate CI e workflow schedulato rifiutano revisioni scadute, evidenze mancanti, fonti non approvate e variazioni delle versioni fissate; la revisione baseline rende inoltre esplicito il divieto di SSHv1 e corregge la data di rilascio di ATT&CK v19.2.
 - Added a versioned CCNA 200-301 v1.1 blueprint matrix that maps all 53 numbered topics to registered study views. The bilingual CCNA Map exposes the links and official source, while automated checks reject uncovered, stale, duplicated, untranslated, or invalid destinations.

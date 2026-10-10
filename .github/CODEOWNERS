@@ -22,6 +22,13 @@
 /scripts/technical-content-review.test.mjs @chiaraberti13
 /scripts/documentation-targets.mjs @chiaraberti13
 /scripts/documentation-targets.test.mjs @chiaraberti13
+/performance-budgets.json @chiaraberti13
+/lighthouse-budget.json @chiaraberti13
+/lighthouserc.json @chiaraberti13
+/vite.config.ts @chiaraberti13
+/docs/PERFORMANCE_BUDGETS.md @chiaraberti13
+/scripts/performance-budget.mjs @chiaraberti13
+/scripts/performance-budget.test.mjs @chiaraberti13
 
 # Security policy, scanners, and deployment hardening
 /.gitleaks.toml @chiaraberti13
