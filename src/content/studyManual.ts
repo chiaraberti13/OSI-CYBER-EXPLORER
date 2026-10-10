@@ -529,5 +529,159 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
         ]
       }
     ]
+  },
+  {
+    id: 'vlan-trunk-stp',
+    cert: 'ccna',
+    order: 4,
+    title: { it: 'VLAN, trunk 802.1Q e Spanning Tree', en: 'VLANs, 802.1Q trunks, and Spanning Tree' },
+    summary: {
+      it: 'Come si segmenta e si rende stabile la rete commutata: VLAN per separare i domini di broadcast, trunk 802.1Q per trasportarle tra switch, e Spanning Tree per evitare i loop di livello 2 mantenendo un percorso senza anelli.',
+      en: 'How the switched network is segmented and kept stable: VLANs to separate broadcast domains, 802.1Q trunks to carry them between switches, and Spanning Tree to prevent layer-2 loops while keeping a loop-free path.'
+    },
+    topics: [
+      {
+        id: 'vlan-segmentation',
+        title: { it: 'VLAN: segmentare la rete logicamente', en: 'VLANs: segmenting the network logically' },
+        objectives: [
+          { it: 'Spiegare cos’è una VLAN e perché corrisponde a un dominio di broadcast separato.', en: 'Explain what a VLAN is and why it corresponds to a separate broadcast domain.' },
+          { it: 'Distinguere porta di accesso e appartenenza a una VLAN, e capire perché serve il livello 3 per il traffico inter-VLAN.', en: 'Distinguish an access port and VLAN membership, and understand why inter-VLAN traffic needs layer 3.' }
+        ],
+        prerequisites: [
+          { it: 'Conoscere i domini di broadcast e il funzionamento dello switch (capitolo Ethernet e switching).', en: 'Know broadcast domains and how a switch works (Ethernet and switching chapter).' }
+        ],
+        theory: [
+          { it: 'Una VLAN (Virtual LAN) suddivide un singolo switch fisico in più reti logiche: ogni VLAN è un dominio di broadcast separato. Due host in VLAN diverse, anche sullo stesso switch, non possono comunicare direttamente al livello 2, esattamente come se fossero su switch distinti.', en: 'A VLAN (Virtual LAN) splits a single physical switch into several logical networks: each VLAN is a separate broadcast domain. Two hosts in different VLANs, even on the same switch, cannot communicate directly at layer 2, exactly as if they were on separate switches.' },
+          { it: 'Una porta di accesso appartiene a una sola VLAN dati e consegna all’host frame non taggati. Gli ID VLAN vanno da 1 a 4094: la VLAN 1 è quella di default (sconsigliata per il traffico utente) e le VLAN 1002-1005 sono riservate per compatibilità storica.', en: 'An access port belongs to a single data VLAN and delivers untagged frames to the host. VLAN IDs range from 1 to 4094: VLAN 1 is the default (discouraged for user traffic) and VLANs 1002–1005 are reserved for historical compatibility.' },
+          { it: 'Poiché le VLAN isolano i domini di broadcast, il traffico tra VLAN diverse richiede un dispositivo di livello 3: un router o una SVI (Switched Virtual Interface) su uno switch multilayer. È il cosiddetto inter-VLAN routing.', en: 'Because VLANs isolate broadcast domains, traffic between different VLANs requires a layer-3 device: a router or an SVI (Switched Virtual Interface) on a multilayer switch. This is so-called inter-VLAN routing.' }
+        ],
+        example: {
+          it: 'Mettendo i PC dell’ufficio in VLAN 10 e le telecamere in VLAN 20 sullo stesso switch, un broadcast delle telecamere non raggiunge i PC; perché un PC parli con il NVR in VLAN 20 serve un instradamento di livello 3 tra le due VLAN.', en: 'Putting office PCs in VLAN 10 and cameras in VLAN 20 on the same switch means a camera broadcast never reaches the PCs; for a PC to talk to the NVR in VLAN 20, layer-3 routing between the two VLANs is required.' }
+        ,
+        commonMistakes: [
+          { it: 'Pensare che host in VLAN diverse comunichino perché sono sullo stesso switch: senza routing di livello 3 restano isolati.', en: 'Thinking hosts in different VLANs communicate because they are on the same switch: without layer-3 routing they stay isolated.' },
+          { it: 'Lasciare il traffico utente sulla VLAN 1 di default, che è anche quella usata da molti protocolli di gestione: una scelta rischiosa in sicurezza.', en: 'Leaving user traffic on the default VLAN 1, which is also used by many management protocols: a risky security choice.' }
+        ],
+        lab: 'access'
+      },
+      {
+        id: 'trunk-dot1q',
+        title: { it: 'Trunk 802.1Q e native VLAN', en: '802.1Q trunks and the native VLAN' },
+        objectives: [
+          { it: 'Descrivere come un trunk trasporta più VLAN e come il tag 802.1Q identifica ciascun frame.', en: 'Describe how a trunk carries multiple VLANs and how the 802.1Q tag identifies each frame.' },
+          { it: 'Spiegare il ruolo della native VLAN e il rischio di un native VLAN mismatch.', en: 'Explain the role of the native VLAN and the risk of a native VLAN mismatch.' }
+        ],
+        prerequisites: [
+          { it: 'Sapere cos’è una VLAN e cosa fa una porta di accesso.', en: 'Know what a VLAN is and what an access port does.' }
+        ],
+        theory: [
+          { it: 'Un collegamento trunk trasporta il traffico di più VLAN tra due switch (o tra switch e router/AP). Per non confondere le VLAN, lo standard IEEE 802.1Q inserisce nel frame un tag di 4 byte tra l’indirizzo sorgente e l’EtherType: contiene un TPID 0x8100, i bit di priorità (PCP) e, soprattutto, un VLAN ID di 12 bit (da cui il limite di 4094 VLAN). Il frame taggato può arrivare fino a 1522 byte.', en: 'A trunk link carries traffic for multiple VLANs between two switches (or between a switch and a router/AP). To avoid confusing the VLANs, the IEEE 802.1Q standard inserts a 4-byte tag into the frame between the source address and the EtherType: it holds a TPID 0x8100, the priority bits (PCP) and, above all, a 12-bit VLAN ID (hence the 4094-VLAN limit). A tagged frame can be up to 1522 bytes.' },
+          { it: 'La native VLAN è l’unica VLAN i cui frame viaggiano sul trunk *senza* tag. Serve per compatibilità, ma è un punto delicato: entrambe le estremità del trunk devono concordare sulla stessa native VLAN.', en: 'The native VLAN is the one VLAN whose frames travel on the trunk *without* a tag. It exists for compatibility, but it is a delicate point: both ends of the trunk must agree on the same native VLAN.' },
+          { it: 'Un native VLAN mismatch (i due lati configurati con native diverse) fa “saltare” il traffico tra le due VLAN native, con fuga di traffico e potenziali rischi di sicurezza come il VLAN hopping. Buona pratica: fissare esplicitamente la native su una VLAN inutilizzata e taggare tutto.', en: 'A native VLAN mismatch (the two sides configured with different natives) makes traffic “leak” between the two native VLANs, with traffic leakage and potential security risks such as VLAN hopping. Best practice: explicitly set the native to an unused VLAN and tag everything.' }
+        ],
+        example: {
+          it: 'Su un trunk che trasporta VLAN 10, 20 e 99: i frame di VLAN 10 e 20 viaggiano taggati, quelli della native VLAN 99 non taggati. Se un lato ha native 99 e l’altro native 1, i due switch scambiano per errore traffico tra VLAN 99 e VLAN 1.', en: 'On a trunk carrying VLANs 10, 20 and 99: VLAN 10 and 20 frames travel tagged, native VLAN 99 frames untagged. If one side has native 99 and the other native 1, the two switches mistakenly exchange traffic between VLAN 99 and VLAN 1.' }
+        ,
+        commonMistakes: [
+          { it: 'Credere che tutti i frame su un trunk siano taggati: quelli della native VLAN non lo sono, ed è proprio questo a rendere pericoloso un mismatch.', en: 'Believing every frame on a trunk is tagged: native VLAN frames are not, and that is exactly what makes a mismatch dangerous.' },
+          { it: 'Lasciare la native VLAN a 1 di default su entrambi i lati senza valutarne le implicazioni di sicurezza (VLAN hopping con doppio tag).', en: 'Leaving the native VLAN at the default of 1 on both sides without considering the security implications (double-tagging VLAN hopping).' }
+        ],
+        lab: 'access',
+        guidedLabs: [
+          {
+            id: 'gl-vlan-trunk',
+            title: { it: 'Quali VLAN passano sul trunk?', en: 'Which VLANs cross the trunk?' },
+            difficulty: 'core',
+            lab: 'access',
+            scenario: {
+              it: 'Il laboratorio «Accesso alla rete» copre VLAN, trunk 802.1Q e la matrice di attacchi e difese di livello 2, inclusi i rischi legati alla native VLAN.',
+              en: 'The “Network access” lab covers VLANs, 802.1Q trunks and the layer-2 attack-defence matrix, including native-VLAN risks.'
+            },
+            task: {
+              it: 'Dato un trunk con VLAN consentite 10, 20 e native 99, stabilisci quali frame viaggiano taggati e quali no, e cosa accade con un native VLAN mismatch.',
+              en: 'Given a trunk with allowed VLANs 10, 20 and native 99, determine which frames travel tagged and which do not, and what happens with a native VLAN mismatch.'
+            },
+            steps: [
+              { it: 'Apri «Accesso alla rete» e individua la sezione su trunk 802.1Q e native VLAN.', en: 'Open “Network access” and find the section on 802.1Q trunks and the native VLAN.' },
+              { it: 'Classifica i frame: VLAN 10 e 20 → taggati con il rispettivo VLAN ID; native 99 → non taggato.', en: 'Classify the frames: VLAN 10 and 20 → tagged with their VLAN ID; native 99 → untagged.' },
+              { it: 'Ipotizza che il lato remoto abbia native 1 e descrivi la fuga di traffico che ne risulta.', en: 'Assume the remote side has native 1 and describe the resulting traffic leak.' }
+            ],
+            challenge: {
+              it: 'Come mitighi il rischio? Indica due misure sulla native VLAN e sul tagging che eliminano il mismatch e riducono il VLAN hopping.',
+              en: 'How do you mitigate the risk? Give two measures on the native VLAN and tagging that eliminate the mismatch and reduce VLAN hopping.'
+            },
+            solution: [
+              { it: 'Sul trunk: i frame di VLAN 10 e 20 sono taggati 802.1Q con VID 10 e 20; i frame della native VLAN 99 viaggiano senza tag. Il ricevente assegna i frame non taggati alla propria native VLAN.', en: 'On the trunk: VLAN 10 and 20 frames are 802.1Q-tagged with VID 10 and 20; native VLAN 99 frames travel untagged. The receiver assigns untagged frames to its own native VLAN.' },
+              { it: 'Con native 99 su un lato e 1 sull’altro, i frame non taggati inviati come VLAN 99 vengono interpretati come VLAN 1 (e viceversa): traffico che “scavalca” l’isolamento tra le due VLAN.', en: 'With native 99 on one side and 1 on the other, untagged frames sent as VLAN 99 are interpreted as VLAN 1 (and vice versa): traffic that “jumps” the isolation between the two VLANs.' },
+              { it: 'Mitigazione: fissare la stessa native VLAN su entrambi i lati, sceglierla come VLAN inutilizzata e dedicata, e idealmente forzare il tagging di tutte le VLAN sul trunk così nessun frame viaggia senza tag.', en: 'Mitigation: set the same native VLAN on both sides, pick it as an unused dedicated VLAN, and ideally force tagging of all VLANs on the trunk so no frame travels untagged.' }
+            ],
+            selfCheck: [
+              { it: 'So dire, per ogni VLAN del trunk, se i suoi frame sono taggati o no e perché.', en: 'I can say, for each VLAN on the trunk, whether its frames are tagged or not and why.' },
+              { it: 'So spiegare la fuga di traffico di un native VLAN mismatch e come eliminarla.', en: 'I can explain the traffic leak of a native VLAN mismatch and how to eliminate it.' }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'stp-loops',
+        title: { it: 'Spanning Tree: evitare i loop di livello 2', en: 'Spanning Tree: preventing layer-2 loops' },
+        objectives: [
+          { it: 'Spiegare perché un loop di livello 2 è catastrofico e come STP costruisce una topologia senza anelli.', en: 'Explain why a layer-2 loop is catastrophic and how STP builds a loop-free topology.' },
+          { it: 'Determinare la root bridge e i ruoli delle porte in base a Bridge ID e costo del percorso.', en: 'Determine the root bridge and the port roles based on Bridge ID and path cost.' }
+        ],
+        prerequisites: [
+          { it: 'Conoscere trunk e come gli switch inoltrano e inondano i frame.', en: 'Know trunks and how switches forward and flood frames.' }
+        ],
+        theory: [
+          { it: 'Il frame Ethernet non ha un campo TTL: in una rete commutata con anelli fisici, un broadcast verrebbe inondato all’infinito, moltiplicandosi a ogni giro — una broadcast storm che satura la rete in pochi secondi. Lo Spanning Tree Protocol (IEEE 802.1D) previene i loop bloccando selettivamente alcune porte, così che resti attivo un solo percorso logico tra due punti qualsiasi.', en: 'The Ethernet frame has no TTL field: in a switched network with physical loops, a broadcast would be flooded forever, multiplying on every lap — a broadcast storm that saturates the network in seconds. The Spanning Tree Protocol (IEEE 802.1D) prevents loops by selectively blocking some ports, so only one logical path remains active between any two points.' },
+          { it: 'STP elegge prima la root bridge: vince lo switch con il Bridge ID più basso, dato da priorità (multipli di 4096, con l’extended system ID che somma il numero di VLAN) seguita dall’indirizzo MAC. Ogni switch non-root sceglie una root port (la porta col costo di percorso verso la root più basso) e, per ogni segmento, si elegge una designated port; le altre porte vanno in blocco.', en: 'STP first elects the root bridge: the switch with the lowest Bridge ID wins, given by priority (multiples of 4096, with the extended system ID adding the VLAN number) followed by the MAC address. Each non-root switch chooses a root port (the port with the lowest path cost toward the root) and, per segment, a designated port is elected; the other ports are blocked.' },
+          { it: 'A parità di costo i criteri sono, in ordine: Bridge ID del mittente più basso, poi Port ID del mittente più basso. Le porte attraversano gli stati blocking → listening → learning → forwarding; RSTP (802.1w) accelera la convergenza con gli stati discarding/learning/forwarding. Su una porta di accesso conviene attivare PortFast (va subito in forwarding) e BPDU Guard (spegne la porta se riceve BPDU, segno di uno switch non autorizzato).', en: 'On a cost tie the criteria are, in order: lowest sender Bridge ID, then lowest sender Port ID. Ports go through the states blocking → listening → learning → forwarding; RSTP (802.1w) speeds up convergence with the discarding/learning/forwarding states. On an access port it is best to enable PortFast (it goes straight to forwarding) and BPDU Guard (it shuts the port down if it receives BPDUs, a sign of an unauthorised switch).' }
+        ],
+        example: {
+          it: 'Con tre switch in anello, STP elegge come root quello con Bridge ID più basso; ogni altro switch tiene una sola root port verso la root e blocca la porta che chiuderebbe l’anello, lasciando una topologia ad albero senza loop. Se un collegamento cade, la porta bloccata può riattivarsi e la rete riconverge.', en: 'With three switches in a ring, STP elects as root the one with the lowest Bridge ID; every other switch keeps a single root port toward the root and blocks the port that would close the ring, leaving a loop-free tree topology. If a link fails, the blocked port can reactivate and the network reconverges.' }
+        ,
+        commonMistakes: [
+          { it: 'Pensare che la root sia lo switch “più potente”: è semplicemente quello con il Bridge ID più basso (priorità, poi MAC). Si controlla abbassando la priorità sullo switch voluto.', en: 'Thinking the root is the “most powerful” switch: it is simply the one with the lowest Bridge ID (priority, then MAC). You control it by lowering the priority on the switch you want.' },
+          { it: 'Confondere la priorità configurata con il Bridge ID effettivo: con l’extended system ID la priorità reale include il numero di VLAN e va in multipli di 4096.', en: 'Confusing the configured priority with the effective Bridge ID: with the extended system ID the real priority includes the VLAN number and comes in multiples of 4096.' },
+          { it: 'Attivare PortFast su una porta trunk verso un altro switch: va usato solo sulle porte di accesso verso host, altrimenti si rischia proprio il loop che STP deve evitare.', en: 'Enabling PortFast on a trunk port toward another switch: it must be used only on access ports toward hosts, otherwise you risk exactly the loop STP is meant to avoid.' }
+        ],
+        lab: 'access',
+        guidedLabs: [
+          {
+            id: 'gl-stp-roles',
+            title: { it: 'Eleggi la root e assegna i ruoli delle porte', en: 'Elect the root and assign port roles' },
+            difficulty: 'advanced',
+            lab: 'access',
+            scenario: {
+              it: 'Il laboratorio «Accesso alla rete» esegue l’algoritmo STP su una maglia di quattro switch con anelli fisici, mostrando root, root port, designated port e il criterio che ha deciso ogni porta, con tabella dei costi short o long.',
+              en: 'The “Network access” lab runs the STP algorithm on a four-switch mesh with physical loops, showing the root, root ports, designated ports and the criterion that decided each port, with the short or long cost table.'
+            },
+            task: {
+              it: 'Prevedi quale switch diventa root e, per uno switch non-root, quale porta sarà root port e perché; poi cambia la tabella dei costi da short a long e osserva se la scelta cambia.',
+              en: 'Predict which switch becomes root and, for a non-root switch, which port will be the root port and why; then switch the cost table from short to long and observe whether the choice changes.'
+            },
+            steps: [
+              { it: 'Apri «Accesso alla rete» e avvia la convergenza STP sulla maglia di switch.', en: 'Open “Network access” and start STP convergence on the switch mesh.' },
+              { it: 'Identifica la root confrontando i Bridge ID (priorità, poi MAC): vince il più basso.', en: 'Identify the root by comparing Bridge IDs (priority, then MAC): the lowest wins.' },
+              { it: 'Per uno switch non-root, somma i costi lungo ogni percorso verso la root e scegli la porta col costo totale minore; a parità usa Bridge ID e poi Port ID del mittente.', en: 'For a non-root switch, add the costs along each path to the root and pick the port with the lower total cost; on a tie use the sender Bridge ID then Port ID.' },
+              { it: 'Cambia la tabella dei costi (short 802.1D ↔ long 802.1t) e verifica se la root port cambia.', en: 'Switch the cost table (short 802.1D ↔ long 802.1t) and check whether the root port changes.' }
+            ],
+            challenge: {
+              it: 'Vuoi forzare come root un altro switch: quale valore di priorità imposti e perché i multipli di 4096? Che effetto ha sulla scelta delle root port?',
+              en: 'You want to force a different switch as root: what priority value do you set and why multiples of 4096? What effect does it have on the root-port choices?'
+            },
+            solution: [
+              { it: 'La root è lo switch con Bridge ID più basso: a parità di priorità decide il MAC più basso. Per uno switch non-root la root port è quella col costo cumulativo verso la root minore; a parità di costo vince il Bridge ID del mittente più basso, poi il Port ID più basso.', en: 'The root is the switch with the lowest Bridge ID: on equal priority the lowest MAC decides. For a non-root switch the root port is the one with the lowest cumulative cost to the root; on a cost tie the lowest sender Bridge ID wins, then the lowest sender Port ID.' },
+              { it: 'Cambiando da short a long i costi per porta aumentano (es. 1 Gbps: 4 in short, 20000 in long): i rapporti tra percorsi possono cambiare e quindi anche la root port, se prima due percorsi erano vicini.', en: 'Switching from short to long raises the per-port costs (e.g. 1 Gbps: 4 in short, 20000 in long): the ratios between paths can change and so can the root port, if two paths were previously close.' },
+              { it: 'Sfida: per forzare la root si abbassa la priorità (es. a 4096 o 0) sullo switch voluto; la priorità va in multipli di 4096 perché i 12 bit bassi del campo sono occupati dall’extended system ID (il VLAN). Una root diversa ricalcola i costi e può spostare le root port degli altri switch.', en: 'Challenge: to force the root you lower the priority (e.g. to 4096 or 0) on the chosen switch; priority comes in multiples of 4096 because the low 12 bits of the field are taken by the extended system ID (the VLAN). A different root recomputes costs and can move the other switches’ root ports.' }
+            ],
+            selfCheck: [
+              { it: 'So motivare l’elezione della root e ogni ruolo di porta citando il criterio applicato (costo, Bridge ID, Port ID).', en: 'I can justify the root election and each port role by citing the criterion applied (cost, Bridge ID, Port ID).' },
+              { it: 'Le mie previsioni coincidono con i ruoli e i criteri mostrati dal laboratorio, in short e in long.', en: 'My predictions match the roles and criteria shown by the lab, in both short and long.' }
+            ]
+          }
+        ]
+      }
+    ]
   }
 ];
