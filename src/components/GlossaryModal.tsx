@@ -48,7 +48,7 @@ export default function GlossaryModal({
         <section
           aria-labelledby={titleId}
           aria-describedby={descriptionId}
-          className="relative bg-white rounded-xl border border-slate-200 flex flex-col overflow-hidden w-full h-[82vh] min-h-[600px]"
+          className="relative flex h-[82dvh] max-h-[48rem] min-h-0 w-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-white"
         >
           {children}
         </section>
@@ -63,7 +63,7 @@ export default function GlossaryModal({
         initialFocusRef={searchRef}
         overlayClassName="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6"
         backdropClassName="absolute inset-0 bg-slate-900/60 backdrop-blur-md"
-        panelClassName="relative bg-white rounded-xl shadow-lg z-[101] flex flex-col overflow-hidden w-full max-w-2xl h-auto max-h-[85vh] border border-slate-100"
+        panelClassName="relative z-[101] flex h-auto max-h-[calc(100dvh-2rem)] min-h-0 w-full max-w-2xl flex-col overflow-hidden rounded-xl border border-slate-100 bg-white shadow-lg"
       >
         {children}
       </ModalDialog>
@@ -73,7 +73,7 @@ export default function GlossaryModal({
   return renderWrapper(
     <>
       {/* Header */}
-      <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-white sticky top-0">
+      <div className="sticky top-0 flex shrink-0 items-center justify-between border-b border-slate-100 bg-white p-6">
         <div className="flex items-center gap-3">
           <div className="p-2 bg-blue-50 rounded-lg">
             <BookOpen aria-hidden="true" className="w-5 h-5 text-blue-600" />
@@ -100,7 +100,7 @@ export default function GlossaryModal({
       </div>
 
       {/* Search Bar */}
-      <div className="px-6 py-4 bg-slate-50 border-b border-slate-100">
+      <div className="shrink-0 border-b border-slate-100 bg-slate-50 px-6 py-4">
         <div className="relative">
           <Search aria-hidden="true" className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
           <input
@@ -136,7 +136,10 @@ export default function GlossaryModal({
       </div>
 
       {/* Terms List */}
-      <div className="flex-1 overflow-y-auto p-6 bg-white">
+      <div
+        data-testid="glossary-terms-scroll"
+        className="min-h-0 flex-1 overflow-y-auto overscroll-contain bg-white p-6"
+      >
         {filteredTerms.length > 0 ? (
           <dl className="space-y-4">
             {filteredTerms.map((item) => (
@@ -161,7 +164,7 @@ export default function GlossaryModal({
       </div>
 
       {/* Footer */}
-      <div className="p-4 border-t border-slate-100 text-center bg-slate-50/30">
+      <div className="shrink-0 border-t border-slate-100 bg-slate-50/30 p-4 text-center">
         <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
           OSI Model Educational Tool • 2024
         </p>

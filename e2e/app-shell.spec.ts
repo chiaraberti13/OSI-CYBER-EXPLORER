@@ -250,3 +250,43 @@ test.describe('WCAG reflow and touch targets', () => {
     expect(reflow.content).toBeLessThanOrEqual(reflow.viewport);
   });
 });
+
+test.describe('glossary on a short landscape viewport', () => {
+  test.use({ viewport: { width: 740, height: 320 } });
+
+  test('keeps the glossary bounded and scrolls terms internally (UX-10)', async ({ page }) => {
+    await page.goto('/#/glossary');
+
+    const glossary = page.getByRole('region', { name: 'Glossario di Rete' });
+    const terms = page.getByTestId('glossary-terms-scroll');
+    await expect(glossary).toBeVisible();
+    await expect(terms).toBeVisible();
+
+    const layout = await glossary.evaluate((section) => {
+      const scrollRegion = section.querySelector<HTMLElement>('[data-testid="glossary-terms-scroll"]');
+      if (!scrollRegion) throw new Error('Glossary scroll region not found');
+
+      return {
+        sectionHeight: section.getBoundingClientRect().height,
+        sectionOverflow: getComputedStyle(section).overflow,
+        listClientHeight: scrollRegion.clientHeight,
+        listScrollHeight: scrollRegion.scrollHeight,
+        listOverflowY: getComputedStyle(scrollRegion).overflowY,
+        pageClientWidth: document.documentElement.clientWidth,
+        pageScrollWidth: document.documentElement.scrollWidth
+      };
+    });
+
+    // The previous 600 px minimum was almost twice this viewport's height.
+    expect(layout.sectionHeight).toBeLessThan(320);
+    expect(layout.sectionOverflow).toBe('hidden');
+    expect(layout.listOverflowY).toBe('auto');
+    expect(layout.listScrollHeight).toBeGreaterThan(layout.listClientHeight);
+    expect(layout.pageScrollWidth).toBeLessThanOrEqual(layout.pageClientWidth);
+
+    await terms.evaluate((element) => {
+      element.scrollTop = element.scrollHeight;
+    });
+    await expect.poll(() => terms.evaluate((element) => element.scrollTop)).toBeGreaterThan(0);
+  });
+});
