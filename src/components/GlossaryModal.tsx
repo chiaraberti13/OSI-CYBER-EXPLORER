@@ -19,6 +19,7 @@ export default function GlossaryModal({
   const descriptionId = useId();
   const statusId = useId();
   const searchRef = useRef<HTMLInputElement>(null);
+  const Title = inline ? 'h1' : 'h2';
 
   const filteredTerms = GLOSSARY_TERMS.filter(
     (item) =>
@@ -78,9 +79,9 @@ export default function GlossaryModal({
             <BookOpen aria-hidden="true" className="w-5 h-5 text-blue-600" />
           </div>
           <div>
-            <h2 id={titleId} className="text-lg font-semibold text-slate-900 uppercase tracking-tighter">
+            <Title id={titleId} className="text-lg font-semibold text-slate-900 uppercase tracking-tighter">
               {language === 'en' ? 'Network Glossary' : 'Glossario di Rete'}
-            </h2>
+            </Title>
             <p id={descriptionId} className="text-xs text-slate-400 font-medium italic">
               {language === 'en' ? 'Key concepts of the OSI world' : 'Concetti chiave del mondo OSI'}
             </p>

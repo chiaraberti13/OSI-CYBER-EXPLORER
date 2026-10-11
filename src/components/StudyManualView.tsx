@@ -42,7 +42,7 @@ export default function StudyManualView() {
           {difficultyLabel[lab.difficulty]}
         </span>
       </div>
-      <h5 className="mt-2 text-[14px] font-semibold text-slate-900">{lab.title[language]}</h5>
+      <h4 className="mt-2 text-[14px] font-semibold text-slate-900">{lab.title[language]}</h4>
 
       <p className="mt-2 text-[13px] text-slate-600">
         <span className="font-semibold text-slate-700">{t.scenario}: </span>
@@ -100,9 +100,9 @@ export default function StudyManualView() {
   return (
     <div className="mx-auto max-w-3xl">
       <header className="mb-6">
-        <h2 id={headingId} className="text-xl font-semibold tracking-tight text-slate-900">
+        <h1 id={headingId} className="text-xl font-semibold tracking-tight text-slate-900">
           {t.heading}
-        </h2>
+        </h1>
         <p className="mt-1 text-sm text-slate-500">{t.intro}</p>
         <p className="mt-2 text-[12px] font-mono text-slate-400">
           {stats.chapters} {t.chapters} · {stats.topics} {t.topics} · {stats.guidedLabs} {t.guidedLabs}
@@ -134,14 +134,14 @@ export default function StudyManualView() {
 
       <article aria-labelledby={chapterTitleId}>
         <span className="eyebrow">{certLabel[chapter.cert]}</span>
-        <h3 id={chapterTitleId} className="mt-1 text-lg font-semibold text-slate-900">
+        <h2 id={chapterTitleId} className="mt-1 text-lg font-semibold text-slate-900">
           {chapter.title[language]}
-        </h3>
+        </h2>
         <p className="mt-1 text-sm text-slate-600">{chapter.summary[language]}</p>
 
         {chapter.topics.map((topic) => (
           <section key={topic.id} className="mt-8 border-t border-slate-200/70 pt-6">
-            <h4 className="text-[15px] font-semibold text-slate-900">{topic.title[language]}</h4>
+            <h3 className="text-[15px] font-semibold text-slate-900">{topic.title[language]}</h3>
 
             <div className="mt-3 flex items-start gap-1.5">
               <Target aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-indigo-600" />

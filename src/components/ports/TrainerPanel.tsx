@@ -137,9 +137,9 @@ export default function TrainerPanel({
 
                       <div className="space-y-2 text-left">
                         <div>
-                          <h4 className="text-[9px] font-semibold text-slate-400 uppercase tracking-wider block">
+                          <h2 className="text-[9px] font-semibold text-slate-400 uppercase tracking-wider block">
                             {language === 'en' ? 'Service Name' : 'Nome Servizio'}
-                          </h4>
+                          </h2>
                           <p className="text-xs font-semibold text-slate-800 leading-tight">
                             {flashcardsList[currentFlashcardIdx]?.service} &bull;{' '}
                             <span className="text-slate-400 text-[11px] font-medium font-sans">
@@ -149,9 +149,9 @@ export default function TrainerPanel({
                         </div>
 
                         <div>
-                          <h4 className="text-[9px] font-semibold text-slate-400 uppercase tracking-wider block">
+                          <h2 className="text-[9px] font-semibold text-slate-400 uppercase tracking-wider block">
                             {language === 'en' ? 'Base Description' : 'Descrizione di Base'}
-                          </h4>
+                          </h2>
                           <p className="text-[11px] text-slate-600 leading-normal font-semibold">
                             {flashcardsList[currentFlashcardIdx]?.description[language]}
                           </p>

@@ -40,11 +40,11 @@ export default function SecureAccessPanel({
             <Lock className="w-3 h-3" />
             {language === 'en' ? 'Enterprise Access Integrity' : 'Integrità degli Accessi Aziendali'}
           </span>
-          <h3 className="text-2xl font-semibold uppercase tracking-tight leading-none text-white">
+          <h2 className="text-2xl font-semibold uppercase tracking-tight leading-none text-white">
             {language === 'en'
               ? 'AAA Secure Framework & Virtual Tunneling'
               : 'Framework Sicuro AAA & Tunneling Virtuale'}
-          </h3>
+          </h2>
           <p className="text-slate-300 text-[12.5px] leading-relaxed">
             {language === 'en'
               ? 'Authentication frameworks, AAA servers, and secure overlay channels protect network boundaries. Learn how EAP, RADIUS, TACACS+, and VPN technologies establish trusted tunnels and audit administrative sessions.'
@@ -105,11 +105,11 @@ export default function SecureAccessPanel({
           >
             {/* EAP Overview */}
             <div className="bg-white border border-slate-200/80 rounded-lg p-5 space-y-3">
-              <h4 className="font-extrabold text-slate-800 text-sm uppercase tracking-tight">
+              <h3 className="font-extrabold text-slate-800 text-sm uppercase tracking-tight">
                 {language === 'en'
                   ? 'Extensible Authentication Protocol (EAP)'
                   : 'Extensible Authentication Protocol (EAP)'}
-              </h4>
+              </h3>
               <p className="text-xs text-slate-500 leading-relaxed">
                 {language === 'en'
                   ? 'EAP is an authentication framework that supports multiple methods. In 802.1X, it carries authentication between the supplicant and the authenticator, which normally communicates with a back-end RADIUS server.'
@@ -179,13 +179,13 @@ export default function SecureAccessPanel({
                 {/* Detailed explanation */}
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <h5 className="font-semibold text-slate-800 text-md uppercase">
+                    <h4 className="font-semibold text-slate-800 text-md uppercase">
                       {selectedEap === 'tls' && 'EAP-TLS (Certificates Verified)'}
                       {selectedEap === 'peap' && 'EAP-PEAP (Protected EAP)'}
                       {selectedEap === 'ttls' && 'EAP-TTLS (Tunneled TLS)'}
                       {selectedEap === 'fast' && 'EAP-FAST (Cisco Secure)'}
                       {selectedEap === 'md5' && 'EAP-MD5 (Vulnerable Legacy)'}
-                    </h5>
+                    </h4>
                     <span
                       className={`text-xs font-bold px-2.5 py-1 rounded-full ${
                         selectedEap === 'md5'
@@ -356,11 +356,11 @@ export default function SecureAccessPanel({
           >
             {/* AAA Overview info */}
             <div className="bg-white border border-slate-200/80 rounded-lg p-5 space-y-3">
-              <h4 className="font-extrabold text-slate-800 text-sm uppercase tracking-tight">
+              <h3 className="font-extrabold text-slate-800 text-sm uppercase tracking-tight">
                 {language === 'en'
                   ? 'Centralized Network Control: RADIUS vs TACACS+'
                   : 'Controllo Centralizzato degli Accessi: RADIUS vs TACACS+'}
-              </h4>
+              </h3>
               <p className="text-xs text-slate-500 leading-relaxed">
                 {language === 'en'
                   ? 'RADIUS and TACACS+ are both AAA (Authentication, Authorization, Accounting) protocols used to manage network access. However, they were built for different scopes: RADIUS is engineered for user/client access at the perimeter, while TACACS+ is crafted for fine-grained administrative access controls directly on network hardware.'
@@ -375,7 +375,7 @@ export default function SecureAccessPanel({
                 <span className="text-xs font-semibold text-blue-600 font-mono tracking-wider block uppercase">
                   RADIUS
                 </span>
-                <h5 className="font-extrabold text-slate-800 text-sm">Remote Authentication Dial-In User Service</h5>
+                <h4 className="font-extrabold text-slate-800 text-sm">Remote Authentication Dial-In User Service</h4>
 
                 <ul className="space-y-2.5 text-xs text-slate-600">
                   <li className="flex items-start gap-2">
@@ -422,9 +422,9 @@ export default function SecureAccessPanel({
                 <span className="text-xs font-semibold text-emerald-600 font-mono tracking-wider block uppercase">
                   TACACS+
                 </span>
-                <h5 className="font-extrabold text-slate-800 text-sm">
+                <h4 className="font-extrabold text-slate-800 text-sm">
                   Terminal Access Controller Access-Control System Plus
-                </h5>
+                </h4>
 
                 <ul className="space-y-2.5 text-xs text-slate-600">
                   <li className="flex items-start gap-2">
@@ -471,10 +471,10 @@ export default function SecureAccessPanel({
             {/* Interactive Diagnostic AAA Console simulator */}
             <div className="bg-slate-900 border border-slate-950 rounded-lg p-5 text-slate-300 space-y-4">
               <div className="flex justify-between items-center border-b border-slate-800 pb-2">
-                <h5 className="font-mono text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5 animate-pulse">
+                <h4 className="font-mono text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5 animate-pulse">
                   <Activity className="w-4 h-4 text-emerald-400" />
                   {language === 'en' ? 'AAA Active Protocol Logger' : 'Analizzatore Real-Time Auditing AAA'}
-                </h5>
+                </h4>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => setSelectedAaaSim('radius')}
@@ -570,11 +570,11 @@ export default function SecureAccessPanel({
           >
             {/* VPN Overview card */}
             <div className="bg-white border border-slate-200/80 rounded-lg p-5 space-y-3">
-              <h4 className="font-extrabold text-slate-800 text-sm uppercase tracking-tight">
+              <h3 className="font-extrabold text-slate-800 text-sm uppercase tracking-tight">
                 {language === 'en'
                   ? 'Overlay Tunneling Security: VPN, IPsec & DTLS'
                   : "La Sicurezza dell'Overlay Tunneling: VPN, IPsec & DTLS"}
-              </h4>
+              </h3>
               <p className="text-xs text-slate-500 leading-relaxed">
                 {language === 'en'
                   ? 'A Virtual Private Network (VPN) creates a secure logical overlay network on top of physical networks (like the internet). IPsec and DTLS are the standard cryptographic engines that make VPN tunnels secure against sniffing and manipulation.'
@@ -627,7 +627,7 @@ export default function SecureAccessPanel({
               >
                 {/* Header description */}
                 <div className="space-y-2">
-                  <h5 className="font-semibold text-slate-800 text-sm uppercase">
+                  <h4 className="font-semibold text-slate-800 text-sm uppercase">
                     {selectedVpnMode === 'vpn-overview' &&
                       (language === 'en'
                         ? 'VPN Overview & Cryptographic Tunneling'
@@ -635,7 +635,7 @@ export default function SecureAccessPanel({
                     {selectedVpnMode === 'ipsec-tunnel' && 'IPsec Tunnel Mode (Gateway-to-Gateway)'}
                     {selectedVpnMode === 'ipsec-transport' && 'IPsec Transport Mode (Host-to-Host)'}
                     {selectedVpnMode === 'dtls' && 'DTLS (Datagram Transport Layer Security)'}
-                  </h5>
+                  </h4>
                   <p className="text-xs text-slate-500 leading-relaxed">
                     {selectedVpnMode === 'vpn-overview' &&
                       (language === 'en'

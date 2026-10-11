@@ -44,7 +44,7 @@ export default function PortsPanel({
             </span>
             <Lock className="w-3.5 h-3.5 text-amber-500" />
           </div>
-          <h4 className="font-mono text-xs font-bold text-slate-700">0 - 1023</h4>
+          <h2 className="font-mono text-xs font-bold text-slate-700">0 - 1023</h2>
           <p className="text-[11px] text-slate-500 mt-1 lines-clamp-2">
             {language === 'en'
               ? 'Reserved for core system administration and essential transport daemons (HTTP, DNS, SSH, SMTP).'
@@ -66,7 +66,7 @@ export default function PortsPanel({
             </span>
             <Unlock className="w-3.5 h-3.5 text-blue-500" />
           </div>
-          <h4 className="font-mono text-xs font-bold text-slate-700">1024 - 49151</h4>
+          <h2 className="font-mono text-xs font-bold text-slate-700">1024 - 49151</h2>
           <p className="text-[11px] text-slate-500 mt-1 lines-clamp-2">
             {language === 'en'
               ? 'Assigned to user processes, databases (MySQL, Redis, PostgreSQL), third-party programs or local web servers.'
@@ -88,7 +88,7 @@ export default function PortsPanel({
             </span>
             <Activity className="w-3.5 h-3.5 text-emerald-500" />
           </div>
-          <h4 className="font-mono text-xs font-bold text-slate-700">49152 - 65535</h4>
+          <h2 className="font-mono text-xs font-bold text-slate-700">49152 - 65535</h2>
           <p className="text-[11px] text-slate-500 mt-1 lines-clamp-2">
             {language === 'en'
               ? 'Ephemeral sockets dynamically chosen by the host OS during client connection initiation.'
@@ -174,9 +174,9 @@ export default function PortsPanel({
           <div className="bg-emerald-50/50 border border-emerald-100 rounded-lg p-4 flex gap-4 items-start mb-4">
             <Activity className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
             <div>
-              <h5 className="font-bold text-xs text-emerald-800 uppercase tracking-wider">
+              <h2 className="font-bold text-xs text-emerald-800 uppercase tracking-wider">
                 {language === 'en' ? 'Understanding Dynamic Range' : 'Comprensione della Banda Dinamica'}
-              </h5>
+              </h2>
               <p className="text-[11px] text-emerald-700 leading-relaxed mt-1">
                 {language === 'en'
                   ? 'This range (49152 to 65535) does not host pre-assigned application daemons. When you open a website, your computer chooses a dynamic port from this exact block as the "Source Port" (Porta Sorgente) to route incoming server replies back to your browser process.'
@@ -302,9 +302,9 @@ export default function PortsPanel({
         ) : (
           <div className="text-center py-20 bg-white rounded-xl border border-dashed border-slate-200">
             <Hash className="w-12 h-12 text-slate-200 mx-auto mb-3" />
-            <h4 className="font-bold text-slate-700 text-sm">
+            <h2 className="font-bold text-slate-700 text-sm">
               {language === 'en' ? 'No ports match your search' : 'Nessuna corrispondenza trovata'}
-            </h4>
+            </h2>
             <p className="text-xs text-slate-400 mt-1 max-w-md mx-auto">
               {language === 'en'
                 ? 'Try searching by numeric port (e.g., 22), protocol abbreviation (e.g., SSH), or search keyword.'

@@ -18,9 +18,9 @@ afterEach(() => {
 describe('StudyManualView (EDU-01)', () => {
   it('renders the manual heading, the OSI chapter and a topic', () => {
     render(<StudyManualView />);
-    expect(screen.getByRole('heading', { level: 2, name: 'Manuale di studio' })).toBeTruthy();
-    expect(screen.getByRole('heading', { level: 3, name: /Il modello OSI/ })).toBeTruthy();
-    expect(screen.getByRole('heading', { level: 4, name: /sette livelli/ })).toBeTruthy();
+    expect(screen.getByRole('heading', { level: 1, name: 'Manuale di studio' })).toBeTruthy();
+    expect(screen.getByRole('heading', { level: 2, name: /Il modello OSI/ })).toBeTruthy();
+    expect(screen.getByRole('heading', { level: 3, name: /sette livelli/ })).toBeTruthy();
   });
 
   it('offers a guided lab with a revealable solution and a link into the interactive lab', () => {
@@ -39,8 +39,8 @@ describe('StudyManualView (EDU-01)', () => {
   it('localises the manual to English', () => {
     useStore.setState({ language: 'en' });
     render(<StudyManualView />);
-    expect(screen.getByRole('heading', { level: 2, name: 'Study manual' })).toBeTruthy();
-    expect(screen.getByRole('heading', { level: 3, name: /OSI model/ })).toBeTruthy();
+    expect(screen.getByRole('heading', { level: 1, name: 'Study manual' })).toBeTruthy();
+    expect(screen.getByRole('heading', { level: 2, name: /OSI model/ })).toBeTruthy();
     // Guided-lab disclosure and lab link are localised too.
     expect(screen.getAllByText('Show the commented solution').length).toBeGreaterThan(0);
   });
@@ -53,7 +53,7 @@ describe('StudyManualView (EDU-01)', () => {
     const secondChapter = within(chapterNav).getByRole('button', { name: /Ethernet/ });
     await user.click(secondChapter);
 
-    expect(screen.getByRole('heading', { level: 3, name: /Ethernet/ })).toBeTruthy();
+    expect(screen.getByRole('heading', { level: 2, name: /Ethernet/ })).toBeTruthy();
     expect(secondChapter.getAttribute('aria-current')).toBe('true');
   });
 

@@ -148,9 +148,9 @@ export default function ProtocolsPanel({
         ) : (
           <div className="text-center py-20 bg-white rounded-xl border border-dashed border-slate-200">
             <Layers className="w-12 h-12 text-slate-200 mx-auto mb-3" />
-            <h4 className="font-bold text-slate-700 text-sm">
+            <h2 className="font-bold text-slate-700 text-sm">
               {language === 'en' ? 'No protocols match your search' : 'Nessun protocollo trovato'}
-            </h4>
+            </h2>
             <p className="text-xs text-slate-400 mt-1 max-w-md mx-auto">
               {language === 'en'
                 ? 'Try searching by name, description key terms, or OSI layer acronym.'

@@ -39,6 +39,7 @@ export default function PortsExplorer({
   const [selectedEap, setSelectedEap] = useState<EapMethod>('tls');
   const [selectedAaaSim, setSelectedAaaSim] = useState<AaaProtocol>('radius');
   const [selectedVpnMode, setSelectedVpnMode] = useState<VpnMode>('vpn-overview');
+  const Title = inline ? 'h1' : 'h2';
 
   // Port explorer state
   const [flashcardsList, setFlashcardsList] = useState<PortInfo[]>([]);
@@ -98,9 +99,9 @@ export default function PortsExplorer({
             <Hash className="w-5 h-5 text-indigo-600" />
           </div>
           <div>
-            <h2 className="text-lg font-semibold text-slate-900 uppercase tracking-tighter">
+            <Title className="text-lg font-semibold text-slate-900 uppercase tracking-tighter">
               {language === 'en' ? 'Network Ports & Protocols' : 'Porte & Protocolli di Rete'}
-            </h2>
+            </Title>
             <p className="text-xs text-slate-400 font-medium">
               {language === 'en'
                 ? 'IANA numeric bands, protocol associations, standard definitions and security'

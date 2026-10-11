@@ -1,4 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
+import { VIEW_ORDER } from '../src/content/viewRegistry';
 
 /**
  * ENG-12 smoke tests for the application shell: first load, the language toggle,
@@ -9,8 +10,8 @@ import { test, expect, type Page } from '@playwright/test';
 
 async function openApp(page: Page) {
   await page.goto('/');
-  // The persistent brand heading proves the shell mounted.
-  await expect(page.getByRole('heading', { level: 1, name: 'OSI Cyber Explorer' })).toBeVisible();
+  // The view heading proves both the shell and the default lazy route mounted.
+  await expect(page.getByRole('heading', { level: 1, name: 'Pila OSI' })).toBeVisible();
 }
 
 test.describe('application shell', () => {
@@ -91,7 +92,7 @@ test.describe('application shell', () => {
   test('the study manual opens, reveals a solution and links into a lab (EDU-01)', async ({ page }) => {
     await page.goto('/#/manual');
     await expect(page).toHaveTitle(/Manuale di studio — OSI Cyber Explorer/);
-    await expect(page.getByRole('heading', { level: 2, name: 'Manuale di studio' })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: 'Manuale di studio' })).toBeVisible();
 
     // A guided-lab solution is disclosed on demand.
     const disclosure = page.getByText('Mostra la soluzione commentata').first();
@@ -137,6 +138,24 @@ test.describe('application shell', () => {
     await page.goForward();
     await expect(page).toHaveURL(/#\/fundamentals$/);
     await expect(page.getByRole('heading', { name: 'Pianificatore VLSM' })).toBeVisible();
+  });
+});
+
+test.describe('document heading outline', () => {
+  test('every registered view has exactly one view-owned h1 (UX-09)', async ({ page }) => {
+    await page.goto('/');
+
+    for (const view of VIEW_ORDER) {
+      await page.evaluate((nextView) => {
+        window.location.hash = `/${nextView}`;
+      }, view);
+      await expect(page).toHaveURL(new RegExp(`#/${view}$`));
+
+      const headings = page.locator('main h1, main h2, main h3, main h4, main h5, main h6');
+      await expect(headings.first(), `${view}: the first main heading must be h1`).toHaveJSProperty('tagName', 'H1');
+      await expect(page.locator('main h1'), `${view}: the view must own one main title`).toHaveCount(1);
+      await expect(page.locator('body > div h1'), `${view}: the document must contain one h1`).toHaveCount(1);
+    }
   });
 });
 

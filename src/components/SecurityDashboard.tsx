@@ -102,9 +102,9 @@ export default function SecurityDashboard() {
             <Zap className="w-3.5 h-3.5 text-blue-400" />
             {language === 'en' ? 'Cybersecurity Architecture' : 'Architettura Cyber-Security'}
           </div>
-          <h2 className="text-3xl font-semibold uppercase tracking-tight leading-none text-white">
+          <h1 className="text-3xl font-semibold uppercase tracking-tight leading-none text-white">
             {language === 'en' ? 'IDS & IPS Detection Center' : 'Centro di Ispezione IDS / IPS'}
-          </h2>
+          </h1>
           <p className="text-slate-300 text-[13px] leading-relaxed">
             {language === 'en'
               ? "The defenders' side: which appliances watch the network, where they sit, and the key difference between detecting an attack (IDS) and actively blocking it (IPS). To run attacks and defenses hands-on, use the Attack & Defense Lab."
@@ -141,9 +141,9 @@ export default function SecurityDashboard() {
       {/* Fleet comparison matrix: NIDS, NIPS, HIDS, HIPS, WIDS, WIPS, EDR */}
       <div className="space-y-4">
         <div className="flex flex-col gap-1 border-b border-slate-100 pb-3">
-          <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+          <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
             {language === 'en' ? 'Defense Appliance Comparison' : 'Confronto degli Apparati di Difesa'}
-          </h3>
+          </h2>
           <p className="text-xs text-slate-400">
             {language === 'en'
               ? 'Detection (D) only alerts; Prevention (P) actively blocks. Network, Host and Wireless tools each guard a different scope.'
@@ -164,7 +164,7 @@ export default function SecurityDashboard() {
                   >
                     {sys.title}
                   </span>
-                  <h4 className="font-bold text-slate-800 text-sm mt-2">{sys.fullName}</h4>
+                  <h3 className="font-bold text-slate-800 text-sm mt-2">{sys.fullName}</h3>
                   <p className="text-[10px] font-mono font-bold text-slate-400 uppercase">{sys.nature}</p>
                 </div>
                 {sys.id.startsWith('N') ? (
@@ -193,9 +193,9 @@ export default function SecurityDashboard() {
               {language === 'en' ? 'Hands-on' : 'Pratica'}
             </span>
           </div>
-          <h3 className="text-xl font-semibold tracking-tight">
+          <h2 className="text-xl font-semibold tracking-tight">
             {language === 'en' ? 'Put these defenses to the test' : 'Metti alla prova queste difese'}
-          </h3>
+          </h2>
           <p className="text-slate-300 text-sm leading-relaxed">
             {language === 'en'
               ? 'Every attack and its countermeasure — step by step — now lives in one place: the Attack & Defense Lab. Pick an attack, watch it unfold, and switch the defense on to see it neutralized.'
