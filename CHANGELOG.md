@@ -4,6 +4,9 @@ All notable changes to OSI Cyber Explorer are documented in this file. The proje
 
 ## [Unreleased]
 
+- Study-path landing (UX-14): new visits open the bilingual learning map, which recommends a three-step route from the Study Manual through the OSI model to an IPv4 lab and offers a clear “Continue” action; progress tracking was not added. Direct OSI and other deep links remain available.
+- Percorso iniziale (UX-14): le nuove visite aprono la mappa didattica bilingue, che consiglia un percorso in tre passaggi dal Manuale di studio al modello OSI e a un laboratorio IPv4, con un’azione “Continua” chiara; non è stato aggiunto alcun tracciamento dei progressi. La rotta diretta OSI e gli altri deep link restano disponibili.
+
 - Design system (UX-13): centralized semantic color, typography, radius, and elevation tokens; mapped common pale Tailwind text utilities to darker AA-safe values; applied shared canvas and focus tokens to the page shell. Added a contrast regression check for semantic foregrounds on all light surfaces and documented the design tokens in Italian and English.
 - Design system (UX-13): centralizzati i token semantici di colore, tipografia, raggio e ombra; ricondotte le utility Tailwind testuali più chiare a valori AA più scuri; applicati i token condivisi per sfondo e focus al guscio dell'app. Aggiunto un controllo di regressione del contrasto sui token testuali e tutte le superfici chiare, con documentazione in italiano e inglese.
 - Accessible feedback and validation (UX-12): added a visible bilingual `aria-live` status for simulation start, pause, resume, reset, speed, completion, and interruption; connected invalid controls to nearby alert text with `aria-invalid` and `aria-describedby` across the interactive networking, security, and automation labs. Component and Chromium regressions cover announcements and field-error associations.

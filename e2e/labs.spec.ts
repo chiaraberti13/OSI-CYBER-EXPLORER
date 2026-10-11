@@ -82,7 +82,7 @@ test.describe('interactive labs', () => {
   });
 
   test('opens a lab from the navigation menu', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/#/osi');
     await expect(page.getByRole('heading', { level: 1, name: 'Pila OSI' })).toBeVisible();
 
     await page.getByRole('button', { name: /Percorso CCNA/ }).click();

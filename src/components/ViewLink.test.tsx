@@ -62,6 +62,27 @@ describe('ViewLink', () => {
     expect(useStore.getState().activeView).toBe('osi');
   });
 
+  it('shows a clear Italian study path with working next steps', () => {
+    render(<CurriculumView />);
+    expect(screen.getByRole('heading', { name: 'Da dove iniziare' })).toBeTruthy();
+    expect(screen.getByRole('link', { name: 'Continua con il Manuale di studio' }).getAttribute('href')).toBe(
+      '#/manual'
+    );
+    expect(screen.getByRole('link', { name: 'Esplora la pila OSI' }).getAttribute('href')).toBe('#/osi');
+    expect(screen.getByRole('link', { name: 'Prova il laboratorio IPv4' }).getAttribute('href')).toBe('#/fundamentals');
+    expect(screen.getByText(/non salva progressi/i)).toBeTruthy();
+  });
+
+  it('localizes the starting path and keeps destinations available in English', () => {
+    useStore.setState({ language: 'en' });
+    render(<CurriculumView />);
+    expect(screen.getByRole('heading', { name: 'Where to start' })).toBeTruthy();
+    expect(screen.getByRole('link', { name: 'Continue with the Study Manual' }).getAttribute('href')).toBe('#/manual');
+    expect(screen.getByRole('link', { name: 'Explore the OSI stack' }).getAttribute('href')).toBe('#/osi');
+    expect(screen.getByRole('link', { name: 'Try the IPv4 lab' }).getAttribute('href')).toBe('#/fundamentals');
+    expect(screen.getByText(/Progress is not saved/i)).toBeTruthy();
+  });
+
   it('makes every curriculum and blueprint destination a real link', () => {
     render(<CurriculumView />);
     const hashes = screen.getAllByRole('link').map((link) => link.getAttribute('href'));
@@ -69,6 +90,10 @@ describe('ViewLink', () => {
       [
         ...Object.values(DOMAIN_LAB_VIEWS).map((view) => `#/${view}`),
         '#/coverage',
+        '#/manual',
+        '#/manual',
+        '#/osi',
+        '#/fundamentals',
         ...CCNA_BLUEPRINT_TOPICS.flatMap((entry) => entry.destinations.map((view) => `#/${view}`)),
         CCNA_BLUEPRINT.source.url
       ].sort()

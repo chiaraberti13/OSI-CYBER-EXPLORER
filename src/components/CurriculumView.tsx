@@ -54,6 +54,87 @@ export default function CurriculumView() {
         </div>
       </header>
 
+      <section
+        aria-labelledby="start-path-title"
+        className="rounded-xl border border-indigo-200 bg-indigo-50/70 p-5 md:p-6"
+      >
+        <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+          <div className="max-w-2xl space-y-2">
+            <p className="eyebrow text-indigo-700">{language === 'it' ? 'Percorso consigliato' : 'Recommended path'}</p>
+            <h2 id="start-path-title" className="text-lg font-semibold text-slate-900">
+              {language === 'it' ? 'Da dove iniziare' : 'Where to start'}
+            </h2>
+            <p className="text-sm leading-relaxed text-slate-700">
+              {language === 'it'
+                ? 'Se stai iniziando, segui questi tre passaggi: prima costruisci le basi, poi osserva come viaggiano i dati e infine prova un laboratorio guidato.'
+                : 'If you are new to the topic, follow these three steps: build the foundations, see how data moves, then try a guided lab.'}
+            </p>
+          </div>
+          <ViewLink
+            view="manual"
+            className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-lg bg-indigo-700 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-indigo-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
+          >
+            {language === 'it' ? 'Continua con il Manuale di studio' : 'Continue with the Study Manual'}
+          </ViewLink>
+        </div>
+
+        <ol className="mt-5 grid gap-3 md:grid-cols-3">
+          <li className="rounded-lg border border-indigo-100 bg-white p-4">
+            <p className="text-xs font-semibold uppercase tracking-wide text-indigo-700">
+              {language === 'it' ? 'Passaggio 1 · Basi' : 'Step 1 · Foundations'}
+            </p>
+            <p className="mt-2 text-sm leading-relaxed text-slate-700">
+              {language === 'it'
+                ? 'Leggi il Manuale di studio e segui gli esempi.'
+                : 'Read the Study Manual and follow its examples.'}
+            </p>
+            <ViewLink
+              view="manual"
+              className="mt-3 inline-flex min-h-11 items-center text-sm font-semibold text-indigo-700 underline decoration-indigo-300 underline-offset-4 hover:text-indigo-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+            >
+              {language === 'it' ? 'Apri il Manuale di studio' : 'Open the Study Manual'}
+            </ViewLink>
+          </li>
+          <li className="rounded-lg border border-indigo-100 bg-white p-4">
+            <p className="text-xs font-semibold uppercase tracking-wide text-indigo-700">
+              {language === 'it' ? 'Passaggio 2 · Modello OSI' : 'Step 2 · OSI model'}
+            </p>
+            <p className="mt-2 text-sm leading-relaxed text-slate-700">
+              {language === 'it'
+                ? 'Esplora i livelli e osserva l’incapsulamento.'
+                : 'Explore the layers and see encapsulation in action.'}
+            </p>
+            <ViewLink
+              view="osi"
+              className="mt-3 inline-flex min-h-11 items-center text-sm font-semibold text-indigo-700 underline decoration-indigo-300 underline-offset-4 hover:text-indigo-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+            >
+              {language === 'it' ? 'Esplora la pila OSI' : 'Explore the OSI stack'}
+            </ViewLink>
+          </li>
+          <li className="rounded-lg border border-indigo-100 bg-white p-4">
+            <p className="text-xs font-semibold uppercase tracking-wide text-indigo-700">
+              {language === 'it' ? 'Passaggio 3 · Pratica' : 'Step 3 · Practice'}
+            </p>
+            <p className="mt-2 text-sm leading-relaxed text-slate-700">
+              {language === 'it'
+                ? 'Calcola una subnet IPv4 e verifica i risultati.'
+                : 'Plan an IPv4 subnet and check the results.'}
+            </p>
+            <ViewLink
+              view="fundamentals"
+              className="mt-3 inline-flex min-h-11 items-center text-sm font-semibold text-indigo-700 underline decoration-indigo-300 underline-offset-4 hover:text-indigo-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+            >
+              {language === 'it' ? 'Prova il laboratorio IPv4' : 'Try the IPv4 lab'}
+            </ViewLink>
+          </li>
+        </ol>
+        <p className="mt-4 text-xs leading-relaxed text-slate-600">
+          {language === 'it'
+            ? 'Il percorso non salva progressi: puoi usare “Continua” per riprendere dal manuale oppure scegliere liberamente un laboratorio dal menu o dalla ricerca.'
+            : 'Progress is not saved: use “Continue” to open the manual, or choose any lab from the menu or search.'}
+        </p>
+      </section>
+
       <section aria-labelledby="blueprint-coverage-title" className="space-y-4">
         <div className="flex items-center gap-2">
           <ListChecks className="h-5 w-5 text-indigo-600" />

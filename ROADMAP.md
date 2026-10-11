@@ -1,7 +1,7 @@
 # 🚀 Roadmap di Sviluppo: OSI-CYBER-EXPLORER
 
-> **Baseline analizzata:** branch `main`, commit `8f91a2c` del 20 settembre 2026  
-> **Ultima revisione della roadmap:** 11 ottobre 2026 (rev. 16 — target touch e reflow accessibili)
+> **Baseline analizzata:** branch `main`, commit `83318b6` dell’11 ottobre 2026
+> **Ultima revisione della roadmap:** 11 ottobre 2026 (rev. 17 — percorso iniziale e vista predefinita)
 > **Metodo di revisione:** baseline rieseguita localmente con Node 22.22.2 (`npm ci`, `vitest run`, `npm audit`, `vite build`) e ispezione mirata del codice; i task già presenti sono stati conservati con la stessa numerazione e arricchiti solo dove la verifica ha fatto emergere dettagli mancanti.
 
 ## Legenda
@@ -242,7 +242,7 @@ La mappatura serve a spiegare _perché_ esiste un controllo, non a dichiarare co
 
 - [x] **UX-13 — Consolidare un design system.** Centralizzare token per colori, contrasto, tipografia, spaziatura, radius, elevazione e stati, riducendo classi Tailwind arbitrarie duplicate. **Completato quando:** i componenti condividono token documentati e i contrasti raggiungono WCAG 2.2 AA. **Esito (11/10/2026):** definiti in `src/index.css` i token semantici per canvas, superfici, testi, accento/focus, stati, bordi, font, raggio ed elevazione; body, header, navigazione e focus consumano ora i valori condivisi. Le utility Tailwind testuali slate-400/500, indigo-500, emerald-500/600, amber-500/600 e red-500 usate dai componenti sono state ricondotte a tinte con contrasto AA. `docs/DESIGN_SYSTEM.md` documenta palette, scala di spaziatura, tipografia, forma, feedback non affidato al solo colore e rapporti verificati; il nuovo gate `verify:design-system`, incluso in `npm run verify`, calcola il contrasto WCAG e controlla i valori su tre superfici chiare. **Verifica:** il gate e la suite completa passano; body, shell e focus usano i token.
 
-- [ ] **UX-14 — Migliorare l'orientamento iniziale.** Valutare `CurriculumView` come landing oppure una home leggera con percorso consigliato e “Continua”, basata solo su interazioni già disponibili. **Completato quando:** un nuovo utente comprende da dove iniziare senza aprire tutti i menu.
+- [x] **UX-14 — Migliorare l'orientamento iniziale.** `CurriculumView` è la vista predefinita per le visite senza fragment e presenta un percorso progressivo di tre passaggi (Manuale di studio → modello OSI → laboratorio IPv4), con CTA “Continua con il Manuale di studio”. I collegamenti usano il routing esistente; il testo chiarisce che non viene salvato alcun progresso. La rotta `#/osi` e i deep link restano invariati. **Verifica:** E2E Chromium copre landing, CTA e fallback di route; test routing coprono il default; suite `npm run verify` e E2E verdi.
 
 - [ ] **UX-15 — Migliorare la findability delle collezioni grandi.** Per glossario e porte aggiungere filtri espliciti, conteggio, reset ed evidenziazione dei match; introdurre virtualizzazione solo dopo profiling. **Completato quando:** le ricerche comuni richiedono pochi passaggi e mantengono il contesto.
 

@@ -3,7 +3,7 @@ import { VIEW_ORDER, VIEW_REGISTRY } from '../content/viewRegistry';
 import type { AppState, AppView } from '../store';
 import type { Language } from '../types';
 
-export const DEFAULT_VIEW: AppView = 'osi';
+export const DEFAULT_VIEW: AppView = 'curriculum';
 
 /** Routes are a projection of the registry, never a second list of view ids. */
 const VIEW_BY_HASH = new Map(VIEW_ORDER.map((view) => [viewHash(view), view]));

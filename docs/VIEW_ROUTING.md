@@ -2,12 +2,13 @@
 
 ## English
 
-Every registered view has a stable URL in the form `#/<id>`. IDs come from
+Every registered view has a stable URL in the form `#/<id>`. A visit without a fragment opens the integrated learning map (`#/curriculum`), which presents a three-step path and a direct link to continue with the study manual. The OSI overview remains available at `#/osi`. IDs come from
 `src/content/viewRegistry.ts`: the route table is generated from the registry,
 without a second list to maintain when a lab is added.
 
 | Destination                     | Example URL                                            |
 | ------------------------------- | ------------------------------------------------------ |
+| Learning map                    | `https://osi-cyber-explorer.vercel.app/#/curriculum`   |
 | OSI overview                    | `https://osi-cyber-explorer.vercel.app/#/osi`          |
 | IPv4/IPv6 fundamentals and VLSM | `https://osi-cyber-explorer.vercel.app/#/fundamentals` |
 | IP connectivity and OSPF        | `https://osi-cyber-explorer.vercel.app/#/routing`      |
@@ -23,8 +24,8 @@ history entry's view without adding more entries. Re-selecting the current view 
 changing language/preferences does not create an entry. Internal shortcuts and the
 error panel's safe return also update the URL.
 
-Missing, unknown or malformed fragments are replaced with `#/osi`, opening the
-overview while preserving the base path and query string. Routes match exactly:
+Missing, unknown or malformed fragments are replaced with `#/curriculum`, opening the
+learning map while preserving the base path and query string. Routes match exactly:
 uppercase, extra segments, fragment queries and percent-encoded IDs are not aliases.
 URL input never becomes a dynamic import path.
 
@@ -51,12 +52,13 @@ deduplication, cleanup, native links, search, CCNA map and IT/EN titles.
 
 ## Italiano
 
-Ogni vista registrata ha un URL stabile nella forma `#/<id>`. Gli ID sono quelli di
+Ogni vista registrata ha un URL stabile nella forma `#/<id>`. Una visita senza fragment apre la mappa didattica integrata (`#/curriculum`), che propone un percorso in tre passaggi e un collegamento diretto per continuare con il Manuale di studio. La panoramica OSI resta disponibile su `#/osi`. Gli ID sono quelli di
 `src/content/viewRegistry.ts`: la tabella delle route viene generata dalla registry,
 senza una seconda lista da aggiornare quando si aggiunge un laboratorio.
 
 | Destinazione                | URL di esempio                                         |
 | --------------------------- | ------------------------------------------------------ |
+| Mappa didattica             | `https://osi-cyber-explorer.vercel.app/#/curriculum`   |
 | Panoramica OSI              | `https://osi-cyber-explorer.vercel.app/#/osi`          |
 | Fondamenti IPv4/IPv6 e VLSM | `https://osi-cyber-explorer.vercel.app/#/fundamentals` |
 | Connettività IP e OSPF      | `https://osi-cyber-explorer.vercel.app/#/routing`      |
@@ -73,8 +75,8 @@ Indietro/Avanti ripristinano la vista della voce di cronologia senza aggiungerne
 Riselezionare la vista corrente o cambiare lingua/preferenze non aggiunge voci.
 Anche i collegamenti interni e il ritorno sicuro del pannello di errore aggiornano l'URL.
 
-URL senza fragment, sconosciuti o malformati vengono sostituiti con `#/osi`, aprendo
-la panoramica e conservando percorso base e query string. Le route sono confrontate
+URL senza fragment, sconosciuti o malformati vengono sostituiti con `#/curriculum`, aprendo
+la mappa didattica e conservando percorso base e query string. Le route sono confrontate
 esattamente: maiuscole, segmenti extra, query nel fragment e ID percent-encoded non
 sono alias accettati. L'input URL non diventa mai un percorso di import dinamico.
 

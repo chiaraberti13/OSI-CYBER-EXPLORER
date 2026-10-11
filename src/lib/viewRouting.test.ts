@@ -2,7 +2,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { VIEW_ORDER, VIEW_REGISTRY } from '../content/viewRegistry';
 import { useStore } from '../store';
-import { connectViewRouting, resolveViewHash, viewHash, viewTitle } from './viewRouting';
+import { DEFAULT_VIEW, connectViewRouting, resolveViewHash, viewHash, viewTitle } from './viewRouting';
 
 let disconnect: (() => void) | undefined;
 
@@ -47,7 +47,7 @@ describe('registry-derived routes', () => {
       '#/routing\u0000',
       '#/<script>alert(1)</script>'
     ]) {
-      expect(resolveViewHash(hash), hash).toBe('osi');
+      expect(resolveViewHash(hash), hash).toBe(DEFAULT_VIEW);
     }
   });
 
@@ -78,8 +78,8 @@ describe('browser/store connection', () => {
     const length = window.history.length;
     useStore.setState({ activeView: 'routing' });
     disconnect = connectViewRouting(useStore, window);
-    expect(useStore.getState().activeView).toBe('osi');
-    expect(window.location.hash).toBe('#/osi');
+    expect(useStore.getState().activeView).toBe('curriculum');
+    expect(window.location.hash).toBe('#/curriculum');
     expect(window.history.length).toBe(length);
   });
 
@@ -89,7 +89,7 @@ describe('browser/store connection', () => {
     disconnect = connectViewRouting(useStore, window);
     expect(window.location.pathname).toBe('/study/');
     expect(window.location.search).toBe('?mode=demo');
-    expect(window.location.hash).toBe('#/osi');
+    expect(window.location.hash).toBe('#/curriculum');
     expect(window.history.state).toEqual({ external: true });
     expect(window.history.length).toBe(length);
   });
@@ -120,7 +120,7 @@ describe('browser/store connection', () => {
     await vi.waitFor(() => expect(useStore.getState().activeView).toBe('routing'));
     expect(window.location.hash).toBe('#/routing');
     window.history.back();
-    await vi.waitFor(() => expect(useStore.getState().activeView).toBe('osi'));
+    await vi.waitFor(() => expect(useStore.getState().activeView).toBe('curriculum'));
     window.history.forward();
     await vi.waitFor(() => expect(useStore.getState().activeView).toBe('routing'));
     window.history.forward();
@@ -142,8 +142,8 @@ describe('browser/store connection', () => {
     const length = window.history.length;
     window.dispatchEvent(new PopStateEvent('popstate'));
     window.dispatchEvent(new HashChangeEvent('hashchange'));
-    expect(useStore.getState().activeView).toBe('osi');
-    expect(window.location.hash).toBe('#/osi');
+    expect(useStore.getState().activeView).toBe('curriculum');
+    expect(window.location.hash).toBe('#/curriculum');
     expect(window.history.length).toBe(length);
   });
 
@@ -151,7 +151,7 @@ describe('browser/store connection', () => {
     disconnect = connectViewRouting(useStore, window);
     disconnect();
     useStore.getState().setActiveView('routing');
-    expect(window.location.hash).toBe('#/osi');
+    expect(window.location.hash).toBe('#/curriculum');
     window.history.replaceState(null, '', '#/glossary');
     window.dispatchEvent(new PopStateEvent('popstate'));
     window.dispatchEvent(new HashChangeEvent('hashchange'));

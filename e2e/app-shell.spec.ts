@@ -10,17 +10,21 @@ import { VIEW_ORDER } from '../src/content/viewRegistry';
 
 async function openApp(page: Page) {
   await page.goto('/');
-  // The view heading proves both the shell and the default lazy route mounted.
-  await expect(page.getByRole('heading', { level: 1, name: 'Pila OSI' })).toBeVisible();
+  // The landing heading proves both the shell and the default lazy route mounted.
+  await expect(page.getByRole('heading', { level: 1, name: 'Mappa didattica integrata' })).toBeVisible();
 }
 
 test.describe('application shell', () => {
-  test('loads the default OSI lab', async ({ page }) => {
+  test('opens the study path as the default landing and offers a clear next step', async ({ page }) => {
     await openApp(page);
 
-    // The default view is the OSI stack with its packet simulator (Italian default).
-    await expect(page.getByRole('heading', { name: 'Simulatore di pacchetti' })).toBeVisible();
-    await expect(page).toHaveTitle(/Pila OSI — OSI Cyber Explorer/);
+    await expect(page.getByRole('heading', { name: 'Da dove iniziare' })).toBeVisible();
+    const continueLink = page.getByRole('link', { name: 'Continua con il Manuale di studio' });
+    await expect(continueLink).toHaveAttribute('href', '#/manual');
+    await continueLink.click();
+    await expect(page).toHaveURL(/#\/manual$/);
+    await expect(page.getByRole('heading', { name: 'Manuale di studio' })).toBeVisible();
+    await expect(page).toHaveTitle(/Manuale di studio — OSI Cyber Explorer/);
     await expect(page.locator('html')).toHaveAttribute('lang', 'it');
   });
 
@@ -55,7 +59,11 @@ test.describe('application shell', () => {
     await page.getByRole('button', { name: 'English' }).click();
     await expect(page.locator('html')).toHaveAttribute('lang', 'en');
     await expect(page.getByRole('button', { name: 'Open the guide' })).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'Packet simulator' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Where to start' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Continue with the Study Manual' })).toHaveAttribute(
+      'href',
+      '#/manual'
+    );
 
     // And back again, confirming the toggle is symmetric.
     await page.getByRole('button', { name: 'Italiano' }).click();
@@ -108,7 +116,7 @@ test.describe('application shell', () => {
     // Activating it lands focus on the main landmark without disturbing the route.
     await page.keyboard.press('Enter');
     await expect(page.locator('#main-content')).toBeFocused();
-    await expect(page).toHaveURL(/#\/osi$/);
+    await expect(page).toHaveURL(/#\/curriculum$/);
   });
 
   test('the study manual opens, reveals a solution and links into a lab (EDU-01)', async ({ page }) => {
@@ -138,10 +146,10 @@ test.describe('application shell', () => {
     await page.reload();
     await expect(page).toHaveTitle(/Porte & Protocolli — OSI Cyber Explorer/);
 
-    // An unknown route is canonicalised in place to the default OSI view.
+    // An unknown route is canonicalised in place to the default study-path landing.
     await page.goto('/#/not-a-real-view');
-    await expect(page).toHaveURL(/#\/osi$/);
-    await expect(page).toHaveTitle(/Pila OSI — OSI Cyber Explorer/);
+    await expect(page).toHaveURL(/#\/curriculum$/);
+    await expect(page).toHaveTitle(/Mappa CCNA — OSI Cyber Explorer/);
   });
 
   test('browser Back and Forward restore the previous view', async ({ page }) => {
@@ -154,8 +162,8 @@ test.describe('application shell', () => {
     await expect(page).toHaveURL(/#\/fundamentals$/);
 
     await page.goBack();
-    await expect(page).toHaveURL(/#\/osi$/);
-    await expect(page.getByRole('heading', { name: 'Simulatore di pacchetti' })).toBeVisible();
+    await expect(page).toHaveURL(/#\/curriculum$/);
+    await expect(page.getByRole('heading', { name: 'Mappa didattica integrata' })).toBeVisible();
 
     await page.goForward();
     await expect(page).toHaveURL(/#\/fundamentals$/);
@@ -219,6 +227,7 @@ test.describe('WCAG reflow and touch targets', () => {
 
   test('keeps primary controls at least 44 px and avoids page overflow (UX-08)', async ({ page }) => {
     await openApp(page);
+    await page.goto('/#/osi');
 
     // A 320 CSS-pixel viewport is also the WCAG 1.4.10 reference layout for a
     // 1280 px desktop viewport at 400% browser zoom (and is stricter than 200%).

@@ -124,7 +124,7 @@ const createNavigationSlice: Slice<NavigationSlice> = (set) => ({
   setViewMode: (viewMode) => set({ viewMode }),
   detailTab: 'overview',
   setDetailTab: (detailTab) => set({ detailTab }),
-  activeView: 'osi',
+  activeView: 'curriculum',
   setActiveView: (activeView) => set({ activeView })
 });
 
