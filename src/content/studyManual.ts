@@ -1986,5 +1986,276 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
         ]
       }
     ]
+  },
+  {
+    id: 'attacks-osi-killchain',
+    cert: 'securityplus',
+    order: 8,
+    title: { it: 'Attacchi per livello OSI e kill chain', en: 'Attacks by OSI layer and the kill chain' },
+    summary: {
+      it: 'Come gli attacchi si mappano ai livelli OSI, le fasi della kill chain e i percorsi d’attacco multi-stadio: leggere un attacco per livello e per fase aiuta a scegliere dove la difesa lo interrompe.',
+      en: 'How attacks map to the OSI layers, the phases of the kill chain and multi-stage attack paths: reading an attack by layer and by phase helps choose where the defence breaks it.'
+    },
+    topics: [
+      {
+        id: 'attacks-by-layer',
+        title: { it: 'Attacchi mappati ai livelli OSI', en: 'Attacks mapped to the OSI layers' },
+        objectives: [
+          {
+            it: 'Associare attacchi tipici a ciascun livello OSI, dal livello 1 al livello 7.',
+            en: 'Associate typical attacks with each OSI layer, from layer 1 to layer 7.'
+          },
+          {
+            it: 'Spiegare perché il livello di un attacco determina dove va collocata la difesa.',
+            en: 'Explain why an attack’s layer determines where the defence belongs.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere i sette livelli OSI e la triade CIA.',
+            en: 'Know the seven OSI layers and the CIA triad.'
+          }
+        ],
+        theory: [
+          {
+            it: 'Ogni attacco colpisce principalmente un livello OSI, e il livello suggerisce dove difendersi. Al livello 1 (fisico) rientrano il tapping di un cavo e il jamming radio; al livello 2 (collegamento) l’ARP spoofing/MITM, il MAC flooding e la DHCP starvation; al livello 3 (rete) l’IP spoofing, il BGP hijacking, lo smurf e gli attacchi di frammentazione.',
+            en: 'Each attack mainly hits one OSI layer, and the layer suggests where to defend. Layer 1 (physical) covers cable tapping and radio jamming; layer 2 (data link) covers ARP spoofing/MITM, MAC flooding and DHCP starvation; layer 3 (network) covers IP spoofing, BGP hijacking, smurf and fragmentation attacks.'
+          },
+          {
+            it: 'Salendo: al livello 4 (trasporto) i flood DoS come il SYN flood, i reset TCP forgiati, gli UDP flood e le scansioni di porta; al livello 5 (sessione) il session hijacking e il replay; al livello 6 (presentazione) gli attacchi alla cifratura come il padding oracle; al livello 7 (applicazione) injection, XSS, DNS poisoning, SSH brute force e slowloris.',
+            en: 'Going up: layer 4 (transport) has DoS floods such as the SYN flood, forged TCP resets, UDP floods and port scans; layer 5 (session) has session hijacking and replay; layer 6 (presentation) has attacks on encryption such as the padding oracle; layer 7 (application) has injection, XSS, DNS poisoning, SSH brute force and slowloris.'
+          },
+          {
+            it: 'Mappare l’attacco al livello evita difese fuori posto: un firewall di livello 3/4 non ferma un’injection di livello 7, e una ACL non protegge dal tapping fisico di livello 1. La difesa efficace agisce al livello giusto o lo compensa esplicitamente a un altro livello.',
+            en: 'Mapping the attack to the layer avoids misplaced defences: a layer 3/4 firewall does not stop a layer 7 injection, and an ACL does not protect against layer 1 physical tapping. Effective defence acts at the right layer or explicitly compensates for it at another layer.'
+          }
+        ],
+        example: {
+          it: 'Un MAC flooding riempie la tabella CAM di uno switch (livello 2) e lo forza a inondare il traffico: la difesa corretta è la port security sulla porta di accesso, non un controllo di livello superiore.',
+          en: 'A MAC flooding fills a switch’s CAM table (layer 2) and forces it to flood traffic: the correct defence is port security on the access port, not a higher-layer control.'
+        },
+        commonMistakes: [
+          {
+            it: 'Pensare che un firewall perimetrale fermi tutto: non vede gli attacchi di livello 2 interni né molte minacce applicative di livello 7.',
+            en: 'Thinking a perimeter firewall stops everything: it sees neither internal layer 2 attacks nor many layer 7 application threats.'
+          },
+          {
+            it: 'Confondere il livello del sintomo con quello della causa: un servizio lento (apparente livello 7) può derivare da un flood di livello 4.',
+            en: 'Confusing the layer of the symptom with that of the cause: a slow service (apparent layer 7) can come from a layer 4 flood.'
+          }
+        ],
+        lab: 'attacklab',
+        references: [{ kind: 'attack', id: 'T1046' }]
+      },
+      {
+        id: 'cyber-kill-chain',
+        title: { it: 'La kill chain', en: 'The kill chain' },
+        objectives: [
+          {
+            it: 'Elencare le fasi della cyber kill chain e che cosa cerca di ottenere l’attaccante in ciascuna.',
+            en: 'List the phases of the cyber kill chain and what the attacker seeks in each.'
+          },
+          {
+            it: 'Indicare, per ogni fase, un controllo difensivo che la interrompe.',
+            en: 'Give, for each phase, a defensive control that disrupts it.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere la terminologia di minaccia, vulnerabilità e rischio.',
+            en: 'Know the threat, vulnerability and risk terminology.'
+          }
+        ],
+        theory: [
+          {
+            it: 'La cyber kill chain descrive un attacco come una sequenza di fasi; nel modello di Lockheed Martin sono sette: ricognizione (reconnaissance), armamento (weaponization), consegna (delivery), sfruttamento (exploitation), installazione (installation), comando e controllo (Command & Control, C2) e azioni sull’obiettivo (actions on objectives). L’attaccante deve completarle quasi tutte; al difensore basta spezzarne una.',
+            en: 'The cyber kill chain describes an attack as a sequence of phases; in the Lockheed Martin model there are seven: reconnaissance, weaponization, delivery, exploitation, installation, Command & Control (C2) and actions on objectives. The attacker must complete nearly all of them; the defender only needs to break one.'
+          },
+          {
+            it: 'Le prime fasi avvengono spesso fuori dal perimetro (ricognizione su fonti pubbliche, preparazione del payload); le fasi centrali toccano la vittima (consegna via e-mail o servizio esposto, sfruttamento di una vulnerabilità, installazione di un impianto); le ultime stabiliscono il controllo remoto e perseguono l’obiettivo, come l’esfiltrazione o il movimento laterale.',
+            en: 'The early phases often happen outside the perimeter (reconnaissance on public sources, payload preparation); the middle phases touch the victim (delivery via e-mail or an exposed service, exploitation of a vulnerability, installation of an implant); the last ones establish remote control and pursue the objective, such as exfiltration or lateral movement.'
+          },
+          {
+            it: 'A ogni fase corrisponde una difesa: formazione e riduzione dell’esposizione contro la ricognizione, filtraggio e sandboxing contro la consegna, patch contro lo sfruttamento, segmentazione e telemetria contro il movimento laterale, blocco del C2 e monitoraggio delle uscite contro l’esfiltrazione. La difesa in profondità funziona perché copre più fasi.',
+            en: 'Each phase has a matching defence: training and exposure reduction against reconnaissance, filtering and sandboxing against delivery, patching against exploitation, segmentation and telemetry against lateral movement, C2 blocking and egress monitoring against exfiltration. Defense in depth works because it covers several phases.'
+          }
+        ],
+        example: {
+          it: 'In un phishing con allegato: la ricognizione individua i nomi, la consegna arriva via e-mail, lo sfruttamento apre l’allegato, l’installazione lascia un impianto, il C2 lo comanda; un filtro che blocca l’allegato spezza la catena già alla consegna.',
+          en: 'In a phishing attack with an attachment: reconnaissance finds the names, delivery arrives via e-mail, exploitation opens the attachment, installation drops an implant, C2 commands it; a filter that blocks the attachment breaks the chain already at delivery.'
+        },
+        commonMistakes: [
+          {
+            it: 'Difendere solo l’ultima fase: se si guarda solo all’esfiltrazione, si perdono le molte occasioni di fermare l’attacco prima.',
+            en: 'Defending only the last phase: looking only at exfiltration misses the many chances to stop the attack earlier.'
+          },
+          {
+            it: 'Trattare la kill chain come lineare e rigida: attacchi reali saltano fasi o le ripetono, ma il valore del modello è indicare dove intervenire.',
+            en: 'Treating the kill chain as linear and rigid: real attacks skip phases or repeat them, but the model’s value is in showing where to intervene.'
+          }
+        ],
+        lab: 'attacklab',
+        references: [{ kind: 'attack', id: 'T1190' }]
+      },
+      {
+        id: 'multi-stage-attack-paths',
+        title: { it: 'Percorsi d’attacco multi-stadio', en: 'Multi-stage attack paths' },
+        objectives: [
+          {
+            it: 'Ricostruire un percorso d’attacco che concatena più stadi attraverso livelli diversi.',
+            en: 'Reconstruct an attack path that chains several stages across different layers.'
+          },
+          {
+            it: 'Individuare il controllo che spezza la catena il prima possibile.',
+            en: 'Identify the control that breaks the chain as early as possible.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere la mappa attacco→livello OSI e le fasi della kill chain.',
+            en: 'Know the attack→OSI layer mapping and the phases of the kill chain.'
+          }
+        ],
+        theory: [
+          {
+            it: 'Gli attacchi reali raramente si fermano a un solo livello: un percorso tipico parte da una ricognizione, ottiene un punto d’appoggio su un livello, poi devia il traffico o scala verso risorse più preziose. L’app modella questi percorsi come stadi concatenati, ciascuno con il proprio obiettivo intermedio.',
+            en: 'Real attacks rarely stop at a single layer: a typical path starts from reconnaissance, gains a foothold at one layer, then redirects traffic or escalates toward more valuable assets. The app models these paths as chained stages, each with its own intermediate goal.'
+          },
+          {
+            it: 'Per esempio il percorso «Dall’accesso fisico al controllo del dominio Layer 2» concatena scoperta del segmento, estensione della raggiungibilità (un trunk o VLAN non previste), deviazione del traffico ed esaurimento delle risorse di livello 2; il percorso «Deviazione del traffico tramite il control plane» mappa il routing, falsifica la sorgente e inserisce una rotta.',
+            en: 'For example the path “From physical access to Layer 2 domain control” chains segment discovery, reachability expansion (a trunk or unintended VLANs), traffic redirection and layer 2 resource exhaustion; the path “Traffic detour through the control plane” maps the routing, forges the source and inserts a route.'
+          },
+          {
+            it: 'La lezione difensiva è spezzare la catena il prima possibile: un singolo controllo ben posizionato — port security, DHCP snooping, Dynamic ARP Inspection, autenticazione del routing — può rendere impercorribile uno stadio e fermare tutto il percorso. È la difesa in profondità applicata a una sequenza.',
+            en: 'The defensive lesson is to break the chain as early as possible: a single well-placed control — port security, DHCP snooping, Dynamic ARP Inspection, routing authentication — can make one stage impassable and stop the whole path. It is defense in depth applied to a sequence.'
+          }
+        ],
+        example: {
+          it: 'Nel percorso Layer 2, abilitare port security e DHCP snooping blocca già lo stadio iniziale: senza raggiungibilità estesa, la deviazione del traffico e l’esaurimento non avvengono.',
+          en: 'In the Layer 2 path, enabling port security and DHCP snooping already blocks the initial stage: without extended reachability, the traffic redirection and exhaustion do not happen.'
+        },
+        commonMistakes: [
+          {
+            it: 'Analizzare gli stadi isolatamente: il rischio nasce dalla concatenazione, non dal singolo passo preso da solo.',
+            en: 'Analysing the stages in isolation: the risk comes from the chaining, not from a single step taken alone.'
+          },
+          {
+            it: 'Rincorrere l’ultimo stadio: conviene investire nei controlli che rendono impossibili i primi, dove l’attaccante ha meno appigli.',
+            en: 'Chasing the last stage: it is better to invest in the controls that make the first ones impossible, where the attacker has the least foothold.'
+          }
+        ],
+        lab: 'attackpaths',
+        references: [{ kind: 'attack', id: 'T1046' }],
+        guidedLabs: [
+          {
+            id: 'gl-attack-layer-killchain',
+            title: {
+              it: 'Mappa un attacco al livello OSI e traccia la kill chain',
+              en: 'Map an attack to its OSI layer and trace the kill chain'
+            },
+            difficulty: 'core',
+            lab: 'attacklab',
+            scenario: {
+              it: 'Il laboratorio «Attacco & Difesa» mostra per ogni scenario il livello OSI, una kill chain passo-passo con i ruoli di attaccante e difensore e il punto esatto in cui la contromisura neutralizza l’attacco.',
+              en: 'The “Attack & defense” lab shows, for each scenario, the OSI layer, a step-by-step kill chain with the attacker and defender roles, and the exact point where the countermeasure neutralises the attack.'
+            },
+            task: {
+              it: 'Scegli tre scenari su livelli OSI diversi; per ciascuno indica il livello, riassumi i passi dell’attaccante e individua in quale passo la difesa interviene.',
+              en: 'Pick three scenarios on different OSI layers; for each, state the layer, summarise the attacker’s steps and identify at which step the defence intervenes.'
+            },
+            steps: [
+              {
+                it: 'Apri «Attacco & Difesa» e scegli uno scenario per ogni fascia di livelli (basso, medio, alto).',
+                en: 'Open “Attack & defense” and pick one scenario for each band of layers (low, middle, high).'
+              },
+              {
+                it: 'Leggi il livello OSI indicato e segui i passi alternati di attaccante e difensore.',
+                en: 'Read the stated OSI layer and follow the alternating attacker and defender steps.'
+              },
+              {
+                it: 'Annota il passo in cui la contromisura neutralizza l’attacco e a quale fase della kill chain corrisponde.',
+                en: 'Note the step where the countermeasure neutralises the attack and which kill-chain phase it corresponds to.'
+              }
+            ],
+            challenge: {
+              it: 'Trova due attacchi su livelli diversi che condividono la stessa contromisura e spiega perché un solo controllo copre entrambi.',
+              en: 'Find two attacks on different layers that share the same countermeasure and explain why one control covers both.'
+            },
+            solution: [
+              {
+                it: 'Esempi: MAC flooding (livello 2) → port security che limita i MAC per porta; SYN flood (livello 4) → SYN cookies e limiti di stato; DNS poisoning (livello 7) → validazione delle risposte e sorgenti fidate. In ciascuno il passo difensivo coincide con la fase della kill chain in cui l’attacco diventa visibile o bloccabile.',
+                en: 'Examples: MAC flooding (layer 2) → port security limiting the MAC addresses per port; SYN flood (layer 4) → SYN cookies and state limits; DNS poisoning (layer 7) → answer validation and trusted sources. In each the defensive step coincides with the kill-chain phase where the attack becomes visible or blockable.'
+              },
+              {
+                it: 'Sfida: port security e Dynamic ARP Inspection, pur mirando a livelli diversi, nascono dalla stessa idea — fidarsi solo di binding noti su una porta — quindi un’unica disciplina di first hop security di livello 2 contrasta più attacchi insieme.',
+                en: 'Challenge: port security and Dynamic ARP Inspection, though aimed at different layers, come from the same idea — trust only known bindings on a port — so a single Layer 2 first hop security discipline counters several attacks at once.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So assegnare un attacco al suo livello OSI e riassumerne i passi.',
+                en: 'I can assign an attack to its OSI layer and summarise its steps.'
+              },
+              {
+                it: 'So indicare in quale passo e fase la difesa interrompe l’attacco.',
+                en: 'I can state at which step and phase the defence breaks the attack.'
+              }
+            ]
+          },
+          {
+            id: 'gl-break-attack-path',
+            title: { it: 'Spezza un percorso d’attacco multi-stadio', en: 'Break a multi-stage attack path' },
+            difficulty: 'advanced',
+            lab: 'attackpaths',
+            scenario: {
+              it: 'Il laboratorio «Percorsi d’attacco» presenta attacchi reali come sequenze di stadi concatenati, ciascuno con obiettivo, famiglie coinvolte e impatto.',
+              en: 'The “Attack paths” lab presents real attacks as sequences of chained stages, each with its goal, the families involved and the impact.'
+            },
+            task: {
+              it: 'Scegli un percorso, elenca i suoi stadi in ordine e individua il primo stadio in cui un singolo controllo spezza l’intera catena.',
+              en: 'Pick a path, list its stages in order and identify the earliest stage where a single control breaks the whole chain.'
+            },
+            steps: [
+              {
+                it: 'Apri «Percorsi d’attacco» e seleziona un percorso, per esempio quello di dominio Layer 2.',
+                en: 'Open “Attack paths” and select a path, for example the Layer 2 domain one.'
+              },
+              {
+                it: 'Elenca gli stadi in ordine e annota l’obiettivo intermedio di ciascuno.',
+                en: 'List the stages in order and note the intermediate goal of each.'
+              },
+              {
+                it: 'Per ogni stadio chiediti quale controllo lo renderebbe impercorribile e scegli quello che agisce il prima possibile.',
+                en: 'For each stage ask which control would make it impassable and choose the one that acts as early as possible.'
+              }
+            ],
+            challenge: {
+              it: 'Confronta due percorsi diversi e trova un controllo comune che li spezza entrambi su uno stadio iniziale.',
+              en: 'Compare two different paths and find a common control that breaks both at an early stage.'
+            },
+            solution: [
+              {
+                it: 'Nel percorso «Dall’accesso fisico al controllo del dominio Layer 2» gli stadi sono scoperta del segmento → estensione della raggiungibilità → deviazione del traffico → esaurimento delle risorse. Abilitare port security e DHCP snooping sullo stadio iniziale nega la raggiungibilità estesa, e gli stadi successivi non possono avvenire.',
+                en: 'In the path “From physical access to Layer 2 domain control” the stages are segment discovery → reachability expansion → traffic redirection → resource exhaustion. Enabling port security and DHCP snooping at the initial stage denies extended reachability, and the later stages cannot happen.'
+              },
+              {
+                it: 'Sfida: sia il percorso Layer 2 sia la deviazione del traffico tramite il control plane dipendono da una ricognizione iniziale e da binding non validati; disabilitare i protocolli di scoperta non necessari e autenticare routing e first hop security spezza entrambi vicino all’inizio.',
+                en: 'Challenge: both the Layer 2 path and the traffic detour through the control plane depend on an initial reconnaissance and on unvalidated bindings; disabling unnecessary discovery protocols and authenticating routing and first hop security breaks both near the start.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So ricostruire gli stadi di un percorso d’attacco nell’ordine corretto.',
+                en: 'I can reconstruct the stages of an attack path in the correct order.'
+              },
+              {
+                it: 'So scegliere il controllo che spezza la catena nello stadio più precoce.',
+                en: 'I can choose the control that breaks the chain at the earliest stage.'
+              }
+            ]
+          }
+        ]
+      }
+    ]
   }
 ];
