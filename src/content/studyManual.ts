@@ -1450,5 +1450,278 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
         ]
       }
     ]
+  },
+  {
+    id: 'ip-services',
+    cert: 'ccna',
+    order: 6,
+    title: { it: 'Servizi IP: DHCP, DNS e NAT', en: 'IP services: DHCP, DNS, and NAT' },
+    summary: {
+      it: 'I servizi che rendono utilizzabile una rete IP: DHCP assegna gli indirizzi, DNS traduce i nomi in indirizzi, NAT/PAT permette a molti host privati di uscire su Internet con pochi indirizzi pubblici.',
+      en: 'The services that make an IP network usable: DHCP hands out addresses, DNS translates names to addresses, and NAT/PAT lets many private hosts reach the Internet with a few public addresses.'
+    },
+    topics: [
+      {
+        id: 'dhcp-dora',
+        title: { it: 'DHCP e il flusso DORA', en: 'DHCP and the DORA exchange' },
+        objectives: [
+          {
+            it: 'Descrivere i quattro messaggi DORA, le porte UDP usate e quali messaggi sono in broadcast.',
+            en: 'Describe the four DORA messages, the UDP ports used, and which messages are broadcast.'
+          },
+          {
+            it: 'Spiegare il ruolo del relay (ip helper-address) e del campo giaddr quando il server è in un’altra sottorete.',
+            en: 'Explain the role of the relay (ip helper-address) and the giaddr field when the server is in another subnet.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere indirizzamento IPv4, broadcast e la differenza tra livello 2 e livello 3.',
+            en: 'Know IPv4 addressing, broadcast, and the difference between layer 2 and layer 3.'
+          }
+        ],
+        theory: [
+          {
+            it: 'DHCP assegna automaticamente a un client indirizzo IP, maschera, gateway e DNS. Lo scambio ha quattro messaggi, riassunti nell’acronimo DORA: Discover, Offer, Request, Acknowledge. Il server ascolta sulla porta UDP 67, il client sulla UDP 68.',
+            en: 'DHCP automatically gives a client an IP address, mask, gateway and DNS. The exchange has four messages, summed up by the acronym DORA: Discover, Offer, Request, Acknowledge. The server listens on UDP port 67, the client on UDP 68.'
+          },
+          {
+            it: 'Il client non ha ancora un indirizzo, quindi il Discover parte in broadcast (sorgente 0.0.0.0, destinazione 255.255.255.255). Il server risponde con un Offer; il client invia una Request — ancora in broadcast — per accettare una specifica offerta, così gli altri server sanno di ritirare le proprie; il server conferma con un Ack. La Request è in broadcast proprio perché deve essere vista anche dai server non scelti.',
+            en: 'The client has no address yet, so the Discover goes out as a broadcast (source 0.0.0.0, destination 255.255.255.255). The server replies with an Offer; the client sends a Request — still broadcast — to accept one specific offer, so the other servers know to withdraw theirs; the server confirms with an Ack. The Request is broadcast precisely so the non-chosen servers also see it.'
+          },
+          {
+            it: 'Se il server DHCP è in un’altra sottorete, i broadcast non la attraversano: si configura allora un relay con ip helper-address sull’interfaccia del router. Il relay inoltra la richiesta in unicast al server e imposta il campo giaddr con l’indirizzo dell’interfaccia su cui ha ricevuto il Discover, così il server capisce da quale scope (pool) assegnare l’indirizzo. Se non c’è alcun server, il client ricade sull’indirizzo APIPA 169.254.x.x.',
+            en: 'If the DHCP server is in another subnet, broadcasts do not cross it: a relay is then configured with ip helper-address on the router interface. The relay forwards the request as unicast to the server and sets the giaddr field to the address of the interface where it received the Discover, so the server knows which scope (pool) to assign from. If there is no server at all, the client falls back to the APIPA address 169.254.x.x.'
+          }
+        ],
+        example: {
+          it: 'Un PC appena acceso invia un Discover in broadcast; il router con ip helper-address lo inoltra al server 203.0.113.10 impostando giaddr all’indirizzo della sua interfaccia nella LAN del PC, e il server sceglie il pool giusto grazie a quel giaddr.',
+          en: 'A PC that has just booted sends a broadcast Discover; the router with ip helper-address forwards it to server 203.0.113.10, setting giaddr to its own interface address in the PC’s LAN, and the server picks the right pool thanks to that giaddr.'
+        },
+        commonMistakes: [
+          {
+            it: 'Pensare che la Request sia unicast: è in broadcast, perché serve anche a informare i server non scelti che possono liberare la loro offerta.',
+            en: 'Thinking the Request is unicast: it is broadcast, because it also tells the non-chosen servers they can release their offer.'
+          },
+          {
+            it: 'Dimenticare il giaddr con un relay: senza di esso il server non sa da quale scope assegnare e la DORA fallisce pur sembrando configurata.',
+            en: 'Forgetting giaddr with a relay: without it the server does not know which scope to assign from and DORA fails while appearing configured.'
+          },
+          {
+            it: 'Scambiare un indirizzo APIPA 169.254.x.x per una configurazione valida: segnala invece che il DHCP non ha risposto.',
+            en: 'Mistaking an APIPA 169.254.x.x address for a valid configuration: it instead signals that DHCP did not answer.'
+          }
+        ],
+        lab: 'services',
+        references: [{ kind: 'rfc', id: 'RFC 2131' }],
+        guidedLabs: [
+          {
+            id: 'gl-dora-order',
+            title: { it: 'Ricostruisci lo scambio DORA', en: 'Reconstruct the DORA exchange' },
+            difficulty: 'core',
+            lab: 'services',
+            scenario: {
+              it: 'Il laboratorio «Servizi IP» percorre lo scambio DHCP messaggio per messaggio, con indirizzi, porte UDP e il campo giaddr, e riproduce i modi in cui fallisce.',
+              en: 'The “IP services” lab walks the DHCP exchange message by message, with addresses, UDP ports and the giaddr field, and reproduces the ways it fails.'
+            },
+            task: {
+              it: 'Metti in ordine i quattro messaggi DORA indicando, per ciascuno, se è broadcast o unicast e quale porta UDP usa; poi individua cosa succede senza ip helper-address.',
+              en: 'Put the four DORA messages in order, stating for each whether it is broadcast or unicast and which UDP port it uses; then identify what happens without ip helper-address.'
+            },
+            steps: [
+              {
+                it: 'Apri «Servizi IP» e avvia l’esercitazione DORA.',
+                en: 'Open “IP services” and start the DORA exercise.'
+              },
+              {
+                it: 'Per ogni messaggio annota mittente, destinatario, broadcast/unicast e porta UDP (67 lato server, 68 lato client).',
+                en: 'For each message note the sender, receiver, broadcast/unicast and UDP port (67 on the server side, 68 on the client side).'
+              },
+              {
+                it: 'Simula l’assenza del relay e osserva perché il Discover non raggiunge il server in un’altra sottorete.',
+                en: 'Simulate the missing relay and observe why the Discover does not reach the server in another subnet.'
+              }
+            ],
+            challenge: {
+              it: 'Riproduci altri due guasti: pool esaurito e DHCP snooping che scarta l’Offer su una porta untrusted. Quale messaggio manca in ciascun caso?',
+              en: 'Reproduce two more failures: an exhausted pool and DHCP snooping dropping the Offer on an untrusted port. Which message is missing in each case?'
+            },
+            solution: [
+              {
+                it: 'Ordine: Discover (client→broadcast, da 0.0.0.0, UDP 68→67), Offer (server→client, UDP 67→68), Request (client→broadcast, UDP 68→67), Ack (server→client, UDP 67→68). Il Discover e la Request sono in broadcast, Offer e Ack tornano verso il client.',
+                en: 'Order: Discover (client→broadcast, from 0.0.0.0, UDP 68→67), Offer (server→client, UDP 67→68), Request (client→broadcast, UDP 68→67), Ack (server→client, UDP 67→68). Discover and Request are broadcast, Offer and Ack go back toward the client.'
+              },
+              {
+                it: 'Senza ip helper-address il Discover in broadcast resta confinato nella sottorete del client e non raggiunge il server: nessun Offer arriva. Sfida: con il pool esaurito il server non invia Offer (manca la O); con DHCP snooping che blocca l’Offer su porta untrusted il client non riceve l’Offer e resta senza indirizzo.',
+                en: 'Without ip helper-address the broadcast Discover stays confined to the client’s subnet and never reaches the server: no Offer arrives. Challenge: with an exhausted pool the server sends no Offer (the O is missing); with DHCP snooping blocking the Offer on an untrusted port the client never receives the Offer and stays without an address.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So riprodurre l’ordine DORA con direzione broadcast/unicast e porte UDP corrette.',
+                en: 'I can reproduce the DORA order with the correct broadcast/unicast direction and UDP ports.'
+              },
+              {
+                it: 'So collegare ogni modalità di guasto al messaggio DORA che non compare.',
+                en: 'I can link each failure mode to the DORA message that does not appear.'
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'dns-resolution',
+        title: { it: 'DNS: dai nomi agli indirizzi', en: 'DNS: from names to addresses' },
+        objectives: [
+          {
+            it: 'Spiegare come un resolver risolve un nome interrogando root, TLD e server autoritativi.',
+            en: 'Explain how a resolver resolves a name by querying root, TLD and authoritative servers.'
+          },
+          {
+            it: 'Riconoscere i principali record (A, AAAA, CNAME, MX, NS, PTR) e il ruolo di TTL e caching.',
+            en: 'Recognise the main records (A, AAAA, CNAME, MX, NS, PTR) and the role of TTL and caching.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Sapere cos’è un indirizzo IP e la differenza tra UDP e TCP.',
+            en: 'Know what an IP address is and the difference between UDP and TCP.'
+          }
+        ],
+        theory: [
+          {
+            it: 'Il DNS traduce nomi leggibili (come www.example.com) negli indirizzi IP usati dalla rete. La risoluzione è gerarchica: il resolver interroga un server radice, che rimanda al server del dominio di primo livello (TLD, es. .com), che rimanda al server autoritativo del dominio, che fornisce la risposta finale. Il client fa una query ricorsiva al resolver; il resolver fa query iterative verso la gerarchia.',
+            en: 'DNS translates human-readable names (such as www.example.com) into the IP addresses the network uses. Resolution is hierarchical: the resolver queries a root server, which refers it to the top-level domain (TLD, e.g. .com) server, which refers it to the domain’s authoritative server, which gives the final answer. The client makes a recursive query to the resolver; the resolver makes iterative queries down the hierarchy.'
+          },
+          {
+            it: 'Le risposte sono record di tipo diverso: A (nome→IPv4), AAAA (nome→IPv6), CNAME (alias verso un altro nome), MX (server di posta del dominio), NS (server autoritativi), PTR (IP→nome, la risoluzione inversa). Il DNS usa la porta 53, su UDP per le query normali e su TCP per risposte grandi o per i trasferimenti di zona.',
+            en: 'Answers are records of different types: A (name→IPv4), AAAA (name→IPv6), CNAME (alias to another name), MX (the domain’s mail servers), NS (authoritative servers), PTR (IP→name, reverse resolution). DNS uses port 53, over UDP for ordinary queries and over TCP for large answers or zone transfers.'
+          },
+          {
+            it: 'Ogni record ha un TTL che indica per quanto può essere messo in cache: i resolver conservano le risposte per quel tempo, riducendo latenza e carico sui server autoritativi. Un TTL basso rende i cambiamenti più rapidi ma aumenta le query; un TTL alto fa il contrario.',
+            en: 'Each record has a TTL that says how long it may be cached: resolvers keep answers for that time, cutting latency and load on the authoritative servers. A low TTL makes changes propagate faster but increases queries; a high TTL does the opposite.'
+          }
+        ],
+        example: {
+          it: 'Aprendo www.example.com il resolver, se non ha nulla in cache, chiede alla radice (→ .com), poi al TLD (→ server autoritativo di example.com), poi all’autoritativo che risponde con il record A; la risposta viene messa in cache per la durata del TTL.',
+          en: 'Opening www.example.com, the resolver — if it has nothing cached — asks the root (→ .com), then the TLD (→ example.com’s authoritative server), then the authoritative server that answers with the A record; the answer is cached for the TTL.'
+        },
+        commonMistakes: [
+          {
+            it: 'Credere che il DNS usi solo UDP: le query comuni sì, ma risposte grandi e trasferimenti di zona passano su TCP, sempre sulla porta 53.',
+            en: 'Believing DNS uses only UDP: ordinary queries do, but large answers and zone transfers go over TCP, still on port 53.'
+          },
+          {
+            it: 'Confondere un CNAME con un record A: il CNAME punta a un altro nome, non direttamente a un indirizzo, e richiede una risoluzione ulteriore.',
+            en: 'Confusing a CNAME with an A record: a CNAME points to another name, not directly to an address, and needs a further lookup.'
+          }
+        ],
+        lab: 'services'
+      },
+      {
+        id: 'nat-pat',
+        title: { it: 'NAT e PAT', en: 'NAT and PAT' },
+        objectives: [
+          {
+            it: 'Spiegare perché il NAT è necessario e distinguere NAT statico, dinamico e PAT (overload).',
+            en: 'Explain why NAT is needed and distinguish static NAT, dynamic NAT and PAT (overload).'
+          },
+          {
+            it: 'Descrivere come il PAT usa le porte per far condividere a molti host un solo indirizzo pubblico.',
+            en: 'Describe how PAT uses ports to let many hosts share a single public address.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere indirizzi privati RFC 1918 e porte di livello 4.',
+            en: 'Know RFC 1918 private addresses and layer-4 ports.'
+          }
+        ],
+        theory: [
+          {
+            it: 'Gli indirizzi privati RFC 1918 non sono instradabili su Internet: il NAT (Network Address Translation) traduce l’indirizzo privato interno in un indirizzo pubblico quando il traffico esce. Esistono tre forme: NAT statico (una corrispondenza fissa uno-a-uno), NAT dinamico (da un pool di indirizzi pubblici) e PAT o overload (molti host dietro un solo indirizzo pubblico).',
+            en: 'RFC 1918 private addresses are not routable on the Internet: NAT (Network Address Translation) translates the internal private address into a public one when traffic leaves. There are three forms: static NAT (a fixed one-to-one mapping), dynamic NAT (from a pool of public addresses) and PAT or overload (many hosts behind a single public address).'
+          },
+          {
+            it: 'Il PAT è la forma più diffusa (è ciò che fa il router di casa). Distingue i flussi di host diversi assegnando a ciascuno una porta sorgente differente sull’indirizzo pubblico condiviso, e tiene una tabella di traduzione che associa (IP privato, porta) ↔ (IP pubblico, porta) per instradare correttamente le risposte.',
+            en: 'PAT is the most common form (it is what a home router does). It tells apart the flows of different hosts by assigning each a different source port on the shared public address, and keeps a translation table mapping (private IP, port) ↔ (public IP, port) to route the replies back correctly.'
+          },
+          {
+            it: 'Il NAT nasce per conservare gli indirizzi IPv4, non come controllo di sicurezza: nasconde la topologia interna e, di fatto, blocca le connessioni entranti non sollecitate, ma non va considerato un firewall. La vera politica di sicurezza resta compito di firewall e ACL.',
+            en: 'NAT exists to conserve IPv4 addresses, not as a security control: it hides the internal topology and effectively blocks unsolicited inbound connections, but must not be treated as a firewall. The real security policy stays the job of firewalls and ACLs.'
+          }
+        ],
+        example: {
+          it: 'Due PC interni (192.168.1.10 e 192.168.1.11) navigano verso Internet: il PAT li traduce entrambi sull’unico indirizzo pubblico 203.0.113.1, distinguendoli con porte sorgente diverse; le risposte tornano alla porta giusta grazie alla tabella di traduzione.',
+          en: 'Two internal PCs (192.168.1.10 and 192.168.1.11) browse to the Internet: PAT translates both to the single public address 203.0.113.1, telling them apart by different source ports; the replies return to the right port thanks to the translation table.'
+        },
+        commonMistakes: [
+          {
+            it: 'Considerare il NAT un firewall: ostacola le connessioni entranti non richieste, ma non applica una politica e non ispeziona il traffico.',
+            en: 'Treating NAT as a firewall: it hinders unsolicited inbound connections but enforces no policy and inspects no traffic.'
+          },
+          {
+            it: 'Dimenticare che il PAT dipende dalle porte: senza porta sorgente libera la traduzione fallisce, ed è un limite di capacità reale sotto carico elevato.',
+            en: 'Forgetting that PAT depends on ports: with no free source port the translation fails, and that is a real capacity limit under heavy load.'
+          }
+        ],
+        lab: 'services',
+        references: [{ kind: 'rfc', id: 'RFC 3022' }],
+        guidedLabs: [
+          {
+            id: 'gl-pat-translate',
+            title: { it: 'Traduci un flusso con il PAT', en: 'Translate a flow with PAT' },
+            difficulty: 'core',
+            lab: 'services',
+            scenario: {
+              it: 'Il laboratorio «Servizi IP» mostra NAT/PAT con allocazione delle porte fedele ai range e la tabella di traduzione.',
+              en: 'The “IP services” lab shows NAT/PAT with range-accurate port allocation and the translation table.'
+            },
+            task: {
+              it: 'Per due host privati che aprono una connessione verso lo stesso server, ricostruisci le voci della tabella PAT e spiega come tornano le risposte.',
+              en: 'For two private hosts opening a connection to the same server, reconstruct the PAT table entries and explain how the replies return.'
+            },
+            steps: [
+              {
+                it: 'Apri «Servizi IP» e vai alla sezione NAT/PAT.',
+                en: 'Open “IP services” and go to the NAT/PAT section.'
+              },
+              {
+                it: 'Per ogni host annota (IP privato, porta sorgente) e la coppia pubblica (IP pubblico, porta) assegnata dal PAT.',
+                en: 'For each host note the (private IP, source port) and the public pair (public IP, port) assigned by PAT.'
+              },
+              {
+                it: 'Verifica come il router usa la tabella per rimandare la risposta all’host interno corretto.',
+                en: 'Check how the router uses the table to send the reply back to the correct internal host.'
+              }
+            ],
+            challenge: {
+              it: 'Cosa accade se i due host usano la stessa porta sorgente verso lo stesso server? Come fa il PAT a evitare l’ambiguità?',
+              en: 'What happens if both hosts use the same source port toward the same server? How does PAT avoid the ambiguity?'
+            },
+            solution: [
+              {
+                it: 'Ogni host riceve una voce che associa (IP privato, porta) a (203.0.113.1, porta pubblica). Le risposte arrivano all’indirizzo pubblico con la porta pubblica come destinazione, e il router le riscrive verso l’host privato corrispondente grazie alla tabella.',
+                en: 'Each host gets an entry mapping (private IP, port) to (203.0.113.1, public port). Replies arrive at the public address with the public port as destination, and the router rewrites them back to the matching private host thanks to the table.'
+              },
+              {
+                it: 'Sfida: se entrambi usano la stessa porta sorgente, il PAT assegna porte pubbliche diverse ai due flussi, così la coppia (IP pubblico, porta pubblica) resta unica e le risposte non sono ambigue.',
+                en: 'Challenge: if both use the same source port, PAT assigns different public ports to the two flows, so the (public IP, public port) pair stays unique and the replies are unambiguous.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So ricostruire le voci della tabella PAT e spiegare come instradano le risposte.',
+                en: 'I can reconstruct the PAT table entries and explain how they route the replies.'
+              },
+              {
+                it: 'So spiegare perché il PAT resta univoco anche con porte sorgente uguali.',
+                en: 'I can explain why PAT stays unambiguous even with equal source ports.'
+              }
+            ]
+          }
+        ]
+      }
+    ]
   }
 ];

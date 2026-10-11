@@ -4,6 +4,8 @@ All notable changes to OSI Cyber Explorer are documented in this file. The proje
 
 ## [Unreleased]
 
+- Study manual (EDU-06): added Chapter 6 — IP services (DHCP and the DORA exchange with UDP 67/68, broadcast Discover/Request, the ip helper-address relay, giaddr and APIPA; hierarchical DNS resolution with A/AAAA/CNAME/MX/NS/PTR records, port 53 over UDP/TCP, TTL and caching; static/dynamic NAT and PAT with the caution that NAT is not a firewall), with two guided labs on the DORA exchange and PAT translation.
+- Manuale di studio (EDU-06): aggiunto il Capitolo 6 — Servizi IP (DHCP e flusso DORA con UDP 67/68, Discover/Request in broadcast, relay ip helper-address, giaddr e APIPA; risoluzione DNS gerarchica con record A/AAAA/CNAME/MX/NS/PTR, porta 53 su UDP/TCP, TTL e caching; NAT statico/dinamico e PAT con l’avvertenza che il NAT non è un firewall), con due laboratori guidati sullo scambio DORA e sulla traduzione PAT.
 - Accessible touch targets (UX-08): raised native controls and interactive navigation cards to a 44×44 px minimum, established a 12 px readability floor for legacy micro-labels, and tightened the shell reflow at 320 px with a Chromium regression test.
 - Target touch accessibili (UX-08): portati controlli nativi e schede di navigazione interattive ad almeno 44×44 px, introdotto un minimo leggibile di 12 px per le micro-etichette legacy e migliorato il reflow della shell a 320 px con un test di regressione Chromium.
 - CI efficiency (ENG-18): split quality, coverage and bundle work into parallel jobs, cancel superseded runs, retain coverage and production-bundle/treemap artifacts, and preserve the existing required-check names through lightweight aggregate gates.
