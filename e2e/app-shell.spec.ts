@@ -321,3 +321,31 @@ test.describe('glossary on a short landscape viewport', () => {
     await expect.poll(() => terms.evaluate((element) => element.scrollTop)).toBeGreaterThan(0);
   });
 });
+
+test.describe('large collection findability', () => {
+  test('filters, counts, highlights, and resets glossary and port results (UX-15)', async ({ page }) => {
+    await page.goto('/#/glossary');
+    const glossary = page.getByRole('region', { name: 'Glossario di Rete' });
+    const glossarySearch = glossary.getByRole('textbox', {
+      name: 'Cerca termini o definizioni del glossario'
+    });
+    await glossarySearch.fill('ipsec');
+    await glossary.getByRole('combobox', { name: 'Cerca in' }).selectOption('term');
+    await expect(glossary.getByRole('status')).toContainText(/\d+ di \d+ termin/);
+    await expect(glossary.locator('mark').filter({ hasText: /ipsec/i }).first()).toBeVisible();
+    await glossary.getByRole('button', { name: 'Azzera filtri' }).click();
+    await expect(glossarySearch).toHaveValue('');
+    await expect(glossary.getByRole('combobox', { name: 'Cerca in' })).toHaveValue('all');
+
+    await page.goto('/#/ports');
+    const main = page.getByRole('main');
+    const portSearch = main.getByRole('textbox', { name: 'Cerca porte e servizi di rete' });
+    await portSearch.fill('8080');
+    await expect(main.getByRole('status')).toContainText(/\d+ di \d+ servizi/);
+    await expect(main.locator('mark').filter({ hasText: '8080' }).first()).toBeVisible();
+    await main.getByRole('combobox', { name: 'Profilo di sicurezza' }).selectOption('review');
+    await main.getByRole('button', { name: 'Azzera filtri' }).click();
+    await expect(portSearch).toHaveValue('');
+    await expect(main.getByRole('combobox', { name: 'Profilo di sicurezza' })).toHaveValue('all');
+  });
+});

@@ -1,8 +1,10 @@
 import React, { useId, useRef, useState } from 'react';
 import { X, Search, BookOpen } from 'lucide-react';
 import { GLOSSARY_TERMS } from '../content/glossaryTerms';
+import { filterGlossaryTerms, type GlossarySearchScope } from '../lib/collectionSearch';
 import { useStore } from '../store';
 import ModalDialog from './ModalDialog';
+import SearchHighlight from './SearchHighlight';
 
 export default function GlossaryModal({
   isOpen = false,
@@ -15,17 +17,15 @@ export default function GlossaryModal({
 }) {
   const language = useStore((state) => state.language);
   const [searchTerm, setSearchTerm] = useState('');
+  const [searchScope, setSearchScope] = useState<GlossarySearchScope>('all');
   const titleId = useId();
   const descriptionId = useId();
   const statusId = useId();
+  const termsId = useId();
   const searchRef = useRef<HTMLInputElement>(null);
   const Title = inline ? 'h1' : 'h2';
 
-  const filteredTerms = GLOSSARY_TERMS.filter(
-    (item) =>
-      item.term.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.definition[language].toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredTerms = filterGlossaryTerms(GLOSSARY_TERMS, searchTerm, searchScope, language);
 
   // UX-04: the result count is announced through a live region so screen-reader
   // users hear the list narrow as they type; it also serves as the input's
@@ -39,8 +39,9 @@ export default function GlossaryModal({
         ? 'No terms found.'
         : 'Nessun termine trovato.'
       : language === 'en'
-        ? `${count} ${count === 1 ? 'term' : 'terms'}`
-        : `${count} ${count === 1 ? 'termine' : 'termini'}`;
+        ? `${count} of ${GLOSSARY_TERMS.length} ${count === 1 ? 'term' : 'terms'}`
+        : `${count} di ${GLOSSARY_TERMS.length} ${count === 1 ? 'termine' : 'termini'}`;
+  const hasActiveFilters = searchTerm.length > 0 || searchScope !== 'all';
 
   const renderWrapper = (children: React.ReactNode) => {
     if (inline) {
@@ -100,7 +101,7 @@ export default function GlossaryModal({
       </div>
 
       {/* Search Bar */}
-      <div className="shrink-0 border-b border-slate-100 bg-slate-50 px-6 py-4">
+      <div className="shrink-0 space-y-3 border-b border-slate-100 bg-slate-50 px-6 py-4">
         <div className="relative">
           <Search aria-hidden="true" className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
           <input
@@ -109,6 +110,7 @@ export default function GlossaryModal({
             placeholder={language === 'en' ? 'Search terms or definitions...' : 'Cerca termini o definizioni...'}
             aria-label={searchLabel}
             aria-describedby={statusId}
+            aria-controls={termsId}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-10 pr-10 py-2 bg-white border border-slate-200 rounded-xl text-sm outline-none focus:border-blue-400 focus:ring-4 focus:ring-blue-50 transition-all"
@@ -129,15 +131,43 @@ export default function GlossaryModal({
             </button>
           )}
         </div>
-        {/* Off-screen live region: announces the result count (or no-results). */}
-        <span id={statusId} role="status" aria-live="polite" className="sr-only">
-          {resultAnnouncement}
-        </span>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <label className="flex min-w-0 flex-1 flex-col gap-1 text-xs font-semibold text-slate-700">
+            <span>{language === 'en' ? 'Search in' : 'Cerca in'}</span>
+            <select
+              value={searchScope}
+              onChange={(event) => setSearchScope(event.target.value as GlossarySearchScope)}
+              className="min-h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-700 outline-none focus:border-blue-400 focus:ring-4 focus:ring-blue-50"
+            >
+              <option value="all">{language === 'en' ? 'Terms and definitions' : 'Termini e definizioni'}</option>
+              <option value="term">{language === 'en' ? 'Terms only' : 'Solo termini'}</option>
+              <option value="definition">{language === 'en' ? 'Definitions only' : 'Solo definizioni'}</option>
+            </select>
+          </label>
+          <div className="flex items-center justify-between gap-3 sm:justify-end">
+            <span id={statusId} role="status" aria-live="polite" className="text-xs font-semibold text-slate-600">
+              {resultAnnouncement}
+            </span>
+            <button
+              type="button"
+              disabled={!hasActiveFilters}
+              onClick={() => {
+                setSearchTerm('');
+                setSearchScope('all');
+                searchRef.current?.focus();
+              }}
+              className="min-h-11 rounded-xl border border-slate-200 bg-white px-3 text-xs font-bold text-slate-700 transition-colors hover:border-blue-300 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {language === 'en' ? 'Reset filters' : 'Azzera filtri'}
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* Terms List */}
       <div
         data-testid="glossary-terms-scroll"
+        id={termsId}
         className="min-h-0 flex-1 overflow-y-auto overscroll-contain bg-white p-6"
       >
         {filteredTerms.length > 0 ? (
@@ -145,10 +175,10 @@ export default function GlossaryModal({
             {filteredTerms.map((item) => (
               <div key={item.term} className="group">
                 <dt className="text-sm font-semibold text-blue-600 mb-1 group-hover:translate-x-1 transition-transform">
-                  {item.term}
+                  <SearchHighlight text={item.term} query={searchTerm} />
                 </dt>
                 <dd className="text-[13px] text-slate-600 leading-relaxed bg-slate-50/50 p-3 rounded-lg border border-slate-100 group-hover:border-blue-100 group-hover:bg-blue-50/30 transition-all">
-                  {item.definition[language]}
+                  <SearchHighlight text={item.definition[language]} query={searchTerm} />
                 </dd>
               </div>
             ))}

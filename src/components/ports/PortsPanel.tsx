@@ -1,13 +1,14 @@
-import React from 'react';
+import React, { useId } from 'react';
 import { motion } from 'motion/react';
 import { Search, ShieldAlert, ShieldCheck, Hash, Activity, Lock, Unlock } from 'lucide-react';
 import type { PortInfo } from '../../content/portsExplorerTypes';
-import type { Language, PortRangeFilter } from '../../lib/portsFilter';
+import type { Language, PortRangeFilter, PortSecurityFilter } from '../../lib/portsFilter';
 import {
   IANA_PORT_REGISTRY_SOURCE,
   PORT_REGISTRY_METADATA,
   PORT_REGISTRY_VERIFIED_ON
 } from '../../content/portRegistry';
+import SearchHighlight from '../SearchHighlight';
 
 export interface PortsPanelProps {
   language: Language;
@@ -15,7 +16,10 @@ export interface PortsPanelProps {
   setSearchTerm: (v: string) => void;
   selectedRange: PortRangeFilter;
   setSelectedRange: (v: PortRangeFilter) => void;
+  securityFilter: PortSecurityFilter;
+  setSecurityFilter: (v: PortSecurityFilter) => void;
   filteredPorts: PortInfo[];
+  totalPorts: number;
 }
 
 export default function PortsPanel({
@@ -24,8 +28,33 @@ export default function PortsPanel({
   setSearchTerm,
   selectedRange,
   setSelectedRange,
-  filteredPorts
+  securityFilter,
+  setSecurityFilter,
+  filteredPorts,
+  totalPorts
 }: PortsPanelProps) {
+  const statusId = useId();
+  const resultsId = useId();
+  const hasActiveFilters = searchTerm.length > 0 || selectedRange !== 'all' || securityFilter !== 'all';
+  const resultNoun =
+    language === 'en'
+      ? filteredPorts.length === 1
+        ? 'service'
+        : 'services'
+      : filteredPorts.length === 1
+        ? 'servizio'
+        : 'servizi';
+  const resultLabel =
+    language === 'en'
+      ? `${filteredPorts.length} of ${totalPorts} ${resultNoun}`
+      : `${filteredPorts.length} di ${totalPorts} ${resultNoun}`;
+
+  const resetFilters = () => {
+    setSearchTerm('');
+    setSelectedRange('all');
+    setSecurityFilter('all');
+  };
+
   return (
     <>
       {/* Registry Top Bar: Category cards explaining numbering */}
@@ -105,6 +134,9 @@ export default function PortsPanel({
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
+            aria-label={language === 'en' ? 'Search network ports and services' : 'Cerca porte e servizi di rete'}
+            aria-describedby={statusId}
+            aria-controls={resultsId}
             placeholder={
               language === 'en'
                 ? 'Search ports, services, security or protocols...'
@@ -114,7 +146,7 @@ export default function PortsPanel({
           />
         </div>
 
-        <div className="flex gap-2 self-start sm:self-auto shrink-0">
+        <div className="flex flex-wrap gap-2 self-start sm:self-auto shrink-0">
           <button
             onClick={() => setSelectedRange('all')}
             className={`px-3.5 py-1.5 rounded-lg text-[10px] font-bold uppercase border tracking-tight transition-all ${
@@ -158,6 +190,34 @@ export default function PortsPanel({
         </div>
       </div>
 
+      <div className="flex flex-col gap-3 border-b border-slate-100 bg-white px-6 py-3 sm:flex-row sm:items-end sm:justify-between">
+        <label className="flex min-w-0 flex-1 flex-col gap-1 text-xs font-semibold text-slate-700 sm:max-w-xs">
+          <span>{language === 'en' ? 'Security posture' : 'Profilo di sicurezza'}</span>
+          <select
+            value={securityFilter}
+            onChange={(event) => setSecurityFilter(event.target.value as PortSecurityFilter)}
+            className="min-h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-700 outline-none focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100/50"
+          >
+            <option value="all">{language === 'en' ? 'All services' : 'Tutti i servizi'}</option>
+            <option value="secure">{language === 'en' ? 'Secure by design' : 'Sicuri per progettazione'}</option>
+            <option value="review">{language === 'en' ? 'Needs security review' : 'Da valutare con attenzione'}</option>
+          </select>
+        </label>
+        <div className="flex items-center justify-between gap-3 sm:justify-end">
+          <span id={statusId} role="status" aria-live="polite" className="text-xs font-semibold text-slate-600">
+            {resultLabel}
+          </span>
+          <button
+            type="button"
+            disabled={!hasActiveFilters}
+            onClick={resetFilters}
+            className="min-h-11 rounded-xl border border-slate-200 bg-white px-3 text-xs font-bold text-slate-700 transition-colors hover:border-indigo-300 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {language === 'en' ? 'Reset filters' : 'Azzera filtri'}
+          </button>
+        </div>
+      </div>
+
       <div className="px-6 py-2.5 border-b border-slate-100 bg-indigo-50/40 text-[10px] text-indigo-700 flex flex-wrap items-center justify-between gap-2">
         <span className="font-semibold">
           {IANA_PORT_REGISTRY_SOURCE} · {PORT_REGISTRY_METADATA.length}{' '}
@@ -169,7 +229,7 @@ export default function PortsPanel({
       </div>
 
       {/* Port Rows Grid */}
-      <div className="flex-1 p-6 space-y-4">
+      <div id={resultsId} className="flex-1 p-6 space-y-4">
         {selectedRange === 'dynamic' && (
           <div className="bg-emerald-50/50 border border-emerald-100 rounded-lg p-4 flex gap-4 items-start mb-4">
             <Activity className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
@@ -201,14 +261,16 @@ export default function PortsPanel({
                   <div className="flex justify-between items-start gap-2 mb-2">
                     <span className="flex items-center gap-1.5">
                       <span className="px-2.5 py-1 bg-slate-900 text-white font-mono font-semibold text-xs rounded-lg select-all">
-                        PORT {item.ports.join(' / ')}
+                        <SearchHighlight text={`PORT ${item.ports.join(' / ')}`} query={searchTerm} />
                       </span>
-                      <span className="text-xs font-semibold text-slate-800 tracking-tight">{item.service}</span>
+                      <span className="text-xs font-semibold text-slate-800 tracking-tight">
+                        <SearchHighlight text={item.service} query={searchTerm} />
+                      </span>
                     </span>
 
                     <span className="flex items-center gap-1">
                       <span className="text-[9px] font-mono font-semibold px-1.5 py-0.5 bg-slate-100 text-slate-500 rounded uppercase">
-                        {item.transports.join(' / ')}
+                        <SearchHighlight text={item.transports.join(' / ')} query={searchTerm} />
                       </span>
                       <span
                         className={`text-[9.5px] font-bold px-1.5 py-0.5 rounded uppercase flex items-center gap-0.5 ${
@@ -229,9 +291,11 @@ export default function PortsPanel({
                   </div>
 
                   <div className="text-slate-800 text-xs font-semibold mb-1 group-hover:text-indigo-600 transition-colors">
-                    {item.name}
+                    <SearchHighlight text={item.name} query={searchTerm} />
                   </div>
-                  <p className="text-[11px] text-slate-500 leading-normal">{item.description[language]}</p>
+                  <p className="text-[11px] text-slate-500 leading-normal">
+                    <SearchHighlight text={item.description[language]} query={searchTerm} />
+                  </p>
 
                   <div className="mt-2 flex flex-wrap gap-1.5 text-[9px] font-semibold">
                     <span
@@ -259,7 +323,7 @@ export default function PortsPanel({
                               : 'non assegnata'}
                     </span>
                     <span className="px-2 py-0.5 rounded-lg border bg-slate-50 text-slate-500 border-slate-100 font-mono">
-                      {item.ianaServiceNames.join(' · ')}
+                      <SearchHighlight text={item.ianaServiceNames.join(' · ')} query={searchTerm} />
                     </span>
                   </div>
 
@@ -268,7 +332,7 @@ export default function PortsPanel({
                       <ShieldAlert className="w-3.5 h-3.5 shrink-0 mt-0.5" />
                       <span>
                         <strong>{language === 'en' ? 'Ambiguous use:' : 'Uso ambiguo:'}</strong>{' '}
-                        {item.ambiguity[language]}
+                        <SearchHighlight text={item.ambiguity[language]} query={searchTerm} />
                       </span>
                     </div>
                   )}
@@ -276,8 +340,10 @@ export default function PortsPanel({
                   {item.encryptedEquivalent && (
                     <div className="mt-2 rounded-lg border border-indigo-100 bg-indigo-50/50 px-2 py-1.5 text-[10px] text-indigo-700">
                       <strong>{language === 'en' ? 'Encrypted option' : 'Alternativa cifrata'}:</strong>{' '}
-                      {item.encryptedEquivalent.service} · {item.encryptedEquivalent.transports.join('/')}{' '}
-                      {item.encryptedEquivalent.ports.join(' / ')}
+                      <SearchHighlight
+                        text={`${item.encryptedEquivalent.service} · ${item.encryptedEquivalent.transports.join('/')} ${item.encryptedEquivalent.ports.join(' / ')}`}
+                        query={searchTerm}
+                      />
                     </div>
                   )}
                 </div>
@@ -293,7 +359,7 @@ export default function PortsPanel({
                     <strong className="text-[10px] uppercase font-semibold tracking-wider block mb-0.5">
                       {language === 'en' ? 'Security Review' : 'Profilo di Sicurezza'}:
                     </strong>
-                    {item.security[language]}
+                    <SearchHighlight text={item.security[language]} query={searchTerm} />
                   </p>
                 </div>
               </motion.div>
@@ -311,10 +377,7 @@ export default function PortsPanel({
                 : 'Prova a cercare per numero di porta (es. 22), sigla del protocollo (es. SSH) o parole descrittive.'}
             </p>
             <button
-              onClick={() => {
-                setSearchTerm('');
-                setSelectedRange('all');
-              }}
+              onClick={resetFilters}
               className="mt-4 px-4 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold rounded-xl transition-all"
             >
               {language === 'en' ? 'Clear search filters' : 'Riazzera filtri'}

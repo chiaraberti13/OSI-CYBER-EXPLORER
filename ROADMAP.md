@@ -1,7 +1,7 @@
 # 🚀 Roadmap di Sviluppo: OSI-CYBER-EXPLORER
 
-> **Baseline analizzata:** branch `main`, commit `83318b6` dell’11 ottobre 2026
-> **Ultima revisione della roadmap:** 11 ottobre 2026 (rev. 17 — percorso iniziale e vista predefinita)
+> **Baseline analizzata:** branch `main`, commit `debb7f7` dell’11 ottobre 2026
+> **Ultima revisione della roadmap:** 11 ottobre 2026 (rev. 18 — reperibilità di glossario e porte)
 > **Metodo di revisione:** baseline rieseguita localmente con Node 22.22.2 (`npm ci`, `vitest run`, `npm audit`, `vite build`) e ispezione mirata del codice; i task già presenti sono stati conservati con la stessa numerazione e arricchiti solo dove la verifica ha fatto emergere dettagli mancanti.
 
 ## Legenda
@@ -244,7 +244,7 @@ La mappatura serve a spiegare _perché_ esiste un controllo, non a dichiarare co
 
 - [x] **UX-14 — Migliorare l'orientamento iniziale.** `CurriculumView` è la vista predefinita per le visite senza fragment e presenta un percorso progressivo di tre passaggi (Manuale di studio → modello OSI → laboratorio IPv4), con CTA “Continua con il Manuale di studio”. I collegamenti usano il routing esistente; il testo chiarisce che non viene salvato alcun progresso. La rotta `#/osi` e i deep link restano invariati. **Verifica:** E2E Chromium copre landing, CTA e fallback di route; test routing coprono il default; suite `npm run verify` e E2E verdi.
 
-- [ ] **UX-15 — Migliorare la findability delle collezioni grandi.** Per glossario e porte aggiungere filtri espliciti, conteggio, reset ed evidenziazione dei match; introdurre virtualizzazione solo dopo profiling. **Completato quando:** le ricerche comuni richiedono pochi passaggi e mantengono il contesto.
+- [x] **UX-15 — Migliorare la findability delle collezioni grandi.** Per glossario e porte aggiungere filtri espliciti, conteggio, reset ed evidenziazione dei match; introdurre virtualizzazione solo dopo profiling. **Completato quando:** le ricerche comuni richiedono pochi passaggi e mantengono il contesto. **Esito (11/10/2026):** il Glossario permette di cercare ovunque, solo nei termini o solo nelle definizioni; il registro Porte combina intervallo IANA e profilo di sicurezza («sicuro per progettazione» / «da valutare con attenzione») e ricerca anche indicazioni di sicurezza e note di ambiguità. Entrambe le collezioni mostrano un conteggio bilingue `risultati/totale` in una regione live, offrono un reset completo in un passaggio e preservano il contesto evidenziando ogni corrispondenza con l'elemento semantico `<mark>`. Filtri e segmentazione del testo sono funzioni pure coperte da test; test di componente e Chromium verificano conteggio, filtri, evidenziazione e reset. La virtualizzazione non è stata aggiunta: il profiling ENG-15 già versionato misura 114 termini, 443 nodi DOM e una mediana di ricerca di 12,37 ms, sotto la soglia di un frame a 60 Hz (16,7 ms).
 
 - [ ] **UX-16 — Automatizzare i controlli a11y.** Integrare `axe-core` con Vitest/Testing Library o `@axe-core/playwright`, più E2E per focus modale, tastiera, cambio lingua, reflow e deep link. **Completato quando:** regressioni WCAG rilevabili automaticamente bloccano la PR.
 

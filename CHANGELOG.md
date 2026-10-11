@@ -4,6 +4,9 @@ All notable changes to OSI Cyber Explorer are documented in this file. The proje
 
 ## [Unreleased]
 
+- Large collection findability (UX-15): added explicit field and security-posture filters, visible bilingual result counts, one-step reset controls, and semantic `<mark>` highlighting to the Glossary and Ports collections. Search now includes port security guidance and ambiguity notes; unit, component, and Chromium regressions cover filtering, counts, highlighting, and reset. Virtualisation remains intentionally deferred because the versioned profile is below the 16.7 ms threshold.
+- Reperibilità delle collezioni grandi (UX-15): aggiunti filtri espliciti per campo e profilo di sicurezza, conteggi bilingui visibili, reset completo in un passaggio ed evidenziazione semantica `<mark>` alle collezioni Glossario e Porte. La ricerca include ora anche indicazioni di sicurezza e note di ambiguità delle porte; test unitari, di componente e Chromium coprono filtro, conteggio, evidenziazione e reset. La virtualizzazione resta intenzionalmente rinviata perché il profilo versionato è sotto la soglia di 16,7 ms.
+
 - Study-path landing (UX-14): new visits open the bilingual learning map, which recommends a three-step route from the Study Manual through the OSI model to an IPv4 lab and offers a clear “Continue” action; progress tracking was not added. Direct OSI and other deep links remain available.
 - Percorso iniziale (UX-14): le nuove visite aprono la mappa didattica bilingue, che consiglia un percorso in tre passaggi dal Manuale di studio al modello OSI e a un laboratorio IPv4, con un’azione “Continua” chiara; non è stato aggiunto alcun tracciamento dei progressi. La rotta diretta OSI e gli altri deep link restano disponibili.
 

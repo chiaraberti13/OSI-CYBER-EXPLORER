@@ -5,7 +5,7 @@
  */
 
 import { afterEach, describe, expect, it } from 'vitest';
-import { cleanup, render, screen, within } from '@testing-library/react';
+import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import GlossaryModal from './GlossaryModal';
 import { useStore } from '../store';
@@ -29,7 +29,7 @@ describe('UX-04 glossary search accessibility', () => {
     const status = screen.getByRole('status');
     // The input is described by the live region, so the count is part of its a11y name/description.
     expect(input.getAttribute('aria-describedby')).toBe(status.id);
-    expect(status.textContent).toMatch(/\d+ termini/);
+    expect(status.textContent).toMatch(/\d+ di \d+ termini/);
   });
 
   it('updates the announced count as the query narrows the list', async () => {
@@ -44,7 +44,7 @@ describe('UX-04 glossary search accessibility', () => {
     const after = Number(status.textContent!.match(/(\d+)/)![1]);
     expect(after).toBeGreaterThan(0);
     expect(after).toBeLessThan(before);
-    expect(screen.getByText('IPsec')).toBeTruthy();
+    expect(screen.getAllByText('IPsec').length).toBeGreaterThan(0);
   });
 
   it('announces and shows the empty state when nothing matches', async () => {
@@ -79,6 +79,29 @@ describe('UX-04 glossary search accessibility', () => {
     useStore.setState({ language: 'en' });
     render(<GlossaryModal inline />);
     const input = screen.getByRole('textbox', { name: 'Search glossary terms or definitions' });
-    expect(within(input.closest('div')!.parentElement!).getByRole('status').textContent).toMatch(/\d+ terms?/);
+    expect(input).toBeTruthy();
+    expect(screen.getByRole('status').textContent).toMatch(/\d+ of \d+ terms?/);
+  });
+
+  it('filters by field, highlights matches, and resets every filter', async () => {
+    const user = userEvent.setup();
+    render(<GlossaryModal inline />);
+
+    const input = screen.getByRole('textbox', { name: 'Cerca termini o definizioni del glossario' });
+    const scope = screen.getByRole('combobox', { name: 'Cerca in' });
+    const reset = screen.getByRole('button', { name: 'Azzera filtri' });
+    expect(reset.hasAttribute('disabled')).toBe(true);
+
+    await user.type(input, 'ipsec');
+    await user.selectOptions(scope, 'term');
+
+    expect(screen.getAllByText(/ipsec/i, { selector: 'mark' }).length).toBeGreaterThan(0);
+    expect((scope as HTMLSelectElement).value).toBe('term');
+    expect(reset.hasAttribute('disabled')).toBe(false);
+
+    await user.click(reset);
+    expect((input as HTMLInputElement).value).toBe('');
+    expect((scope as HTMLSelectElement).value).toBe('all');
+    expect(document.activeElement).toBe(input);
   });
 });

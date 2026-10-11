@@ -11,7 +11,8 @@ import {
   filterProtocols,
   shuffled,
   type DeviceCategoryFilter,
-  type PortRangeFilter
+  type PortRangeFilter,
+  type PortSecurityFilter
 } from '../lib/portsFilter';
 import type { PortInfo } from '../content/portsExplorerTypes';
 import type { AaaProtocol, EapMethod, PortsTab, SecureSubTab, VpnMode } from './ports/portsTypes';
@@ -33,6 +34,7 @@ export default function PortsExplorer({
   const language = useStore((state) => state.language);
   const [activeTab, setActiveTab] = useState<PortsTab>('ports');
   const [selectedRange, setSelectedRange] = useState<PortRangeFilter>('all');
+  const [portSecurity, setPortSecurity] = useState<PortSecurityFilter>('all');
   const [deviceCategory, setDeviceCategory] = useState<DeviceCategoryFilter>('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [secureSubTab, setSecureSubTab] = useState<SecureSubTab>('eap');
@@ -46,7 +48,7 @@ export default function PortsExplorer({
   const [currentFlashcardIdx, setCurrentFlashcardIdx] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
 
-  const filteredPorts = filterPorts(PORT_REGISTRY, selectedRange, searchTerm, language);
+  const filteredPorts = filterPorts(PORT_REGISTRY, selectedRange, searchTerm, language, portSecurity);
   const filteredProtocols = filterProtocols(PROTOCOL_REGISTRY, searchTerm, language);
   const filteredDevices = filterDevices(DEVICE_REGISTRY, deviceCategory, searchTerm, language);
 
@@ -180,7 +182,10 @@ export default function PortsExplorer({
             setSearchTerm={setSearchTerm}
             selectedRange={selectedRange}
             setSelectedRange={setSelectedRange}
+            securityFilter={portSecurity}
+            setSecurityFilter={setPortSecurity}
             filteredPorts={filteredPorts}
+            totalPorts={PORT_REGISTRY.length}
           />
         ) : activeTab === 'protocols' ? (
           <ProtocolsPanel

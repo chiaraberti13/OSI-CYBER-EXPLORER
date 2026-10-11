@@ -21,6 +21,19 @@ describe('portsFilter', () => {
     expect(filterPorts(PORT_REGISTRY, 'all', 'zzz-no-match-zzz', 'en')).toEqual([]);
   });
 
+  it('filters ports by security posture and searches the security guidance', () => {
+    const secure = filterPorts(PORT_REGISTRY, 'all', '', 'en', 'secure');
+    const review = filterPorts(PORT_REGISTRY, 'all', '', 'en', 'review');
+    expect(secure.length).toBeGreaterThan(0);
+    expect(review.length).toBeGreaterThan(0);
+    expect(secure.every((port) => port.isSecure)).toBe(true);
+    expect(review.every((port) => !port.isSecure)).toBe(true);
+
+    const securityText = PORT_REGISTRY.find((port) => port.security.en.toLowerCase().includes('plaintext'));
+    expect(securityText).toBeTruthy();
+    expect(filterPorts(PORT_REGISTRY, 'all', 'plaintext', 'en')).toContain(securityText);
+  });
+
   it('matches protocols case-insensitively', () => {
     const first = PROTOCOL_REGISTRY[0]!;
     const hits = filterProtocols(PROTOCOL_REGISTRY, first.name.toUpperCase(), 'en');

@@ -2,28 +2,33 @@ import type { DeviceInfo, PortInfo, ProtocolInfo } from '../content/portsExplore
 
 export type Language = 'en' | 'it';
 export type PortRangeFilter = 'all' | 'well-known' | 'registered' | 'dynamic';
+export type PortSecurityFilter = 'all' | 'secure' | 'review';
 export type DeviceCategoryFilter = 'all' | 'security' | 'networking' | 'infrastructure';
 
 export function filterPorts(
   registry: readonly PortInfo[],
   range: PortRangeFilter,
   searchTerm: string,
-  language: Language
+  language: Language,
+  security: PortSecurityFilter = 'all'
 ): PortInfo[] {
-  const term = searchTerm.toLowerCase();
+  const term = searchTerm.trim().toLowerCase();
   return registry.filter((p) => {
     const rangeMatch = range === 'all' || p.range === range;
+    const securityMatch = security === 'all' || (security === 'secure' ? p.isSecure : !p.isSecure);
     const searchMatch =
-      !searchTerm ||
+      !term ||
       p.ports.join(' / ').includes(term) ||
       p.transports.join(' ').toLowerCase().includes(term) ||
       p.registrationStatus.includes(term) ||
-      p.ianaServiceNames.some((name) => name.includes(term)) ||
+      p.ianaServiceNames.some((name) => name.toLowerCase().includes(term)) ||
       p.encryptedEquivalent?.service.toLowerCase().includes(term) ||
       p.service.toLowerCase().includes(term) ||
       p.name.toLowerCase().includes(term) ||
-      p.description[language].toLowerCase().includes(term);
-    return rangeMatch && searchMatch;
+      p.description[language].toLowerCase().includes(term) ||
+      p.security[language].toLowerCase().includes(term) ||
+      p.ambiguity?.[language].toLowerCase().includes(term);
+    return rangeMatch && securityMatch && searchMatch;
   });
 }
 

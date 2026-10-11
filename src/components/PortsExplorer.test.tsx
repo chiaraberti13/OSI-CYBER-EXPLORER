@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it } from 'vitest';
 import { useStore } from '../store';
 import PortsExplorer from './PortsExplorer';
@@ -30,5 +31,31 @@ describe('PortsExplorer IANA metadata', () => {
     expect(screen.getByText('IANA: assigned')).toBeTruthy();
     expect(screen.getByText('http-alt')).toBeTruthy();
     expect(screen.queryByText(/Ambiguous use:/)).toBeNull();
+    expect(screen.getAllByText('8080', { selector: 'mark' }).length).toBeGreaterThan(0);
+  });
+
+  it('shows a visible count and resets search, range, and security filters together', async () => {
+    const user = userEvent.setup();
+    useStore.setState({ language: 'it' });
+    render(<PortsExplorer inline />);
+
+    const status = screen.getByRole('status');
+    const total = Number(status.textContent!.match(/di (\d+) servizi/)![1]);
+    expect(status.textContent).toBe(`${total} di ${total} servizi`);
+
+    const security = screen.getByRole('combobox', { name: 'Profilo di sicurezza' });
+    await user.selectOptions(security, 'review');
+    const filtered = Number(status.textContent!.match(/(\d+) di/)![1]);
+    expect(filtered).toBeGreaterThan(0);
+    expect(filtered).toBeLessThan(total);
+
+    fireEvent.change(screen.getByRole('textbox', { name: 'Cerca porte e servizi di rete' }), {
+      target: { value: 'ssh' }
+    });
+    await user.click(screen.getByRole('button', { name: 'Azzera filtri' }));
+
+    expect((security as HTMLSelectElement).value).toBe('all');
+    expect((screen.getByRole('textbox', { name: 'Cerca porte e servizi di rete' }) as HTMLInputElement).value).toBe('');
+    expect(status.textContent).toBe(`${total} di ${total} servizi`);
   });
 });
