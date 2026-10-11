@@ -146,6 +146,9 @@ describe('Guide dialog', () => {
       'Come usare il Laboratorio'
     );
     expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Chiudi la guida' }));
+    const banner = dialog.querySelector('img');
+    expect(banner?.getAttribute('alt')).toBe('');
+    expect(banner?.getAttribute('src')).not.toMatch(/^https?:/);
 
     await user.click(screen.getByRole('button', { name: 'Ho capito!' }));
     expect(useStore.getState().isGuideOpen).toBe(false);

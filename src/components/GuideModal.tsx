@@ -1,6 +1,7 @@
 import { useId } from 'react';
 import { X, Play, Shield, MousePointer2, Swords } from 'lucide-react';
 import ModalDialog from './ModalDialog';
+import guideTerminalUrl from '../assets/guide-terminal.svg?url';
 
 interface GuideModalProps {
   isOpen: boolean;
@@ -89,12 +90,7 @@ export default function GuideModal({ isOpen, onClose, language }: GuideModalProp
 
       {/* Cyberpunk Repository Banner */}
       <div className="relative w-full h-44 md:h-52 rounded-lg overflow-hidden mb-6 border border-slate-100">
-        <img
-          src="https://images.unsplash.com/photo-1563089145-599997674d42?q=80&w=1200&auto=format&fit=crop"
-          alt="Cyberpunk Lab Terminal"
-          className="w-full h-full object-cover brightness-[0.75] contrast-[1.15]"
-          referrerPolicy="no-referrer"
-        />
+        <img src={guideTerminalUrl} alt="" className="w-full h-full object-cover brightness-[0.75] contrast-[1.15]" />
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/30 to-transparent flex items-end p-6">
           <div>
             <span

@@ -24,6 +24,28 @@ test.describe('application shell', () => {
     await expect(page.locator('html')).toHaveAttribute('lang', 'it');
   });
 
+  test('loads the guide artwork locally without third-party requests (UX-11)', async ({ page }) => {
+    const thirdPartyRequests: string[] = [];
+    page.on('request', (request) => {
+      const url = new URL(request.url());
+      if (url.origin !== 'http://127.0.0.1:4173') thirdPartyRequests.push(url.href);
+    });
+
+    await openApp(page);
+    await page.getByRole('button', { name: 'Apri la guida' }).click();
+
+    const dialog = page.getByRole('dialog', { name: 'Manuale & Repository di Rete' });
+    const banner = dialog.locator('img[alt=""]');
+    await expect(banner).toBeVisible();
+    await expect
+      .poll(() => banner.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0))
+      .toBe(true);
+
+    const source = await banner.getAttribute('src');
+    expect(source).toMatch(/^data:image\/svg\+xml,/);
+    expect(thirdPartyRequests).toEqual([]);
+  });
+
   test('switches language between Italian and English', async ({ page }) => {
     await openApp(page);
 

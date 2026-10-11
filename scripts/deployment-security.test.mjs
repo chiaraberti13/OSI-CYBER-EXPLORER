@@ -116,6 +116,16 @@ test('scopes application HSTS to the exact canonical host, without applying prel
   // behavior is accepted; this assertion guards the policy controlled here.
 });
 
+test('allows images only from the deployment itself or embedded data', async () => {
+  const configuration = JSON.parse(await readFile(new URL('../vercel.json', import.meta.url), 'utf8'));
+  const enforcedCsp = configuration.headers[0].headers.find(
+    (header) => header.key.toLowerCase() === 'content-security-policy'
+  );
+  const directives = parseCsp(enforcedCsp.value);
+
+  assert.deepEqual(directives.get('img-src'), ["'self'", 'data:']);
+});
+
 test('produces a compact comparable Markdown summary', () => {
   const report = evaluateSecurityHeaders({
     targetUrl: 'https://osi-cyber-explorer.vercel.app',
