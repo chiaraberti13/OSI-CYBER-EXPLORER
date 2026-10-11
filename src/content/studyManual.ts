@@ -2257,5 +2257,332 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
         ]
       }
     ]
+  },
+  {
+    id: 'network-defenses',
+    cert: 'securityplus',
+    order: 9,
+    title: {
+      it: 'Difese di rete: ACL, firewall, IDS/IPS e segmentazione',
+      en: 'Network defenses: ACLs, firewalls, IDS/IPS and segmentation'
+    },
+    summary: {
+      it: 'I controlli che filtrano e sorvegliano il traffico: ACL e filtraggio dei pacchetti, firewall stateful con ordine delle regole, IDS/IPS fra rilevamento e blocco, e la segmentazione fino allo Zero Trust.',
+      en: 'The controls that filter and watch traffic: ACLs and packet filtering, stateful firewalls with rule order, IDS/IPS between detection and blocking, and segmentation up to Zero Trust.'
+    },
+    topics: [
+      {
+        id: 'acl-packet-filtering',
+        title: { it: 'ACL e filtraggio dei pacchetti', en: 'ACLs and packet filtering' },
+        objectives: [
+          {
+            it: 'Spiegare come un’ACL valuta i pacchetti dall’alto verso il basso fermandosi alla prima corrispondenza.',
+            en: 'Explain how an ACL evaluates packets top-down, stopping at the first match.'
+          },
+          {
+            it: 'Distinguere ACL standard ed extended e applicare il principio del default deny.',
+            en: 'Distinguish standard and extended ACLs and apply the default-deny principle.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere indirizzi IP, porte e la differenza tra TCP e UDP.',
+            en: 'Know IP addresses, ports and the difference between TCP and UDP.'
+          }
+        ],
+        theory: [
+          {
+            it: 'Un’ACL (Access Control List) è un elenco ordinato di regole permit/deny che il dispositivo valuta dall’alto verso il basso: appena un pacchetto corrisponde a una regola, l’ACL si ferma e applica quell’azione, ignorando le regole successive. L’ordine, quindi, cambia il risultato.',
+            en: 'An ACL (Access Control List) is an ordered list of permit/deny rules the device evaluates top-down: as soon as a packet matches a rule, the ACL stops and applies that action, ignoring the later rules. Order therefore changes the outcome.'
+          },
+          {
+            it: 'Un’ACL standard filtra solo sull’indirizzo sorgente; un’ACL extended filtra su protocollo, sorgente, destinazione e porte, quindi è molto più selettiva. La parola chiave “established” lascia passare il traffico di ritorno controllando i flag ACK/RST, ma non mantiene stato: è un filtro, non un firewall stateful.',
+            en: 'A standard ACL filters only on the source address; an extended ACL filters on protocol, source, destination and ports, so it is far more selective. The “established” keyword lets return traffic through by checking the ACK/RST flags, but keeps no state: it is a filter, not a stateful firewall.'
+          },
+          {
+            it: 'In fondo a ogni ACL c’è un deny implicito: tutto ciò che non è esplicitamente permesso viene scartato. Questo è il default deny, il fondamento del minimo privilegio applicato al traffico: si aprono solo i flussi necessari e si nega il resto.',
+            en: 'At the bottom of every ACL there is an implicit deny: anything not explicitly permitted is dropped. This is default deny, the foundation of least privilege applied to traffic: only the needed flows are opened and the rest is denied.'
+          }
+        ],
+        example: {
+          it: 'Se una regola “permit ip any any” precede un “deny” più specifico, il deny non verrà mai raggiunto: il pacchetto corrisponde già alla prima regola. Spostare le regole specifiche sopra quelle generiche risolve lo shadowing.',
+          en: 'If a “permit ip any any” rule precedes a more specific “deny”, the deny is never reached: the packet already matches the first rule. Moving the specific rules above the generic ones fixes the shadowing.'
+        },
+        commonMistakes: [
+          {
+            it: 'Dimenticare l’ordine: una regola generica messa troppo in alto oscura (shadowing) quelle specifiche sotto di essa.',
+            en: 'Forgetting order: a generic rule placed too high shadows the specific ones below it.'
+          },
+          {
+            it: 'Scambiare “established” per stato reale: controlla solo i flag ACK/RST del pacchetto, non tiene traccia della connessione.',
+            en: 'Mistaking “established” for real state: it only checks the packet’s ACK/RST flags, it does not track the connection.'
+          }
+        ],
+        lab: 'securitycore',
+        references: [{ kind: 'nist', id: 'SP 800-41 Rev. 1' }],
+        guidedLabs: [
+          {
+            id: 'gl-acl-first-match',
+            title: { it: 'Prevedi la decisione di un’ACL', en: 'Predict an ACL’s decision' },
+            difficulty: 'core',
+            lab: 'securitycore',
+            scenario: {
+              it: 'Il laboratorio «Sicurezza CCNA» valuta un pacchetto contro un’ACL IPv4 regola per regola, mostrando quale riga produce la prima corrispondenza.',
+              en: 'The “Security fundamentals” (CCNA) lab evaluates a packet against an IPv4 ACL rule by rule, showing which line produces the first match.'
+            },
+            task: {
+              it: 'Per due pacchetti diversi, prevedi se l’ACL li consente o li nega e quale regola scatta per prima; poi verifica nel lab.',
+              en: 'For two different packets, predict whether the ACL permits or denies them and which rule fires first; then check in the lab.'
+            },
+            steps: [
+              {
+                it: 'Apri «Sicurezza CCNA» e osserva l’elenco di regole dell’ACL IPv4.',
+                en: 'Open “Security fundamentals” (CCNA) and look at the IPv4 ACL rule list.'
+              },
+              {
+                it: 'Imposta i campi del pacchetto (sorgente, destinazione, protocollo, porta) e prevedi l’esito prima di valutare.',
+                en: 'Set the packet fields (source, destination, protocol, port) and predict the outcome before evaluating.'
+              },
+              {
+                it: 'Confronta la tua previsione con la prima corrispondenza evidenziata dal lab.',
+                en: 'Compare your prediction with the first match highlighted by the lab.'
+              }
+            ],
+            challenge: {
+              it: 'Riordina mentalmente due regole per eliminare uno shadowing e prevedi come cambia l’esito.',
+              en: 'Mentally reorder two rules to remove a shadowing and predict how the outcome changes.'
+            },
+            solution: [
+              {
+                it: 'L’ACL si ferma alla prima regola che corrisponde: se una “permit” generica precede una “deny” specifica, il pacchetto è consentito perché la deny non viene mai raggiunta. Il deny implicito finale scarta ciò che nessuna regola permette.',
+                en: 'The ACL stops at the first matching rule: if a generic “permit” precedes a specific “deny”, the packet is permitted because the deny is never reached. The final implicit deny drops whatever no rule permits.'
+              },
+              {
+                it: 'Sfida: spostando la regola specifica sopra quella generica, la prima corrispondenza cambia e l’esito si inverte per i pacchetti interessati — la prova concreta che in un’ACL l’ordine è semantica, non estetica.',
+                en: 'Challenge: moving the specific rule above the generic one changes the first match and flips the outcome for the affected packets — concrete proof that in an ACL order is semantics, not aesthetics.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So prevedere permit/deny e la prima regola che scatta per un pacchetto dato.',
+                en: 'I can predict permit/deny and the first rule that fires for a given packet.'
+              },
+              {
+                it: 'So spiegare come riordinare le regole elimina lo shadowing.',
+                en: 'I can explain how reordering rules removes shadowing.'
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'firewalls-inspection',
+        title: { it: 'Firewall e ispezione stateful', en: 'Firewalls and stateful inspection' },
+        objectives: [
+          {
+            it: 'Distinguere un filtro stateless da un firewall stateful e spiegare il ruolo della state table.',
+            en: 'Distinguish a stateless filter from a stateful firewall and explain the role of the state table.'
+          },
+          {
+            it: 'Applicare l’ordine delle regole, evitare lo shadowing e partire da un default deny per zone.',
+            en: 'Apply rule order, avoid shadowing and start from a default deny per zone.'
+          }
+        ],
+        prerequisites: [
+          { it: 'Conoscere le ACL e la nozione di sessione TCP.', en: 'Know ACLs and the notion of a TCP session.' }
+        ],
+        theory: [
+          {
+            it: 'Un filtro stateless valuta ogni pacchetto in isolamento; un firewall stateful tiene una state table delle connessioni attive e lascia passare automaticamente il traffico di ritorno coerente, bloccando i pacchetti fuori stato. Questo distingue una risposta legittima da un pacchetto iniettato.',
+            en: 'A stateless filter evaluates each packet in isolation; a stateful firewall keeps a state table of active connections and automatically lets coherent return traffic through, blocking out-of-state packets. This tells a legitimate reply from an injected packet.'
+          },
+          {
+            it: 'Il firewall classifica il traffico per zona, sorgente, destinazione, servizio, applicazione e identità, poi applica la prima regola corrispondente. Regole ampie o messe troppo in alto rendono inefficaci i deny più specifici (shadowing) e aprono percorsi non previsti tra zone: l’ordine e la specificità delle regole sono parte della sicurezza.',
+            en: 'The firewall classifies traffic by zone, source, destination, service, application and identity, then applies the first matching rule. Broad rules, or rules placed too high, make more specific denies ineffective (shadowing) and open unintended paths between zones: rule order and specificity are part of security.'
+          },
+          {
+            it: 'Anche l’ordine di elaborazione con il NAT conta: la policy va definita in modo esplicito e indipendente dalla traduzione, altrimenti una regola può corrispondere a tuple diverse da quelle attese. Il firewall è un punto di enforcement inline: se è in linea sul percorso, può bloccare, non solo osservare.',
+            en: 'The processing order with NAT also matters: the policy must be defined explicitly and independently of translation, otherwise a rule can match tuples different from those expected. The firewall is an inline enforcement point: being in line on the path, it can block, not only observe.'
+          }
+        ],
+        example: {
+          it: 'Con routing asimmetrico il ritorno passa da un altro firewall che non ha la connessione nella sua state table: il traffico legittimo viene scartato come fuori stato. La correzione è rendere simmetrico il percorso, non aprire il traffico out-of-state.',
+          en: 'With asymmetric routing the return goes through another firewall that does not have the connection in its state table: legitimate traffic is dropped as out-of-state. The fix is to make the path symmetric, not to allow out-of-state traffic.'
+        },
+        commonMistakes: [
+          {
+            it: 'Aprire il traffico fuori stato per “far funzionare” un flusso: nasconde un problema di routing e indebolisce le garanzie del firewall stateful.',
+            en: 'Allowing out-of-state traffic to “make a flow work”: it hides a routing problem and weakens the stateful firewall’s guarantees.'
+          },
+          {
+            it: 'Credere che un NAT basti come policy di sicurezza: la traduzione non è autorizzazione; serve una policy esplicita indipendente dal NAT.',
+            en: 'Believing a NAT is enough as a security policy: translation is not authorization; an explicit policy independent of NAT is needed.'
+          }
+        ],
+        lab: 'inspection',
+        references: [{ kind: 'nist', id: 'SP 800-41 Rev. 1' }],
+        guidedLabs: [
+          {
+            id: 'gl-rule-order-shadowing',
+            title: { it: 'Traccia un flusso fino alla regola che scatta', en: 'Trace a flow to the rule that fires' },
+            difficulty: 'core',
+            lab: 'inspection',
+            scenario: {
+              it: 'Il laboratorio «Firewall e ispezione» mostra scenari di policy con ordine delle regole, shadowing, default deny e state table.',
+              en: 'The “Firewall and inspection” lab shows policy scenarios with rule order, shadowing, default deny and the state table.'
+            },
+            task: {
+              it: 'Scegli lo scenario sull’ordine delle regole e individua quale regola corrisponde davvero a un flusso dato e perché un deny più specifico resta a zero hit.',
+              en: 'Pick the rule-order scenario and find which rule actually matches a given flow and why a more specific deny stays at zero hits.'
+            },
+            steps: [
+              {
+                it: 'Apri «Firewall e ispezione» e seleziona lo scenario «Ordine delle regole, shadowing e default deny».',
+                en: 'Open “Firewall and inspection” and select the “Rule order, shadowing, and default deny” scenario.'
+              },
+              {
+                it: 'Segui il flusso attraverso le regole e osserva su quale riga avviene la prima corrispondenza.',
+                en: 'Follow the flow through the rules and observe on which line the first match happens.'
+              },
+              {
+                it: 'Nota come una regola specifica con zero hit riveli uno shadowing da parte di una regola più ampia e precedente.',
+                en: 'Notice how a specific rule with zero hits reveals shadowing by a broader, earlier rule.'
+              }
+            ],
+            challenge: {
+              it: 'Proponi un riordino che azzeri lo shadowing mantenendo il default deny finale, e indica come lo verificheresti con test positivi e negativi.',
+              en: 'Propose a reordering that removes the shadowing while keeping the final default deny, and say how you would verify it with positive and negative tests.'
+            },
+            solution: [
+              {
+                it: 'Il firewall applica la prima regola corrispondente: una policy generica precedente intercetta il flusso e la deny specifica resta a zero hit. Spostare la regola specifica sopra quella generica ripristina l’intento, e il deny implicito di zona continua a scartare tutto il resto.',
+                en: 'The firewall applies the first matching rule: an earlier generic policy intercepts the flow and the specific deny stays at zero hits. Moving the specific rule above the generic one restores the intent, and the implicit zone deny keeps dropping everything else.'
+              },
+              {
+                it: 'Sfida: dopo il riordino si verifica con test per zona, famiglia di indirizzi e direzione — positivi (ciò che deve passare) e negativi (ciò che deve essere negato) — e si controlla che rimuovere una regola apparentemente inutilizzata non rompa dipendenze note.',
+                en: 'Challenge: after reordering you verify with tests by zone, address family and direction — positive (what must pass) and negative (what must be denied) — and check that removing an apparently unused rule does not break known dependencies.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So tracciare un flusso fino alla regola che scatta davvero.',
+                en: 'I can trace a flow to the rule that actually fires.'
+              },
+              {
+                it: 'So riconoscere e correggere uno shadowing mantenendo il default deny.',
+                en: 'I can recognise and fix a shadowing while keeping the default deny.'
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'ids-ips-segmentation',
+        title: { it: 'IDS/IPS, segmentazione e Zero Trust', en: 'IDS/IPS, segmentation and Zero Trust' },
+        objectives: [
+          {
+            it: 'Distinguere un IDS (rilevamento, out-of-band) da un IPS (blocco, inline) e sapere quando usarli.',
+            en: 'Distinguish an IDS (detection, out-of-band) from an IPS (blocking, inline) and know when to use each.'
+          },
+          {
+            it: 'Spiegare come la segmentazione e il modello Zero Trust riducono la portata di un attacco.',
+            en: 'Explain how segmentation and the Zero Trust model reduce the reach of an attack.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere firewall, VLAN e la difesa in profondità.',
+            en: 'Know firewalls, VLANs and defense in depth.'
+          }
+        ],
+        theory: [
+          {
+            it: 'Un IDS (Intrusion Detection System) osserva una copia del traffico out-of-band e genera un allarme quando rileva qualcosa: non è sul percorso, quindi non può bloccare da solo. Un IPS (Intrusion Prevention System) è inline sul traffico e può scartare il pacchetto in tempo reale, al prezzo di poter introdurre latenza o falsi positivi che bloccano traffico legittimo.',
+            en: 'An IDS (Intrusion Detection System) watches a copy of the traffic out-of-band and raises an alert when it detects something: it is not on the path, so it cannot block on its own. An IPS (Intrusion Prevention System) is inline on the traffic and can drop the packet in real time, at the cost of possibly adding latency or false positives that block legitimate traffic.'
+          },
+          {
+            it: 'I sensori si distinguono anche per posizione: NIDS/NIPS osservano la rete, HIDS/HIPS vivono sull’host e vedono ciò che la rete non mostra (processi, file, chiamate di sistema), mentre un EDR unisce telemetria e risposta sull’endpoint. La scelta fra rilevare e bloccare dipende dal rischio: in linea si blocca, fuori banda si indaga senza impattare il traffico.',
+            en: 'Sensors also differ by placement: NIDS/NIPS watch the network, HIDS/HIPS live on the host and see what the network does not show (processes, files, system calls), while an EDR combines telemetry and response on the endpoint. The choice between detecting and blocking depends on risk: inline you block, out-of-band you investigate without impacting traffic.'
+          },
+          {
+            it: 'La segmentazione divide la rete in zone con policy fra loro, così un attacco confinato non raggiunge tutto; il microsegmento la porta al singolo carico di lavoro. Lo Zero Trust estende l’idea: nessuna fiducia implicita per posizione in rete, ma verifica di identità e contesto a ogni richiesta («never trust, always verify»). IDS/IPS e segmentazione sono complementari: uno vede, l’altra contiene.',
+            en: 'Segmentation divides the network into zones with policy between them, so a contained attack does not reach everything; microsegmentation takes it down to the single workload. Zero Trust extends the idea: no implicit trust by network location, but verification of identity and context on every request (“never trust, always verify”). IDS/IPS and segmentation are complementary: one sees, the other contains.'
+          }
+        ],
+        example: {
+          it: 'Un IDS fuori banda rileva una scansione e avvisa il SOC senza toccare il traffico; un IPS inline sulla stessa tratta può invece scartare subito i pacchetti della scansione. In una rete segmentata, anche se un host cade, la policy di zona impedisce il movimento laterale verso i server critici.',
+          en: 'An out-of-band IDS detects a scan and alerts the SOC without touching the traffic; an inline IPS on the same path can instead drop the scan packets immediately. In a segmented network, even if one host falls, the zone policy prevents lateral movement toward the critical servers.'
+        },
+        commonMistakes: [
+          {
+            it: 'Aspettarsi che un IDS blocchi: essendo out-of-band rileva e segnala, ma per bloccare serve un IPS inline o un’azione a valle.',
+            en: 'Expecting an IDS to block: being out-of-band it detects and alerts, but blocking needs an inline IPS or a downstream action.'
+          },
+          {
+            it: 'Considerare lo Zero Trust solo un prodotto: è un modello che toglie la fiducia implicita e verifica ogni richiesta, e si realizza con identità, segmentazione e policy, non con un singolo apparato.',
+            en: 'Treating Zero Trust as just a product: it is a model that removes implicit trust and verifies every request, realised through identity, segmentation and policy, not a single appliance.'
+          }
+        ],
+        lab: 'security',
+        references: [
+          { kind: 'nist', id: 'SP 800-94' },
+          { kind: 'nist', id: 'SP 800-207' }
+        ],
+        guidedLabs: [
+          {
+            id: 'gl-ids-vs-ips',
+            title: { it: 'Scegli tra rilevare e bloccare', en: 'Choose between detecting and blocking' },
+            difficulty: 'core',
+            lab: 'security',
+            scenario: {
+              it: 'Il laboratorio «IDS e IPS» presenta i sensori difensivi — NIDS, NIPS, HIDS, HIPS, WIDS, WIPS ed EDR — distinguendo chi rileva da chi blocca e la posizione inline o fuori banda.',
+              en: 'The “IDS and IPS” lab presents the defensive sensors — NIDS, NIPS, HIDS, HIPS, WIDS, WIPS and EDR — telling apart who detects from who blocks and the inline or out-of-band placement.'
+            },
+            task: {
+              it: 'Per una minaccia di rete e una minaccia sull’host, scegli il sensore giusto e indica se va inline (blocco) o fuori banda (rilevamento) e perché.',
+              en: 'For a network threat and a host threat, choose the right sensor and state whether it goes inline (blocking) or out-of-band (detection) and why.'
+            },
+            steps: [
+              {
+                it: 'Apri «IDS e IPS» e confronta le caratteristiche di NIDS/NIPS e HIDS/HIPS.',
+                en: 'Open “IDS and IPS” and compare the characteristics of NIDS/NIPS and HIDS/HIPS.'
+              },
+              {
+                it: 'Per ogni minaccia decidi se conta di più non impattare il traffico (fuori banda) o fermarlo subito (inline).',
+                en: 'For each threat decide whether not impacting traffic (out-of-band) or stopping it immediately (inline) matters more.'
+              },
+              {
+                it: 'Associa il sensore corretto alla posizione e giustifica la scelta con il rischio.',
+                en: 'Match the correct sensor to the placement and justify the choice with the risk.'
+              }
+            ],
+            challenge: {
+              it: 'Quando preferiresti un IDS fuori banda a un IPS inline pur potendo bloccare? Motiva con falsi positivi e disponibilità.',
+              en: 'When would you prefer an out-of-band IDS to an inline IPS even when blocking is possible? Justify with false positives and availability.'
+            },
+            solution: [
+              {
+                it: 'Per una minaccia di rete su un segmento critico un NIPS inline può bloccarla subito; se il rischio di falsi positivi che interrompono traffico legittimo è alto, un NIDS fuori banda rileva e allerta senza impattare. Sull’host, HIDS/HIPS ed EDR vedono processi e file che la rete non mostra.',
+                en: 'For a network threat on a critical segment an inline NIPS can block it at once; if the risk of false positives cutting legitimate traffic is high, an out-of-band NIDS detects and alerts without impact. On the host, HIDS/HIPS and EDR see processes and files the network does not show.'
+              },
+              {
+                it: 'Sfida: si preferisce un IDS fuori banda quando la disponibilità del flusso è prioritaria e un blocco errato costerebbe più del ritardo nella risposta; l’IPS inline conviene dove fermare subito l’attacco vale il rischio di qualche falso positivo.',
+                en: 'Challenge: an out-of-band IDS is preferred when flow availability is the priority and a wrong block would cost more than a slower response; the inline IPS is worth it where stopping the attack immediately outweighs the risk of a few false positives.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So scegliere tra sensore inline e fuori banda in base al rischio.',
+                en: 'I can choose between an inline and an out-of-band sensor based on risk.'
+              },
+              {
+                it: 'So collocare NIDS/NIPS e HIDS/HIPS secondo ciò che devono vedere.',
+                en: 'I can place NIDS/NIPS and HIDS/HIPS according to what they must see.'
+              }
+            ]
+          }
+        ]
+      }
+    ]
   }
 ];
