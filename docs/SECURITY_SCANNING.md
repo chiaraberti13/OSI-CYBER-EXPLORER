@@ -27,11 +27,14 @@ The active GitHub ruleset `Protect main and sensitive changes` (ID `24081937`) t
 
 - `build (Node 22.22.x)`
 - `build (Node 24.x)`
+
 - `JavaScript/TypeScript analysis`
 - `Lockfile and package signatures`
 - `Secret scan (Gitleaks)`
 - `Dependency gate (npm audit)`
 - `SBOM (CycloneDX)`
+
+The two stable `build (Node …)` names are lightweight aggregate jobs: each succeeds only when the parallel quality matrix, blocking coverage job and production bundle/budget job have all succeeded. Superseded runs for the same PR or ref are cancelled.
 
 OSV-Scanner remains informational and is not a required check because its check name differs between pull-request and push workflows. Repository administrators retain an explicit `Always allow` bypass for recovery and direct owner maintenance; use of that bypass does not replace the requirement to obtain green CI evidence after a direct maintenance push.
 

@@ -4,6 +4,8 @@ All notable changes to OSI Cyber Explorer are documented in this file. The proje
 
 ## [Unreleased]
 
+- CI efficiency (ENG-18): split quality, coverage and bundle work into parallel jobs, cancel superseded runs, retain coverage and production-bundle/treemap artifacts, and preserve the existing required-check names through lightweight aggregate gates.
+- Efficienza CI (ENG-18): separati in parallelo i job qualità, coverage e bundle, cancellati i run superati, conservati artifact di coverage e bundle/treemap, mantenuti i nomi dei check richiesti tramite gate aggregatori leggeri.
 - Repository standards (ENG-17): added pinned Prettier, EditorConfig, local/CI formatting gates and a bilingual cross-platform contribution guide with a PR checklist; removed the redundant platform-specific clean command because Vite already empties its output directory.
 - Standard del repository (ENG-17): aggiunti Prettier fissato, EditorConfig, gate di formattazione locali/CI e guida di contribuzione bilingue multipiattaforma con checklist PR; rimosso il comando di pulizia specifico della piattaforma perché Vite svuota già la directory di output.
 - Study manual (EDU-05): added Chapter 5 — IP routing with static routes and OSPF (the routing table and longest prefix match, administrative distance vs metric; static routes, the 0.0.0.0/0 default and floating static backups; OSPF link-state with adjacencies, router-ID, non-preemptive DR/BDR, cost = reference/bandwidth and SPF), with two guided labs on the IP connectivity route lookup and the OSPF cost/reference-bandwidth exercise.

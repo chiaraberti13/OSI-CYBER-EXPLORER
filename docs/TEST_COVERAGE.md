@@ -33,7 +33,7 @@ npm run verify           # all gates, coverage and build
 
 Git ignores `coverage/`, and Vitest cleans it before each run. It contains the navigable HTML report (`index.html` and assets), `lcov.info` and `coverage-summary.json` with aggregate and per-module counts. The command also prints a coverage table.
 
-CI runs the gate on Node `22.22.x` and `24.x`, adds a table to each job summary and retains full reports for 14 days as `coverage-node-22.22.x` and `coverage-node-24.x`. `reportOnFailure: true` and conditional publishing steps preserve diagnostics after failing tests or thresholds. Failures remain blocking and prevent the build. Reports are not committed.
+CI runs compatibility-sensitive quality checks on Node `22.22.x` and `24.x`, while the dedicated Node 24 test job runs the blocking coverage gate once, adds a table to its summary and retains the full report for 14 days as `coverage-node-24.x`. `reportOnFailure: true` and conditional publishing preserve diagnostics after failing tests or thresholds. Failures remain blocking through the aggregate required checks. Reports are not committed.
 
 To check the failure path without editing the configuration, run `npm run test:coverage -- --coverage.thresholds.lines=100`. With this baseline tests pass, the command fails below 100% lines and reports remain available. Run the normal command afterward to restore the configured reports. ENG-11 also verified an unimported temporary module (0% coverage, per-module gate failure) and an intentionally failing temporary test (reports still generated); both fixtures were removed.
 
@@ -75,7 +75,7 @@ Vitest scrive in `coverage/`, ignorata da git e ripulita a ogni esecuzione:
 - `coverage-summary.json`: conteggi e percentuali aggregate e per modulo;
 - tabella testuale nel log del comando.
 
-La CI esegue il gate su Node `22.22.x` e `24.x`, pubblica una tabella nel riepilogo di ogni job e conserva i report completi per 14 giorni negli artifact `coverage-node-22.22.x` e `coverage-node-24.x`. `reportOnFailure: true` e gli step di pubblicazione condizionali conservano i report anche se falliscono test o soglie; l'errore resta bloccante e impedisce la build. Gli artifact non sono versionati nel repository.
+La CI esegue i controlli di qualità sensibili alla compatibilità su Node `22.22.x` e `24.x`; il job test dedicato su Node 24 esegue una sola volta il gate bloccante di coverage, pubblica la tabella nel riepilogo e conserva il report completo per 14 giorni come `coverage-node-24.x`. `reportOnFailure: true` e la pubblicazione condizionale mantengono la diagnosi anche in caso di errore; i check aggregatori restano bloccanti. Gli artifact non sono versionati.
 
 Per controllare manualmente il gate senza modificare la configurazione:
 

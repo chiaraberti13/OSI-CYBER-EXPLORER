@@ -10,7 +10,7 @@
 
 - Supported Node.js versions are declared once in `package.json#engines` (`^22.22.2 || ^24.15.0 || >=26.0.0`); `.nvmrc` pins the recommended LTS (24).
 - `.npmrc` sets `engine-strict=true`: installing on an unsupported Node.js version fails immediately instead of producing results that differ from CI.
-- CI runs the same checks on the lowest supported line (`22.22.x`) and on the recommended LTS (`24.x`).
+- CI runs compatibility-sensitive quality checks on the lowest supported line (`22.22.x`) and the recommended LTS (`24.x`); deterministic tests, coverage, build and bundle analysis run once on Node 24 in parallel jobs.
 
 ### Installing
 
@@ -50,7 +50,7 @@ A new High/Critical advisory must be fixed before merging. A temporary exception
 
 - Le versioni di Node.js supportate sono dichiarate una sola volta in `package.json#engines` (`^22.22.2 || ^24.15.0 || >=26.0.0`); `.nvmrc` indica la LTS consigliata (24).
 - `.npmrc` imposta `engine-strict=true`: un'installazione su una versione di Node.js non supportata fallisce subito, invece di produrre risultati diversi dalla CI.
-- La CI esegue gli stessi controlli sulla versione minima supportata (`22.22.x`) e sulla LTS consigliata (`24.x`).
+- La CI esegue i controlli di qualità sensibili alla compatibilità sulla versione minima (`22.22.x`) e sulla LTS consigliata (`24.x`); test deterministici, coverage, build e analisi bundle girano una sola volta su Node 24 in job paralleli.
 
 ### Installazione
 
