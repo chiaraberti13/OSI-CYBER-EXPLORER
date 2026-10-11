@@ -29,6 +29,26 @@ describe('StudyManualView (EDU-01)', () => {
     expect(screen.getAllByText('CCNA 1.0 · Fondamenti di rete').length).toBeGreaterThan(0);
   });
 
+  it('offers an "on this page" rail listing the chapter topics', () => {
+    render(<StudyManualView />);
+    const rail = screen.getByRole('navigation', { name: 'In questa pagina' });
+    // The OSI chapter has four topics; each is a jump target in the rail.
+    expect(within(rail).getAllByRole('button').length).toBe(4);
+    expect(within(rail).getByRole('button', { name: /sette livelli/ })).toBeTruthy();
+  });
+
+  it('moves to the next chapter through the chapter step navigation', async () => {
+    const user = userEvent.setup();
+    render(<StudyManualView />);
+
+    const stepNav = screen.getByRole('navigation', { name: 'Capitolo precedente e successivo' });
+    // On the first chapter there is a next but no previous.
+    expect(within(stepNav).queryByText('Capitolo precedente')).toBeNull();
+    await user.click(within(stepNav).getByRole('button', { name: /Capitolo successivo/ }));
+
+    expect(screen.getByRole('heading', { level: 2, name: /Ethernet/ })).toBeTruthy();
+  });
+
   it('groups the chapter navigation by CCNA domain', () => {
     render(<StudyManualView />);
     const nav = screen.getByRole('navigation', { name: 'Capitoli del manuale' });
