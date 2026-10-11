@@ -20,13 +20,9 @@ export default function Header() {
           <div className="w-6 h-6 border border-slate-300 flex items-center justify-center rounded-md">
             <div className="w-2.5 h-2.5 border border-slate-900 rotate-45" />
           </div>
-          <span aria-label="OSI Cyber Explorer" className="font-medium text-slate-900 text-sm tracking-tight">
-            <span className="hidden min-[360px]:inline" aria-hidden="true">
-              OSI Cyber Explorer
-            </span>
-            <span className="min-[360px]:hidden" aria-hidden="true">
-              OSI
-            </span>
+          <span className="font-medium text-slate-900 text-sm tracking-tight">
+            <span className="hidden min-[360px]:inline">OSI Cyber Explorer</span>
+            <span className="min-[360px]:hidden">OSI</span>
           </span>
         </div>
 

@@ -168,6 +168,8 @@ export default function GlossaryModal({
       <div
         data-testid="glossary-terms-scroll"
         id={termsId}
+        tabIndex={0}
+        aria-label={language === 'en' ? 'Glossary terms' : 'Termini del glossario'}
         className="min-h-0 flex-1 overflow-y-auto overscroll-contain bg-white p-6"
       >
         {filteredTerms.length > 0 ? (

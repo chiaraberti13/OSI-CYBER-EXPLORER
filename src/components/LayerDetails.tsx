@@ -718,7 +718,7 @@ export default function LayerDetails() {
                         <div className="space-y-2">
                           {info.keyFacts.map((fact, i) => (
                             <div key={i} className="flex gap-3 p-3 bg-amber-50 border border-amber-100 rounded-lg">
-                              <span className="text-[10px] font-semibold text-amber-500/40 mt-0.5 flex-shrink-0">
+                              <span className="text-[10px] font-semibold text-amber-600 mt-0.5 flex-shrink-0">
                                 0{i + 1}
                               </span>
                               <p className="text-[10px] text-slate-700 leading-relaxed">{fact}</p>

@@ -69,7 +69,7 @@ export default function Terminal() {
             <p className="text-[10px] text-slate-400 leading-relaxed max-w-[220px] normal-case tracking-normal font-sans mb-3">
               {labels.emptyBody}
             </p>
-            <p className="text-[9px] text-amber-600/80 leading-relaxed max-w-[220px] normal-case tracking-normal font-sans">
+            <p className="text-[9px] text-amber-600 leading-relaxed max-w-[220px] normal-case tracking-normal font-sans">
               {labels.emptyHint}
             </p>
           </div>

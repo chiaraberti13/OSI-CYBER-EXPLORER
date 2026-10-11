@@ -261,7 +261,7 @@ export default function AttackLab() {
             </span>
           </div>
           <h1 className="text-2xl md:text-3xl font-semibold tracking-tight uppercase">{t.title}</h1>
-          <p className="text-slate-400 text-sm mt-2 max-w-2xl leading-relaxed">{t.subtitle}</p>
+          <p className="text-slate-300 text-sm mt-2 max-w-2xl leading-relaxed">{t.subtitle}</p>
           <div
             className="mt-4 flex max-w-3xl items-start gap-2 rounded-lg border border-amber-300/30 bg-amber-300/10 px-3 py-2 text-xs leading-relaxed text-amber-100"
             role="note"
@@ -338,7 +338,7 @@ export default function AttackLab() {
             <div>
               <div className="flex items-center gap-2 flex-wrap mb-2">
                 <span
-                  className="text-[10px] font-semibold uppercase px-2 py-1 rounded-md text-white"
+                  className="text-[10px] font-semibold uppercase px-2 py-1 rounded-md text-slate-950"
                   style={{ backgroundColor: layerColor }}
                 >
                   {t.layer} {wt.layer}

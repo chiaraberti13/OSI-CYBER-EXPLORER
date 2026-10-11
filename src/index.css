@@ -19,7 +19,7 @@
   --color-stroke: #e2e8f0;
 
   /* WCAG AA-safe replacements for common small-text utility colors. */
-  --color-slate-400: var(--color-ink-muted);
+  --color-slate-400: var(--color-ink-secondary);
   --color-slate-500: var(--color-ink-secondary);
   --color-indigo-500: var(--color-accent);
   --color-emerald-500: var(--color-success);
@@ -55,7 +55,7 @@ body {
   font-weight: 500;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--color-ink-muted);
+  color: var(--color-ink-secondary);
 }
 
 /* UX-08: WCAG 2.2 target-size and readability floor. Native controls are the
