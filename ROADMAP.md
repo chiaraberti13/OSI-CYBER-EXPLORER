@@ -249,6 +249,7 @@ La mappatura serve a spiegare _perché_ esiste un controllo, non a dichiarare co
 - [ ] **UX-16 — Automatizzare i controlli a11y.** Integrare `axe-core` con Vitest/Testing Library o `@axe-core/playwright`, più E2E per focus modale, tastiera, cambio lingua, reflow e deep link. **Completato quando:** regressioni WCAG rilevabili automaticamente bloccano la PR.
 
 - [ ] **UX-17 — Definire obiettivi misurabili.** Adottare WCAG 2.2 AA, Lighthouse Accessibility ≥95, uso completo da tastiera, assenza di focus trap involontari, target touch 44 px e nessuno scroll orizzontale della pagina a 320 px/400% zoom. **Completato quando:** la checklist viene eseguita per ogni release.
+- [x] **UX-18 — Allineare il layout del Manuale al linguaggio visivo della mappa CCNA.** Il manuale era un documento a colonna unica con testo uniforme e argomenti separati solo da una linea: poco scansionabile per un principiante. **Completato quando:** la gerarchia è evidente e i contenuti sono facili da trovare. **Esito (11/10/2026):** ridisegnata la vista `StudyManualView` (solo presentazione, nessun contenuto toccato) adottando il sistema a card della mappa — card di panoramica del capitolo con badge del peso % del dominio, **indice del capitolo** cliccabile (scorre all'argomento), ogni argomento in una card distinta, e sotto-blocchi con icona e colore coerenti (Obiettivi indigo, Spiegazione, Esempio verde, Errori comuni ambra). Un solo `h1` preservato (UX-09); `npm run verify` verde (656 test) ed E2E 16/16 su Chromium.
 
 ---
 

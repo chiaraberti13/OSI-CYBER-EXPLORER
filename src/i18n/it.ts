@@ -40,6 +40,8 @@ export const it = {
     prerequisites: 'Prerequisiti',
     commonMistakes: 'Errori comuni',
     example: 'Esempio',
+    explanation: 'Spiegazione',
+    tableOfContents: 'Contenuti del capitolo',
     references: 'Riferimenti',
     studyInLab: 'Studia nel laboratorio',
     guidedLab: 'Laboratorio guidato',

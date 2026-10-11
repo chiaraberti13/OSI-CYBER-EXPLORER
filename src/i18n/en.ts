@@ -39,6 +39,8 @@ export const en = {
     prerequisites: 'Prerequisites',
     commonMistakes: 'Common mistakes',
     example: 'Example',
+    explanation: 'Explanation',
+    tableOfContents: 'In this chapter',
     references: 'References',
     studyInLab: 'Study in the lab',
     guidedLab: 'Guided lab',
