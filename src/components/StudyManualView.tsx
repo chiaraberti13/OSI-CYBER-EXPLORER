@@ -7,7 +7,7 @@ import { useId, useState } from 'react';
 import { ArrowRight, ExternalLink, FlaskConical, ListChecks, Target } from 'lucide-react';
 import { useStore } from '../store';
 import { uiMessages } from '../i18n';
-import { findChapter, manualStats, orderedChapters } from '../lib/studyManual';
+import { ccnaDomainForChapter, findChapter, manualStats, orderedChapters } from '../lib/studyManual';
 import type { GuidedLab, ManualCert, ManualDifficulty } from '../content/studyManual';
 import { securityReferenceUrl } from '../content/securityReferences';
 import ViewLink from './ViewLink';
@@ -133,7 +133,14 @@ export default function StudyManualView() {
       ) : null}
 
       <article aria-labelledby={chapterTitleId}>
-        <span className="eyebrow">{certLabel[chapter.cert]}</span>
+        {(() => {
+          const domain = ccnaDomainForChapter(chapter);
+          const alignment =
+            chapter.track === 'ccna' && domain
+              ? `CCNA ${domain.number}.0 · ${domain.title[language]}`
+              : `${t.trackExtension} · ${certLabel[chapter.cert]}`;
+          return <span className="eyebrow">{alignment}</span>;
+        })()}
         <h2 id={chapterTitleId} className="mt-1 text-lg font-semibold text-slate-900">
           {chapter.title[language]}
         </h2>

@@ -68,6 +68,17 @@ export interface ManualChapter {
   cert: ManualCert;
   /** Position in the study order. */
   order: number;
+  /**
+   * Alignment to the CCNA 200-301 v1.1 blueprint: `ccna` for a backbone chapter that
+   * maps to an official domain, `extension` for content declared beyond the blueprint
+   * (advanced networking or CompTIA Security+ SY0-701).
+   */
+  track: 'ccna' | 'extension';
+  /**
+   * For `ccna` chapters, the `CCNA_DOMAINS` id (src/content/ccna.ts) this chapter maps
+   * to. Omitted for `extension` chapters. The pairing is validated in content.test.ts.
+   */
+  domain?: string;
   title: Bilingual;
   summary: Bilingual;
   topics: ManualTopic[];
@@ -78,6 +89,8 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
     id: 'osi-model',
     cert: 'both',
     order: 1,
+    track: 'ccna',
+    domain: 'network-fundamentals',
     title: { it: 'Il modello OSI e l’incapsulamento', en: 'The OSI model and encapsulation' },
     summary: {
       it: 'Il linguaggio comune con cui descriviamo le reti: sette livelli, la funzione di ciascuno e come i dati vengono imbustati e sbustati mentre attraversano lo stack.',
@@ -409,6 +422,8 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
     id: 'ethernet-switching',
     cert: 'ccna',
     order: 2,
+    track: 'ccna',
+    domain: 'network-fundamentals',
     title: { it: 'Ethernet, switching e tabella CAM', en: 'Ethernet, switching, and the CAM table' },
     summary: {
       it: 'Come funziona la rete locale al livello 2: il frame Ethernet e gli indirizzi MAC, come lo switch impara e inoltra, e perché domini di collisione e di broadcast cambiano il modo di progettare la rete.',
@@ -623,6 +638,8 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
     id: 'ipv4-subnetting',
     cert: 'ccna',
     order: 3,
+    track: 'ccna',
+    domain: 'network-fundamentals',
     title: { it: 'Indirizzamento IPv4 e subnetting', en: 'IPv4 addressing and subnetting' },
     summary: {
       it: 'Il livello 3 che instrada tra reti: come è fatto un indirizzo IPv4, cosa significano maschera e notazione CIDR, come si calcolano rete, broadcast e host, e come il VLSM assegna subnet di dimensioni diverse senza sprechi.',
@@ -900,6 +917,8 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
     id: 'vlan-trunk-stp',
     cert: 'ccna',
     order: 4,
+    track: 'ccna',
+    domain: 'network-access',
     title: { it: 'VLAN, trunk 802.1Q e Spanning Tree', en: 'VLANs, 802.1Q trunks, and Spanning Tree' },
     summary: {
       it: 'Come si segmenta e si rende stabile la rete commutata: VLAN per separare i domini di broadcast, trunk 802.1Q per trasportarle tra switch, e Spanning Tree per evitare i loop di livello 2 mantenendo un percorso senza anelli.',
@@ -1183,6 +1202,8 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
     id: 'ip-routing-ospf',
     cert: 'ccna',
     order: 5,
+    track: 'ccna',
+    domain: 'ip-connectivity',
     title: { it: 'Routing IP: rotte statiche e OSPF', en: 'IP routing: static routes and OSPF' },
     summary: {
       it: 'Come un router decide dove inoltrare un pacchetto: la tabella di routing e il longest prefix match, le rotte statiche e di default, e OSPF come protocollo dinamico link-state con il suo costo e le adiacenze.',
@@ -1455,6 +1476,8 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
     id: 'ip-services',
     cert: 'ccna',
     order: 6,
+    track: 'ccna',
+    domain: 'ip-services',
     title: { it: 'Servizi IP: DHCP, DNS e NAT', en: 'IP services: DHCP, DNS, and NAT' },
     summary: {
       it: 'I servizi che rendono utilizzabile una rete IP: DHCP assegna gli indirizzi, DNS traduce i nomi in indirizzi, NAT/PAT permette a molti host privati di uscire su Internet con pochi indirizzi pubblici.',
@@ -1726,8 +1749,10 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
   },
   {
     id: 'security-fundamentals',
-    cert: 'securityplus',
+    cert: 'both',
     order: 7,
+    track: 'ccna',
+    domain: 'security-fundamentals',
     title: { it: 'Fondamenti di sicurezza', en: 'Security fundamentals' },
     summary: {
       it: 'La terminologia di base della sicurezza: la triade CIA, la differenza tra minaccia, vulnerabilità e rischio, la superficie d’attacco e la difesa in profondità, con i controlli letti per funzione e per piano.',
@@ -1991,6 +2016,7 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
     id: 'attacks-osi-killchain',
     cert: 'securityplus',
     order: 8,
+    track: 'extension',
     title: { it: 'Attacchi per livello OSI e kill chain', en: 'Attacks by OSI layer and the kill chain' },
     summary: {
       it: 'Come gli attacchi si mappano ai livelli OSI, le fasi della kill chain e i percorsi d’attacco multi-stadio: leggere un attacco per livello e per fase aiuta a scegliere dove la difesa lo interrompe.',
@@ -2260,8 +2286,10 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
   },
   {
     id: 'network-defenses',
-    cert: 'securityplus',
+    cert: 'both',
     order: 9,
+    track: 'ccna',
+    domain: 'security-fundamentals',
     title: {
       it: 'Difese di rete: ACL, firewall, IDS/IPS e segmentazione',
       en: 'Network defenses: ACLs, firewalls, IDS/IPS and segmentation'

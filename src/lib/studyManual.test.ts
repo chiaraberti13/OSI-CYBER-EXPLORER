@@ -5,9 +5,17 @@
 
 import { describe, expect, it } from 'vitest';
 import { STUDY_MANUAL } from '../content/studyManual';
+import { CCNA_DOMAINS } from '../content/ccna';
 import { VIEW_REGISTRY } from '../content/viewRegistry';
 import { securityReferenceUrl } from '../content/securityReferences';
-import { allGuidedLabs, byChapterOrder, findChapter, manualStats, orderedChapters } from './studyManual';
+import {
+  allGuidedLabs,
+  byChapterOrder,
+  ccnaDomainForChapter,
+  findChapter,
+  manualStats,
+  orderedChapters
+} from './studyManual';
 import type { AppView } from '../store';
 
 /**
@@ -90,6 +98,19 @@ describe('study manual content integrity', () => {
   it('keeps full IT/EN parity across the manual', () => {
     assertBilingualParity(STUDY_MANUAL, 'STUDY_MANUAL');
   });
+
+  it('aligns every chapter to the CCNA 200-301 v1.1 blueprint or marks it an extension', () => {
+    const domainIds = new Set(CCNA_DOMAINS.map((domain) => domain.id));
+    for (const chapter of STUDY_MANUAL) {
+      expect(['ccna', 'extension'], `${chapter.id} track`).toContain(chapter.track);
+      if (chapter.track === 'ccna') {
+        expect(chapter.domain, `${chapter.id} ccna chapter needs a domain`).toBeDefined();
+        expect(domainIds.has(chapter.domain as string), `${chapter.id} domain=${chapter.domain}`).toBe(true);
+      } else {
+        expect(chapter.domain, `${chapter.id} extension must not carry a domain`).toBeUndefined();
+      }
+    }
+  });
 });
 
 describe('study manual selectors', () => {
@@ -109,6 +130,13 @@ describe('study manual selectors', () => {
   it('finds a chapter by id and nothing for an unknown id', () => {
     expect(findChapter('osi-model')?.id).toBe('osi-model');
     expect(findChapter('does-not-exist')).toBeUndefined();
+  });
+
+  it('resolves the CCNA domain for a core chapter and nothing for an extension', () => {
+    const osi = findChapter('osi-model');
+    expect(osi && ccnaDomainForChapter(osi)?.id).toBe('network-fundamentals');
+    const attacks = findChapter('attacks-osi-killchain');
+    expect(attacks && ccnaDomainForChapter(attacks)).toBeUndefined();
   });
 
   it('reports counts consistent with the dataset', () => {

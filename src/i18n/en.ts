@@ -56,7 +56,8 @@ export const en = {
     difficultyAdvanced: 'Advanced',
     certCcna: 'CCNA 200-301',
     certSecurityPlus: 'CompTIA Security+ SY0-701',
-    certBoth: 'CCNA 200-301 · Security+ SY0-701'
+    certBoth: 'CCNA 200-301 · Security+ SY0-701',
+    trackExtension: 'Extension'
   },
   error: {
     chunkTitle: 'This section could not be loaded',

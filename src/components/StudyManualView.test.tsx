@@ -23,6 +23,12 @@ describe('StudyManualView (EDU-01)', () => {
     expect(screen.getByRole('heading', { level: 3, name: /sette livelli/ })).toBeTruthy();
   });
 
+  it('shows the CCNA domain alignment badge for the active chapter', () => {
+    render(<StudyManualView />);
+    // The OSI chapter maps to CCNA domain 1.0 Network Fundamentals.
+    expect(screen.getByText('CCNA 1.0 · Fondamenti di rete')).toBeTruthy();
+  });
+
   it('offers a guided lab with a revealable solution and a link into the interactive lab', () => {
     render(<StudyManualView />);
 
