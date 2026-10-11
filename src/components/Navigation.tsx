@@ -173,7 +173,7 @@ export default function Navigation() {
     <nav
       ref={navRef}
       aria-label={labels.label}
-      className="sticky top-14 z-40 w-full border-b border-slate-200/60 bg-[#fafafa]/85 backdrop-blur-md"
+      className="sticky top-14 z-40 w-full border-b border-slate-200/60 bg-canvas/85 backdrop-blur-md"
     >
       <div className="relative mx-auto max-w-7xl px-3 sm:px-6">
         <div className="flex h-12 items-center gap-1.5">
@@ -184,7 +184,7 @@ export default function Navigation() {
               <>
                 <span
                   aria-hidden="true"
-                  className="pointer-events-none absolute inset-y-0 left-0 z-10 w-10 bg-gradient-to-r from-[#fafafa] to-transparent"
+                  className="pointer-events-none absolute inset-y-0 left-0 z-10 w-10 bg-gradient-to-r from-canvas to-transparent"
                 />
                 <button
                   type="button"
@@ -200,7 +200,7 @@ export default function Navigation() {
               <>
                 <span
                   aria-hidden="true"
-                  className="pointer-events-none absolute inset-y-0 right-0 z-10 w-10 bg-gradient-to-l from-[#fafafa] to-transparent"
+                  className="pointer-events-none absolute inset-y-0 right-0 z-10 w-10 bg-gradient-to-l from-canvas to-transparent"
                 />
                 <button
                   type="button"

@@ -41,6 +41,8 @@ jobs:
         run: npm run verify:repository-posture && npm run verify:deployment-security
       - name: Validate educational and technical content
         run: npm run verify:offensive-content && npm run verify:technical-content && npm run verify:documentation-targets
+      - name: Verify design-token contrast
+        run: npm run verify:design-system
       - name: Check formatting
         run: npm run format:check
       - name: Type-check

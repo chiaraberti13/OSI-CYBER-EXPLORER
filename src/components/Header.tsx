@@ -14,7 +14,7 @@ export default function Header() {
   const copy = uiMessages(language).header;
 
   return (
-    <header className="border-b border-slate-200/60 bg-[#fafafa]/80 backdrop-blur-xl sticky top-0 z-50">
+    <header className="sticky top-0 z-50 border-b border-slate-200/60 bg-canvas/80 backdrop-blur-xl">
       <div className="max-w-7xl mx-auto px-3 sm:px-6 min-h-14 flex items-center justify-between gap-2">
         <div className="flex items-center gap-2.5">
           <div className="w-6 h-6 border border-slate-300 flex items-center justify-center rounded-md">

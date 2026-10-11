@@ -128,6 +128,7 @@ Dependency and audit policy: [docs/DEPENDENCIES.md](docs/DEPENDENCIES.md).
 Coverage scope, thresholds and CI reports: [docs/TEST_COVERAGE.md](docs/TEST_COVERAGE.md#english).
 End-to-end smoke tests: [docs/E2E_TESTING.md](docs/E2E_TESTING.md#english).
 Typed Italian/English UI catalogs: [docs/INTERNATIONALIZATION.md](docs/INTERNATIONALIZATION.md#english).
+Shared color, contrast, typography, spacing, radius and elevation tokens: [docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md).
 Contribution setup, bilingual conventions and PR checklist: [CONTRIBUTING.md](CONTRIBUTING.md#english).
 
 `npm run dev` is the secure default and does not expose Vite to other devices. `npm run dev:network` binds the development server to every network interface; use it only when LAN access is required, on a trusted network and with an appropriate host firewall. The Vite development server is not intended for public or production exposure.

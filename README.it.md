@@ -96,6 +96,7 @@ Policy su dipendenze e audit: [docs/DEPENDENCIES.md](docs/DEPENDENCIES.md#-itali
 Ambito, soglie e report coverage in CI: [docs/TEST_COVERAGE.md](docs/TEST_COVERAGE.md#italiano).
 Smoke test end-to-end: [docs/E2E_TESTING.md](docs/E2E_TESTING.md#italiano).
 Cataloghi UI tipizzati italiano/inglese: [docs/INTERNATIONALIZATION.md](docs/INTERNATIONALIZATION.md#italiano).
+Token condivisi per colori, contrasto, tipografia, spaziatura, raggi e ombre: [docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md#italiano).
 Setup di contribuzione, convenzioni bilingui e checklist PR: [CONTRIBUTING.md](CONTRIBUTING.md#italiano).
 
 `npm run dev` è il comando predefinito sicuro e non espone Vite agli altri dispositivi. `npm run dev:network` associa il server di sviluppo a tutte le interfacce: va usato solo quando serve l'accesso LAN, su una rete fidata e con un firewall host adeguato. Il server di sviluppo Vite non deve essere esposto pubblicamente né usato in produzione.
