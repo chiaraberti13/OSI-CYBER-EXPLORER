@@ -4,6 +4,8 @@ All notable changes to OSI Cyber Explorer are documented in this file. The proje
 
 ## [Unreleased]
 
+- Accessible touch targets (UX-08): raised native controls and interactive navigation cards to a 44×44 px minimum, established a 12 px readability floor for legacy micro-labels, and tightened the shell reflow at 320 px with a Chromium regression test.
+- Target touch accessibili (UX-08): portati controlli nativi e schede di navigazione interattive ad almeno 44×44 px, introdotto un minimo leggibile di 12 px per le micro-etichette legacy e migliorato il reflow della shell a 320 px con un test di regressione Chromium.
 - CI efficiency (ENG-18): split quality, coverage and bundle work into parallel jobs, cancel superseded runs, retain coverage and production-bundle/treemap artifacts, and preserve the existing required-check names through lightweight aggregate gates.
 - Efficienza CI (ENG-18): separati in parallelo i job qualità, coverage e bundle, cancellati i run superati, conservati artifact di coverage e bundle/treemap, mantenuti i nomi dei check richiesti tramite gate aggregatori leggeri.
 - Repository standards (ENG-17): added pinned Prettier, EditorConfig, local/CI formatting gates and a bilingual cross-platform contribution guide with a PR checklist; removed the redundant platform-specific clean command because Vite already empties its output directory.

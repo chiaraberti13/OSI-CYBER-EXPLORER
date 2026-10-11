@@ -172,3 +172,62 @@ test.describe('navigation at phone width', () => {
     await expect(scrollLeft).toBeVisible();
   });
 });
+
+test.describe('WCAG reflow and touch targets', () => {
+  test.use({ viewport: { width: 320, height: 800 } });
+
+  test('keeps primary controls at least 44 px and avoids page overflow (UX-08)', async ({ page }) => {
+    await openApp(page);
+
+    // A 320 CSS-pixel viewport is also the WCAG 1.4.10 reference layout for a
+    // 1280 px desktop viewport at 400% browser zoom (and is stricter than 200%).
+    const primaryControls = [
+      page.getByRole('button', { name: 'Apri la guida' }),
+      page.getByRole('button', { name: 'English' }),
+      page.getByRole('button', { name: 'Italiano' }),
+      page.getByRole('button', { name: 'Copia il link di questo laboratorio' }),
+      page.getByRole('button', { name: 'Cerca un laboratorio' }),
+      page.getByRole('button', { name: 'Velocità 0.5x' }),
+      page.getByRole('button', { name: 'Velocità 1x' }),
+      page.getByRole('button', { name: 'Velocità 2x' }),
+      page.getByRole('button', { name: 'Avvia Simulazione' }),
+      page.getByRole('button', { name: 'Reset' }),
+      page.getByLabel('Seleziona il protocollo da simulare')
+    ];
+
+    for (const control of primaryControls) {
+      await expect(control).toBeVisible();
+      const box = await control.boundingBox();
+      expect(box, 'control must have a measurable box').not.toBeNull();
+      expect(box!.width).toBeGreaterThanOrEqual(44);
+      expect(box!.height).toBeGreaterThanOrEqual(44);
+    }
+
+    const undersizedControls = await page
+      .locator('button:visible, select:visible, textarea:visible, input:visible')
+      .evaluateAll((controls) =>
+        controls.flatMap((control) => {
+          const rect = control.getBoundingClientRect();
+          return rect.width < 44 || rect.height < 44
+            ? [
+                `${control.tagName.toLowerCase()}[${control.getAttribute('aria-label') ?? control.textContent?.trim() ?? ''}]: ${rect.width}×${rect.height}`
+              ]
+            : [];
+        })
+      );
+    expect(undersizedControls).toEqual([]);
+
+    const microText = await page
+      .locator('.text-\\[8px\\], .text-\\[9px\\], .text-\\[10px\\], .text-\\[11px\\], .eyebrow')
+      .evaluateAll((nodes) =>
+        nodes.map((node) => Number.parseFloat(getComputedStyle(node).fontSize)).filter((size) => size < 12)
+      );
+    expect(microText).toEqual([]);
+
+    const reflow = await page.evaluate(() => ({
+      viewport: document.documentElement.clientWidth,
+      content: document.documentElement.scrollWidth
+    }));
+    expect(reflow.content).toBeLessThanOrEqual(reflow.viewport);
+  });
+});
