@@ -6,6 +6,7 @@ import ViewLink from './ViewLink';
 import CurriculumView from './CurriculumView';
 import { useStore } from '../store';
 import { DOMAIN_LAB_VIEWS } from '../lib/navigation';
+import { chaptersByDomain } from '../lib/studyManual';
 import { CCNA_BLUEPRINT, CCNA_BLUEPRINT_TOPICS } from '../content/ccnaBlueprint';
 
 afterEach(() => {
@@ -94,6 +95,10 @@ describe('ViewLink', () => {
         '#/manual',
         '#/osi',
         '#/fundamentals',
+        // One "theory in the manual" link per chapter that teaches a CCNA domain (EDU-STRUCT-03).
+        ...chaptersByDomain()
+          .filter((group) => group.domain)
+          .flatMap((group) => group.chapters.map(() => '#/manual')),
         ...CCNA_BLUEPRINT_TOPICS.flatMap((entry) => entry.destinations.map((view) => `#/${view}`)),
         CCNA_BLUEPRINT.source.url
       ].sort()

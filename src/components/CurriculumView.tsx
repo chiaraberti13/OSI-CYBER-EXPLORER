@@ -4,11 +4,19 @@ import { CCNA_BLUEPRINT, CCNA_BLUEPRINT_DOMAINS, CCNA_BLUEPRINT_TOPICS } from '.
 import { DOMAIN_CHECKLISTS } from '../content/domainChecklists';
 import { ATTACK_FAMILIES } from '../content/securityTaxonomy';
 import { VIEW_REGISTRY } from '../content/viewRegistry';
+import { chaptersByDomain } from '../lib/studyManual';
 import { useStore } from '../store';
 import ViewLink from './ViewLink';
 
 const CHECKLIST_BY_DOMAIN = new Map<string, (typeof DOMAIN_CHECKLISTS)[number]>(
   DOMAIN_CHECKLISTS.map((list) => [list.domainId, list])
+);
+
+/** Manual chapters that teach each CCNA domain — the single source the index points into. */
+const MANUAL_CHAPTERS_BY_DOMAIN = new Map(
+  chaptersByDomain()
+    .filter((group) => group.domain)
+    .map((group) => [group.domain!.id, group.chapters])
 );
 
 export default function CurriculumView() {
@@ -225,6 +233,33 @@ export default function CurriculumView() {
               </div>
 
               <p className="mt-4 text-sm leading-relaxed text-slate-600">{domain.purpose[language]}</p>
+
+              <div className="mt-4 rounded-lg border border-indigo-100 bg-indigo-50/40 p-3">
+                <h4 className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-indigo-700">
+                  <BookOpen className="h-3.5 w-3.5" aria-hidden="true" />
+                  {language === 'it' ? 'Teoria nel manuale' : 'Theory in the study manual'}
+                </h4>
+                {(MANUAL_CHAPTERS_BY_DOMAIN.get(domain.id) ?? []).length > 0 ? (
+                  <ul className="mt-2 space-y-1 text-xs leading-relaxed text-slate-700">
+                    {MANUAL_CHAPTERS_BY_DOMAIN.get(domain.id)!.map((entry) => (
+                      <li key={entry.id}>
+                        <ViewLink
+                          view="manual"
+                          className="font-medium text-indigo-700 underline decoration-indigo-300 underline-offset-2 hover:text-indigo-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
+                        >
+                          {language === 'it' ? `Cap. ${entry.order}` : `Ch. ${entry.order}`}: {entry.title[language]}
+                        </ViewLink>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="mt-2 text-xs leading-relaxed text-slate-500">
+                    {language === 'it'
+                      ? 'In arrivo: questo dominio non ha ancora un capitolo dedicato nel manuale.'
+                      : 'Coming soon: this domain does not yet have a dedicated manual chapter.'}
+                  </p>
+                )}
+              </div>
 
               <div className="mt-4 grid gap-4 sm:grid-cols-2">
                 <div>
