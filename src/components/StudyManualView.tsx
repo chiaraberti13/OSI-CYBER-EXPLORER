@@ -7,7 +7,7 @@ import { useId, useState } from 'react';
 import { ArrowRight, ExternalLink, FlaskConical, ListChecks, Target } from 'lucide-react';
 import { useStore } from '../store';
 import { uiMessages } from '../i18n';
-import { ccnaDomainForChapter, findChapter, manualStats, orderedChapters } from '../lib/studyManual';
+import { ccnaDomainForChapter, chaptersByDomain, findChapter, manualStats, orderedChapters } from '../lib/studyManual';
 import type { GuidedLab, ManualCert, ManualDifficulty } from '../content/studyManual';
 import { securityReferenceUrl } from '../content/securityReferences';
 import ViewLink from './ViewLink';
@@ -110,23 +110,35 @@ export default function StudyManualView() {
       </header>
 
       {chapters.length > 1 ? (
-        <nav aria-label={t.chapterNav} className="mb-6 flex flex-wrap gap-1.5">
-          {chapters.map((entry) => {
-            const isActive = entry.id === chapter.id;
+        <nav aria-label={t.chapterNav} className="mb-6 space-y-3">
+          {chaptersByDomain().map((group) => {
+            const groupLabel = group.domain
+              ? `CCNA ${group.domain.number}.0 · ${group.domain.title[language]}`
+              : t.trackExtension;
             return (
-              <button
-                key={entry.id}
-                type="button"
-                onClick={() => setActiveId(entry.id)}
-                aria-current={isActive ? 'true' : undefined}
-                className={`rounded-md border px-3 py-1.5 text-[13px] font-medium transition-colors ${
-                  isActive
-                    ? 'border-slate-300 bg-white text-slate-900'
-                    : 'border-transparent text-slate-500 hover:bg-white/70 hover:text-slate-800'
-                }`}
-              >
-                {entry.order}. {entry.title[language]}
-              </button>
+              <div key={group.key} role="group" aria-label={groupLabel}>
+                <p className="eyebrow mb-1.5">{groupLabel}</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {group.chapters.map((entry) => {
+                    const isActive = entry.id === chapter.id;
+                    return (
+                      <button
+                        key={entry.id}
+                        type="button"
+                        onClick={() => setActiveId(entry.id)}
+                        aria-current={isActive ? 'true' : undefined}
+                        className={`rounded-md border px-3 py-1.5 text-[13px] font-medium transition-colors ${
+                          isActive
+                            ? 'border-slate-300 bg-white text-slate-900'
+                            : 'border-transparent text-slate-500 hover:bg-white/70 hover:text-slate-800'
+                        }`}
+                      >
+                        {entry.order}. {entry.title[language]}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
             );
           })}
         </nav>

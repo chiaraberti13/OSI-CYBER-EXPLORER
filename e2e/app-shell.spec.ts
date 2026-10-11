@@ -137,6 +137,14 @@ test.describe('application shell', () => {
     await expect(page).toHaveURL(/#\/(osi|ports)$/);
   });
 
+  test('the study manual navigation is grouped by CCNA domain (EDU-STRUCT-02)', async ({ page }) => {
+    await page.goto('/#/manual');
+    const nav = page.getByRole('navigation', { name: 'Capitoli del manuale' });
+    await expect(nav.getByRole('group', { name: 'CCNA 1.0 · Fondamenti di rete' })).toBeVisible();
+    await expect(nav.getByRole('group', { name: 'CCNA 3.0 · Connettività IP' })).toBeVisible();
+    await expect(nav.getByRole('group', { name: 'Estensione' })).toBeVisible();
+  });
+
   test('deep links, reload and invalid routes behave predictably', async ({ page }) => {
     // A deep link opens its destination directly.
     await page.goto('/#/ports');

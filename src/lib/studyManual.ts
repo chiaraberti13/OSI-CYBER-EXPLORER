@@ -36,6 +36,33 @@ export function ccnaDomainForChapter(chapter: ManualChapter): CcnaDomain | undef
   return chapter.domain ? CCNA_DOMAINS.find((domain) => domain.id === chapter.domain) : undefined;
 }
 
+/** A navigation group: one CCNA domain (or the declared-extension bucket) with its chapters. */
+export interface ManualDomainGroup {
+  /** The CCNA_DOMAINS id, or 'extension' for the declared-extension bucket. */
+  key: string;
+  /** The domain, or undefined for the extension bucket. */
+  domain?: CcnaDomain;
+  /** The group's chapters, in study order. */
+  chapters: ManualChapter[];
+}
+
+/**
+ * Chapters grouped by CCNA domain for the manual's domain → chapter navigation. CCNA
+ * domains come first in official number order, each with its chapters in study order;
+ * the declared extensions follow in a final `extension` group. Empty groups are dropped.
+ */
+export function chaptersByDomain(): ManualDomainGroup[] {
+  const ordered = orderedChapters();
+  const groups: ManualDomainGroup[] = [];
+  for (const domain of [...CCNA_DOMAINS].sort((a, b) => a.number - b.number)) {
+    const chapters = ordered.filter((chapter) => chapter.track === 'ccna' && chapter.domain === domain.id);
+    if (chapters.length > 0) groups.push({ key: domain.id, domain, chapters });
+  }
+  const extensions = ordered.filter((chapter) => chapter.track === 'extension');
+  if (extensions.length > 0) groups.push({ key: 'extension', chapters: extensions });
+  return groups;
+}
+
 /** Every guided lab across the manual, in study order. */
 export function allGuidedLabs(): GuidedLab[] {
   return orderedChapters().flatMap((chapter) => chapter.topics.flatMap((topic) => topic.guidedLabs ?? []));

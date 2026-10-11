@@ -26,7 +26,16 @@ describe('StudyManualView (EDU-01)', () => {
   it('shows the CCNA domain alignment badge for the active chapter', () => {
     render(<StudyManualView />);
     // The OSI chapter maps to CCNA domain 1.0 Network Fundamentals.
-    expect(screen.getByText('CCNA 1.0 · Fondamenti di rete')).toBeTruthy();
+    expect(screen.getAllByText('CCNA 1.0 · Fondamenti di rete').length).toBeGreaterThan(0);
+  });
+
+  it('groups the chapter navigation by CCNA domain', () => {
+    render(<StudyManualView />);
+    const nav = screen.getByRole('navigation', { name: 'Capitoli del manuale' });
+    // Domain groups are labelled and precede the extension bucket.
+    expect(within(nav).getByRole('group', { name: 'CCNA 1.0 · Fondamenti di rete' })).toBeTruthy();
+    expect(within(nav).getByRole('group', { name: 'CCNA 3.0 · Connettività IP' })).toBeTruthy();
+    expect(within(nav).getByRole('group', { name: 'Estensione' })).toBeTruthy();
   });
 
   it('offers a guided lab with a revealable solution and a link into the interactive lab', () => {

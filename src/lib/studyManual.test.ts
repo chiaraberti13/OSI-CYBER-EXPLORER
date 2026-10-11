@@ -12,6 +12,7 @@ import {
   allGuidedLabs,
   byChapterOrder,
   ccnaDomainForChapter,
+  chaptersByDomain,
   findChapter,
   manualStats,
   orderedChapters
@@ -137,6 +138,29 @@ describe('study manual selectors', () => {
     expect(osi && ccnaDomainForChapter(osi)?.id).toBe('network-fundamentals');
     const attacks = findChapter('attacks-osi-killchain');
     expect(attacks && ccnaDomainForChapter(attacks)).toBeUndefined();
+  });
+
+  it('groups chapters by CCNA domain, in domain order, with extensions last', () => {
+    const groups = chaptersByDomain();
+    // Every chapter appears exactly once across the groups.
+    const grouped = groups.flatMap((group) => group.chapters);
+    expect(grouped.length).toBe(STUDY_MANUAL.length);
+    expect(new Set(grouped.map((c) => c.id)).size).toBe(STUDY_MANUAL.length);
+
+    // CCNA domain groups precede the extension bucket, and domain groups are in number order.
+    const domainNumbers = groups.filter((g) => g.domain).map((g) => g.domain!.number);
+    expect(domainNumbers).toEqual([...domainNumbers].sort((a, b) => a - b));
+    const extensionIndex = groups.findIndex((g) => g.key === 'extension');
+    if (extensionIndex !== -1) {
+      expect(extensionIndex).toBe(groups.length - 1);
+      expect(groups[extensionIndex].chapters.every((c) => c.track === 'extension')).toBe(true);
+    }
+
+    // Chapters within a group stay in study order.
+    for (const group of groups) {
+      const orders = group.chapters.map((c) => c.order);
+      expect(orders).toEqual([...orders].sort((a, b) => a - b));
+    }
   });
 
   it('reports counts consistent with the dataset', () => {
