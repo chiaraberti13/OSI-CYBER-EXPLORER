@@ -25,7 +25,9 @@ function Harness({ onClose, withInitialFocus = false }: { onClose?: () => void; 
   };
   return (
     <>
-      <button type="button" onClick={() => setOpen(true)}>Apri</button>
+      <button type="button" onClick={() => setOpen(true)}>
+        Apri
+      </button>
       <ModalDialog
         isOpen={open}
         onClose={close}
@@ -39,9 +41,15 @@ function Harness({ onClose, withInitialFocus = false }: { onClose?: () => void; 
         <h2 id="t">Titolo</h2>
         <p id="d">Descrizione</p>
         <button type="button">Primo</button>
-        <button type="button" ref={secondRef}>Secondo</button>
-        <button type="button" disabled>Disabilitato</button>
-        <button type="button" onClick={close}>Ultimo</button>
+        <button type="button" ref={secondRef}>
+          Secondo
+        </button>
+        <button type="button" disabled>
+          Disabilitato
+        </button>
+        <button type="button" onClick={close}>
+          Ultimo
+        </button>
       </ModalDialog>
     </>
   );
@@ -134,7 +142,9 @@ describe('Guide dialog', () => {
     await user.click(trigger);
 
     const dialog = screen.getByRole('dialog', { name: 'Manuale & Repository di Rete' });
-    expect(document.getElementById(dialog.getAttribute('aria-describedby') ?? '')?.textContent).toBe('Come usare il Laboratorio');
+    expect(document.getElementById(dialog.getAttribute('aria-describedby') ?? '')?.textContent).toBe(
+      'Come usare il Laboratorio'
+    );
     expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Chiudi la guida' }));
 
     await user.click(screen.getByRole('button', { name: 'Ho capito!' }));

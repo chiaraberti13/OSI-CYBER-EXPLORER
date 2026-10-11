@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { simulateDhcp } from './dhcpFlow';
 
-const messages = (result: ReturnType<typeof simulateDhcp>) => result.steps.map(step => step.message);
+const messages = (result: ReturnType<typeof simulateDhcp>) => result.steps.map((step) => step.message);
 
 describe('DORA with the server in the same subnet', () => {
   const result = simulateDhcp({ serverLocation: 'same-subnet' });
@@ -30,13 +30,17 @@ describe('DORA with the server in the same subnet', () => {
   });
 
   it('leaves giaddr at zero when no relay is involved', () => {
-    expect(result.steps.every(step => step.giaddr === '0.0.0.0')).toBe(true);
+    expect(result.steps.every((step) => step.giaddr === '0.0.0.0')).toBe(true);
   });
 
   it('computes the renewal and rebinding timers from the lease', () => {
     expect(result.lease).toMatchObject({
-      address: '10.10.10.42', mask: '255.255.255.0', gateway: '10.10.10.1',
-      leaseSeconds: 86_400, t1Seconds: 43_200, t2Seconds: 75_600
+      address: '10.10.10.42',
+      mask: '255.255.255.0',
+      gateway: '10.10.10.1',
+      leaseSeconds: 86_400,
+      t1Seconds: 43_200,
+      t2Seconds: 75_600
     });
   });
 });
@@ -135,8 +139,11 @@ describe('renewal is not a DORA', () => {
 describe('every step is teachable', () => {
   it('describes each message in both languages, with ports and addresses', () => {
     for (const options of [
-      {}, { serverLocation: 'same-subnet' as const }, { mode: 'renew' as const },
-      { relayConfigured: false }, { snoopingUntrustedServer: true }
+      {},
+      { serverLocation: 'same-subnet' as const },
+      { mode: 'renew' as const },
+      { relayConfigured: false },
+      { snoopingUntrustedServer: true }
     ]) {
       for (const step of simulateDhcp(options).steps) {
         expect(step.note.it.length).toBeGreaterThan(60);

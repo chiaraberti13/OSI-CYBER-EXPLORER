@@ -60,10 +60,10 @@ export const ATTACK_SCENARIO_REFERENCES = {
   'l3-bgp-hijack': [{ kind: 'rfc', id: 'RFC 7454' }],
   'l7-ssh-brute': [{ kind: 'attack', id: 'T1110.001' }],
   'l7-smtp-relay': [{ kind: 'rfc', id: 'RFC 5321' }],
-  'l7-ftp-sniffing': [{ kind: 'rfc', id: 'RFC 2577' }],
+  'l7-ftp-sniffing': [{ kind: 'rfc', id: 'RFC 2577' }]
 } as const satisfies Record<string, readonly SecurityReference[]>;
 
 /** Baseline catalog used for every defensive control; specific technique links remain in techniqueIds. */
 export const DEFENSIVE_CONTROL_BASELINE_REFERENCES = [
-  { kind: 'nist', id: 'SP 800-53 Rev. 5' },
+  { kind: 'nist', id: 'SP 800-53 Rev. 5' }
 ] as const satisfies readonly SecurityReference[];

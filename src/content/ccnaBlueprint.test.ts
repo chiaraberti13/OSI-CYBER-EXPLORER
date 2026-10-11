@@ -14,18 +14,18 @@ describe('CCNA 200-301 blueprint coverage', () => {
   });
 
   it('matches every declared curriculum objective in domain order', () => {
-    expect(CCNA_BLUEPRINT_DOMAINS.map(domain => domain.number)).toEqual(CCNA_DOMAINS.map(domain => domain.number));
+    expect(CCNA_BLUEPRINT_DOMAINS.map((domain) => domain.number)).toEqual(CCNA_DOMAINS.map((domain) => domain.number));
 
     for (const domain of CCNA_DOMAINS) {
-      const matrixDomain = CCNA_BLUEPRINT_DOMAINS.find(item => item.number === domain.number);
+      const matrixDomain = CCNA_BLUEPRINT_DOMAINS.find((item) => item.number === domain.number);
       expect(matrixDomain, `missing matrix domain ${domain.number}`).toBeDefined();
       expect(matrixDomain?.weight).toBe(domain.weight);
-      expect(matrixDomain?.topics.map(item => item.id)).toEqual(domain.objectiveIds);
+      expect(matrixDomain?.topics.map((item) => item.id)).toEqual(domain.objectiveIds);
     }
   });
 
   it('maps each unique topic to at least one registered view', () => {
-    const ids = CCNA_BLUEPRINT_TOPICS.map(item => item.id);
+    const ids = CCNA_BLUEPRINT_TOPICS.map((item) => item.id);
     expect(new Set(ids).size).toBe(ids.length);
 
     for (const entry of CCNA_BLUEPRINT_TOPICS) {

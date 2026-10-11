@@ -9,7 +9,7 @@
 ## 1. In una frase
 
 **OSI Cyber Explorer** è un'applicazione web didattica e interattiva, bilingue (Italiano/Inglese),
-che permette di studiare il **modello OSI** e la **cybersecurity di rete** vedendo *in movimento*
+che permette di studiare il **modello OSI** e la **cybersecurity di rete** vedendo _in movimento_
 come un pacchetto di dati attraversa i 7 livelli della rete, come può essere attaccato e come lo si difende.
 
 L'idea è trasformare un argomento normalmente teorico e astratto — l'incapsulamento dei pacchetti —
@@ -22,6 +22,7 @@ in un **laboratorio visivo** che si "guarda funzionare", pensato per studenti e 
 L'applicazione è organizzata in **5 sezioni** navigabili da un menu in alto:
 
 ### 🧪 Lab Pila OSI (la sezione principale)
+
 È il cuore dell'app. Lo schermo è diviso in tre colonne:
 
 - **A sinistra — Console + Ispettore Pacchetto:** una console che scrive in tempo reale ogni
@@ -30,7 +31,7 @@ L'applicazione è organizzata in **5 sezioni** navigabili da un menu in alto:
   ognuno con i suoi campi reali (IP, porte, MAC, flag…): è la rappresentazione visiva diretta
   dell'incapsulamento.
 - **Al centro — Motore di simulazione + Pila OSI:** l'utente sceglie un **protocollo**
-  (HTTP, DNS, BGP, SSH, FTP, SMTP), preme *Avvia Simulazione* e vede il pacchetto scendere
+  (HTTP, DNS, BGP, SSH, FTP, SMTP), preme _Avvia Simulazione_ e vede il pacchetto scendere
   dal Livello 7 (Applicazione) al Livello 1 (Fisico), aggiungendo a ogni passo un'**intestazione (header)**
   realistica — indirizzi IP, porte TCP/UDP, MAC address, flag, sequence number, ecc. —
   per poi risalire in fase di **decapsulamento**. Si può mettere in pausa, riprendere e resettare.
@@ -38,22 +39,24 @@ L'applicazione è organizzata in **5 sezioni** navigabili da un menu in alto:
   con panoramica, responsabilità, casi d'uso, attacchi e difese.
 
 Su questa sezione l'utente può anche:
+
 - **Iniettare uno scenario di attacco** (es. SQL Injection su L7, SYN Flood su L4, BGP Hijacking su L3,
   Man-in-the-Middle, spoofing…). Quando l'attacco è attivo appare un **indicatore di rischio ("threat meter")**
   che sale, l'interfaccia si tinge di rosso e la connessione può venire "interrotta".
-- **Attivare le difese** (toggle *Shield*): con la contromisura giusta l'attacco viene **mitigato**
+- **Attivare le difese** (toggle _Shield_): con la contromisura giusta l'attacco viene **mitigato**
   e la simulazione arriva a destinazione, con tanto di scheda "difesa consigliata" per ogni scenario.
 - **Attivare/disattivare i segnali audio:** ogni fase produce un suono sintetizzato
   (avvio, tick a ogni livello, accordo di successo, allarme in caso di attacco).
 
 ### ⚔️ Laboratorio Attacco & Difesa
-Il **laboratorio pratico unico** per capire *come avvengono gli attacchi e come vengono neutralizzati*.
-Si sceglie un attacco (organizzati per livello OSI, da L7 a L1) e se ne osserva la *kill chain*
+
+Il **laboratorio pratico unico** per capire _come avvengono gli attacchi e come vengono neutralizzati_.
+Si sceglie un attacco (organizzati per livello OSI, da L7 a L1) e se ne osserva la _kill chain_
 passo dopo passo: ogni passo indica **chi agisce** (attaccante, bersaglio, rete o difesa),
 cosa succede e — dove utile — il pacchetto/payload tecnico coinvolto. Attivando il toggle
-**Difesa** compare la contromisura consigliata (con *come agisce* e *perché funziona*) esattamente
+**Difesa** compare la contromisura consigliata (con _come agisce_ e _perché funziona_) esattamente
 nel punto in cui interviene: i passi successivi dell'attacco vengono mostrati come "bloccati"
-e l'esito passa da *"Attacco riuscito"* a *"Attacco neutralizzato"*. Si può riprodurre in automatico,
+e l'esito passa da _"Attacco riuscito"_ a _"Attacco neutralizzato"_. Si può riprodurre in automatico,
 avanzare un passo alla volta o resettare. Copre **tutti i 7 livelli con ~25 attacchi** (ARP Poisoning,
 MAC Flooding, DHCP Starvation, IP Spoofing, Smurf, Frammentazione IP, BGP Hijacking, SYN/UDP Flood,
 Port Scanning, TCP Reset, Ping of Death, Session Hijacking, Replay, Padding Oracle, SQL Injection,
@@ -61,25 +64,29 @@ XSS, Phishing Omografico, DNS Cache Poisoning, Slowloris, SSH Brute Force, SMTP 
 FTP Sniffing, Jamming, Physical Tapping…).
 
 ### 🔢 Porte & Protocolli
+
 Una sezione di riferimento sulle porte di rete e i protocolli associati.
 
 ### 🛡️ Cybersecurity (IDS/IPS)
+
 Sezione di **riferimento** sul lato dei difensori, complementare al Laboratorio Attacco & Difesa
-(dove si fa la pratica): qui non si studia *come* funziona un attacco, ma **con quale apparato**
+(dove si fa la pratica): qui non si studia _come_ funziona un attacco, ma **con quale apparato**
 lo si rileva o blocca e **dove** si posiziona. Spiega la differenza chiave tra **IDS**
 (rilevamento passivo, allerta ma non ferma) e **IPS** (prevenzione attiva in linea, scarta il
 pacchetto), con la matrice dei dispositivi NIDS/NIPS/HIDS/HIPS/WIDS/WIPS/EDR e un rimando diretto
 al laboratorio pratico.
 
 ### 📖 Glossario di Rete
+
 Dizionario dei termini tecnici di networking e sicurezza.
 
 Tutti i contenuti sono disponibili sia **in italiano che in inglese**, commutabili con un click.
 
 ### ✨ Esperienza didattica e UX
+
 Alcune scelte pensate specificamente per l'apprendimento e l'usabilità:
 
-- **Guida su richiesta:** la *Guida del Lab* è disponibile dal pulsante in alto per orientare
+- **Guida su richiesta:** la _Guida del Lab_ è disponibile dal pulsante in alto per orientare
   chi non conosce l'app.
 - **Preferenze ricordate:** lingua, segnali audio e velocità di simulazione vengono salvati
   nel browser (`localStorage`), così l'app riapre com'era stata lasciata.
@@ -89,25 +96,27 @@ Alcune scelte pensate specificamente per l'apprendimento e l'usabilità:
   come iniziare invece di restare vuoto.
 - **Accessibilità:** attributo `lang` del documento e titolo sincronizzati con la lingua,
   etichette `aria-label` sui controlli a sola icona, focus da tastiera ben visibile e
-  rispetto della preferenza di sistema *"riduci animazioni"* (`prefers-reduced-motion`).
+  rispetto della preferenza di sistema _"riduci animazioni"_ (`prefers-reduced-motion`).
 
 ---
 
 ## 3. Come è stata sviluppata (aspetti tecnici)
 
 ### Stack tecnologico
-| Area | Tecnologia | Ruolo nel progetto |
-|------|------------|--------------------|
-| Linguaggio | **TypeScript** | Tipizzazione statica di dati e stato, meno errori a runtime |
-| UI | **React 19** | Costruzione dell'interfaccia a componenti |
-| Build tool | **Vite 8** | Dev server rapido e bundling di produzione |
-| Stile | **Tailwind CSS 4** | Design system utility-first, look coerente e responsivo |
-| Stato globale | **Zustand** | Store centralizzato e leggero, senza boilerplate |
-| Animazioni | **Motion** | Transizioni fluide tra viste e micro-interazioni |
-| Icone | **lucide-react** | Set di icone vettoriali |
-| Audio | **Web Audio API** | Sintesi in tempo reale dei segnali sonori (nessun file audio) |
+
+| Area          | Tecnologia         | Ruolo nel progetto                                            |
+| ------------- | ------------------ | ------------------------------------------------------------- |
+| Linguaggio    | **TypeScript**     | Tipizzazione statica di dati e stato, meno errori a runtime   |
+| UI            | **React 19**       | Costruzione dell'interfaccia a componenti                     |
+| Build tool    | **Vite 8**         | Dev server rapido e bundling di produzione                    |
+| Stile         | **Tailwind CSS 4** | Design system utility-first, look coerente e responsivo       |
+| Stato globale | **Zustand**        | Store centralizzato e leggero, senza boilerplate              |
+| Animazioni    | **Motion**         | Transizioni fluide tra viste e micro-interazioni              |
+| Icone         | **lucide-react**   | Set di icone vettoriali                                       |
+| Audio         | **Web Audio API**  | Sintesi in tempo reale dei segnali sonori (nessun file audio) |
 
 ### Architettura
+
 Il progetto segue un'**architettura modulare e a responsabilità separate**:
 
 - **`src/types.ts`** — definizione centrale dei tipi (livelli OSI, attacchi, difese, header di pacchetto,
@@ -137,12 +146,13 @@ Il progetto segue un'**architettura modulare e a responsabilità separate**:
   attacco abbia il suo scenario, che i campi bilingui siano completi, che i 7 livelli siano coperti.
 
 ### Il motore di simulazione (la "pipeline")
+
 Il componente `PacketSimulator` gestisce l'intero ciclo di vita del pacchetto:
 
 1. All'avvio imposta lo stato su `encapsulating` e parte dal livello 7.
 2. Un ciclo temporizzato (`setInterval`, un passo al secondo) scende di livello in livello:
    a ogni passo calcola l'**header** e il nome della **PDU** corretti in base al protocollo scelto
-   (es. *Segment* + TCP su L4 per HTTP, *Datagram* + UDP per DNS), li aggiunge allo store e scrive nel log.
+   (es. _Segment_ + TCP su L4 per HTTP, _Datagram_ + UDP per DNS), li aggiunge allo store e scrive nel log.
 3. Arrivato al livello fisico, se è attivo un attacco **senza** difesa la simulazione passa a `interrupted`;
    altrimenti passa a `decapsulating` e il pacchetto **risale** i livelli fino alla consegna.
 4. Ogni transizione aggiorna in modo reattivo l'interfaccia, il terminale e i segnali audio.
@@ -151,11 +161,13 @@ Il tutto è **deterministico e client-side**: i dati di pacchetto (IP, MAC, port
 sono realistici ma predefiniti, scelti per essere didatticamente chiari.
 
 ### Internazionalizzazione (i18n)
+
 Il bilinguismo non usa librerie esterne: i testi sono strutturati come dizionari `{ it, en }`
 nei tipi e nelle costanti, e i componenti scelgono la stringa in base alla lingua nello store.
 Questo rende immediato aggiungere o correggere una traduzione.
 
 ### Qualità del progetto (test e CI)
+
 La logica pura dell'incapsulamento è coperta da **test unitari** (`Vitest`) e un test di **integrità
 dei contenuti** garantisce che i dati didattici restino coerenti (ogni attacco ha il suo scenario,
 campi bilingui completi, tutti e 7 i livelli coperti). Una **pipeline CI** su GitHub Actions esegue a
@@ -167,8 +179,8 @@ usa alcun modello di AI né backend**, la simulazione è interamente determinist
 
 ## 4. Il mio ruolo e contributo nel progetto
 
-> ⚠️ *Questa sezione è una traccia da personalizzare: mantieni solo le affermazioni che corrispondono
-> davvero alla tua parte di lavoro e taglia il resto — un CV è più forte quando è verificabile.*
+> ⚠️ _Questa sezione è una traccia da personalizzare: mantieni solo le affermazioni che corrispondono
+> davvero alla tua parte di lavoro e taglia il resto — un CV è più forte quando è verificabile._
 
 Nel progetto ho:
 
@@ -192,6 +204,7 @@ Nel progetto ho:
 ## 5. Competenze dimostrate
 
 **Sviluppo front-end**
+
 - React 19 con componenti funzionali e hook (`useEffect`, `useRef`, stato derivato)
 - TypeScript: progettazione di tipi e interfacce, tipizzazione dello stato applicativo
 - Gestione dello stato con Zustand (store centralizzato, azioni, selettori)
@@ -200,6 +213,7 @@ Nel progetto ho:
 - Web Audio API per la sintesi sonora
 
 **Ingegneria del software**
+
 - Architettura modulare e separazione dei livelli (dati / tipi / stato / UI)
 - Progettazione di una macchina a stati per il ciclo di vita della simulazione
 - Internazionalizzazione (i18n) senza dipendenze
@@ -207,11 +221,13 @@ Nel progetto ho:
 - Test unitari con **Vitest** e **CI** (GitHub Actions: type-check + test + build)
 
 **Dominio: reti e cybersecurity**
+
 - Modello OSI e incapsulamento/decapsulamento delle PDU
 - Protocolli di rete (HTTP, DNS, BGP, SSH, FTP, SMTP, TCP/UDP/IP)
 - Attacchi per livello e strategie di mitigazione/hardening
 
 **Trasversali**
+
 - Capacità di **rendere semplice e visivo** un argomento tecnico complesso (didattica)
 - Attenzione al dettaglio nell'UI e nell'esperienza d'uso
 - Documentazione chiara del progetto (README bilingue, questo documento)
@@ -234,4 +250,4 @@ Il comando predefinito non espone il server agli altri dispositivi. `npm run dev
 
 ---
 
-*OSI Cyber Explorer — © Chiara Berti, 2026. Applicazione didattica a scopo educativo.*
+_OSI Cyber Explorer — © Chiara Berti, 2026. Applicazione didattica a scopo educativo._

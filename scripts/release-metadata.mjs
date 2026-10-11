@@ -36,22 +36,15 @@ export function parseReleaseMetadata({ tag, packageJson, changelog }) {
   }
 
   if (manifest.version !== version) {
-    throw new Error(
-      `Tag ${tag} does not match package.json version ${String(manifest.version)}.`,
-    );
+    throw new Error(`Tag ${tag} does not match package.json version ${String(manifest.version)}.`);
   }
 
   const normalizedChangelog = changelog.replace(/\r\n?/g, '\n');
-  const heading = new RegExp(
-    `^## \\[${escapeRegExp(version)}\\] - (\\d{4}-\\d{2}-\\d{2})\\s*$`,
-    'gm',
-  );
+  const heading = new RegExp(`^## \\[${escapeRegExp(version)}\\] - (\\d{4}-\\d{2}-\\d{2})\\s*$`, 'gm');
   const matches = [...normalizedChangelog.matchAll(heading)];
 
   if (matches.length !== 1) {
-    throw new Error(
-      `CHANGELOG.md must contain exactly one "## [${version}] - YYYY-MM-DD" section.`,
-    );
+    throw new Error(`CHANGELOG.md must contain exactly one "## [${version}] - YYYY-MM-DD" section.`);
   }
 
   const releaseDate = matches[0][1];
@@ -61,9 +54,7 @@ export function parseReleaseMetadata({ tag, packageJson, changelog }) {
 
   const contentStart = matches[0].index + matches[0][0].length;
   const nextHeading = normalizedChangelog.indexOf('\n## ', contentStart);
-  const notes = normalizedChangelog
-    .slice(contentStart, nextHeading === -1 ? undefined : nextHeading)
-    .trim();
+  const notes = normalizedChangelog.slice(contentStart, nextHeading === -1 ? undefined : nextHeading).trim();
 
   if (!notes) {
     throw new Error(`CHANGELOG.md release section ${version} is empty.`);
@@ -86,7 +77,7 @@ async function main() {
   const metadata = parseReleaseMetadata({
     tag,
     packageJson: await readFile(manifestPath, 'utf8'),
-    changelog: await readFile(changelogPath, 'utf8'),
+    changelog: await readFile(changelogPath, 'utf8')
   });
 
   if (notesPath) {

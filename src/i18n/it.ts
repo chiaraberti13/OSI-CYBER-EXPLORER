@@ -7,12 +7,12 @@ export const it = {
     loadingModule: 'Caricamento del modulo…',
     skipToContent: 'Vai al contenuto',
     backToOsi: 'Torna alla panoramica OSI',
-    footer: 'App didattica · © 2026 Chiara Berti',
+    footer: 'App didattica · © 2026 Chiara Berti'
   },
   header: {
     openGuide: 'Apri la guida',
     guide: 'Guida',
-    language: 'Lingua',
+    language: 'Lingua'
   },
   navigation: {
     label: 'Navigazione dei laboratori',
@@ -28,7 +28,7 @@ export const it = {
     copyLink: 'Copia il link di questo laboratorio',
     linkCopied: 'Link copiato',
     scrollLabsLeft: 'Scorri i laboratori verso sinistra',
-    scrollLabsRight: 'Scorri i laboratori verso destra',
+    scrollLabsRight: 'Scorri i laboratori verso destra'
   },
   manual: {
     heading: 'Manuale di studio',
@@ -57,13 +57,14 @@ export const it = {
     difficultyAdvanced: 'Avanzato',
     certCcna: 'CCNA 200-301',
     certSecurityPlus: 'CompTIA Security+ SY0-701',
-    certBoth: 'CCNA 200-301 · Security+ SY0-701',
+    certBoth: 'CCNA 200-301 · Security+ SY0-701'
   },
   error: {
     chunkTitle: 'Impossibile caricare questa sezione',
-    chunkBody: 'Il modulo non è stato scaricato correttamente, probabilmente per un problema di rete temporaneo. I tuoi dati e le tue preferenze non sono andati persi.',
+    chunkBody:
+      'Il modulo non è stato scaricato correttamente, probabilmente per un problema di rete temporaneo. I tuoi dati e le tue preferenze non sono andati persi.',
     reload: 'Ricarica la pagina',
-    role: 'Messaggio di errore',
+    role: 'Messaggio di errore'
   },
   shared: {
     results: 'risultati',
@@ -87,8 +88,8 @@ export const it = {
     ccnaDomain: 'Dominio CCNA',
     attackFamily: 'Famiglia di attacco',
     simulationOnly: 'Solo simulazione.',
-    normalBehavior: 'Comportamento normale',
-  },
+    normalBehavior: 'Comportamento normale'
+  }
 } as const;
 
 type WidenStrings<T> = {

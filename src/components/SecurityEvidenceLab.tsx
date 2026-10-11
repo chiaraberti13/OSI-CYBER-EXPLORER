@@ -4,7 +4,7 @@ import { CCNA_DOMAINS } from '../content/ccna';
 import { SECURITY_EVIDENCE_CASES, type EvidenceSeverity } from '../content/securityEvidence';
 import { useStore } from '../store';
 
-const DOMAIN_BY_ID = new Map(CCNA_DOMAINS.map(domain => [domain.id, domain]));
+const DOMAIN_BY_ID = new Map(CCNA_DOMAINS.map((domain) => [domain.id, domain]));
 const LINE_STYLES: Record<EvidenceSeverity, string> = {
   context: 'border-sky-500/40 bg-sky-500/10',
   warning: 'border-amber-400/50 bg-amber-400/10',
@@ -17,19 +17,26 @@ const BADGE_STYLES: Record<EvidenceSeverity, string> = {
 };
 
 export default function SecurityEvidenceLab() {
-  const language = useStore(state => state.language);
+  const language = useStore((state) => state.language);
   const [selectedId, setSelectedId] = useState(SECURITY_EVIDENCE_CASES[0].id);
-  const selected = useMemo(() => SECURITY_EVIDENCE_CASES.find(item => item.id === selectedId) ?? SECURITY_EVIDENCE_CASES[0], [selectedId]);
-  const annotationsByLine = useMemo(() => new Map(selected.annotations.map(item => [item.lineId, item])), [selected]);
+  const selected = useMemo(
+    () => SECURITY_EVIDENCE_CASES.find((item) => item.id === selectedId) ?? SECURITY_EVIDENCE_CASES[0],
+    [selectedId]
+  );
+  const annotationsByLine = useMemo(() => new Map(selected.annotations.map((item) => [item.lineId, item])), [selected]);
 
   return (
     <div className="space-y-6">
       <header className="rounded-xl border border-slate-200 bg-white p-6 md:p-8">
         <div className="flex items-start gap-4">
-          <div className="rounded-xl bg-sky-50 p-3 text-sky-700"><Terminal className="h-6 w-6" aria-hidden="true" /></div>
+          <div className="rounded-xl bg-sky-50 p-3 text-sky-700">
+            <Terminal className="h-6 w-6" aria-hidden="true" />
+          </div>
           <div>
             <p className="eyebrow">OBSERVE · CORRELATE · VERIFY</p>
-            <h1 className="mt-2 text-2xl font-semibold text-slate-900">{language === 'it' ? 'Laboratorio delle evidenze operative' : 'Operational Evidence Lab'}</h1>
+            <h1 className="mt-2 text-2xl font-semibold text-slate-900">
+              {language === 'it' ? 'Laboratorio delle evidenze operative' : 'Operational Evidence Lab'}
+            </h1>
             <p className="mt-2 max-w-4xl text-sm leading-relaxed text-slate-600">
               {language === 'it'
                 ? 'Esplora output IOS, log e audit realistici senza trasformarli in un quiz. Le annotazioni distinguono il dato osservato dalla sua interpretazione e ricordano quali fonti servono per confermare l’ipotesi.'
@@ -40,10 +47,16 @@ export default function SecurityEvidenceLab() {
       </header>
 
       <section aria-label={language === 'it' ? 'Casi di evidenza' : 'Evidence cases'} className="flex flex-wrap gap-2">
-        {SECURITY_EVIDENCE_CASES.map(item => {
+        {SECURITY_EVIDENCE_CASES.map((item) => {
           const active = item.id === selected.id;
           return (
-            <button type="button" key={item.id} onClick={() => setSelectedId(item.id)} aria-pressed={active} className={`rounded-lg border px-3 py-2 text-left text-xs font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 ${active ? 'border-sky-200 bg-sky-50 text-sky-800' : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'}`}>
+            <button
+              type="button"
+              key={item.id}
+              onClick={() => setSelectedId(item.id)}
+              aria-pressed={active}
+              className={`rounded-lg border px-3 py-2 text-left text-xs font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 ${active ? 'border-sky-200 bg-sky-50 text-sky-800' : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'}`}
+            >
               {item.title[language]}
             </button>
           );
@@ -53,12 +66,20 @@ export default function SecurityEvidenceLab() {
       <section className="rounded-xl border border-slate-200 bg-white p-5" aria-labelledby="evidence-case-title">
         <div className="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 pb-4">
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-sky-600">{selected.source} · {selected.plane} plane</p>
-            <h2 id="evidence-case-title" className="mt-1 text-xl font-semibold text-slate-900">{selected.title[language]}</h2>
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-sky-600">
+              {selected.source} · {selected.plane} plane
+            </p>
+            <h2 id="evidence-case-title" className="mt-1 text-xl font-semibold text-slate-900">
+              {selected.title[language]}
+            </h2>
             <p className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-600">{selected.context[language]}</p>
           </div>
           <div className="flex flex-wrap gap-1.5">
-            {selected.domains.map(id => <span key={id} className="rounded-full bg-slate-100 px-2.5 py-1 text-[10px] font-semibold text-slate-600">{DOMAIN_BY_ID.get(id)?.number}. {DOMAIN_BY_ID.get(id)?.title[language]}</span>)}
+            {selected.domains.map((id) => (
+              <span key={id} className="rounded-full bg-slate-100 px-2.5 py-1 text-[10px] font-semibold text-slate-600">
+                {DOMAIN_BY_ID.get(id)?.number}. {DOMAIN_BY_ID.get(id)?.title[language]}
+              </span>
+            ))}
           </div>
         </div>
 
@@ -72,7 +93,10 @@ export default function SecurityEvidenceLab() {
               {selected.output.map((line, index) => {
                 const annotation = annotationsByLine.get(line.id);
                 return (
-                  <li key={line.id} className={`grid min-w-max grid-cols-[2rem_1fr] border-l-2 px-2 ${annotation ? LINE_STYLES[annotation.severity] : 'border-transparent'}`}>
+                  <li
+                    key={line.id}
+                    className={`grid min-w-max grid-cols-[2rem_1fr] border-l-2 px-2 ${annotation ? LINE_STYLES[annotation.severity] : 'border-transparent'}`}
+                  >
                     <span className="select-none text-right text-slate-600">{index + 1}</span>
                     <code className="pl-3">{line.text}</code>
                   </li>
@@ -82,9 +106,19 @@ export default function SecurityEvidenceLab() {
           </div>
 
           <aside aria-label={language === 'it' ? 'Annotazioni' : 'Annotations'} className="space-y-3">
-            {selected.annotations.map(annotation => (
+            {selected.annotations.map((annotation) => (
               <article key={annotation.lineId} className="rounded-lg border border-slate-200 p-3">
-                <div className="flex items-center justify-between gap-3"><h3 className="text-xs font-semibold text-slate-900">L{selected.output.findIndex(line => line.id === annotation.lineId) + 1} · {annotation.label[language]}</h3><span className={`rounded-full px-2 py-0.5 text-[9px] font-semibold uppercase ${BADGE_STYLES[annotation.severity]}`}>{annotation.severity}</span></div>
+                <div className="flex items-center justify-between gap-3">
+                  <h3 className="text-xs font-semibold text-slate-900">
+                    L{selected.output.findIndex((line) => line.id === annotation.lineId) + 1} ·{' '}
+                    {annotation.label[language]}
+                  </h3>
+                  <span
+                    className={`rounded-full px-2 py-0.5 text-[9px] font-semibold uppercase ${BADGE_STYLES[annotation.severity]}`}
+                  >
+                    {annotation.severity}
+                  </span>
+                </div>
                 <p className="mt-2 text-xs leading-relaxed text-slate-600">{annotation.meaning[language]}</p>
               </article>
             ))}
@@ -93,11 +127,21 @@ export default function SecurityEvidenceLab() {
 
         <div className="mt-5 grid gap-3 md:grid-cols-2">
           <div className="rounded-lg border border-indigo-100 bg-indigo-50/60 p-4">
-            <h3 className="flex items-center gap-2 text-xs font-semibold text-indigo-950"><Link2 className="h-4 w-4" aria-hidden="true" />{language === 'it' ? 'Fonti da correlare' : 'Sources to correlate'}</h3>
-            <ul className="mt-2 space-y-1.5 text-xs leading-relaxed text-indigo-900">{selected.correlate.map(item => <li key={item.en}>• {item[language]}</li>)}</ul>
+            <h3 className="flex items-center gap-2 text-xs font-semibold text-indigo-950">
+              <Link2 className="h-4 w-4" aria-hidden="true" />
+              {language === 'it' ? 'Fonti da correlare' : 'Sources to correlate'}
+            </h3>
+            <ul className="mt-2 space-y-1.5 text-xs leading-relaxed text-indigo-900">
+              {selected.correlate.map((item) => (
+                <li key={item.en}>• {item[language]}</li>
+              ))}
+            </ul>
           </div>
           <div className="rounded-lg border border-orange-200 bg-orange-50 p-4">
-            <h3 className="flex items-center gap-2 text-xs font-semibold text-orange-950"><AlertTriangle className="h-4 w-4" aria-hidden="true" />{language === 'it' ? 'Limite dell’evidenza' : 'Evidence limitation'}</h3>
+            <h3 className="flex items-center gap-2 text-xs font-semibold text-orange-950">
+              <AlertTriangle className="h-4 w-4" aria-hidden="true" />
+              {language === 'it' ? 'Limite dell’evidenza' : 'Evidence limitation'}
+            </h3>
             <p className="mt-2 text-xs leading-relaxed text-orange-900">{selected.limitation[language]}</p>
           </div>
         </div>
@@ -105,7 +149,11 @@ export default function SecurityEvidenceLab() {
 
       <div className="flex items-start gap-3 rounded-xl border border-slate-200 bg-white p-4 text-xs leading-relaxed text-slate-600">
         <BookOpenCheck className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" aria-hidden="true" />
-        <p>{language === 'it' ? 'Metodo: osserva il dato grezzo, formula più ipotesi, cerca una fonte indipendente e verifica dopo ogni modifica. Un singolo comando raramente basta per attribuire causa o intenzionalità.' : 'Method: observe raw data, form multiple hypotheses, seek an independent source, and verify after every change. A single command is rarely enough to attribute cause or intent.'}</p>
+        <p>
+          {language === 'it'
+            ? 'Metodo: osserva il dato grezzo, formula più ipotesi, cerca una fonte indipendente e verifica dopo ogni modifica. Un singolo comando raramente basta per attribuire causa o intenzionalità.'
+            : 'Method: observe raw data, form multiple hypotheses, seek an independent source, and verify after every change. A single command is rarely enough to attribute cause or intent.'}
+        </p>
         <Activity className="mt-0.5 h-4 w-4 shrink-0 text-sky-600" aria-hidden="true" />
       </div>
     </div>

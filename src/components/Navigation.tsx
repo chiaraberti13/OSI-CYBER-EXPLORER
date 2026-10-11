@@ -9,15 +9,13 @@ import { viewHash } from '../lib/viewRouting';
 import { formatSearchResultCount, uiMessages } from '../i18n';
 
 export default function Navigation() {
-  const {
-  language,
-  activeView,
-  setActiveView,
-} = useStore(useShallow((state) => ({
-  language: state.language,
-  activeView: state.activeView,
-  setActiveView: state.setActiveView,
-})));
+  const { language, activeView, setActiveView } = useStore(
+    useShallow((state) => ({
+      language: state.language,
+      activeView: state.activeView,
+      setActiveView: state.setActiveView
+    }))
+  );
   const [openGroupId, setOpenGroupId] = useState<string | null>(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [query, setQuery] = useState('');
@@ -43,9 +41,8 @@ export default function Navigation() {
   const SEARCH_LISTBOX_ID = 'nav-search-results';
   const optionId = (view: string) => `nav-search-option-${view}`;
   const activeOptionId = results.length > 0 ? optionId(results[highlighted]?.entry.view) : undefined;
-  const resultAnnouncement = results.length === 0
-    ? labels.noResults
-    : formatSearchResultCount(language, results.length);
+  const resultAnnouncement =
+    results.length === 0 ? labels.noResults : formatSearchResultCount(language, results.length);
 
   // Close the menus whenever the view changes: the destination is reached, so the chrome
   // gets out of the way. The view can also change from another component, so this is
@@ -65,7 +62,7 @@ export default function Navigation() {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
         event.preventDefault();
         setOpenGroupId(null);
-        setIsSearchOpen(current => !current);
+        setIsSearchOpen((current) => !current);
         return;
       }
       if (event.key === 'Escape') {
@@ -99,9 +96,12 @@ export default function Navigation() {
   }, [isSearchOpen]);
 
   // Clear the "copied" feedback timer on unmount so it never fires into a gone component.
-  useEffect(() => () => {
-    if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
-  }, []);
+  useEffect(
+    () => () => {
+      if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+    },
+    []
+  );
 
   // UX-07: the tab row hides its scrollbar, so track whether content is hidden off
   // either edge and expose it through visible fade + scroll-button affordances.
@@ -109,11 +109,14 @@ export default function Navigation() {
   useEffect(() => {
     const el = tabScrollRef.current;
     if (!el) return;
-    const update = () => setTabOverflow(navOverflow({
-      scrollLeft: el.scrollLeft,
-      scrollWidth: el.scrollWidth,
-      clientWidth: el.clientWidth,
-    }));
+    const update = () =>
+      setTabOverflow(
+        navOverflow({
+          scrollLeft: el.scrollLeft,
+          scrollWidth: el.scrollWidth,
+          clientWidth: el.clientWidth
+        })
+      );
     update();
     el.addEventListener('scroll', update, { passive: true });
     window.addEventListener('resize', update);
@@ -154,20 +157,24 @@ export default function Navigation() {
     if (results.length === 0) return;
     if (event.key === 'ArrowDown') {
       event.preventDefault();
-      setHighlighted(index => (index + 1) % results.length);
+      setHighlighted((index) => (index + 1) % results.length);
     } else if (event.key === 'ArrowUp') {
       event.preventDefault();
-      setHighlighted(index => (index - 1 + results.length) % results.length);
+      setHighlighted((index) => (index - 1 + results.length) % results.length);
     } else if (event.key === 'Enter') {
       event.preventDefault();
       setActiveView(results[highlighted].entry.view);
     }
   };
 
-  const openGroup = NAV_GROUPS.find(group => group.id === openGroupId) ?? null;
+  const openGroup = NAV_GROUPS.find((group) => group.id === openGroupId) ?? null;
 
   return (
-    <nav ref={navRef} aria-label={labels.label} className="sticky top-14 z-40 w-full border-b border-slate-200/60 bg-[#fafafa]/85 backdrop-blur-md">
+    <nav
+      ref={navRef}
+      aria-label={labels.label}
+      className="sticky top-14 z-40 w-full border-b border-slate-200/60 bg-[#fafafa]/85 backdrop-blur-md"
+    >
       <div className="relative mx-auto max-w-7xl px-6">
         <div className="flex h-12 items-center gap-1.5">
           <div className="relative min-w-0 flex-1">
@@ -175,7 +182,10 @@ export default function Navigation() {
                 content is hidden to the left, so groups are reachable without a blind swipe. */}
             {tabOverflow.canScrollLeft && (
               <>
-                <span aria-hidden="true" className="pointer-events-none absolute inset-y-0 left-0 z-10 w-10 bg-gradient-to-r from-[#fafafa] to-transparent" />
+                <span
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-y-0 left-0 z-10 w-10 bg-gradient-to-r from-[#fafafa] to-transparent"
+                />
                 <button
                   type="button"
                   onClick={() => scrollTabs(-1)}
@@ -188,7 +198,10 @@ export default function Navigation() {
             )}
             {tabOverflow.canScrollRight && (
               <>
-                <span aria-hidden="true" className="pointer-events-none absolute inset-y-0 right-0 z-10 w-10 bg-gradient-to-l from-[#fafafa] to-transparent" />
+                <span
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-y-0 right-0 z-10 w-10 bg-gradient-to-l from-[#fafafa] to-transparent"
+                />
                 <button
                   type="button"
                   onClick={() => scrollTabs(1)}
@@ -200,38 +213,51 @@ export default function Navigation() {
               </>
             )}
             <div ref={tabScrollRef} className="flex items-center gap-1 overflow-x-auto no-scrollbar">
-            {NAV_GROUPS.map(group => {
-              const isOpen = openGroupId === group.id;
-              const holdsActiveView = activeGroup?.id === group.id;
-              return (
-                <button
-                  type="button"
-                  key={group.id}
-                  onClick={() => { setIsSearchOpen(false); setOpenGroupId(isOpen ? null : group.id); }}
-                  aria-expanded={isOpen}
-                  aria-haspopup="true"
-                  aria-controls={`nav-panel-${group.id}`}
-                  className={`flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-md border px-3 py-1.5 text-[13px] font-medium transition-colors ${
-                    isOpen
-                      ? 'border-slate-300 bg-white text-slate-900'
-                      : holdsActiveView
-                        ? 'border-slate-200/70 bg-white text-slate-900'
-                        : 'border-transparent text-slate-500 hover:bg-white/70 hover:text-slate-800'
-                  }`}
-                >
-                  {holdsActiveView ? <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-500" aria-hidden="true" /> : null}
-                  <span className="hidden sm:inline">{group[language]}</span>
-                  <span className="sm:hidden">{language === 'it' ? group.itShort : group.enShort}</span>
-                  <span className="hidden text-[10px] font-normal text-slate-400 sm:inline">{group.entries.length}</span>
-                  <ChevronDown className={`h-3.5 w-3.5 shrink-0 text-slate-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} aria-hidden="true" />
-                </button>
-              );
-            })}
+              {NAV_GROUPS.map((group) => {
+                const isOpen = openGroupId === group.id;
+                const holdsActiveView = activeGroup?.id === group.id;
+                return (
+                  <button
+                    type="button"
+                    key={group.id}
+                    onClick={() => {
+                      setIsSearchOpen(false);
+                      setOpenGroupId(isOpen ? null : group.id);
+                    }}
+                    aria-expanded={isOpen}
+                    aria-haspopup="true"
+                    aria-controls={`nav-panel-${group.id}`}
+                    className={`flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-md border px-3 py-1.5 text-[13px] font-medium transition-colors ${
+                      isOpen
+                        ? 'border-slate-300 bg-white text-slate-900'
+                        : holdsActiveView
+                          ? 'border-slate-200/70 bg-white text-slate-900'
+                          : 'border-transparent text-slate-500 hover:bg-white/70 hover:text-slate-800'
+                    }`}
+                  >
+                    {holdsActiveView ? (
+                      <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-500" aria-hidden="true" />
+                    ) : null}
+                    <span className="hidden sm:inline">{group[language]}</span>
+                    <span className="sm:hidden">{language === 'it' ? group.itShort : group.enShort}</span>
+                    <span className="hidden text-[10px] font-normal text-slate-400 sm:inline">
+                      {group.entries.length}
+                    </span>
+                    <ChevronDown
+                      className={`h-3.5 w-3.5 shrink-0 text-slate-400 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+                      aria-hidden="true"
+                    />
+                  </button>
+                );
+              })}
             </div>
           </div>
 
           {activeEntry ? (
-            <p className="hidden shrink-0 items-center gap-1.5 truncate pl-2 text-[11px] text-slate-400 lg:flex" aria-live="polite">
+            <p
+              className="hidden shrink-0 items-center gap-1.5 truncate pl-2 text-[11px] text-slate-400 lg:flex"
+              aria-live="polite"
+            >
               <span className="eyebrow">{labels.current}</span>
               <span className="font-medium text-slate-600">{activeEntry[language]}</span>
             </p>
@@ -243,15 +269,20 @@ export default function Navigation() {
             aria-label={labels.copyLink}
             className="flex shrink-0 items-center gap-1.5 rounded-md border border-slate-200/70 bg-white px-2.5 py-1.5 text-[13px] font-medium text-slate-500 transition-colors hover:text-slate-800"
           >
-            {linkCopied
-              ? <Check className="h-3.5 w-3.5 text-emerald-600" aria-hidden="true" />
-              : <Link2 className="h-3.5 w-3.5" aria-hidden="true" />}
+            {linkCopied ? (
+              <Check className="h-3.5 w-3.5 text-emerald-600" aria-hidden="true" />
+            ) : (
+              <Link2 className="h-3.5 w-3.5" aria-hidden="true" />
+            )}
             <span className="hidden xl:inline">{linkCopied ? labels.linkCopied : labels.copyLink}</span>
           </button>
 
           <button
             type="button"
-            onClick={() => { setOpenGroupId(null); setIsSearchOpen(open => !open); }}
+            onClick={() => {
+              setOpenGroupId(null);
+              setIsSearchOpen((open) => !open);
+            }}
             aria-expanded={isSearchOpen}
             aria-label={labels.search}
             className="flex shrink-0 items-center gap-1.5 rounded-md border border-slate-200/70 bg-white px-2.5 py-1.5 text-[13px] font-medium text-slate-500 transition-colors hover:text-slate-800"
@@ -262,7 +293,9 @@ export default function Navigation() {
         </div>
 
         {/* Off-screen live region: confirms the copy without moving focus. */}
-        <span className="sr-only" role="status" aria-live="polite">{linkCopied ? labels.linkCopied : ''}</span>
+        <span className="sr-only" role="status" aria-live="polite">
+          {linkCopied ? labels.linkCopied : ''}
+        </span>
 
         <AnimatePresence>
           {openGroup ? (
@@ -277,7 +310,7 @@ export default function Navigation() {
             >
               <p className="eyebrow px-1 pb-2">{openGroup[language]}</p>
               <ul className="grid gap-1 sm:grid-cols-2 xl:grid-cols-3">
-                {openGroup.entries.map(entry => {
+                {openGroup.entries.map((entry) => {
                   const Icon = entry.icon;
                   const isActive = activeView === entry.view;
                   return (
@@ -287,13 +320,24 @@ export default function Navigation() {
                         onClick={() => setOpenGroupId(null)}
                         aria-current={isActive ? 'page' : undefined}
                         className={`flex w-full items-start gap-2.5 rounded-lg border p-2.5 text-left transition-colors ${
-                          isActive ? 'border-indigo-200 bg-indigo-50/60' : 'border-transparent hover:border-slate-200 hover:bg-slate-50'
+                          isActive
+                            ? 'border-indigo-200 bg-indigo-50/60'
+                            : 'border-transparent hover:border-slate-200 hover:bg-slate-50'
                         }`}
                       >
-                        <Icon className={`mt-0.5 h-4 w-4 shrink-0 ${isActive ? 'text-indigo-600' : 'text-slate-400'}`} aria-hidden="true" />
+                        <Icon
+                          className={`mt-0.5 h-4 w-4 shrink-0 ${isActive ? 'text-indigo-600' : 'text-slate-400'}`}
+                          aria-hidden="true"
+                        />
                         <span className="min-w-0">
-                          <span className={`block text-[13px] font-medium ${isActive ? 'text-indigo-900' : 'text-slate-800'}`}>{entry[language]}</span>
-                          <span className="mt-0.5 block text-[11px] leading-snug text-slate-500">{language === 'it' ? entry.hintIt : entry.hintEn}</span>
+                          <span
+                            className={`block text-[13px] font-medium ${isActive ? 'text-indigo-900' : 'text-slate-800'}`}
+                          >
+                            {entry[language]}
+                          </span>
+                          <span className="mt-0.5 block text-[11px] leading-snug text-slate-500">
+                            {language === 'it' ? entry.hintIt : entry.hintEn}
+                          </span>
                         </span>
                       </ViewLink>
                     </li>
@@ -320,7 +364,10 @@ export default function Navigation() {
                 <input
                   ref={searchInputRef}
                   value={query}
-                  onChange={event => { setQuery(event.target.value); setHighlighted(0); }}
+                  onChange={(event) => {
+                    setQuery(event.target.value);
+                    setHighlighted(0);
+                  }}
                   onKeyDown={onSearchKeyDown}
                   placeholder={labels.searchHint}
                   aria-label={labels.search}
@@ -332,7 +379,12 @@ export default function Navigation() {
                   spellCheck={false}
                   className="min-w-0 flex-1 bg-transparent text-sm text-slate-800 outline-none placeholder:text-slate-400"
                 />
-                <button type="button" onClick={() => setIsSearchOpen(false)} aria-label={labels.close} className="shrink-0 rounded-md p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700">
+                <button
+                  type="button"
+                  onClick={() => setIsSearchOpen(false)}
+                  aria-label={labels.close}
+                  className="shrink-0 rounded-md p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+                >
                   <X className="h-4 w-4" aria-hidden="true" />
                 </button>
               </div>
@@ -340,12 +392,19 @@ export default function Navigation() {
               {/* Off-screen live region: announces the result count (or no-results) as
                   the query changes, so screen-reader users hear the list update without
                   moving focus. The visible panel below is not itself a live region. */}
-              <span className="sr-only" role="status" aria-live="polite">{resultAnnouncement}</span>
+              <span className="sr-only" role="status" aria-live="polite">
+                {resultAnnouncement}
+              </span>
 
               {results.length === 0 ? (
                 <p className="px-4 py-6 text-center text-sm text-slate-500">{labels.noResults}</p>
               ) : (
-                <ul id={SEARCH_LISTBOX_ID} role="listbox" aria-label={labels.results} className="max-h-[60vh] overflow-y-auto p-1.5 custom-scrollbar">
+                <ul
+                  id={SEARCH_LISTBOX_ID}
+                  role="listbox"
+                  aria-label={labels.results}
+                  className="max-h-[60vh] overflow-y-auto p-1.5 custom-scrollbar"
+                >
                   {results.map((item, index) => {
                     const Icon = item.entry.icon;
                     const isHighlighted = index === highlighted;
@@ -363,10 +422,16 @@ export default function Navigation() {
                         >
                           <Icon className="h-4 w-4 shrink-0 text-slate-400" aria-hidden="true" />
                           <span className="min-w-0 flex-1">
-                            <span className="block truncate text-[13px] font-medium text-slate-800">{item.entry[language]}</span>
-                            <span className="block truncate text-[11px] text-slate-500">{language === 'it' ? item.entry.hintIt : item.entry.hintEn}</span>
+                            <span className="block truncate text-[13px] font-medium text-slate-800">
+                              {item.entry[language]}
+                            </span>
+                            <span className="block truncate text-[11px] text-slate-500">
+                              {language === 'it' ? item.entry.hintIt : item.entry.hintEn}
+                            </span>
                           </span>
-                          <span className="eyebrow shrink-0">{language === 'it' ? item.group.itShort : item.group.enShort}</span>
+                          <span className="eyebrow shrink-0">
+                            {language === 'it' ? item.group.itShort : item.group.enShort}
+                          </span>
                         </ViewLink>
                       </li>
                     );

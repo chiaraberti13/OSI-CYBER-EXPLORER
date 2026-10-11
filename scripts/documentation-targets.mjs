@@ -17,7 +17,7 @@ async function productionSources(directory, root = directory) {
   const files = [];
   for (const entry of entries) {
     const absolute = path.join(directory, entry.name);
-    if (entry.isDirectory()) files.push(...await productionSources(absolute, root));
+    if (entry.isDirectory()) files.push(...(await productionSources(absolute, root)));
     else if (SOURCE_EXTENSIONS.has(path.extname(entry.name)) && !/\.(?:test|spec)\.[^.]+$/.test(entry.name)) {
       files.push(path.relative(path.dirname(root), absolute).replaceAll(path.sep, '/'));
     }
@@ -35,7 +35,7 @@ function stringLiterals(source) {
     literals.push({ value: match[0].slice(1, -1), index: match.index + 1 });
   }
   for (const match of source.matchAll(TEMPLATE_STRING_PATTERN)) {
-    const value = match[0].slice(1, -1).replace(/\$\{[\s\S]*?\}/g, expression => ' '.repeat(expression.length));
+    const value = match[0].slice(1, -1).replace(/\$\{[\s\S]*?\}/g, (expression) => ' '.repeat(expression.length));
     literals.push({ value, index: match.index + 1 });
   }
   return literals;
@@ -43,18 +43,20 @@ function stringLiterals(source) {
 
 function isAllowedIpv4(address) {
   const octets = address.split('.').map(Number);
-  if (octets.length !== 4 || octets.some(value => !Number.isInteger(value) || value < 0 || value > 255)) return false;
+  if (octets.length !== 4 || octets.some((value) => !Number.isInteger(value) || value < 0 || value > 255)) return false;
   const [a, b, c] = octets;
-  return a === 0
-    || a === 10
-    || a === 127
-    || (a === 169 && b === 254)
-    || (a === 172 && b >= 16 && b <= 31)
-    || (a === 192 && b === 168)
-    || (a === 192 && b === 0 && c === 2)
-    || (a === 198 && b === 51 && c === 100)
-    || (a === 203 && b === 0 && c === 113)
-    || a >= 224;
+  return (
+    a === 0 ||
+    a === 10 ||
+    a === 127 ||
+    (a === 169 && b === 254) ||
+    (a === 172 && b >= 16 && b <= 31) ||
+    (a === 192 && b === 168) ||
+    (a === 192 && b === 0 && c === 2) ||
+    (a === 198 && b === 51 && c === 100) ||
+    (a === 203 && b === 0 && c === 113) ||
+    a >= 224
+  );
 }
 
 function isAllowedIpv6(candidate) {
@@ -71,7 +73,7 @@ function isAllowedIpv6(candidate) {
 
 function isReservedDomain(domain, suffixes) {
   const normalized = domain.toLowerCase().replace(/\.$/, '');
-  return suffixes.some(suffix => normalized === suffix || normalized.endsWith(`.${suffix}`));
+  return suffixes.some((suffix) => normalized === suffix || normalized.endsWith(`.${suffix}`));
 }
 
 function exceptionKey(value, file) {
@@ -85,9 +87,11 @@ export function validateAllowlist(allowlist, knownFiles = []) {
   const seenDomains = new Set();
   for (const item of allowlist.externalDomainExceptions ?? []) {
     const key = exceptionKey(item.domain ?? '', item.file ?? '');
-    if (!item.domain || !item.file || !item.purpose) findings.push({ rule: 'NET-S02', message: `incomplete domain exception: ${key}` });
+    if (!item.domain || !item.file || !item.purpose)
+      findings.push({ rule: 'NET-S02', message: `incomplete domain exception: ${key}` });
     if (seenDomains.has(key)) findings.push({ rule: 'NET-S03', message: `duplicate domain exception: ${key}` });
-    if (known.size && !known.has(item.file)) findings.push({ rule: 'NET-S04', message: `domain exception file does not exist: ${item.file}` });
+    if (known.size && !known.has(item.file))
+      findings.push({ rule: 'NET-S04', message: `domain exception file does not exist: ${item.file}` });
     seenDomains.add(key);
   }
   const seenIpv4 = new Set();
@@ -99,7 +103,8 @@ export function validateAllowlist(allowlist, knownFiles = []) {
     for (const file of item.files) {
       const key = exceptionKey(item.address, file);
       if (seenIpv4.has(key)) findings.push({ rule: 'NET-S06', message: `duplicate IPv4 exception: ${key}` });
-      if (known.size && !known.has(file)) findings.push({ rule: 'NET-S07', message: `IPv4 exception file does not exist: ${file}` });
+      if (known.size && !known.has(file))
+        findings.push({ rule: 'NET-S07', message: `IPv4 exception file does not exist: ${file}` });
       seenIpv4.add(key);
     }
   }
@@ -108,22 +113,38 @@ export function validateAllowlist(allowlist, knownFiles = []) {
 
 export function validateSource(source, file, allowlist) {
   const findings = [];
-  const ipv4Exceptions = new Set((allowlist.ipv4LiteralExceptions ?? []).flatMap(item =>
-    (item.files ?? []).map(exceptionFile => exceptionKey(item.address, exceptionFile))
-  ));
-  const domainExceptions = new Set((allowlist.externalDomainExceptions ?? []).map(item => exceptionKey(item.domain, item.file)));
+  const ipv4Exceptions = new Set(
+    (allowlist.ipv4LiteralExceptions ?? []).flatMap((item) =>
+      (item.files ?? []).map((exceptionFile) => exceptionKey(item.address, exceptionFile))
+    )
+  );
+  const domainExceptions = new Set(
+    (allowlist.externalDomainExceptions ?? []).map((item) => exceptionKey(item.domain, item.file))
+  );
 
   for (const match of source.matchAll(IPV4_PATTERN)) {
     const address = match[0];
     if (!isAllowedIpv4(address) && !ipv4Exceptions.has(exceptionKey(address, file))) {
-      findings.push({ rule: 'NET-T01', file, line: lineAt(source, match.index), value: address, message: 'public IPv4 literal' });
+      findings.push({
+        rule: 'NET-T01',
+        file,
+        line: lineAt(source, match.index),
+        value: address,
+        message: 'public IPv4 literal'
+      });
     }
   }
 
   for (const match of source.matchAll(ADDRESS_TOKEN_PATTERN)) {
     const candidate = match[0];
     if (candidate.includes(':') && isIP(candidate.split('/')[0]) === 6 && !isAllowedIpv6(candidate)) {
-      findings.push({ rule: 'NET-T02', file, line: lineAt(source, match.index), value: candidate, message: 'public IPv6 literal' });
+      findings.push({
+        rule: 'NET-T02',
+        file,
+        line: lineAt(source, match.index),
+        value: candidate,
+        message: 'public IPv6 literal'
+      });
     }
   }
 
@@ -131,10 +152,18 @@ export function validateSource(source, file, allowlist) {
     const value = literal.value;
     for (const match of value.matchAll(DOMAIN_PATTERN)) {
       const domain = match[0].toLowerCase();
-      if (!isReservedDomain(domain, allowlist.reservedDomainSuffixes ?? [])
-        && !domainExceptions.has(exceptionKey(domain, file))) {
+      if (
+        !isReservedDomain(domain, allowlist.reservedDomainSuffixes ?? []) &&
+        !domainExceptions.has(exceptionKey(domain, file))
+      ) {
         const index = literal.index + match.index;
-        findings.push({ rule: 'NET-T03', file, line: lineAt(source, index), value: domain, message: 'non-reserved public domain' });
+        findings.push({
+          rule: 'NET-T03',
+          file,
+          line: lineAt(source, index),
+          value: domain,
+          message: 'non-reserved public domain'
+        });
       }
     }
   }
@@ -151,8 +180,9 @@ export async function validateRepository(root = ROOT) {
   for (const file of files) {
     const source = await readFile(path.join(root, file), 'utf8');
     ipv4Literals += [...source.matchAll(IPV4_PATTERN)].length;
-    ipv6Literals += [...source.matchAll(ADDRESS_TOKEN_PATTERN)]
-      .filter(match => match[0].includes(':') && isIP(match[0].split('/')[0]) === 6).length;
+    ipv6Literals += [...source.matchAll(ADDRESS_TOKEN_PATTERN)].filter(
+      (match) => match[0].includes(':') && isIP(match[0].split('/')[0]) === 6
+    ).length;
     for (const literal of stringLiterals(source)) domainLiterals += [...literal.value.matchAll(DOMAIN_PATTERN)].length;
     findings.push(...validateSource(source, file, allowlist));
   }
@@ -170,7 +200,9 @@ async function main() {
     process.exitCode = 1;
     return;
   }
-  console.log(`Documentation-target validation passed: ${result.files} files, ${result.ipv4Literals} IPv4, ${result.ipv6Literals} IPv6, ${result.domainLiterals} domain literals.`);
+  console.log(
+    `Documentation-target validation passed: ${result.files} files, ${result.ipv4Literals} IPv4, ${result.ipv6Literals} IPv6, ${result.domainLiterals} domain literals.`
+  );
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) await main();

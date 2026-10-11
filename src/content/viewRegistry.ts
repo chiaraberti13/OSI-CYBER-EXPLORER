@@ -5,10 +5,38 @@
 
 import { lazy, type ComponentType, type LazyExoticComponent } from 'react';
 import {
-  Activity, BookOpen, Cable, Calculator, FileCode2, FileSearch, Fingerprint, Gauge,
-  GitBranch, GlobeLock, GraduationCap, Hash, HeartPulse, KeyRound, Laptop, Layers, Layers3, LockKeyhole, Map,
-  MailWarning, Network, Radar, Radio, Route, Router, ServerCog, Shield, ShieldAlert,
-  Split, Swords, Workflow, type LucideIcon
+  Activity,
+  BookOpen,
+  Cable,
+  Calculator,
+  FileCode2,
+  FileSearch,
+  Fingerprint,
+  Gauge,
+  GitBranch,
+  GlobeLock,
+  GraduationCap,
+  Hash,
+  HeartPulse,
+  KeyRound,
+  Laptop,
+  Layers,
+  Layers3,
+  LockKeyhole,
+  Map,
+  MailWarning,
+  Network,
+  Radar,
+  Radio,
+  Route,
+  Router,
+  ServerCog,
+  Shield,
+  ShieldAlert,
+  Split,
+  Swords,
+  Workflow,
+  type LucideIcon
 } from 'lucide-react';
 import type { AppView } from '../store';
 import { importWithRetry } from '../lib/lazyWithRetry';
@@ -51,9 +79,21 @@ export interface ViewGroupMeta {
 /** Group display metadata and the order groups appear in the navigation bar. */
 export const VIEW_GROUPS: readonly ViewGroupMeta[] = [
   { id: 'ccna', it: 'Percorso CCNA', en: 'CCNA path', itShort: 'CCNA', enShort: 'CCNA' },
-  { id: 'interactive', it: 'Laboratori interattivi', en: 'Interactive labs', itShort: 'Interattivi', enShort: 'Interactive' },
+  {
+    id: 'interactive',
+    it: 'Laboratori interattivi',
+    en: 'Interactive labs',
+    itShort: 'Interattivi',
+    enShort: 'Interactive'
+  },
   { id: 'domains', it: 'Sicurezza per area', en: 'Security by area', itShort: 'Per area', enShort: 'By area' },
-  { id: 'operations', it: 'Operazioni e difesa', en: 'Operations and defense', itShort: 'Operazioni', enShort: 'Operations' }
+  {
+    id: 'operations',
+    it: 'Operazioni e difesa',
+    en: 'Operations and defense',
+    itShort: 'Operazioni',
+    enShort: 'Operations'
+  }
 ];
 
 export interface ViewDefinition {
@@ -81,7 +121,9 @@ export interface ViewDefinition {
  * {@link ViewProps} here keeps every entry's `component` field the same type, so the
  * registry stays a homogeneous `Record` the render switch can index without casts.
  */
-function view(loader: () => Promise<{ default: ComponentType<ViewProps> }>): LazyExoticComponent<ComponentType<ViewProps>> {
+function view(
+  loader: () => Promise<{ default: ComponentType<ViewProps> }>
+): LazyExoticComponent<ComponentType<ViewProps>> {
   // `importWithRetry` absorbs transient chunk-fetch failures (a dropped connection, a
   // chunk still propagating after a deploy) before React.lazy caches the result. A
   // failure that survives the retries surfaces to the ChunkErrorBoundary (ENG-09).
@@ -98,7 +140,8 @@ export const VIEW_REGISTRY: Record<AppView, ViewDefinition> = {
     en: 'Study manual',
     hintIt: 'Gli argomenti spiegati passo passo, con esempi, errori comuni e laboratori guidati.',
     hintEn: 'The topics explained step by step, with examples, common mistakes, and guided labs.',
-    keywords: 'manuale manual guida teoria studio capitoli argomenti spiegazione esercitazioni laboratori guidati osi incapsulamento handbook theory study chapters'
+    keywords:
+      'manuale manual guida teoria studio capitoli argomenti spiegazione esercitazioni laboratori guidati osi incapsulamento handbook theory study chapters'
   },
   curriculum: {
     group: 'ccna',
@@ -118,7 +161,8 @@ export const VIEW_REGISTRY: Record<AppView, ViewDefinition> = {
     en: 'Network fundamentals',
     hintIt: 'IPv4 e subnetting, IPv6, TCP/UDP, switching, virtualizzazione, parametri IP del client.',
     hintEn: 'IPv4 and subnetting, IPv6, TCP/UDP, switching, virtualization, client IP parameters.',
-    keywords: 'subnet mask wildcard cidr binario eui-64 slaac mtu duplex collisione broadcast container vrf ipconfig vlsm pianificatore planner frammentazione fragmentation df pmtud mss adjust-mss gre tunnel overhead 1500 1476 802.1q baby giant'
+    keywords:
+      'subnet mask wildcard cidr binario eui-64 slaac mtu duplex collisione broadcast container vrf ipconfig vlsm pianificatore planner frammentazione fragmentation df pmtud mss adjust-mss gre tunnel overhead 1500 1476 802.1q baby giant'
   },
   access: {
     group: 'ccna',
@@ -128,7 +172,8 @@ export const VIEW_REGISTRY: Record<AppView, ViewDefinition> = {
     en: 'Network access',
     hintIt: 'VLAN, trunk 802.1Q, STP/RSTP, EtherChannel, principi wireless e GUI del WLC.',
     hintEn: 'VLANs, 802.1Q trunks, STP/RSTP, EtherChannel, wireless principles, and the WLC GUI.',
-    keywords: 'vlan trunk native stp rstp bpdu portfast lacp pagp etherchannel wlc capwap ssid csma cam table mac address-table flooding filtering aging learning unknown unicast port-security sticky violation protect restrict shutdown err-disable psecure bridge id discarding pvst'
+    keywords:
+      'vlan trunk native stp rstp bpdu portfast lacp pagp etherchannel wlc capwap ssid csma cam table mac address-table flooding filtering aging learning unknown unicast port-security sticky violation protect restrict shutdown err-disable psecure bridge id discarding pvst'
   },
   routing: {
     group: 'ccna',
@@ -138,7 +183,8 @@ export const VIEW_REGISTRY: Record<AppView, ViewDefinition> = {
     en: 'IP connectivity',
     hintIt: 'Lettura di show ip route, longest prefix match, OSPFv2, DR/BDR e first-hop redundancy.',
     hintEn: 'Reading show ip route, longest prefix match, OSPFv2, DR/BDR, and first-hop redundancy.',
-    keywords: 'routing table rotte statiche floating ospf costo router-id dr bdr hsrp vrrp fhrp rib fib cef spf dijkstra shortest path ecmp maximum-paths reference-bandwidth auto-cost area lsa riconvergenza'
+    keywords:
+      'routing table rotte statiche floating ospf costo router-id dr bdr hsrp vrrp fhrp rib fib cef spf dijkstra shortest path ecmp maximum-paths reference-bandwidth auto-cost area lsa riconvergenza'
   },
   services: {
     group: 'ccna',
@@ -148,7 +194,8 @@ export const VIEW_REGISTRY: Record<AppView, ViewDefinition> = {
     en: 'IP services',
     hintIt: 'DHCP e relay, DNS, NAT/PAT, NTP, SNMPv3, Syslog, QoS e SSH.',
     hintEn: 'DHCP and relay, DNS, NAT/PAT, NTP, SNMPv3, Syslog, QoS, and SSH.',
-    keywords: 'dhcp dora discover offer request ack nak relay helper-address giaddr option 82 snooping trusted lease t1 t2 apipa 169.254 dns nat pat overload ntp stratum snmp syslog severity qos dscp ssh tftp'
+    keywords:
+      'dhcp dora discover offer request ack nak relay helper-address giaddr option 82 snooping trusted lease t1 t2 apipa 169.254 dns nat pat overload ntp stratum snmp syslog severity qos dscp ssh tftp'
   },
   securitycore: {
     group: 'ccna',
@@ -158,7 +205,8 @@ export const VIEW_REGISTRY: Record<AppView, ViewDefinition> = {
     en: 'Security fundamentals',
     hintIt: 'ACL IPv4, AAA, VPN e IPsec, firewall e IDS/IPS, PKI, da WEP a WPA3.',
     hintEn: 'IPv4 ACLs, AAA, VPNs and IPsec, firewalls and IDS/IPS, PKI, WEP through WPA3.',
-    keywords: 'acl standard extended established first match implicit deny shadowing riga morta ordine sequenza access-group access-list wildcard aaa tacacs radius ipsec ikev2 pki crl ocsp wpa2 psk wpa3 sae mfa'
+    keywords:
+      'acl standard extended established first match implicit deny shadowing riga morta ordine sequenza access-group access-list wildcard aaa tacacs radius ipsec ikev2 pki crl ocsp wpa2 psk wpa3 sae mfa'
   },
   automation: {
     group: 'ccna',
@@ -168,7 +216,8 @@ export const VIEW_REGISTRY: Record<AppView, ViewDefinition> = {
     en: 'Automation',
     hintIt: 'Reti controller-based, underlay e overlay, REST e CRUD, JSON, Ansible e Terraform.',
     hintEn: 'Controller-based networking, underlay and overlay, REST and CRUD, JSON, Ansible, and Terraform.',
-    keywords: 'sdn controller northbound southbound netconf restconf yang rest crud json idempotenza ansible terraform ai'
+    keywords:
+      'sdn controller northbound southbound netconf restconf yang rest crud json idempotenza ansible terraform ai'
   },
 
   // --- Interactive labs -------------------------------------------------------
@@ -200,7 +249,8 @@ export const VIEW_REGISTRY: Record<AppView, ViewDefinition> = {
     it: 'Attacco & Difesa',
     en: 'Attack & defense',
     hintIt: 'Circa 25 attacchi sui sette livelli come kill chain, con il punto esatto in cui la difesa interviene.',
-    hintEn: 'About 25 attacks across the seven layers as kill chains, with the exact point where the defense intervenes.',
+    hintEn:
+      'About 25 attacks across the seven layers as kill chains, with the exact point where the defense intervenes.',
     keywords: 'kill chain arp poisoning mac flooding syn flood spoofing xss sql injection mitm scenario'
   },
   ports: {

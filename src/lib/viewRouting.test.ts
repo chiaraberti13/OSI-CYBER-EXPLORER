@@ -29,10 +29,23 @@ describe('registry-derived routes', () => {
 
   it('falls back safely for empty, malformed, encoded and unregistered routes', () => {
     for (const hash of [
-      '', '#', '#/', '#routing', '#/missing', '#/constructor', '#/toString',
-      '#/__proto__', '#/ROUTING', '#/%72outing', '#/routing/',
-      '#/routing?view=glossary', '#/routing#glossary', '#//example.com',
-      '#/../routing', '#/routing\u0000', '#/<script>alert(1)</script>',
+      '',
+      '#',
+      '#/',
+      '#routing',
+      '#/missing',
+      '#/constructor',
+      '#/toString',
+      '#/__proto__',
+      '#/ROUTING',
+      '#/%72outing',
+      '#/routing/',
+      '#/routing?view=glossary',
+      '#/routing#glossary',
+      '#//example.com',
+      '#/../routing',
+      '#/routing\u0000',
+      '#/<script>alert(1)</script>'
     ]) {
       expect(resolveViewHash(hash), hash).toBe('osi');
     }

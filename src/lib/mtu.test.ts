@@ -48,9 +48,9 @@ describe('IPv4 fragmentation', () => {
     // 1500 - 20 = 1480 of payload per fragment, already a multiple of 8.
     const result = analyseMtu({ packetBytes: 4000 });
     expect(result.outcome).toBe('fragmented');
-    expect(result.fragments.map(fragment => fragment.payloadBytes)).toEqual([1480, 1480, 1020]);
-    expect(result.fragments.map(fragment => fragment.offsetUnits)).toEqual([0, 185, 370]);
-    expect(result.fragments.map(fragment => fragment.moreFragments)).toEqual([true, true, false]);
+    expect(result.fragments.map((fragment) => fragment.payloadBytes)).toEqual([1480, 1480, 1020]);
+    expect(result.fragments.map((fragment) => fragment.offsetUnits)).toEqual([0, 185, 370]);
+    expect(result.fragments.map((fragment) => fragment.moreFragments)).toEqual([true, true, false]);
   });
 
   it('rounds the fragment payload down when the MTU is not a multiple of 8', () => {
@@ -94,7 +94,10 @@ describe('when the router refuses to fragment', () => {
     expect(result.outcome).toBe('dropped-df');
     expect(result.fragments).toEqual([]);
     expect(result.icmp).toEqual({
-      name: 'ICMP Destination Unreachable — Fragmentation Needed', type: 3, code: 4, reportedMtu: 1500
+      name: 'ICMP Destination Unreachable — Fragmentation Needed',
+      type: 3,
+      code: 4,
+      reportedMtu: 1500
     });
     expect(result.explanation.en).toMatch(/Path MTU Discovery/);
   });

@@ -24,12 +24,12 @@ export function orderedChapters(): ManualChapter[] {
 
 /** The chapter with this id, or undefined. */
 export function findChapter(id: string): ManualChapter | undefined {
-  return STUDY_MANUAL.find(chapter => chapter.id === id);
+  return STUDY_MANUAL.find((chapter) => chapter.id === id);
 }
 
 /** Every guided lab across the manual, in study order. */
 export function allGuidedLabs(): GuidedLab[] {
-  return orderedChapters().flatMap(chapter => chapter.topics.flatMap(topic => topic.guidedLabs ?? []));
+  return orderedChapters().flatMap((chapter) => chapter.topics.flatMap((topic) => topic.guidedLabs ?? []));
 }
 
 /** Headline counts for the manual overview. */

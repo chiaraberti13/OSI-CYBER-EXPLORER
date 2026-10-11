@@ -10,7 +10,7 @@ import { useStore } from '../store';
 const packetHeaders = [
   { layer: 4, protocol: 'TCP', details: 'TCP test', pduName: 'Segment', fields: [] },
   { layer: 3, protocol: 'IP', details: 'IP test', pduName: 'Packet', fields: [] },
-  { layer: 2, protocol: 'Ethernet II', details: 'Ethernet test', pduName: 'Frame', fields: [] },
+  { layer: 2, protocol: 'Ethernet II', details: 'Ethernet test', pduName: 'Frame', fields: [] }
 ];
 
 afterEach(() => {
@@ -21,7 +21,7 @@ afterEach(() => {
     packetHeaders: [],
     selectedLayerId: 7,
     selectedProtocol: 'HTTP',
-    simulationState: 'idle',
+    simulationState: 'idle'
   });
 });
 
@@ -51,22 +51,23 @@ describe('header specification consistency', () => {
       viewMode: 'packet',
       packetHeaders,
       selectedLayerId: 3,
-      selectedProtocol: 'HTTP',
+      selectedProtocol: 'HTTP'
     });
 
     const inspector = render(<PacketInspector />);
     const inspectorValues = new Map(
       [2, 3, 4].map((layer) => [
         layer,
-        normalizedText(screen.getByTestId(`packet-inspector-header-specifications-l${layer}`)),
-      ]),
+        normalizedText(screen.getByTestId(`packet-inspector-header-specifications-l${layer}`))
+      ])
     );
     inspector.unmount();
 
     render(<LayerDetails />);
     for (const layer of [2, 3, 4]) {
-      expect(normalizedText(screen.getByTestId(`layer-details-header-specifications-l${layer}`)))
-        .toBe(inspectorValues.get(layer));
+      expect(normalizedText(screen.getByTestId(`layer-details-header-specifications-l${layer}`))).toBe(
+        inspectorValues.get(layer)
+      );
     }
   });
 });

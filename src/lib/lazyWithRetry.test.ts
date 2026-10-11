@@ -64,7 +64,8 @@ describe('importWithRetry (ENG-09 loader-level chunk retry)', () => {
   it('waits for the default backoff before the second retry', async () => {
     vi.useFakeTimers();
     try {
-      const factory = vi.fn<() => Promise<string>>()
+      const factory = vi
+        .fn<() => Promise<string>>()
         .mockRejectedValueOnce(new Error('first blip'))
         .mockRejectedValueOnce(new Error('second blip'))
         .mockResolvedValueOnce('loaded');

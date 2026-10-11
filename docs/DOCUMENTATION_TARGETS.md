@@ -6,13 +6,13 @@ Copyable examples and OSI Cyber Explorer simulations must not send traffic to re
 
 ## Spazi ammessi / Allowed spaces
 
-| Tipo / Type | Spazio / Space | Uso / Use |
-|---|---|---|
-| IPv4 documentazione | `192.0.2.0/24`, `198.51.100.0/24`, `203.0.113.0/24` | Host Internet, NAT, peer e servizi simulati / Simulated Internet hosts, NAT, peers, and services |
-| IPv6 documentazione | `2001:db8::/32` | Host e prefissi IPv6 simulati / Simulated IPv6 hosts and prefixes |
-| Domini | `example.com`, `example.org`, `example.net`, `.example.test`, `.test` | DNS, HTTP, email e nomi di laboratorio / DNS, HTTP, email, and lab names |
-| Ambiti non pubblici | RFC 1918, loopback, link-local, unique-local e `localhost` | Topologie locali / Local topologies |
-| Protocolli | multicast, unspecified, broadcast, subnet mask, wildcard e prefissi well-known | Spiegazione del protocollo, non destinazioni di terzi / Protocol explanation, not third-party destinations |
+| Tipo / Type         | Spazio / Space                                                                 | Uso / Use                                                                                                  |
+| ------------------- | ------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------- |
+| IPv4 documentazione | `192.0.2.0/24`, `198.51.100.0/24`, `203.0.113.0/24`                            | Host Internet, NAT, peer e servizi simulati / Simulated Internet hosts, NAT, peers, and services           |
+| IPv6 documentazione | `2001:db8::/32`                                                                | Host e prefissi IPv6 simulati / Simulated IPv6 hosts and prefixes                                          |
+| Domini              | `example.com`, `example.org`, `example.net`, `.example.test`, `.test`          | DNS, HTTP, email e nomi di laboratorio / DNS, HTTP, email, and lab names                                   |
+| Ambiti non pubblici | RFC 1918, loopback, link-local, unique-local e `localhost`                     | Topologie locali / Local topologies                                                                        |
+| Protocolli          | multicast, unspecified, broadcast, subnet mask, wildcard e prefissi well-known | Spiegazione del protocollo, non destinazioni di terzi / Protocol explanation, not third-party destinations |
 
 ## Eccezioni contestuali / Contextual exceptions
 

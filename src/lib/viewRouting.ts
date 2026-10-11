@@ -6,7 +6,7 @@ import type { Language } from '../types';
 export const DEFAULT_VIEW: AppView = 'osi';
 
 /** Routes are a projection of the registry, never a second list of view ids. */
-const VIEW_BY_HASH = new Map(VIEW_ORDER.map(view => [viewHash(view), view]));
+const VIEW_BY_HASH = new Map(VIEW_ORDER.map((view) => [viewHash(view), view]));
 
 export function viewHash(view: AppView): string {
   return `#/${view}`;
@@ -29,7 +29,7 @@ export function viewTitle(view: AppView, language: Language): string {
  */
 export function connectViewRouting(
   store: Pick<StoreApi<AppState>, 'getState' | 'subscribe'>,
-  browser: Window,
+  browser: Window
 ): () => void {
   const readLocation = () => {
     const view = resolveViewHash(browser.location.hash);

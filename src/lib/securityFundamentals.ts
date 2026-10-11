@@ -43,8 +43,8 @@ export function aclAddressMatches(packetAddress: string, aclAddress: AclAddress)
   const packet = ipv4ToUint(packetAddress);
   const base = ipv4ToUint(aclAddress.address);
   const wildcard = ipv4ToUint(aclAddress.wildcard);
-  const significantMask = (~wildcard) >>> 0;
-  return ((packet & significantMask) >>> 0) === ((base & significantMask) >>> 0);
+  const significantMask = ~wildcard >>> 0;
+  return (packet & significantMask) >>> 0 === (base & significantMask) >>> 0;
 }
 
 function ruleMatches(rule: AclRule, packet: PacketDescriptor): boolean {
@@ -54,7 +54,7 @@ function ruleMatches(rule: AclRule, packet: PacketDescriptor): boolean {
   if (rule.destinationPort !== undefined && packet.destinationPort !== rule.destinationPort) return false;
   if (rule.established) {
     if (packet.protocol !== 'tcp') return false;
-    const flags = new Set((packet.tcpFlags ?? []).map(flag => flag.toUpperCase()));
+    const flags = new Set((packet.tcpFlags ?? []).map((flag) => flag.toUpperCase()));
     if (!flags.has('ACK') && !flags.has('RST')) return false;
   }
   return true;
@@ -80,6 +80,6 @@ export function evaluateIpv4Acl(rules: AclRule[], packet: PacketDescriptor): Acl
 export function inverseMaskFromPrefix(prefix: number): string {
   if (!Number.isInteger(prefix) || prefix < 0 || prefix > 32) throw new Error('INVALID_PREFIX');
   const mask = prefix === 0 ? 0 : (0xffffffff << (32 - prefix)) >>> 0;
-  const wildcard = (~mask) >>> 0;
-  return [24, 16, 8, 0].map(shift => (wildcard >>> shift) & 0xff).join('.');
+  const wildcard = ~mask >>> 0;
+  return [24, 16, 8, 0].map((shift) => (wildcard >>> shift) & 0xff).join('.');
 }

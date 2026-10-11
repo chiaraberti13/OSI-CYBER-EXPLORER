@@ -6,12 +6,12 @@ Every registered view has a stable URL in the form `#/<id>`. IDs come from
 `src/content/viewRegistry.ts`: the route table is generated from the registry,
 without a second list to maintain when a lab is added.
 
-| Destination | Example URL |
-|---|---|
-| OSI overview | `https://osi-cyber-explorer.vercel.app/#/osi` |
+| Destination                     | Example URL                                            |
+| ------------------------------- | ------------------------------------------------------ |
+| OSI overview                    | `https://osi-cyber-explorer.vercel.app/#/osi`          |
 | IPv4/IPv6 fundamentals and VLSM | `https://osi-cyber-explorer.vercel.app/#/fundamentals` |
-| IP connectivity and OSPF | `https://osi-cyber-explorer.vercel.app/#/routing` |
-| Glossary | `https://osi-cyber-explorer.vercel.app/#/glossary` |
+| IP connectivity and OSPF        | `https://osi-cyber-explorer.vercel.app/#/routing`      |
+| Glossary                        | `https://osi-cyber-explorer.vercel.app/#/glossary`     |
 
 Copy the browser address or a lab link in the menu, search, or CCNA map.
 Ctrl/Cmd+click, middle-click and opening a new tab retain native link behavior.
@@ -55,12 +55,12 @@ Ogni vista registrata ha un URL stabile nella forma `#/<id>`. Gli ID sono quelli
 `src/content/viewRegistry.ts`: la tabella delle route viene generata dalla registry,
 senza una seconda lista da aggiornare quando si aggiunge un laboratorio.
 
-| Destinazione | URL di esempio |
-|---|---|
-| Panoramica OSI | `https://osi-cyber-explorer.vercel.app/#/osi` |
+| Destinazione                | URL di esempio                                         |
+| --------------------------- | ------------------------------------------------------ |
+| Panoramica OSI              | `https://osi-cyber-explorer.vercel.app/#/osi`          |
 | Fondamenti IPv4/IPv6 e VLSM | `https://osi-cyber-explorer.vercel.app/#/fundamentals` |
-| Connettività IP e OSPF | `https://osi-cyber-explorer.vercel.app/#/routing` |
-| Glossario | `https://osi-cyber-explorer.vercel.app/#/glossary` |
+| Connettività IP e OSPF      | `https://osi-cyber-explorer.vercel.app/#/routing`      |
+| Glossario                   | `https://osi-cyber-explorer.vercel.app/#/glossary`     |
 
 Copia l'indirizzo dalla barra del browser oppure il link di un laboratorio nel menu,
 nella ricerca o nella mappa CCNA. Ctrl/Cmd+clic, clic centrale e apertura in una nuova

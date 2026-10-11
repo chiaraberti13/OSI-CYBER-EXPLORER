@@ -85,8 +85,8 @@ export function createPatTranslation(
 export function calculateNtpMetrics(t1: number, t2: number, t3: number, t4: number): NtpMetrics {
   if (![t1, t2, t3, t4].every(Number.isFinite) || t4 < t1 || t3 < t2) throw new Error('INVALID_NTP_TIMESTAMPS');
   return {
-    offsetMs: ((t2 - t1) + (t3 - t4)) / 2,
-    delayMs: (t4 - t1) - (t3 - t2)
+    offsetMs: (t2 - t1 + (t3 - t4)) / 2,
+    delayMs: t4 - t1 - (t3 - t2)
   };
 }
 

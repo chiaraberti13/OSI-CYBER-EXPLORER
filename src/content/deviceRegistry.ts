@@ -16,7 +16,7 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     },
     securityAttacks: {
       en: 'Fenders off IP addresses outside permitted subnets, blocks access to closed port ranges, and filters basic ICMP floods.',
-      it: 'Respinge indirizzi IP non appartenenti a subnet autorizzate, blocca l\'accesso a range di porte chiuse e filtra attacchi ICMP flood di base.'
+      it: "Respinge indirizzi IP non appartenenti a subnet autorizzate, blocca l'accesso a range di porte chiuse e filtra attacchi ICMP flood di base."
     },
     cannotStop: {
       en: 'Session hijacking, ACK storms, or malformed protocol payloads. Because it is stateless, it cannot verify if an incoming packet is a legitimate, expected reply or an out-of-order spoof.',
@@ -35,7 +35,7 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     category: 'security',
     role: {
       en: 'Monitors the state of active network connections, allowing incoming traffic only if it matches a valid, established outbound request.',
-      it: 'Rileva e traccia lo stato delle connessioni di rete attive, consentendo l\'ingresso solo al traffico in risposta a flussi interni legittimi.'
+      it: "Rileva e traccia lo stato delle connessioni di rete attive, consentendo l'ingresso solo al traffico in risposta a flussi interni legittimi."
     },
     howItWorks: {
       en: 'Maintains an active State Table of all established connections (tracking source/destination IP, port numbers, and TCP sequence states).',
@@ -47,11 +47,11 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     },
     cannotStop: {
       en: 'SQL Injections, Cross-Site Scripting (XSS), and content-based malware. Since it only checks protocol session compliance (Layer 4), it remains completely blind to malicious payloads wrapped inside valid connections.',
-      it: 'SQL Injection, Cross-Site Scripting (XSS) e malware. Controllando solo la conformità della connessione di trasporto (Layer 4), ignora completamente il contenuto applicativo inserito all\'interno del flusso autorizzato.'
+      it: "SQL Injection, Cross-Site Scripting (XSS) e malware. Controllando solo la conformità della connessione di trasporto (Layer 4), ignora completamente il contenuto applicativo inserito all'interno del flusso autorizzato."
     },
     mitigation: {
       en: 'Deploy in combination with Web Application Firewalls (WAF) to inspect Layer 7 web payloads, and IPS for signature-level malware detection.',
-      it: 'Associare a dispositivi Web Application Firewall (WAF) per esaminare payload web al Layer 7 e sistemi IPS per rilevare codice dall\'interno.'
+      it: "Associare a dispositivi Web Application Firewall (WAF) per esaminare payload web al Layer 7 e sistemi IPS per rilevare codice dall'interno."
     },
     iconName: 'Shield'
   },
@@ -62,7 +62,7 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     category: 'security',
     role: {
       en: 'Acts as an intermediary between client and server, establishing independent connections to fully isolate external hosts from the internal network.',
-      it: 'Intermedia l\'intera sessione tra client e server, aprendo due connessioni separate per isolare del tutto i server interni dalle minacce esterne.'
+      it: "Intermedia l'intera sessione tra client e server, aprendo due connessioni separate per isolare del tutto i server interni dalle minacce esterne."
     },
     howItWorks: {
       en: 'Intercepts incoming application requests, performs thorough payload validation and validation of specific commands (e.g. HTTP, FTP), then establishes a new separate connection to the destination.',
@@ -78,7 +78,7 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     },
     mitigation: {
       en: 'Regularly patch proxy software, perform OS hardening, and configure load balancers to distribute high-volume traffic.',
-      it: 'Aggiornare regolarmente il software del proxy, effettuare l\'hardening del sistema operativo ed impostare bilanciatori a monte.'
+      it: "Aggiornare regolarmente il software del proxy, effettuare l'hardening del sistema operativo ed impostare bilanciatori a monte."
     },
     iconName: 'Server'
   },
@@ -89,11 +89,11 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     category: 'security',
     role: {
       en: 'Performs high-performance application-level proxy inspections directly within the operating system kernel, rather than slow user space.',
-      it: 'Esegue un\'ispezione proxy approfondita dei protocolli applicativi direttamente nello spazio del kernel del sistema operativo, massimizzando le performance.'
+      it: "Esegue un'ispezione proxy approfondita dei protocolli applicativi direttamente nello spazio del kernel del sistema operativo, massimizzando le performance."
     },
     howItWorks: {
       en: 'Spawns dynamic virtual protocol stacks natively inside the kernel to validate application compliance at close to network interfaces line speeds.',
-      it: 'Genera uno stack di protocollo virtuale direttamente nel kernel dell\'OS, analizzando i dati applicativi quasi alla velocità dell\'interfaccia fisica.'
+      it: "Genera uno stack di protocollo virtuale direttamente nel kernel dell'OS, analizzando i dati applicativi quasi alla velocità dell'interfaccia fisica."
     },
     securityAttacks: {
       en: 'Filters unauthorized high-speed application streams, drops complex application bypass tries, and blocks protocol parameter evasion.',
@@ -120,7 +120,7 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     },
     howItWorks: {
       en: 'Analyzes HTTP request components (GET parameters, POST bodies, cookies, and headers) against signatures (OWASP Top 10) and anomaly templates.',
-      it: 'Esamina le richieste web (parametri GET, messaggi POST, cookie e intestazioni) confrontandole con elenchi di firme d\'attacco (OWASP Top 10).'
+      it: "Esamina le richieste web (parametri GET, messaggi POST, cookie e intestazioni) confrontandole con elenchi di firme d'attacco (OWASP Top 10)."
     },
     securityAttacks: {
       en: 'Stops SQL Injection (SQLi), Cross-Site Scripting (XSS), Local/Remote File Inclusion (LFI/RFI), and credential stuffing.',
@@ -147,7 +147,7 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     },
     howItWorks: {
       en: 'Executes single-pass deep packet scanning, running incoming streams through a sequence of defense engines located in one hardware appliance.',
-      it: 'Esegue un\'ispezione multi-motore in un unico passaggio, canalizzando i pacchetti in motori sequenziali di controllo antivirus, firewall e IPS.'
+      it: "Esegue un'ispezione multi-motore in un unico passaggio, canalizzando i pacchetti in motori sequenziali di controllo antivirus, firewall e IPS."
     },
     securityAttacks: {
       en: 'Blocks known network worms, malware file transfers, malicious active spam, and connections to known botnets.',
@@ -170,11 +170,11 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     category: 'security',
     role: {
       en: 'Provides deep control by combining a typical stateful firewall with integrated IPS, user identity checks, and application awareness.',
-      it: 'Ottiene un controllo pervasivo integrando un tipico firewall stateful con ispezione IPS attiva e l\'identificazione degli utenti e delle app.'
+      it: "Ottiene un controllo pervasivo integrando un tipico firewall stateful con ispezione IPS attiva e l'identificazione degli utenti e delle app."
     },
     howItWorks: {
       en: 'Conducts Deep Packet Inspection (DPI) to identify and classify the exact application (e.g. telling Facebook Chat apart from a file transfer) regardless of ports.',
-      it: 'Esegue Deep Packet Inspection (DPI) per decrittare e identificare l\'esatto servizio (es. distinguendo Facebook Chat da un trasferimento FTP) a prescindere dalle porte.'
+      it: "Esegue Deep Packet Inspection (DPI) per decrittare e identificare l'esatto servizio (es. distinguendo Facebook Chat da un trasferimento FTP) a prescindere dalle porte."
     },
     securityAttacks: {
       en: 'Detects protocol evasions (dynamic ports), server exploits using malicious file attachments on standard ports, and anomalous flows.',
@@ -182,7 +182,7 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     },
     cannotStop: {
       en: 'Encrypted malicious traffic inside HTTPS/TLS streams unless active SSL decryption is deployed, and attacks capitalizing on unpatched client-side system configurations once inside.',
-      it: 'Traffico malevolo crittografato all\'interno di canali HTTPS se la decrittografia SSL (SSL Decrypt) è spenta, e attacchi focalizzati su configurazioni locali deboli.'
+      it: "Traffico malevolo crittografato all'interno di canali HTTPS se la decrittografia SSL (SSL Decrypt) è spenta, e attacchi focalizzati su configurazioni locali deboli."
     },
     mitigation: {
       en: 'Enable SSL/TLS inspection profiles on the NGFW, and mandate central security patches update cycles.',
@@ -201,7 +201,7 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     },
     howItWorks: {
       en: 'Parses destination IP addresses from IP headers and references local routing tables (OSPF, BGP) to send packets to the correct next hop.',
-      it: 'Analizza gli IP di destinazione inseriti nell\'header dei pacchetti e interroga la tabella di instradamento locale (OSPF, BGP) per selezionare l\'hop successivo.'
+      it: "Analizza gli IP di destinazione inseriti nell'header dei pacchetti e interroga la tabella di instradamento locale (OSPF, BGP) per selezionare l'hop successivo."
     },
     securityAttacks: {
       en: 'IP Directed Broadcast magnification, IP routing loops, basic IP spoofing (using Unicast RPF controls), and simple route failures.',
@@ -224,7 +224,7 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     category: 'networking',
     role: {
       en: 'Directs digital communication frames locally within the same network segment, avoiding packet collisions.',
-      it: 'Inoltra i frame dei dati in modo mirato e ad alta velocità tra le macchine collegate all\'interno dello stesso segmento fisico.'
+      it: "Inoltra i frame dei dati in modo mirato e ad alta velocità tra le macchine collegate all'interno dello stesso segmento fisico."
     },
     howItWorks: {
       en: 'Builds a dynamic Content Addressable Memory (CAM) table matching target MAC hardware addresses to physical switch interfaces.',
@@ -232,11 +232,11 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     },
     securityAttacks: {
       en: 'Intercepts simple physical cable sniffing, mitigates basic STP root bridges displacement attempts (BPDU Guard), and regulates VLAN access.',
-      it: 'Attenua lo sniffing isolando i flussi sulle porte, contrasta furti del ruolo Root STP con filtri BPDU Guard e gestisce l\'appartenenza alle VLAN.'
+      it: "Attenua lo sniffing isolando i flussi sulle porte, contrasta furti del ruolo Root STP con filtri BPDU Guard e gestisce l'appartenenza alle VLAN."
     },
     cannotStop: {
       en: 'Layer 7 application exploits (SQL injection, malicious script payloads in files, or logic overflows). The switch processes physical frame headers in copper/silicon, meaning it is blind to what data travels inside the payload.',
-      it: 'Attacchi applicativi del Layer 7 (SQL Injection, XSS, file infetti). Lo switch opera a livello di impulsi e indirizzi hardware, restando ignaro del significato dei file che transitano all\'interno del payload.'
+      it: "Attacchi applicativi del Layer 7 (SQL Injection, XSS, file infetti). Lo switch opera a livello di impulsi e indirizzi hardware, restando ignaro del significato dei file che transitano all'interno del payload."
     },
     mitigation: {
       en: 'Route segment transit traffic through a stateful firewall and enforce strict endpoint Antivirus software routines.',
@@ -251,15 +251,15 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     category: 'networking',
     role: {
       en: 'Bridges radio-frequency wireless networks to the physical wired Ethernet infrastructures.',
-      it: 'Funge da punto di raccordo isolando l\'etere radio e traducendo i pacchetti wireless in frame cablati Ethernet.'
+      it: "Funge da punto di raccordo isolando l'etere radio e traducendo i pacchetti wireless in frame cablati Ethernet."
     },
     howItWorks: {
       en: 'Establishes local encrypted radio links, coordinates client access, and wraps wireless frames into standard RJ45 cable structures.',
-      it: 'Stabilisce collegamenti radio cifrati, organizza l\'handshake d\'accesso dei client wireless e ne incapsula il traffico sul cavo standard.'
+      it: "Stabilisce collegamenti radio cifrati, organizza l'handshake d'accesso dei client wireless e ne incapsula il traffico sul cavo standard."
     },
     securityAttacks: {
       en: 'Filters unauthorized over-the-air packet snooping with standard WPA3 encryption, and screens out rogue mac links.',
-      it: 'Previene l\'intercettazione passiva radio imponendo cifratura WPA3 e rifiuta connessioni basate su liste fisse di MAC nocivi.'
+      it: "Previene l'intercettazione passiva radio imponendo cifratura WPA3 e rifiuta connessioni basate su liste fisse di MAC nocivi."
     },
     cannotStop: {
       en: 'Physical Layer 1 Radio Frequency (RF) jamming. A nearby malicious radio transmitter broadcasting noise on the 2.4GHz/5GHz bands will block antennae reception completely, regardless of logical encryption strength.',
@@ -286,7 +286,7 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     },
     securityAttacks: {
       en: 'Resolves syntax incompatibilities, stops direct external-to-internal network command injection, and mitigates basic buffer bugs during rewrite.',
-      it: 'Individua incompatibilità sintattiche strutturali, impedisce l\'esecuzione diretta di comandi non filtrati e corregge errori minori.'
+      it: "Individua incompatibilità sintattiche strutturali, impedisce l'esecuzione diretta di comandi non filtrati e corregge errori minori."
     },
     cannotStop: {
       en: 'Logical or malicious instructions sent by authenticated, approved internal programs. If an approved script orders the deletion of database tables, the gateway will process the command anyway.',
@@ -305,11 +305,11 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     category: 'networking',
     role: {
       en: 'Joins two physical LAN segments and separates their collision domains, while the two segments remain a single broadcast domain — the historical ancestor of the switch, which is simply a multiport bridge.',
-      it: 'Unisce due segmenti LAN fisici separandone i domini di collisione, mentre i due segmenti restano un unico dominio di broadcast: è l\'antenato storico dello switch, che non è altro che un bridge multiporta.'
+      it: "Unisce due segmenti LAN fisici separandone i domini di collisione, mentre i due segmenti restano un unico dominio di broadcast: è l'antenato storico dello switch, che non è altro che un bridge multiporta."
     },
     howItWorks: {
       en: 'Tracks physical MAC addresses seen on interfaces and lets a frame cross only if the target MAC resides on the opposite segment.',
-      it: 'Rileva e tiene traccia dei MAC address avvistati sulle porte, consentendo il transito da una tratta all\'altra solo se il PC destinatario è realmente sull\'altro lato.'
+      it: "Rileva e tiene traccia dei MAC address avvistati sulle porte, consentendo il transito da una tratta all'altra solo se il PC destinatario è realmente sull'altro lato."
     },
     securityAttacks: {
       en: 'Keeps excessive localized cabling noise isolated and helps filter simple local network loop creations.',
@@ -344,11 +344,11 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     },
     cannotStop: {
       en: 'ANY style of threat (packet sniffing, MAC spoofing, ARP poisoning, DDoS floods). Because it is a simple physical repeater, any laptop connected to a port can capture all network frames flowing between other hosts in cleartext using a sniffer (Wireshark).',
-      it: 'Qualsiasi minaccia informatica (sniffing dei dati, MAC spoofing, ARP poisoning, attacchi DDoS). Essendo un semplice ripetitore fisico, chiunque si colleghi ad una spina dell\'hub intercetta in tempo reale ed in chiaro tutte le comunicazioni degli altri host.'
+      it: "Qualsiasi minaccia informatica (sniffing dei dati, MAC spoofing, ARP poisoning, attacchi DDoS). Essendo un semplice ripetitore fisico, chiunque si colleghi ad una spina dell'hub intercetta in tempo reale ed in chiaro tutte le comunicazioni degli altri host."
     },
     mitigation: {
       en: 'Decommission and replace all active hubs with secure modern managed switches immediately.',
-      it: 'Dismettere e rimpiazzare all\'istante ogni vecchio hub con moderni switch gestiti, e sigillare fisicamente le prese libere.'
+      it: "Dismettere e rimpiazzare all'istante ogni vecchio hub con moderni switch gestiti, e sigillare fisicamente le prese libere."
     },
     iconName: 'Activity'
   },
@@ -359,11 +359,11 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     category: 'security',
     role: {
       en: 'Passively monitors network traffic copies (via port mirroring or TAPs) to detect suspicious patterns, active scans, or signature matches, generating real-time security alerts.',
-      it: 'Monitora passivamente le copie del traffico di rete (tramite port mirroring o TAP fisici) per identificare pattern sospetti, scansioni ostili o corrispondenze di firme d\'attacco, generando avvisi di sicurezza.'
+      it: "Monitora passivamente le copie del traffico di rete (tramite port mirroring o TAP fisici) per identificare pattern sospetti, scansioni ostili o corrispondenze di firme d'attacco, generando avvisi di sicurezza."
     },
     howItWorks: {
       en: 'Receives mirrored traffic out-of-band, meaning it does not sit directly in the network path. It inspects copies of frames against an extensive signature file database or behavioral baselines.',
-      it: 'Riceve il traffico duplicato fuori banda (non si interpone nel tragitto reale dei pacchetti). Esamina le copie dei frame confrontandole con un database di firme d\'attacco o comportamenti anomali.'
+      it: "Riceve il traffico duplicato fuori banda (non si interpone nel tragitto reale dei pacchetti). Esamina le copie dei frame confrontandole con un database di firme d'attacco o comportamenti anomali."
     },
     securityAttacks: {
       en: 'Identifies slow port scanning sweeps, brute-force attempts, worm replication activities, and known software vulnerabilities exploits without impacting network performance.',
@@ -386,11 +386,11 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     category: 'security',
     role: {
       en: 'Deploys inline (directly in the network path) to actively inspect packets in real-time, instantly blocking, dropping, or sanitizing malicious connections.',
-      it: 'Si posiziona in-linea (direttamente nel percorso attivo del traffico) per ispezionare i pacchetti in tempo reale, bloccando, scartando o sanificando all\'istante le connessioni dannose.'
+      it: "Si posiziona in-linea (direttamente nel percorso attivo del traffico) per ispezionare i pacchetti in tempo reale, bloccando, scartando o sanificando all'istante le connessioni dannose."
     },
     howItWorks: {
       en: 'Requires traffic to flow physically through the appliance. If a packet payload matches an exploit signature or anomaly threshold, the device discards the frame, resets the TCP session, or rewrites parameters before forwarding.',
-      it: 'Richiede che il traffico fluisca fisicamente attraverso l\'hardware. In caso di corrispondenza con firme nocive o anomalie, scarta istantaneamente il pacchetto, forza il reset TCP o ne modifica i parametri.'
+      it: "Richiede che il traffico fluisca fisicamente attraverso l'hardware. In caso di corrispondenza con firme nocive o anomalie, scarta istantaneamente il pacchetto, forza il reset TCP o ne modifica i parametri."
     },
     securityAttacks: {
       en: 'Halts remote code execution (RCE) attempts, command injections, active denial of service floods, and network-level buffer overflows before they reach targets.',
@@ -402,7 +402,7 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     },
     mitigation: {
       en: 'Enable SSL/TLS decryption proxies, configure bypass network taps with fail-open hardware configurations, and ensure automated, daily signature updates.',
-      it: 'Abilitare proxy di decrittografia SSL/TLS, dotare l\'hardware di schede bypass fail-open per non interrompere il cavo in caso di guasto elettrico, e impostare aggiornamenti firme giornalieri.'
+      it: "Abilitare proxy di decrittografia SSL/TLS, dotare l'hardware di schede bypass fail-open per non interrompere il cavo in caso di guasto elettrico, e impostare aggiornamenti firme giornalieri."
     },
     iconName: 'Shield'
   },
@@ -429,7 +429,7 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     },
     mitigation: {
       en: 'Integrate NDR with inline NAC or core directory systems to revoke access of suspicious IPs automatically within seconds.',
-      it: 'Agganciare l\'NDR a sistemi di controllo dell\'accesso alla rete (NAC) o al firewall core per tagliare immediatamente i permessi dell\'IP sospetto alla prima anomalia.'
+      it: "Agganciare l'NDR a sistemi di controllo dell'accesso alla rete (NAC) o al firewall core per tagliare immediatamente i permessi dell'IP sospetto alla prima anomalia."
     },
     iconName: 'Activity'
   },
@@ -456,7 +456,7 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     },
     mitigation: {
       en: 'Position wireless sensors uniformly to eliminate signal dead zones, integrate with wired switch catalogs for port containment (shutting down switch ports feeding rogue APs).',
-      it: 'Posizionare sensori dislocati in modo uniforme per annullare i coni d\'ombra di segnale, e integrare il sistema con switch cablati per disattivare la porta fisica che alimenta l\'AP illegale.'
+      it: "Posizionare sensori dislocati in modo uniforme per annullare i coni d'ombra di segnale, e integrare il sistema con switch cablati per disattivare la porta fisica che alimenta l'AP illegale."
     },
     iconName: 'Radio'
   },
@@ -471,7 +471,7 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     },
     howItWorks: {
       en: 'Upon detecting a rogue client or AP, it spoofs deauthentication frames targeting the target MAC addresses, forcing continuous wireless disconnections.',
-      it: 'All\'invocazione di un AP o client illegale, genera e trasmette frame di deautenticazione (Deauth) falsificati diretti ai loro MAC address, forzando la disconnessione immediata.'
+      it: "All'invocazione di un AP o client illegale, genera e trasmette frame di deautenticazione (Deauth) falsificati diretti ai loro MAC address, forzando la disconnessione immediata."
     },
     securityAttacks: {
       en: 'Neutralizes Evil Twin connections, blocks rogue ad-hoc networks, and shuts down unapproved client-to-client Wi-Fi bridging.',
@@ -479,7 +479,7 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     },
     cannotStop: {
       en: 'Passive Wi-Fi frame sniffing or custom radio wave jamming that does not comply with 802.11 modulation structures.',
-      it: 'Lo sniffing passivo delle onde radio (che avviene senza trasmettere nulla) o attacchi di jamming fisico di spettro che oscurano completamente l\'antenna di ricezione.'
+      it: "Lo sniffing passivo delle onde radio (che avviene senza trasmettere nulla) o attacchi di jamming fisico di spettro che oscurano completamente l'antenna di ricezione."
     },
     mitigation: {
       en: 'Configure proper classification rules to avoid target blacklisting of neighbor residential APs, and transition to Protected Management Frames (PMF / 802.11w) to secure management packets against spoofed deauth.',
@@ -506,7 +506,7 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     },
     cannotStop: {
       en: 'Active encryption or execution of ransomware if it does not contain blocking engines, and rapid memory-only fileless execution sequences. Moreover, if the attacker obtains high-level administrator root privileges, they can disable or corrupt the HIDS agent entirely.',
-      it: 'La cifratura immediata di file o esecuzione rapida di ransomware se sprovvisto di moduli di blocco attivi, e malware fileless residenti solo in RAM. Inoltre, se l\'attaccante ottiene privilegi di ROOT, può disattivare l\'agente HIDS.'
+      it: "La cifratura immediata di file o esecuzione rapida di ransomware se sprovvisto di moduli di blocco attivi, e malware fileless residenti solo in RAM. Inoltre, se l'attaccante ottiene privilegi di ROOT, può disattivare l'agente HIDS."
     },
     mitigation: {
       en: 'Protect client processes with tamper-protection settings, stream all host telemetry logs in real time to off-host write-only SIEM systems, and combine with integrity monitoring tools like Tripwire.',
@@ -521,11 +521,11 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     category: 'security',
     role: {
       en: 'Actively prevents malicious software executions, rogue registry writes, and buffer overflows directly on endpoints, stopping attacks in memory or on the disk.',
-      it: 'Impedisce attivamente l\'esecuzione di software nocivi, scritture nei registri di sistema o buffer overflow direttamente sull\'endpoint, bloccando attacchi in RAM o su disco.'
+      it: "Impedisce attivamente l'esecuzione di software nocivi, scritture nei registri di sistema o buffer overflow direttamente sull'endpoint, bloccando attacchi in RAM o su disco."
     },
     howItWorks: {
       en: 'Interposes directly between application processes and the operating system kernel. It intercepts system calls (syscalls) and dynamically blocks operations that violate local security postures.',
-      it: 'Si interpone tra i processi applicativi e il kernel del sistema operativo. Intercetta le syscall (chiamate di sistema) bloccando le azioni che violano le policy locali dell\'endpoint.'
+      it: "Si interpone tra i processi applicativi e il kernel del sistema operativo. Intercetta le syscall (chiamate di sistema) bloccando le azioni che violano le policy locali dell'endpoint."
     },
     securityAttacks: {
       en: 'Intercepts zero-day exploitation attempts, isolates unknown ransomware executions, blocks writing to vital directory keys, and shuts down memory injection actions.',
@@ -533,7 +533,7 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     },
     cannotStop: {
       en: 'Exploitations that target vulnerable hardware firmware lines, or users manually bypassing prompts with high administrative rights. Can also trigger excessive false positives that crash vital legacy business databases.',
-      it: 'Sfruttamento di falle hardware/firmware di basso livello, o azioni autorizzate incautamente dall\'utente con massimi privilegi amministrativi. Inoltre, può generare falsi positivi bloccando database o tool aziendali storici.'
+      it: "Sfruttamento di falle hardware/firmware di basso livello, o azioni autorizzate incautamente dall'utente con massimi privilegi amministrativi. Inoltre, può generare falsi positivi bloccando database o tool aziendali storici."
     },
     mitigation: {
       en: 'Configure granular, host-specific exception profiles, implement strict change-management plans, and upgrade endpoint clients to modern EDR (Endpoint Detection & Response) engines.',
@@ -552,7 +552,7 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     },
     howItWorks: {
       en: 'Streams entire host metadata (process lifecycles, network hooks, file reads) in real time. Rather than relying purely on static hashes, it analyzes active memory executions and shuts down compromised processes instantly.',
-      it: 'Invia tutta la telemetria dell\'host (processi avviati, porte aperte, file modificati) a motori di analisi istantanei. Invece di basarsi su firme statiche, analizza come si comportano i processi in RAM e li termina all\'istante.'
+      it: "Invia tutta la telemetria dell'host (processi avviati, porte aperte, file modificati) a motori di analisi istantanei. Invece di basarsi su firme statiche, analizza come si comportano i processi in RAM e li termina all'istante."
     },
     securityAttacks: {
       en: 'Stops fileless PowerShell memory injections, live ransomware encryption loops, DLL sideloading bypasses, and multi-stage APT lateral movement attempts.',
@@ -564,7 +564,7 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     },
     mitigation: {
       en: 'Maintain strict least-privilege configurations, disable remote command console execution protocols across endpoints, and combine with regular off-line immutable backup strategies.',
-      it: 'Mantenere politiche rigorose di minimo privilegio, disabilitare ovunque l\'accesso remoto a script amministrativi non autorizzati e predisporre backup offline (immutabili).'
+      it: "Mantenere politiche rigorose di minimo privilegio, disabilitare ovunque l'accesso remoto a script amministrativi non autorizzati e predisporre backup offline (immutabili)."
     },
     iconName: 'Cpu'
   },
@@ -575,15 +575,15 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     category: 'networking',
     role: {
       en: 'Distributes incoming client application traffic across multiple backend servers to maximize capacity, reliability, and service uptime.',
-      it: 'Distribuisce in modo intelligente le richieste dei client tra più server di destinazione backend, ottimizzando l\'uso delle risorse e scongiurando singoli punti di guasto.'
+      it: "Distribuisce in modo intelligente le richieste dei client tra più server di destinazione backend, ottimizzando l'uso delle risorse e scongiurando singoli punti di guasto."
     },
     howItWorks: {
       en: 'Inspects TCP parameters (Layer 4) or URL queries, cookies, and HTTP headers (Layer 7), routing flows based on algorithms like Round-Robin, Least Connections, or Session Affinity.',
-      it: 'Analizza i parametri TCP (Layer 4) o l\'URI, i cookie e le intestazioni HTTP (Layer 7), indirizzando le richieste secondo algoritmi mirati (es. Round-Robin, Least Connections o affinità di sessione).'
+      it: "Analizza i parametri TCP (Layer 4) o l'URI, i cookie e le intestazioni HTTP (Layer 7), indirizzando le richieste secondo algoritmi mirati (es. Round-Robin, Least Connections o affinità di sessione)."
     },
     securityAttacks: {
       en: 'Handles massive spikes of application traffic, shields direct server IP visibility, and mitigates single-target system stress floods.',
-      it: 'Assorbe e sgonfia picchi improvvisi di traffico, scherma l\'indirizzamento IP reale dei server backend ed evita il sovraccarico di un singolo server.'
+      it: "Assorbe e sgonfia picchi improvvisi di traffico, scherma l'indirizzamento IP reale dei server backend ed evita il sovraccarico di un singolo server."
     },
     cannotStop: {
       en: 'Application logical exploits (like SQL Injection or broken authorization flows). Although it balances traffic, it faithfully duplicates and forwards malicious requests to the backends, treating them as normal users.',
@@ -591,7 +591,7 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     },
     mitigation: {
       en: 'Integrate active WAF modules directly within the Application Delivery Controller (ADC) or run reverse proxy web application firewalls in front of the load balancer.',
-      it: 'Attivare moduli integrati WAF all\'interno dell\'Application Delivery Controller (ADC) o posizionare Web Application Firewall dedicati a monte.'
+      it: "Attivare moduli integrati WAF all'interno dell'Application Delivery Controller (ADC) o posizionare Web Application Firewall dedicati a monte."
     },
     iconName: 'Shuffle'
   },
@@ -606,7 +606,7 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     },
     howItWorks: {
       en: 'Performs initial cryptographic handshake, authenticates users, and wraps/encrypts cleartext packets into IPsec (Layer 3) or SSL/TLS (Layer 4) transport envelopes.',
-      it: 'Esegue un handshake crittografico iniziale, autentica l\'utente e incapsula/cifra tutti i pacchetti originari all\'interno di un canale IPsec (Layer 3) o SSL/TLS (Layer 4).'
+      it: "Esegue un handshake crittografico iniziale, autentica l'utente e incapsula/cifra tutti i pacchetti originari all'interno di un canale IPsec (Layer 3) o SSL/TLS (Layer 4)."
     },
     securityAttacks: {
       en: 'Prevents passive internet eavesdropping, man-in-the-middle sniffing, and unauthorized interception of corporate transit traffic.',
@@ -614,11 +614,11 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     },
     cannotStop: {
       en: 'Phishing attacks, malware execution, or malicious traffic passing inside the tunnel once a connection is authenticated. If an infected endpoint connects via VPN, it can spread worms laterally directly into the internal network.',
-      it: 'Attacchi phishing, esecuzione locale di malware o transito di minacce all\'interno dello stesso tunnel una volta autenticato. Se un dipendente si collega con un PC infetto, propagherà virus direttamente sulla LAN interna.'
+      it: "Attacchi phishing, esecuzione locale di malware o transito di minacce all'interno dello stesso tunnel una volta autenticato. Se un dipendente si collega con un PC infetto, propagherà virus direttamente sulla LAN interna."
     },
     mitigation: {
       en: 'Enforce Zero Trust Network Access (ZTNA), mandate continuous endpoint policy compliance scans (Host Checking), and require Multi-Factor Authentication.',
-      it: 'Adottare logiche Zero Trust (ZTNA), imporre controlli di conformità e sicurezza dell\'host prima dell\'accesso (Host Checking) e richiedere la MFA.'
+      it: "Adottare logiche Zero Trust (ZTNA), imporre controlli di conformità e sicurezza dell'host prima dell'accesso (Host Checking) e richiedere la MFA."
     },
     iconName: 'Shield'
   },
@@ -668,7 +668,7 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     },
     cannotStop: {
       en: 'Initial, ultra-fast exploits or zero-day script executions in real-time. Because SIEM is primarily a diagnostic analyzer (reactive/detective), it notes the breach but cannot block physical frames or connections by default unless explicitly integrated with active SOAR automation tools.',
-      it: 'Exploit istantanei ad altissima velocità o esecuzioni di script zero-day. Essendo prevalentemente un analizzatore di tipo diagnostico (reattivo), registra l\'avvenuta violazione ma non può bloccare fisicamente una connessione se sprovvisto di automazione SOAR.'
+      it: "Exploit istantanei ad altissima velocità o esecuzioni di script zero-day. Essendo prevalentemente un analizzatore di tipo diagnostico (reattivo), registra l'avvenuta violazione ma non può bloccare fisicamente una connessione se sprovvisto di automazione SOAR."
     },
     mitigation: {
       en: 'Pair the SIEM with active SOAR (Security Orchestration, Automation, and Response) networks to trigger automatic block execution on perimeter firewalls.',
@@ -683,15 +683,15 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     category: 'security',
     role: {
       en: 'Restricts and monitors physical and wireless connections to the corporate network, validating endpoint compliance before granting LAN access.',
-      it: 'Limita e monitora i collegamenti fisici e wireless alla rete aziendale, convalidando lo stato di conformità degli host prima di concederne l\'ingresso.'
+      it: "Limita e monitora i collegamenti fisici e wireless alla rete aziendale, convalidando lo stato di conformità degli host prima di concederne l'ingresso."
     },
     howItWorks: {
       en: 'Leverages IEEE 802.1X protocols and local agents to verify credentials, computer certificates, and check host posture (current OS patches, active antivirus) before mapping to authorized VLANs.',
-      it: 'Sfrutta il protocollo IEEE 802.1X e agenti locali per verificare credenziali, certificati digitali e salute dell\'host (patch installate, antivirus attivo) prima di associarlo alla VLAN corretta.'
+      it: "Sfrutta il protocollo IEEE 802.1X e agenti locali per verificare credenziali, certificati digitali e salute dell'host (patch installate, antivirus attivo) prima di associarlo alla VLAN corretta."
     },
     securityAttacks: {
       en: 'Stops rogue laptop physical connections on open wall Ethernet jacks, isolates infected devices, and blocks unmanaged employee tablets.',
-      it: 'Inibisce l\'accesso di PC estranei collegati abusivamente a prese di rete a muro incustodite, isola i dispositivi compromessi e blocca tablet sprovvisti di profili.'
+      it: "Inibisce l'accesso di PC estranei collegati abusivamente a prese di rete a muro incustodite, isola i dispositivi compromessi e blocca tablet sprovvisti di profili."
     },
     cannotStop: {
       en: 'Advanced application exploits executed by an already authenticated, fully compliant corporate notebook that gets exploited client-side by malware *after* it has successfully joined the LAN segment.',
@@ -699,7 +699,7 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     },
     mitigation: {
       en: 'Implement continuous host health scanning (periodic posture checks) and deploy micro-segmentation switches to restrict lateral movement paths.',
-      it: 'Implementare analisi periodiche di conformità sull\'host (posture check ricorrente) e configurare regole di micro-segmentazione locale.'
+      it: "Implementare analisi periodiche di conformità sull'host (posture check ricorrente) e configurare regole di micro-segmentazione locale."
     },
     iconName: 'Server'
   },
@@ -718,15 +718,15 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     },
     securityAttacks: {
       en: 'Detects early network scanning sweeps, logs stealthy internal lateral hops, and intercepts rogue brute force sweeps.',
-      it: 'Rileva attività di ricognizione preventiva (network scanning) dell\'attaccante, registra spostamenti laterali e intercetta robot di brute-force automatici.'
+      it: "Rileva attività di ricognizione preventiva (network scanning) dell'attaccante, registra spostamenti laterali e intercetta robot di brute-force automatici."
     },
     cannotStop: {
       en: 'Direct exploits targeted against real, vital production systems. If the attacker ignores the decoy servers because they possess precise map blueprints, the honeypot remains completely bypassed.',
-      it: 'Exploit diretti mirati esclusivamente a risorse e server vitali reali di produzione. Se l\'attore ostile dispone di informazioni precise e ignora i server esca, l\'honeypot non potrà intercettarlo.'
+      it: "Exploit diretti mirati esclusivamente a risorse e server vitali reali di produzione. Se l'attore ostile dispone di informazioni precise e ignora i server esca, l'honeypot non potrà intercettarlo."
     },
     mitigation: {
       en: 'Scatter fake admin credentials (honeytokens) and mock server listings inside real workstations to redirect scanning hackers to the honeypot.',
-      it: 'Disseminare credenziali fasulle (honeytokens) e record di database virtuali all\'interno dei PC reali per deviare le scansioni degli hacker verso l\'esca.'
+      it: "Disseminare credenziali fasulle (honeytokens) e record di database virtuali all'interno dei PC reali per deviare le scansioni degli hacker verso l'esca."
     },
     iconName: 'Activity'
   },
@@ -741,15 +741,15 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     },
     howItWorks: {
       en: 'Receives authentication requests from networking nodes, validates credentials against central LDAP/Active Directory engines, issues authorized shell levels, and records a trace of run command strings.',
-      it: 'Riceve le richieste di login degli amministratori, convalida le credenziali su server centrali LDAP/Active Directory, stabilisce i livelli di comando abilitati e archivia l\'elenco delle azioni digitate.'
+      it: "Riceve le richieste di login degli amministratori, convalida le credenziali su server centrali LDAP/Active Directory, stabilisce i livelli di comando abilitati e archivia l'elenco delle azioni digitate."
     },
     securityAttacks: {
       en: 'Stops unauthorized configuration changes on switches, defeats local default credential exploits, and guarantees individual admin account tracking.',
-      it: 'Sventa configurazioni arbitrarie sugli apparati di rete, impedisce l\'accesso tramite credenziali di fabbrica (default) e assicura la tracciabilità delle azioni per singolo utente.'
+      it: "Sventa configurazioni arbitrarie sugli apparati di rete, impedisce l'accesso tramite credenziali di fabbrica (default) e assicura la tracciabilità delle azioni per singolo utente."
     },
     cannotStop: {
       en: 'Man-in-the-Middle hijacking of open console sessions if administrators log in using unencrypted protocols (like Telnet or HTTP) or credential scraping from administrative client devices.',
-      it: 'Sottrazione di sessioni aperte consolle (session hijacking) via MITM qualora il personale usi protocolli non cifrati (come Telnet o HTTP), o furto di password sul PC dell\'operatore.'
+      it: "Sottrazione di sessioni aperte consolle (session hijacking) via MITM qualora il personale usi protocolli non cifrati (come Telnet o HTTP), o furto di password sul PC dell'operatore."
     },
     mitigation: {
       en: 'Enforce modern cryptographic transport layers (SSHv2, HTTPS) for console connections, require Multi-Factor Authentication, and define short auto-logoff sessions.',
@@ -772,7 +772,7 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     },
     securityAttacks: {
       en: 'Obscures internal network layouts, blocks direct access to origin web servers, filters unauthorized outbound web categorization targets, and mitigates basic web scraping.',
-      it: 'Nasconde la struttura della rete LAN interna, impedisce l\'accesso diretto ai server web di origine, blocca la navigazione dei dipendenti verso siti non autorizzati e attenua lo scraping automatizzato.'
+      it: "Nasconde la struttura della rete LAN interna, impedisce l'accesso diretto ai server web di origine, blocca la navigazione dei dipendenti verso siti non autorizzati e attenua lo scraping automatizzato."
     },
     cannotStop: {
       en: 'Sophisticated application exploits (like unvalidated SQL queries or remote file inclusion) if the proxy does not run active deep Web Application Firewall (WAF) rule sets, or attacks targeting non-web custom ports.',
@@ -791,7 +791,7 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     category: 'security',
     role: {
       en: 'Acts as a single, highly-secured entry point (bastion host) that administrators must authenticate through before accessing other sensitive servers or physical devices in internal network zones.',
-      it: 'Agisce come un singolo punto d\'ingresso blindato e protetto (bastion host) attraverso il quale gli amministratori devono autenticarsi prima di accedere ad altri server sensibili o apparati all\'interno della rete.'
+      it: "Agisce come un singolo punto d'ingresso blindato e protetto (bastion host) attraverso il quale gli amministratori devono autenticarsi prima di accedere ad altri server sensibili o apparati all'interno della rete."
     },
     howItWorks: {
       en: 'Sits in a DMZ or isolated network segment. System administrators connect to the Jump Server (via SSH, RDP, or secure HTML5 consoles) using multi-factor credentials, then initiate a secondary authenticated session to internal servers.',
@@ -799,15 +799,15 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     },
     securityAttacks: {
       en: 'Eliminates direct administrative access exposure from the internet, prevents brute-force attempts on database nodes, enforces strict protocol isolation, and centralizes session logging.',
-      it: 'Elimina completamente l\'esposizione diretta delle porte di gestione (SSH, RDP) su Internet, previene attacchi brute-force sui server core, impone un isolamento rigoroso dei protocolli e centralizza la registrazione video/testo delle sessioni.'
+      it: "Elimina completamente l'esposizione diretta delle porte di gestione (SSH, RDP) su Internet, previene attacchi brute-force sui server core, impone un isolamento rigoroso dei protocolli e centralizza la registrazione video/testo delle sessioni."
     },
     cannotStop: {
-      en: 'Credential scraping or keylogging on the administrator\'s local workstation, or privilege escalation exploits originating from already compromised internal services after session bridge establishment.',
-      it: 'Furto di credenziali (credential scraping o keylogger) sul computer locale del manutentore prima dell\'accesso, o exploit di escalation dei privileges scatenati da servizi interni infetti dopo il collegamento.'
+      en: "Credential scraping or keylogging on the administrator's local workstation, or privilege escalation exploits originating from already compromised internal services after session bridge establishment.",
+      it: "Furto di credenziali (credential scraping o keylogger) sul computer locale del manutentore prima dell'accesso, o exploit di escalation dei privileges scatenati da servizi interni infetti dopo il collegamento."
     },
     mitigation: {
       en: 'Mandate Multi-Factor Authentication (MFA), restrict Jump Server inbound traffic exclusively via secure client-to-site VPNs, and enable real-time session recording, auditing, and keystroke logging.',
-      it: 'Imporre il vincolo di MFA, limitare l\'accesso in ingresso al Jump Server solo tramite VPN preventiva e abilitare la registrazione video ed il tracciamento dei comandi digitati in tempo reale.'
+      it: "Imporre il vincolo di MFA, limitare l'accesso in ingresso al Jump Server solo tramite VPN preventiva e abilitare la registrazione video ed il tracciamento dei comandi digitati in tempo reale."
     },
     iconName: 'Shield'
   },

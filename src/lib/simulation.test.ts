@@ -10,7 +10,7 @@ import {
   type SimAction,
   type SimContext,
   type SimEffect,
-  type SimMachineState,
+  type SimMachineState
 } from './simulation';
 
 const EN: SimContext = { protocol: 'HTTP', attack: 'none', defenseEnabled: false, language: 'en' };
@@ -42,7 +42,7 @@ const PROFILES = [
   { protocol: 'FTP', transport: 'TCP', port: '21', pdu: 'Segment' },
   { protocol: 'SMTP', transport: 'TCP', port: '25', pdu: 'Segment' },
   { protocol: 'DNS', transport: 'UDP', port: '53 (DNS)', pdu: 'Datagram' },
-  { protocol: 'BGP', transport: 'TCP', port: '179', pdu: 'Segment' },
+  { protocol: 'BGP', transport: 'TCP', port: '179', pdu: 'Segment' }
 ] satisfies { protocol: SimProtocol; transport: string; port: string; pdu: string }[];
 
 describe('headerNameForLayer', () => {
@@ -105,10 +105,7 @@ describe('simulationReducer — lifecycle', () => {
     const { state, effects } = simulationReducer(INITIAL_SIM_STATE, { type: 'START' }, EN);
     expect(state).toEqual({ phase: 'encapsulating', currentStep: INITIAL_STEP, paused: false });
     expect(effects[0]).toEqual({ kind: 'clearHeaders' });
-    expect(logs(effects)).toEqual([
-      startupLogMessage('HTTP', 'en'),
-      'Starting packet encapsulation...',
-    ]);
+    expect(logs(effects)).toEqual([startupLogMessage('HTTP', 'en'), 'Starting packet encapsulation...']);
     expect(effects).toContainEqual({ kind: 'audio', cue: 'start' });
   });
 
@@ -223,12 +220,14 @@ describe.each(['en', 'it'] as const)('simulation protocol journeys (%s)', (langu
     expect(headers.find((header) => header.layer === 4)).toMatchObject({
       protocol: transport,
       pduName: pdu,
-      fields: expect.arrayContaining([{ key: 'DstPort', value: port }]),
+      fields: expect.arrayContaining([{ key: 'DstPort', value: port }])
     });
     expect(effects).toContainEqual({ kind: 'audio', cue: 'success' });
-    expect(logs(effects)).toContain(language === 'en'
-      ? 'Data successfully delivered to Application Layer.'
-      : 'Dati consegnati con successo al Livello Applicazione.');
+    expect(logs(effects)).toContain(
+      language === 'en'
+        ? 'Data successfully delivered to Application Layer.'
+        : 'Dati consegnati con successo al Livello Applicazione.'
+    );
   });
 
   it.each([false, true])('applies the attack outcome when defenseEnabled=%s', (defenseEnabled) => {
@@ -237,8 +236,12 @@ describe.each(['en', 'it'] as const)('simulation protocol journeys (%s)', (langu
     expect(state.phase).toBe(defenseEnabled ? 'idle' : 'interrupted');
     expect(effects).toContainEqual({ kind: 'audio', cue: defenseEnabled ? 'success' : 'alert' });
     expect(logs(effects).some((message) => message.includes('MITM'))).toBe(true);
-    expect(logs(effects).includes(language === 'en'
-      ? 'Data successfully delivered to Application Layer.'
-      : 'Dati consegnati con successo al Livello Applicazione.')).toBe(defenseEnabled);
+    expect(
+      logs(effects).includes(
+        language === 'en'
+          ? 'Data successfully delivered to Application Layer.'
+          : 'Dati consegnati con successo al Livello Applicazione.'
+      )
+    ).toBe(defenseEnabled);
   });
 });

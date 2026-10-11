@@ -1,7 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import {
-  addressKind, calculateIpv4Subnet, ipv4ToUint, planVlsm, prefixForHosts, prefixToMask,
-  uintToIpv4, wildcardForRange
+  addressKind,
+  calculateIpv4Subnet,
+  ipv4ToUint,
+  planVlsm,
+  prefixForHosts,
+  prefixToMask,
+  uintToIpv4,
+  wildcardForRange
 } from './ipv4';
 
 describe('IPv4 conversion', () => {
@@ -98,7 +104,7 @@ describe('VLSM planning', () => {
 
   it('allocates largest first and keeps every subnet on its own boundary', () => {
     const plan = planVlsm('192.168.1.0', 24, requirements);
-    expect(plan.allocations.map(a => [a.id, a.network, a.prefix])).toEqual([
+    expect(plan.allocations.map((a) => [a.id, a.network, a.prefix])).toEqual([
       ['sales', '192.168.1.0', 26],
       ['hr', '192.168.1.64', 27],
       ['it', '192.168.1.96', 28],
@@ -142,8 +148,10 @@ describe('VLSM planning', () => {
       { id: 'voice', name: 'Voice', hosts: 25 }
     ];
     const plan = planVlsm('10.0.0.0', 25, awkward);
-    expect(plan.allocations.map(a => `${a.network}/${a.prefix}`)).toEqual([
-      '10.0.0.0/26', '10.0.0.64/27', '10.0.0.96/28'
+    expect(plan.allocations.map((a) => `${a.network}/${a.prefix}`)).toEqual([
+      '10.0.0.0/26',
+      '10.0.0.64/27',
+      '10.0.0.96/28'
     ]);
     expect(plan.usedAddresses).toBe(112);
     expect(plan.utilisationPercent).toBe(87.5);
@@ -170,19 +178,30 @@ describe('VLSM planning', () => {
 describe('wildcard for a range', () => {
   it('matches an aligned block with a single ACE', () => {
     expect(wildcardForRange('10.1.1.0', '10.1.1.255')).toMatchObject({
-      address: '10.1.1.0', wildcard: '0.0.0.255', prefix: 24, exact: true, extraAddresses: 0
+      address: '10.1.1.0',
+      wildcard: '0.0.0.255',
+      prefix: 24,
+      exact: true,
+      extraAddresses: 0
     });
   });
 
   it('writes the four management hosts as one aligned /30', () => {
     expect(wildcardForRange('10.1.1.8', '10.1.1.11')).toMatchObject({
-      address: '10.1.1.8', wildcard: '0.0.0.3', prefix: 30, exact: true
+      address: '10.1.1.8',
+      wildcard: '0.0.0.3',
+      prefix: 30,
+      exact: true
     });
   });
 
   it('matches a single host with a zero wildcard', () => {
     expect(wildcardForRange('10.1.1.9', '10.1.1.9')).toMatchObject({
-      address: '10.1.1.9', wildcard: '0.0.0.0', prefix: 32, exact: true, extraAddresses: 0
+      address: '10.1.1.9',
+      wildcard: '0.0.0.0',
+      prefix: 32,
+      exact: true,
+      extraAddresses: 0
     });
   });
 
@@ -196,7 +215,10 @@ describe('wildcard for a range', () => {
 
   it('crosses octets when the range demands it', () => {
     expect(wildcardForRange('10.1.0.0', '10.1.3.255')).toMatchObject({
-      address: '10.1.0.0', wildcard: '0.0.3.255', prefix: 22, exact: true
+      address: '10.1.0.0',
+      wildcard: '0.0.3.255',
+      prefix: 22,
+      exact: true
     });
   });
 

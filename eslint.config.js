@@ -22,11 +22,13 @@ const unsafeFrontendSyntax = [
     message: 'Unsafe HTML assignment is not allowed; use textContent or React rendering.'
   },
   {
-    selector: "CallExpression[callee.type='MemberExpression'][callee.property.name=/^(insertAdjacentHTML|setHTMLUnsafe|createContextualFragment)$/]",
+    selector:
+      "CallExpression[callee.type='MemberExpression'][callee.property.name=/^(insertAdjacentHTML|setHTMLUnsafe|createContextualFragment)$/]",
     message: 'Unsafe HTML parsing or insertion is not allowed.'
   },
   {
-    selector: "CallExpression[callee.type='MemberExpression'][callee.object.name='document'][callee.property.name=/^(write|writeln)$/]",
+    selector:
+      "CallExpression[callee.type='MemberExpression'][callee.object.name='document'][callee.property.name=/^(write|writeln)$/]",
     message: 'document.write is an unsafe DOM sink and is not allowed.'
   },
   {
@@ -42,15 +44,17 @@ const unsafeFrontendSyntax = [
     message: 'Network access is deny-by-default; document and review an exception before adding fetch.'
   },
   {
-    selector: "NewExpression[callee.name=/^(XMLHttpRequest|WebSocket|EventSource)$/]",
+    selector: 'NewExpression[callee.name=/^(XMLHttpRequest|WebSocket|EventSource)$/]',
     message: 'Network access is deny-by-default; document and review an exception first.'
   },
   {
-    selector: "NewExpression[callee.type='MemberExpression'][callee.property.name=/^(XMLHttpRequest|WebSocket|EventSource)$/]",
+    selector:
+      "NewExpression[callee.type='MemberExpression'][callee.property.name=/^(XMLHttpRequest|WebSocket|EventSource)$/]",
     message: 'Network access is deny-by-default; document and review an exception first.'
   },
   {
-    selector: "CallExpression[callee.type='MemberExpression'][callee.object.name='navigator'][callee.property.name='sendBeacon']",
+    selector:
+      "CallExpression[callee.type='MemberExpression'][callee.object.name='navigator'][callee.property.name='sendBeacon']",
     message: 'Telemetry and network beacons are not allowed without an explicit reviewed exception.'
   }
 ];
@@ -65,7 +69,7 @@ const restrictedPersistenceSyntax = [
     message: 'localStorage is allowed only in src/store.ts through the versioned preference allowlist.'
   },
   {
-    selector: "Identifier[name=/^(sessionStorage|indexedDB)$/]",
+    selector: 'Identifier[name=/^(sessionStorage|indexedDB)$/]',
     message: 'Unreviewed browser persistence is not allowed.'
   },
   {

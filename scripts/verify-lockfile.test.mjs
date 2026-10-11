@@ -13,9 +13,9 @@ function lockfileWith(metadata) {
         version: '1.0.0',
         resolved: 'https://registry.npmjs.org/example/-/example-1.0.0.tgz',
         integrity,
-        ...metadata,
-      },
-    },
+        ...metadata
+      }
+    }
   };
 }
 
@@ -27,14 +27,14 @@ describe('bootstrap lockfile policy', () => {
   it('rejects an unexpected registry host', () => {
     assert.throws(
       () => verifyLockfilePolicy(lockfileWith({ resolved: 'https://evil.example/example.tgz' })),
-      error => error instanceof LockfilePolicyError && error.message.includes('untrusted registry URL'),
+      (error) => error instanceof LockfilePolicyError && error.message.includes('untrusted registry URL')
     );
   });
 
   it('rejects HTTP even for the trusted hostname', () => {
     assert.throws(
       () => verifyLockfilePolicy(lockfileWith({ resolved: 'http://registry.npmjs.org/example.tgz' })),
-      error => error instanceof LockfilePolicyError && error.message.includes('untrusted registry URL'),
+      (error) => error instanceof LockfilePolicyError && error.message.includes('untrusted registry URL')
     );
   });
 
@@ -42,7 +42,7 @@ describe('bootstrap lockfile policy', () => {
     for (const invalid of [undefined, 'sha1-deadbeef', 'sha512-not-base64']) {
       assert.throws(
         () => verifyLockfilePolicy(lockfileWith({ integrity: invalid })),
-        error => error instanceof LockfilePolicyError && error.message.includes('non-SHA-512 integrity'),
+        (error) => error instanceof LockfilePolicyError && error.message.includes('non-SHA-512 integrity')
       );
     }
   });
@@ -50,24 +50,25 @@ describe('bootstrap lockfile policy', () => {
   it('rejects packages without a resolved tarball', () => {
     assert.throws(
       () => verifyLockfilePolicy(lockfileWith({ resolved: undefined })),
-      error => error instanceof LockfilePolicyError && error.message.includes('missing resolved tarball URL'),
+      (error) => error instanceof LockfilePolicyError && error.message.includes('missing resolved tarball URL')
     );
   });
 
   it('rejects unexpected lockfile schemas', () => {
     assert.throws(
       () => verifyLockfilePolicy({ lockfileVersion: 2, packages: [] }),
-      error => error instanceof LockfilePolicyError
-        && error.message.includes('lockfileVersion 3')
-        && error.message.includes('packages object'),
+      (error) =>
+        error instanceof LockfilePolicyError &&
+        error.message.includes('lockfileVersion 3') &&
+        error.message.includes('packages object')
     );
     assert.throws(
       () => verifyLockfilePolicy({ lockfileVersion: 3 }),
-      error => error instanceof LockfilePolicyError && error.message.includes('packages object'),
+      (error) => error instanceof LockfilePolicyError && error.message.includes('packages object')
     );
     assert.throws(
       () => verifyLockfilePolicy(null),
-      error => error instanceof LockfilePolicyError && error.message.includes('JSON object'),
+      (error) => error instanceof LockfilePolicyError && error.message.includes('JSON object')
     );
   });
 });

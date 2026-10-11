@@ -1,7 +1,10 @@
-export const SCENARIO_FEEDBACK: Record<string, {
-  attack: { it: string; en: string };
-  defense: { it: string; en: string };
-}> = {
+export const SCENARIO_FEEDBACK: Record<
+  string,
+  {
+    attack: { it: string; en: string };
+    defense: { it: string; en: string };
+  }
+> = {
   'l1-jamming': {
     attack: {
       it: 'DISTURBO DEL SEGNALE (JAMMING): Il canale fisico è saturo di rumore di fondo. I bit non possono essere trasferiti e la trasmissione si interrompe a livello Fisico.',
@@ -24,7 +27,7 @@ export const SCENARIO_FEEDBACK: Record<string, {
   },
   'l2-mitm': {
     attack: {
-      it: 'ARP POISONING RIUSCITO: L\'attaccante ha avvelenato la cache ARP degli host (e del gateway), non la CAM table dello switch. Il traffico locale viene ricanalizzato attraverso l\'host malevolo.',
+      it: "ARP POISONING RIUSCITO: L'attaccante ha avvelenato la cache ARP degli host (e del gateway), non la CAM table dello switch. Il traffico locale viene ricanalizzato attraverso l'host malevolo.",
       en: 'ARP POISONING SUCCESSFUL: The attacker poisoned the ARP cache of the hosts (and of the gateway) — not the switch CAM table. Local traffic is rerouted through the fraudulent host.'
     },
     defense: {
@@ -38,7 +41,7 @@ export const SCENARIO_FEEDBACK: Record<string, {
       en: 'MAC FLOODING SUCCESSFUL: The switch CAM table is filled to capacity. The switch fails open and floods unknown-unicast frames to every port in the VLAN.'
     },
     defense: {
-      it: 'PORT SECURITY ATTIVA: Lo switch limita i MAC address consentiti per porta e blocca l\'interfaccia violata che inviava richieste massive.',
+      it: "PORT SECURITY ATTIVA: Lo switch limita i MAC address consentiti per porta e blocca l'interfaccia violata che inviava richieste massive.",
       en: 'PORT SECURITY ENGAGED: The switch limits maximum allowed MACs per interface and disables the leaking port immediately.'
     }
   },
@@ -58,27 +61,27 @@ export const SCENARIO_FEEDBACK: Record<string, {
       en: 'IP SPOOFING SUCCESSFUL: Packets with forged source IPs successfully bypassed peripheral check-rules on the firewall.'
     },
     defense: {
-      it: 'REGOLA URPF FILTRANTE: Unicast Reverse Path Forwarding (uRPF) ha scartato il pacchetto poiché l\'interfaccia di ingresso era incongruente.',
+      it: "REGOLA URPF FILTRANTE: Unicast Reverse Path Forwarding (uRPF) ha scartato il pacchetto poiché l'interfaccia di ingresso era incongruente.",
       en: 'URPF RULE ACTIVE: Unicast Reverse Path Forwarding (uRPF) discarded the spoofed packet as the ingress route was invalid.'
     }
   },
   'l3-smurf': {
     attack: {
-      it: 'ICMP SMURF RIUSCITO: Attacco amplificato tramite richiesta ICMP echo broadcast. L\'obiettivo è sommerso da risposte Echo-Reply non richieste.',
+      it: "ICMP SMURF RIUSCITO: Attacco amplificato tramite richiesta ICMP echo broadcast. L'obiettivo è sommerso da risposte Echo-Reply non richieste.",
       en: 'ICMP SMURF SUCCESSFUL: Reflection attack enabled using broadcast ICMP echo requests. The target is flooded with replies.'
     },
     defense: {
-      it: 'FILTRAGGIO BROADCAST: I router di confine ignorano e bloccano l\'instradamento dei pacchetti ICMP broadcast diretti all\'intera sottorete.',
+      it: "FILTRAGGIO BROADCAST: I router di confine ignorano e bloccano l'instradamento dei pacchetti ICMP broadcast diretti all'intera sottorete.",
       en: 'BROADCAST SCRUBBING: Border routers drop broadcast directed ICMP echo requests, preventing spoofed reflection bursts.'
     }
   },
   'l3-frag': {
     attack: {
-      it: 'IP FRAGMENTATION RIUSCITO: Frammenti IP sovrapposti e di dimensioni anomale hanno causato l\'esaurimento delle risorse sul sistema vittima.',
+      it: "IP FRAGMENTATION RIUSCITO: Frammenti IP sovrapposti e di dimensioni anomale hanno causato l'esaurimento delle risorse sul sistema vittima.",
       en: 'IP FRAGMENTATION SUCCESSFUL: Overlapping and malformed packet fragments bypass checks, causing resource exhaustion during reassembly.'
     },
     defense: {
-      it: 'ISPEZIONE REASSEMBLAGGIO: Il firewall stateful ricombina ed analizza i frammenti prima dell\'inoltro salvaguardando il buffer dell\'host.',
+      it: "ISPEZIONE REASSEMBLAGGIO: Il firewall stateful ricombina ed analizza i frammenti prima dell'inoltro salvaguardando il buffer dell'host.",
       en: 'REASSEMBLY INSPECTION: The stateful firewall reconstructs and inspects IP fragments, discarding out-of-order anomalies.'
     }
   },
@@ -88,13 +91,13 @@ export const SCENARIO_FEEDBACK: Record<string, {
       en: 'TCP SYN FLOOD SUCCESSFUL: Millions of half-open TCP handshakes filled the SYN backlog queue, making the server unavailable.'
     },
     defense: {
-      it: 'SYN COOKIES ATTIVI: Il server convalida l\'autenticità della connessione nell\'ACK finale senza allocare memoria preliminare.',
+      it: "SYN COOKIES ATTIVI: Il server convalida l'autenticità della connessione nell'ACK finale senza allocare memoria preliminare.",
       en: 'SYN COOKIES ACTIVE: The server validates authentic handshakes cryptographically in the final ACK without allocating buffer queues upfront.'
     }
   },
   'l4-udp-flood': {
     attack: {
-      it: 'UDP FLOOD RIUSCITO: La tempesta di pacchetti UDP inviati a porte casuali esaurisce la CPU nell\'invio di ricorsivi ICMP Port Unreachable.',
+      it: "UDP FLOOD RIUSCITO: La tempesta di pacchetti UDP inviati a porte casuali esaurisce la CPU nell'invio di ricorsivi ICMP Port Unreachable.",
       en: 'UDP FLOOD SUCCESSFUL: A massive volume of UDP packets to random ports exhausted CPU capacity generating ICMP Unreachable replies.'
     },
     defense: {
@@ -104,11 +107,11 @@ export const SCENARIO_FEEDBACK: Record<string, {
   },
   'l4-scan': {
     attack: {
-      it: 'SCANSIONE PORTE RIUSCITA: Una scansione coordinata (SYN/FIN Scan) ha tracciato con precisione i servizi attivi ed esposti dell\'host.',
+      it: "SCANSIONE PORTE RIUSCITA: Una scansione coordinata (SYN/FIN Scan) ha tracciato con precisione i servizi attivi ed esposti dell'host.",
       en: 'PORT SCAN SUCCESSFUL: Intensive probing (SYN/FIN scans) mapped out open ports, exposing active socket applications.'
     },
     defense: {
-      it: 'IDS REAZIONE DINAMICA: L\'Intrusion Detection System intercetta i ping sequenziali e inserisce temporaneamente in blacklist l\'IP sorgente.',
+      it: "IDS REAZIONE DINAMICA: L'Intrusion Detection System intercetta i ping sequenziali e inserisce temporaneamente in blacklist l'IP sorgente.",
       en: 'IDS INSTANT ACTION: The Intrusion Detection System caught the probes and dynamically blocked the sender IP on the firewall.'
     }
   },
@@ -118,13 +121,13 @@ export const SCENARIO_FEEDBACK: Record<string, {
       en: 'REPLAY ATTACK SUCCESSFUL: A captured session token has been re-sent, bypassing fresh login credentials successfully.'
     },
     defense: {
-      it: 'CONTROLLO NONCE E TIMESTAMP: L\'applicazione scarta il frame poiché il marcatore di tempo o il token usa-e-getta (Nonce) sono scaduti o già usati.',
+      it: "CONTROLLO NONCE E TIMESTAMP: L'applicazione scarta il frame poiché il marcatore di tempo o il token usa-e-getta (Nonce) sono scaduti o già usati.",
       en: 'NONCE & TIME CHECK: The server discarded the packet because its timestamp or single-use nonce is expired or already processed.'
     }
   },
   'l5-hijacking': {
     attack: {
-      it: 'SESSION HIJACKING RIUSCITO: L\'attaccante ha preso il controllo di una sessione TCP stabilita falsificando gli ID o inserendosi nel flusso delle credenziali.',
+      it: "SESSION HIJACKING RIUSCITO: L'attaccante ha preso il controllo di una sessione TCP stabilita falsificando gli ID o inserendosi nel flusso delle credenziali.",
       en: 'SESSION HIJACKING SUCCESSFUL: The attacker hijacked or cloned an authentic active TCP session ID, taking direct command of the channel.'
     },
     defense: {
@@ -138,7 +141,7 @@ export const SCENARIO_FEEDBACK: Record<string, {
       en: 'PADDING ORACLE SUCCESSFUL: The attacker reconstructed ciphertexts by analyzing temporal and descriptive CBC padding-exception delays.'
     },
     defense: {
-      it: 'CRITTOGRAFIA AUTENTICATA: L\'adozione di modalità cifrate AEAD come AES-GCM impedisce la manipolazione del padding lanciando eccezioni generiche identiche.',
+      it: "CRITTOGRAFIA AUTENTICATA: L'adozione di modalità cifrate AEAD come AES-GCM impedisce la manipolazione del padding lanciando eccezioni generiche identiche.",
       en: 'AUTHENTICATED ENCRYPTION: AES-GCM/AEAD mode validates message integrity, throwing uniform errors to deny padding analysis.'
     }
   },
@@ -148,7 +151,7 @@ export const SCENARIO_FEEDBACK: Record<string, {
       en: 'SQL INJECTION SUCCESSFUL: Unescaped SQL statements manipulated the compile tree, circumventing login or leaking information.'
     },
     defense: {
-      it: 'QUERY PARAMETRIZZATE: L\'uso di prepared statements isola gli argomenti di input trattandoli come stringhe letterali inoffensive.',
+      it: "QUERY PARAMETRIZZATE: L'uso di prepared statements isola gli argomenti di input trattandoli come stringhe letterali inoffensive.",
       en: 'PARAMETERIZED BINDINGS: Prepared queries treat all inputs as safe data fields, completely neutralizing database tree shifts.'
     }
   },
@@ -158,13 +161,13 @@ export const SCENARIO_FEEDBACK: Record<string, {
       en: 'XSS ATTACK SUCCESSFUL: Unauthorized inline javascript code was executed by the browser on client-side, stealing cookie files.'
     },
     defense: {
-      it: 'CSP E SANITIZZAZIONE: Una rigida Content Security Policy (CSP) impedisce l\'esecuzione di script inline sprovvisti di firma approvata.',
+      it: "CSP E SANITIZZAZIONE: Una rigida Content Security Policy (CSP) impedisce l'esecuzione di script inline sprovvisti di firma approvata.",
       en: 'CSP FILTERING ENGAGED: A robust Content Security Policy (CSP) and output-encoding block any unsanctioned script executions.'
     }
   },
   'l7-homograph': {
     attack: {
-      it: 'PHISHING OMOGRAFICO RIUSCITO: Caratteri internazionalizzati (Unicode) esteticamente identici a lettere latine hanno ingannato l\'utente simulando un sito protetto.',
+      it: "PHISHING OMOGRAFICO RIUSCITO: Caratteri internazionalizzati (Unicode) esteticamente identici a lettere latine hanno ingannato l'utente simulando un sito protetto.",
       en: 'HOMOGRAPH PHISHING SUCCESSFUL: Internationalized domain names with indistinguishable characters tricked users into visiting a clone page.'
     },
     defense: {
@@ -174,7 +177,7 @@ export const SCENARIO_FEEDBACK: Record<string, {
   },
   'l7-dns-poison': {
     attack: {
-      it: 'AVVELENAMENTO DNS RIUSCITO: Record contraffatti inseriti nella cache del DNS di rete reindirizzano gli utenti verso indirizzi IP controllati dall\'attaccante.',
+      it: "AVVELENAMENTO DNS RIUSCITO: Record contraffatti inseriti nella cache del DNS di rete reindirizzano gli utenti verso indirizzi IP controllati dall'attaccante.",
       en: 'DNS POISONING SUCCESSFUL: Mimicked responses corrupted the caching resolver domain mapping, redirecting client requests to the wrong IP.'
     },
     defense: {
@@ -188,7 +191,7 @@ export const SCENARIO_FEEDBACK: Record<string, {
       en: 'SLOWLORIS SUCCESSFUL: The application pool is exhausted as the attacker slowly feeds HTTP headers to prevent sessions from closing.'
     },
     defense: {
-      it: 'TIMEOUT INTESTAZIONI EXPIRED: Il web server chiude istantaneamente i canali che non completano l\'invio delle intestazioni entro intervalli brevi prestabiliti.',
+      it: "TIMEOUT INTESTAZIONI EXPIRED: Il web server chiude istantaneamente i canali che non completano l'invio delle intestazioni entro intervalli brevi prestabiliti.",
       en: 'STALL TIMEOUT ACTIVATED: Web server configurations prune stalling connections that fail to deliver key content on schedule.'
     }
   },
@@ -198,7 +201,7 @@ export const SCENARIO_FEEDBACK: Record<string, {
       en: 'TCP RESET SUCCESSFUL: A spoofed RST packet matching the active sequence parameters triggered an abrupt socket closure.'
     },
     defense: {
-      it: 'CIFRATURA DI INTESTAZIONE: TLS blocca i tentativi degli intercettatori passivi di leggere i numeri di sequenza, rendendo impossibile forgiare l\'attacco.',
+      it: "CIFRATURA DI INTESTAZIONE: TLS blocca i tentativi degli intercettatori passivi di leggere i numeri di sequenza, rendendo impossibile forgiare l'attacco.",
       en: 'TCP SEQUENCE ENCRYPTION: TLS sessions prevent passive wiretappers from guessing sequence coordinates, neutralizing reset injections.'
     }
   },
@@ -228,17 +231,17 @@ export const SCENARIO_FEEDBACK: Record<string, {
       en: 'SSH BRUTE FORCE SUCCESSFUL: High-frequency dictionaries unlocked root credentials, delivering full console access to the endpoint.'
     },
     defense: {
-      it: 'FAIL2BAN REAZIONE: I continui tentativi falliti innescano l\'esclusione temporanea dell\'indirizzo IP tramite tabelle di routing host.',
+      it: "FAIL2BAN REAZIONE: I continui tentativi falliti innescano l'esclusione temporanea dell'indirizzo IP tramite tabelle di routing host.",
       en: 'FAIL2BAN ACTIVE: Multiple successive unauthorized login attempts prompted a system IP blacklist trigger, denying any further connect requests.'
     }
   },
   'l7-smtp-relay': {
     attack: {
-      it: 'SMTP OPEN RELAY EXPLOITED: Il server accetta e instrada flussi e-mail malevoli di terze parti facilitando l\'inoltro di spam e malware indiscriminato.',
+      it: "SMTP OPEN RELAY EXPLOITED: Il server accetta e instrada flussi e-mail malevoli di terze parti facilitando l'inoltro di spam e malware indiscriminato.",
       en: 'SMTP OPEN RELAY EXPLOITED: The wide-open relay server processed unauthorized email queues, forwarding massive spam at scale.'
     },
     defense: {
-      it: 'RESTRIZIONE SASL: È stata abilitata l\'autenticazione accoppiata a rigide regole SPF/DKIM bloccando indirizzi provenienti da domini esterni.',
+      it: "RESTRIZIONE SASL: È stata abilitata l'autenticazione accoppiata a rigide regole SPF/DKIM bloccando indirizzi provenienti da domini esterni.",
       en: 'SASL SECURED: Configured strict credential-based transport authentication combined with SPF/DKIM restrictions.'
     }
   },
@@ -248,7 +251,7 @@ export const SCENARIO_FEEDBACK: Record<string, {
       en: 'FTP CLEAR TEXT SNIFFING: Management credentials sent across unencrypted FTP control ports have been recorded in plain text directly.'
     },
     defense: {
-      it: 'ENFORCED SFTP/FTPS: L\'host disabilita le porte tradizionali e consente esclusivamente trasferimenti cifrati SSH/TLS proteggendo i dati di controllo.',
+      it: "ENFORCED SFTP/FTPS: L'host disabilita le porte tradizionali e consente esclusivamente trasferimenti cifrati SSH/TLS proteggendo i dati di controllo.",
       en: 'ENFORCED SFTP/FTPS: Traditional plain ports are barred in favor of encrypted SSH/TLS tunnels, keeping transmission items secure.'
     }
   }

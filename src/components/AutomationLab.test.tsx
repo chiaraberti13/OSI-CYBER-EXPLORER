@@ -13,13 +13,13 @@ afterEach(() => {
 describe('AutomationLab secret warning', () => {
   it.each([
     ['it', /non sostituisce un secret scanner/i],
-    ['en', /does not replace a secret scanner/i],
+    ['en', /does not replace a secret scanner/i]
   ] as const)('keeps the %s warning explicit and renders only the redacted value', (language, warning) => {
     useStore.setState({ language });
     render(<AutomationLab />);
 
     fireEvent.change(screen.getByRole('textbox', { name: 'JSON inspector' }), {
-      target: { value: '{"client_secret":"never-render-this-value"}' },
+      target: { value: '{"client_secret":"never-render-this-value"}' }
     });
 
     const sensitiveRow = screen.getByText('$.client_secret').closest('tr');

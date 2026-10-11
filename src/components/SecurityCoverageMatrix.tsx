@@ -40,18 +40,22 @@ function SecurityCoverageMatrix({ language, onOpenLab, onSelect }: SecurityCover
             ? 'Il numero indica quante tecniche collegano il dominio alla famiglia. Seleziona una cella per filtrare il catalogo; il pulsante del dominio apre il laboratorio CCNA corrispondente.'
             : 'The number shows how many techniques link a domain to a family. Select a cell to filter the catalog; the domain button opens the corresponding CCNA lab.'}
         </p>
-        <p className="xl:hidden mt-2 text-[11px] text-slate-400" role="note">{uiMessages(language).shared.horizontalScrollHint}</p>
+        <p className="xl:hidden mt-2 text-[11px] text-slate-400" role="note">
+          {uiMessages(language).shared.horizontalScrollHint}
+        </p>
         <div className="mt-2 overflow-x-auto">
           <table className="w-full min-w-[1080px] border-separate border-spacing-1 text-center text-xs">
             <caption className="sr-only">
-              {language === 'it' ? 'Copertura delle famiglie di attacco per dominio CCNA' : 'Attack-family coverage by CCNA domain'}
+              {language === 'it'
+                ? 'Copertura delle famiglie di attacco per dominio CCNA'
+                : 'Attack-family coverage by CCNA domain'}
             </caption>
             <thead>
               <tr>
                 <th scope="col" className="p-2 text-left font-semibold text-slate-500">
                   {language === 'it' ? 'Dominio' : 'Domain'}
                 </th>
-                {ATTACK_FAMILIES.map(family => (
+                {ATTACK_FAMILIES.map((family) => (
                   <th key={family.id} scope="col" className="max-w-24 p-2 align-bottom font-semibold text-slate-500">
                     <span className="line-clamp-3">{family.name[language]}</span>
                   </th>
@@ -59,7 +63,7 @@ function SecurityCoverageMatrix({ language, onOpenLab, onSelect }: SecurityCover
               </tr>
             </thead>
             <tbody>
-              {CCNA_DOMAINS.map(domain => (
+              {CCNA_DOMAINS.map((domain) => (
                 <tr key={domain.id}>
                   <th scope="row" className="p-1 text-left">
                     <button
@@ -67,15 +71,18 @@ function SecurityCoverageMatrix({ language, onOpenLab, onSelect }: SecurityCover
                       onClick={() => onOpenLab(domain.id as CcnaDomainId)}
                       className="flex w-full items-center justify-between gap-2 rounded-lg px-2 py-2 text-left font-semibold text-slate-700 hover:bg-indigo-50 hover:text-indigo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
                     >
-                      <span>{domain.number}. {domain.title[language]}</span>
+                      <span>
+                        {domain.number}. {domain.title[language]}
+                      </span>
                       <ArrowUpRight className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
                     </button>
                   </th>
-                  {ATTACK_FAMILIES.map(family => {
+                  {ATTACK_FAMILIES.map((family) => {
                     const count = COVERAGE_COUNTS.get(`${domain.id}:${family.id}`) ?? 0;
-                    const label = language === 'it'
-                      ? `${domain.title.it}, ${family.name.it}: ${count} tecniche`
-                      : `${domain.title.en}, ${family.name.en}: ${count} techniques`;
+                    const label =
+                      language === 'it'
+                        ? `${domain.title.it}, ${family.name.it}: ${count} tecniche`
+                        : `${domain.title.en}, ${family.name.en}: ${count} techniques`;
 
                     return (
                       <td key={family.id} className="p-0.5">
@@ -89,7 +96,12 @@ function SecurityCoverageMatrix({ language, onOpenLab, onSelect }: SecurityCover
                             {count}
                           </button>
                         ) : (
-                          <span className="flex h-9 items-center justify-center rounded-md bg-slate-50 text-slate-300" aria-label={label}>—</span>
+                          <span
+                            className="flex h-9 items-center justify-center rounded-md bg-slate-50 text-slate-300"
+                            aria-label={label}
+                          >
+                            —
+                          </span>
                         )}
                       </td>
                     );

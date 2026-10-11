@@ -22,7 +22,7 @@ describe('writing the ACE', () => {
       intent({ id: 'b', protocol: 'tcp', source: GUESTS, destination: SERVERS, port: 443 }),
       intent({ id: 'c', protocol: 'icmp', source: { kind: 'host', address: '10.10.10.42' }, destination: ANY })
     ]);
-    expect(acl.aces.map(ace => ace.text)).toEqual([
+    expect(acl.aces.map((ace) => ace.text)).toEqual([
       '10 deny tcp 10.10.10.0 0.0.0.255 any eq telnet log',
       '20 permit tcp 10.10.10.0 0.0.0.255 10.20.50.0 0.0.0.255 eq https',
       '30 permit icmp host 10.10.10.42 any'
@@ -37,7 +37,9 @@ describe('writing the ACE', () => {
 
   it('produces a configuration with the interface and the implicit deny spelled out', () => {
     const acl = buildAcl([intent({ id: 'a', protocol: 'tcp', source: GUESTS, destination: SERVERS, port: 443 })], {
-      name: 'GUEST-IN', interfaceName: 'Vlan10', direction: 'in'
+      name: 'GUEST-IN',
+      interfaceName: 'Vlan10',
+      direction: 'in'
     });
     expect(acl.configuration).toEqual([
       'ip access-list extended GUEST-IN',
@@ -52,7 +54,9 @@ describe('writing the ACE', () => {
 
 describe('when one ACE covers another', () => {
   const rule = (over: Partial<Parameters<typeof aceCovers>[0]> = {}) => ({
-    sequence: 10, action: 'permit' as const, protocol: 'ip' as const,
+    sequence: 10,
+    action: 'permit' as const,
+    protocol: 'ip' as const,
     source: { address: '0.0.0.0', wildcard: '255.255.255.255' },
     destination: { address: '0.0.0.0', wildcard: '255.255.255.255' },
     ...over
@@ -88,7 +92,14 @@ describe('when one ACE covers another', () => {
 
 describe('first match wins, and what it costs', () => {
   const permitEverything = intent({ id: 'open', protocol: 'ip', source: GUESTS, destination: ANY });
-  const denyTelnet = intent({ id: 'telnet', action: 'deny', protocol: 'tcp', source: GUESTS, destination: ANY, port: 23 });
+  const denyTelnet = intent({
+    id: 'telnet',
+    action: 'deny',
+    protocol: 'tcp',
+    source: GUESTS,
+    destination: ANY,
+    port: 23
+  });
 
   it('marks a specific deny placed after a general permit as a dead line', () => {
     const acl = buildAcl([permitEverything, denyTelnet]);
@@ -100,7 +111,7 @@ describe('first match wins, and what it costs', () => {
 
   it('leaves both lines alive in the right order', () => {
     const acl = buildAcl([denyTelnet, permitEverything]);
-    expect(acl.aces.map(ace => ace.status)).toEqual(['active', 'active']);
+    expect(acl.aces.map((ace) => ace.status)).toEqual(['active', 'active']);
     expect(acl.hasDeadRules).toBe(false);
     expect(acl.suggestedOrder).toBeNull();
   });
@@ -110,7 +121,7 @@ describe('first match wins, and what it costs', () => {
     expect(acl.suggestedOrder).toEqual(['telnet', 'open']);
     // And that order really does leave every line reachable.
     const fixed = buildAcl([denyTelnet, permitEverything]);
-    expect(fixed.aces.every(ace => ace.status === 'active')).toBe(true);
+    expect(fixed.aces.every((ace) => ace.status === 'active')).toBe(true);
   });
 
   it('separates a redundant line from a dead one', () => {
@@ -127,7 +138,13 @@ describe('first match wins, and what it costs', () => {
   it('scores a host rule as more specific than a subnet rule', () => {
     const acl = buildAcl([
       intent({ id: 'subnet', protocol: 'tcp', source: GUESTS, destination: ANY, port: 443 }),
-      intent({ id: 'host', protocol: 'tcp', source: { kind: 'host', address: '10.10.10.42' }, destination: ANY, port: 443 })
+      intent({
+        id: 'host',
+        protocol: 'tcp',
+        source: { kind: 'host', address: '10.10.10.42' },
+        destination: ANY,
+        port: 443
+      })
     ]);
     expect(acl.aces[1].specificity).toBeGreaterThan(acl.aces[0].specificity);
   });
@@ -139,25 +156,34 @@ describe('the builder and the evaluator agree', () => {
     intent({ id: 'https', protocol: 'tcp', source: GUESTS, destination: SERVERS, port: 443 }),
     intent({ id: 'ping', protocol: 'icmp', source: ANY, destination: ANY })
   ]);
-  const rules = acl.aces.map(ace => ace.rule);
+  const rules = acl.aces.map((ace) => ace.rule);
 
   it('denies the traffic the first line was written to deny', () => {
     const decision = evaluateIpv4Acl(rules, {
-      protocol: 'tcp', sourceIp: '10.10.10.42', destinationIp: '10.20.50.5', destinationPort: 23
+      protocol: 'tcp',
+      sourceIp: '10.10.10.42',
+      destinationIp: '10.20.50.5',
+      destinationPort: 23
     });
     expect(decision).toMatchObject({ action: 'deny', matchedSequence: 10, logged: true });
   });
 
   it('permits the traffic the second line was written to permit', () => {
     const decision = evaluateIpv4Acl(rules, {
-      protocol: 'tcp', sourceIp: '10.10.10.42', destinationIp: '10.20.50.5', destinationPort: 443
+      protocol: 'tcp',
+      sourceIp: '10.10.10.42',
+      destinationIp: '10.20.50.5',
+      destinationPort: 443
     });
     expect(decision).toMatchObject({ action: 'permit', matchedSequence: 20 });
   });
 
   it('drops through to the implicit deny when no line matches', () => {
     const decision = evaluateIpv4Acl(rules, {
-      protocol: 'udp', sourceIp: '10.10.10.42', destinationIp: '10.20.50.5', destinationPort: 53
+      protocol: 'udp',
+      sourceIp: '10.10.10.42',
+      destinationIp: '10.20.50.5',
+      destinationPort: 53
     });
     expect(decision).toMatchObject({ action: 'deny', matchedSequence: null, implicit: true });
   });
@@ -171,7 +197,9 @@ describe('invalid policies', () => {
     // A port has no meaning without a Layer 4 protocol: `permit ip any any eq 80` is not
     // a command IOS accepts.
     expect(() => buildAcl([intent({ id: 'x', protocol: 'ip', port: 80 })])).toThrow('PORT_WITHOUT_L4_PROTOCOL');
-    expect(() => buildAcl([intent({ id: 'x', source: { kind: 'host', address: '10.10.10.999' } })])).toThrow('INVALID_IPV4');
+    expect(() => buildAcl([intent({ id: 'x', source: { kind: 'host', address: '10.10.10.999' } })])).toThrow(
+      'INVALID_IPV4'
+    );
   });
 
   it('explains the implicit deny in both languages', () => {

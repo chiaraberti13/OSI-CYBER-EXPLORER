@@ -20,12 +20,15 @@ import { uiMessages } from './i18n';
  * view declares in the registry. Keeping the concrete values here keeps presentation
  * in the component while the registry stays declarative.
  */
-const MOTION_PRESETS: Record<MotionPreset, {
-  initial: { opacity: number; y: number };
-  animate: { opacity: number; y: number };
-  exit: { opacity: number; y: number };
-  transition: { duration: number };
-}> = {
+const MOTION_PRESETS: Record<
+  MotionPreset,
+  {
+    initial: { opacity: number; y: number };
+    animate: { opacity: number; y: number };
+    exit: { opacity: number; y: number };
+    transition: { duration: number };
+  }
+> = {
   subtle: {
     initial: { opacity: 0, y: 8 },
     animate: { opacity: 1, y: 0 },
@@ -49,19 +52,15 @@ function ViewFallback({ language }: { language: 'it' | 'en' }) {
 }
 
 export default function App() {
-  const {
-  isGuideOpen,
-  setIsGuideOpen,
-  activeView,
-  setActiveView,
-  language,
-} = useStore(useShallow((state) => ({
-  isGuideOpen: state.isGuideOpen,
-  setIsGuideOpen: state.setIsGuideOpen,
-  activeView: state.activeView,
-  setActiveView: state.setActiveView,
-  language: state.language,
-})));
+  const { isGuideOpen, setIsGuideOpen, activeView, setActiveView, language } = useStore(
+    useShallow((state) => ({
+      isGuideOpen: state.isGuideOpen,
+      setIsGuideOpen: state.setIsGuideOpen,
+      activeView: state.activeView,
+      setActiveView: state.setActiveView,
+      language: state.language
+    }))
+  );
 
   // Each deep-linked lab has a bilingual title, including after history traversal.
   useEffect(() => {
@@ -142,18 +141,12 @@ export default function App() {
 
       {/* Footer */}
       <footer className="max-w-7xl mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-2 border-t border-slate-200/60 mt-12 text-xs text-slate-400">
-         <span className="font-medium text-slate-500 font-mono tracking-tight">osi·cyber·explorer</span>
-         <span>
-           {copy.footer}
-         </span>
+        <span className="font-medium text-slate-500 font-mono tracking-tight">osi·cyber·explorer</span>
+        <span>{copy.footer}</span>
       </footer>
 
       {/* Global Modals */}
-      <GuideModal
-        isOpen={isGuideOpen}
-        onClose={() => setIsGuideOpen(false)}
-        language={language}
-      />
+      <GuideModal isOpen={isGuideOpen} onClose={() => setIsGuideOpen(false)} language={language} />
     </div>
   );
 }

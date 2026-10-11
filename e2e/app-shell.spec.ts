@@ -99,7 +99,10 @@ test.describe('application shell', () => {
     await expect(page.getByText('Soluzione commentata').first()).toBeVisible();
 
     // A guided lab links into the OSI stack lab.
-    await page.getByRole('link', { name: /Apri il laboratorio/ }).first().click();
+    await page
+      .getByRole('link', { name: /Apri il laboratorio/ })
+      .first()
+      .click();
     await expect(page).toHaveURL(/#\/(osi|ports)$/);
   });
 

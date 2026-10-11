@@ -42,17 +42,30 @@ export const INTERACTIVE_INPUT_LIMITS = Object.freeze({
 });
 
 function hasControlCharacters(value: string): boolean {
-  return [...value].some(character => {
+  return [...value].some((character) => {
     const codePoint = character.codePointAt(0)!;
     return codePoint <= 0x1f || (codePoint >= 0x7f && codePoint <= 0x9f);
   });
 }
 const KNOWN_CODES = new Set<InputValidationCode>([
-  'REQUIRED', 'TOO_LONG', 'CONTROL_CHARACTER', 'INVALID_INTEGER', 'OUT_OF_RANGE',
-  'INVALID_IPV4', 'INVALID_PREFIX', 'INVALID_RANGE', 'INVALID_VLAN',
-  'INVALID_VLAN_LIST', 'INVALID_VLAN_RANGE', 'EMPTY_VLAN_LIST',
-  'INVALID_RESOURCE_PATH', 'JSON_INVALID', 'JSON_TOO_MANY_BYTES', 'JSON_TOO_DEEP',
-  'JSON_TOO_MANY_NODES', 'INVALID_INPUT'
+  'REQUIRED',
+  'TOO_LONG',
+  'CONTROL_CHARACTER',
+  'INVALID_INTEGER',
+  'OUT_OF_RANGE',
+  'INVALID_IPV4',
+  'INVALID_PREFIX',
+  'INVALID_RANGE',
+  'INVALID_VLAN',
+  'INVALID_VLAN_LIST',
+  'INVALID_VLAN_RANGE',
+  'EMPTY_VLAN_LIST',
+  'INVALID_RESOURCE_PATH',
+  'JSON_INVALID',
+  'JSON_TOO_MANY_BYTES',
+  'JSON_TOO_DEEP',
+  'JSON_TOO_MANY_NODES',
+  'INVALID_INPUT'
 ]);
 
 const MESSAGES: Record<InputLanguage, Record<InputValidationCode, string>> = {
@@ -99,24 +112,15 @@ const MESSAGES: Record<InputLanguage, Record<InputValidationCode, string>> = {
 };
 
 export function inputErrorCode(error: unknown): InputValidationCode {
-  const candidate = error instanceof InputValidationError
-    ? error.code
-    : error instanceof Error
-      ? error.message
-      : '';
-  return KNOWN_CODES.has(candidate as InputValidationCode)
-    ? candidate as InputValidationCode
-    : 'INVALID_INPUT';
+  const candidate = error instanceof InputValidationError ? error.code : error instanceof Error ? error.message : '';
+  return KNOWN_CODES.has(candidate as InputValidationCode) ? (candidate as InputValidationCode) : 'INVALID_INPUT';
 }
 
 export function inputErrorMessage(error: unknown, language: InputLanguage): string {
   return MESSAGES[language][inputErrorCode(error)];
 }
 
-export function validateTextInput(
-  value: string,
-  options: { maxLength: number; allowEmpty?: boolean } 
-): string {
+export function validateTextInput(value: string, options: { maxLength: number; allowEmpty?: boolean }): string {
   if (hasControlCharacters(value)) throw new InputValidationError('CONTROL_CHARACTER');
   const normalized = value.trim();
   if (!options.allowEmpty && normalized.length === 0) throw new InputValidationError('REQUIRED');
@@ -182,7 +186,7 @@ export function parseRelativeResourcePath(value: string): string {
   }
 
   const rawSegments = path.split('/').slice(1);
-  if (rawSegments.some(segment => segment.length === 0) && path !== '/') {
+  if (rawSegments.some((segment) => segment.length === 0) && path !== '/') {
     throw new InputValidationError('INVALID_RESOURCE_PATH');
   }
 

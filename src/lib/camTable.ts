@@ -101,11 +101,9 @@ export function formatMac(mac: string): string {
 
 /** Ports that carry a VLAN: an access port in it, or a trunk allowing it. */
 function portsInVlan(ports: SwitchPort[], vlan: number): SwitchPort[] {
-  return ports.filter(port => (
-    port.mode === 'access'
-      ? port.vlan === vlan
-      : (port.trunkVlans ?? []).includes(vlan) || port.vlan === vlan
-  ));
+  return ports.filter((port) =>
+    port.mode === 'access' ? port.vlan === vlan : (port.trunkVlans ?? []).includes(vlan) || port.vlan === vlan
+  );
 }
 
 export function simulateCam(ports: SwitchPort[], frames: FrameInput[], options: CamOptions = {}): CamStep[] {
@@ -113,7 +111,7 @@ export function simulateCam(ports: SwitchPort[], frames: FrameInput[], options: 
   const agingSeconds = options.agingSeconds ?? 300;
   if (agingSeconds <= 0) throw new Error('INVALID_AGING');
 
-  const byId = new Map(ports.map(port => [port.id, port]));
+  const byId = new Map(ports.map((port) => [port.id, port]));
   const table = new Map<string, CamEntry>();
   for (const entry of options.initialEntries ?? []) {
     if (!byId.has(entry.port)) throw new Error('UNKNOWN_PORT');
@@ -157,12 +155,18 @@ export function simulateCam(ports: SwitchPort[], frames: FrameInput[], options: 
     if (existing?.kind !== 'static') {
       const moved = existing !== undefined && existing.port !== ingress.id;
       table.set(sourceKey, { mac: srcMac, port: ingress.id, vlan: frame.vlan, learnedAt: at, kind: 'dynamic' });
-      learned = { mac: formatMac(srcMac), port: ingress.id, vlan: frame.vlan, moved, movedFrom: moved ? existing?.port : undefined };
+      learned = {
+        mac: formatMac(srcMac),
+        port: ingress.id,
+        vlan: frame.vlan,
+        moved,
+        movedFrom: moved ? existing?.port : undefined
+      };
     }
 
     // 3. The forwarding decision is taken on the destination address.
     const vlanPorts = portsInVlan(ports, frame.vlan);
-    const others = vlanPorts.filter(port => port.id !== ingress.id).map(port => port.id);
+    const others = vlanPorts.filter((port) => port.id !== ingress.id).map((port) => port.id);
     const destinationEntry = destinationKind === 'unicast' ? table.get(`${frame.vlan}:${dstMac}`) : undefined;
     const destinationKnown = destinationEntry !== undefined;
 

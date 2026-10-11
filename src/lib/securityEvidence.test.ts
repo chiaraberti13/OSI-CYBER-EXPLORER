@@ -6,23 +6,31 @@ import type { CcnaDomainId } from '../content/securityCoverage';
 describe('operational evidence cases', () => {
   it('provides unique cases across every CCNA domain', () => {
     expect(SECURITY_EVIDENCE_CASES.length).toBeGreaterThanOrEqual(8);
-    expect(new Set(SECURITY_EVIDENCE_CASES.map(item => item.id)).size).toBe(SECURITY_EVIDENCE_CASES.length);
-    CCNA_DOMAINS.forEach(domain => expect(SECURITY_EVIDENCE_CASES.some(item => item.domains.includes(domain.id as CcnaDomainId))).toBe(true));
+    expect(new Set(SECURITY_EVIDENCE_CASES.map((item) => item.id)).size).toBe(SECURITY_EVIDENCE_CASES.length);
+    CCNA_DOMAINS.forEach((domain) =>
+      expect(SECURITY_EVIDENCE_CASES.some((item) => item.domains.includes(domain.id as CcnaDomainId))).toBe(true)
+    );
   });
 
   it('keeps every annotation bound to an existing output line', () => {
-    SECURITY_EVIDENCE_CASES.forEach(item => {
-      const lineIds = item.output.map(line => line.id);
+    SECURITY_EVIDENCE_CASES.forEach((item) => {
+      const lineIds = item.output.map((line) => line.id);
       expect(new Set(lineIds).size, `${item.id} has duplicate line ids`).toBe(lineIds.length);
-      item.annotations.forEach(annotation => {
+      item.annotations.forEach((annotation) => {
         expect(lineIds, `${item.id} annotation ${annotation.lineId}`).toContain(annotation.lineId);
       });
     });
   });
 
   it('provides bilingual interpretation, correlation, and limitations', () => {
-    SECURITY_EVIDENCE_CASES.forEach(item => {
-      [item.title, item.context, item.limitation, ...item.correlate, ...item.annotations.flatMap(annotation => [annotation.label, annotation.meaning])].forEach(field => {
+    SECURITY_EVIDENCE_CASES.forEach((item) => {
+      [
+        item.title,
+        item.context,
+        item.limitation,
+        ...item.correlate,
+        ...item.annotations.flatMap((annotation) => [annotation.label, annotation.meaning])
+      ].forEach((field) => {
         expect(field.it.trim().length).toBeGreaterThan(8);
         expect(field.en.trim().length).toBeGreaterThan(8);
       });
@@ -32,11 +40,11 @@ describe('operational evidence cases', () => {
   });
 
   it('includes realistic source and output metadata', () => {
-    SECURITY_EVIDENCE_CASES.forEach(item => {
+    SECURITY_EVIDENCE_CASES.forEach((item) => {
       expect(item.source.length).toBeGreaterThan(2);
       expect(item.command.length).toBeGreaterThan(5);
       expect(item.output.length).toBeGreaterThanOrEqual(5);
-      item.output.forEach(line => expect(line.text.trim().length).toBeGreaterThan(0));
+      item.output.forEach((line) => expect(line.text.trim().length).toBeGreaterThan(0));
     });
   });
 });

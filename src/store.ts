@@ -1,13 +1,6 @@
 import { create, type StateCreator } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import type {
-  AttackType,
-  Language,
-  LogEntry,
-  OsiLayerId,
-  PacketHeader,
-  SimulationState,
-} from './types';
+import type { AttackType, Language, LogEntry, OsiLayerId, PacketHeader, SimulationState } from './types';
 import type { SimProtocol } from './lib/osi';
 import {
   DEFAULT_PREFERENCES,
@@ -15,11 +8,45 @@ import {
   PREFERENCES_STORAGE_VERSION,
   isSimulationSpeed,
   migratePreferences,
-  sanitizePreferences,
+  sanitizePreferences
 } from './lib/preferences';
 import type { SimulationSpeed } from './lib/preferences';
 
-export type AppView = 'manual' | 'curriculum' | 'pathtrace' | 'fundamentals' | 'access' | 'routing' | 'services' | 'securitycore' | 'automation' | 'coverage' | 'attackpaths' | 'hardening' | 'detection' | 'recovery' | 'ipv6security' | 'segmentation' | 'identitytrust' | 'routingsecurity' | 'wirelesssecurity' | 'vpnsecurity' | 'availability' | 'inspection' | 'managementsecurity' | 'endpointsecurity' | 'applicationsecurity' | 'emailsecurity' | 'layer2security' | 'defense' | 'evidence' | 'osi' | 'attacklab' | 'ports' | 'security' | 'glossary';
+export type AppView =
+  | 'manual'
+  | 'curriculum'
+  | 'pathtrace'
+  | 'fundamentals'
+  | 'access'
+  | 'routing'
+  | 'services'
+  | 'securitycore'
+  | 'automation'
+  | 'coverage'
+  | 'attackpaths'
+  | 'hardening'
+  | 'detection'
+  | 'recovery'
+  | 'ipv6security'
+  | 'segmentation'
+  | 'identitytrust'
+  | 'routingsecurity'
+  | 'wirelesssecurity'
+  | 'vpnsecurity'
+  | 'availability'
+  | 'inspection'
+  | 'managementsecurity'
+  | 'endpointsecurity'
+  | 'applicationsecurity'
+  | 'emailsecurity'
+  | 'layer2security'
+  | 'defense'
+  | 'evidence'
+  | 'osi'
+  | 'attacklab'
+  | 'ports'
+  | 'security'
+  | 'glossary';
 
 export interface PreferencesSlice {
   language: Language;
@@ -82,11 +109,12 @@ const createPreferencesSlice: Slice<PreferencesSlice> = (set) => ({
   audioEnabled: DEFAULT_PREFERENCES.audioEnabled,
   setAudioEnabled: (audioEnabled) => set({ audioEnabled }),
   simSpeed: DEFAULT_PREFERENCES.simSpeed,
-  setSimSpeed: (simSpeed) => set({
-    simSpeed: isSimulationSpeed(simSpeed) ? simSpeed : DEFAULT_PREFERENCES.simSpeed,
-  }),
+  setSimSpeed: (simSpeed) =>
+    set({
+      simSpeed: isSimulationSpeed(simSpeed) ? simSpeed : DEFAULT_PREFERENCES.simSpeed
+    }),
   hasSeenGuide: DEFAULT_PREFERENCES.hasSeenGuide,
-  setHasSeenGuide: (hasSeenGuide) => set({ hasSeenGuide }),
+  setHasSeenGuide: (hasSeenGuide) => set({ hasSeenGuide })
 });
 
 const createNavigationSlice: Slice<NavigationSlice> = (set) => ({
@@ -97,15 +125,16 @@ const createNavigationSlice: Slice<NavigationSlice> = (set) => ({
   detailTab: 'overview',
   setDetailTab: (detailTab) => set({ detailTab }),
   activeView: 'osi',
-  setActiveView: (activeView) => set({ activeView }),
+  setActiveView: (activeView) => set({ activeView })
 });
 
 const createSimulationSlice: Slice<SimulationSlice> = (set) => ({
   simulationState: 'idle',
-  setSimulationState: (simulationState) => set((state) => ({
-    simulationState,
-    hasSimulated: simulationState !== 'idle' ? true : state.hasSimulated,
-  })),
+  setSimulationState: (simulationState) =>
+    set((state) => ({
+      simulationState,
+      hasSimulated: simulationState !== 'idle' ? true : state.hasSimulated
+    })),
   activeAttack: 'none',
   setActiveAttack: (activeAttack) => set({ activeAttack }),
   activeScenarioId: null,
@@ -113,17 +142,16 @@ const createSimulationSlice: Slice<SimulationSlice> = (set) => ({
   defenseEnabled: false,
   setDefenseEnabled: (defenseEnabled) => set({ defenseEnabled }),
   logs: [],
-  addLog: (message, type = 'info') => set((state) => ({
-    logs: [
-      ...state.logs,
-      { timestamp: new Date().toLocaleTimeString(), message, type },
-    ].slice(-50),
-  })),
+  addLog: (message, type = 'info') =>
+    set((state) => ({
+      logs: [...state.logs, { timestamp: new Date().toLocaleTimeString(), message, type }].slice(-50)
+    })),
   clearLogs: () => set({ logs: [] }),
   packetHeaders: [],
-  addPacketHeader: (header) => set((state) => ({
-    packetHeaders: [...state.packetHeaders, header],
-  })),
+  addPacketHeader: (header) =>
+    set((state) => ({
+      packetHeaders: [...state.packetHeaders, header]
+    })),
   clearPacketHeaders: () => set({ packetHeaders: [] }),
   currentStep: 7,
   setCurrentStep: (currentStep) => set({ currentStep }),
@@ -132,12 +160,12 @@ const createSimulationSlice: Slice<SimulationSlice> = (set) => ({
   hasSimulated: false,
   setHasSimulated: (hasSimulated) => set({ hasSimulated }),
   isPaused: false,
-  setIsPaused: (isPaused) => set({ isPaused }),
+  setIsPaused: (isPaused) => set({ isPaused })
 });
 
 const createUiSlice: Slice<UiSlice> = (set) => ({
   isGuideOpen: false,
-  setIsGuideOpen: (isGuideOpen) => set({ isGuideOpen }),
+  setIsGuideOpen: (isGuideOpen) => set({ isGuideOpen })
 });
 
 export const useStore = create<AppState>()(
@@ -146,7 +174,7 @@ export const useStore = create<AppState>()(
       ...createPreferencesSlice(...args),
       ...createNavigationSlice(...args),
       ...createSimulationSlice(...args),
-      ...createUiSlice(...args),
+      ...createUiSlice(...args)
     }),
     {
       name: PREFERENCES_STORAGE_KEY,
@@ -155,7 +183,7 @@ export const useStore = create<AppState>()(
       migrate: migratePreferences,
       merge: (persistedState, currentState) => ({
         ...currentState,
-        ...sanitizePreferences(persistedState),
+        ...sanitizePreferences(persistedState)
       }),
       // These non-secret preferences intentionally remain inspectable in localStorage.
       // Never persist transient session state (logs, simulation status, active attack),
@@ -164,8 +192,8 @@ export const useStore = create<AppState>()(
         language: state.language,
         audioEnabled: state.audioEnabled,
         simSpeed: state.simSpeed,
-        hasSeenGuide: state.hasSeenGuide,
-      }),
-    },
-  ),
+        hasSeenGuide: state.hasSeenGuide
+      })
+    }
+  )
 );

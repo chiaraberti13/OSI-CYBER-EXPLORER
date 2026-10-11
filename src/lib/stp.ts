@@ -101,12 +101,7 @@ export interface StpModel {
   cost: StpCostModel;
 }
 
-export type StpRootPortCriterion =
-  | 'root-path-cost'
-  | 'sender-bridge-id'
-  | 'sender-port-id'
-  | 'local-port-id'
-  | 'equal';
+export type StpRootPortCriterion = 'root-path-cost' | 'sender-bridge-id' | 'sender-port-id' | 'local-port-id' | 'equal';
 
 /** The four fields compared when a non-root bridge elects its root port. */
 export interface StpRootPortCandidate {
@@ -249,17 +244,25 @@ export function convergeStp({ switches, links, vlan, method = 'short' }: StpOpti
   if (switches.length === 0) throw new Error('NO_SWITCHES');
   if (!Number.isInteger(vlan) || vlan < 1 || vlan > 4094) throw new Error('INVALID_VLAN');
 
-  const byId = new Map(switches.map(item => [item.id, item]));
+  const byId = new Map(switches.map((item) => [item.id, item]));
   const bridgeIds: Record<string, StpBridgeId> = {};
   for (const item of switches) bridgeIds[item.id] = bridgeIdFor(item, vlan);
 
-  const adjacency = new Map<string, Adjacency[]>(switches.map(item => [item.id, []]));
+  const adjacency = new Map<string, Adjacency[]>(switches.map((item) => [item.id, []]));
   for (const link of links) {
     if (!byId.has(link.from.switchId)) throw new Error('UNKNOWN_SWITCH');
     if (!byId.has(link.to.switchId)) throw new Error('UNKNOWN_SWITCH');
     const cost = pathCostFor(link.speed, method);
-    adjacency.get(link.from.switchId)!.push({ linkId: link.id, port: link.from.port, neighborId: link.to.switchId, neighborPort: link.to.port, cost });
-    adjacency.get(link.to.switchId)!.push({ linkId: link.id, port: link.to.port, neighborId: link.from.switchId, neighborPort: link.from.port, cost });
+    adjacency
+      .get(link.from.switchId)!
+      .push({ linkId: link.id, port: link.from.port, neighborId: link.to.switchId, neighborPort: link.to.port, cost });
+    adjacency.get(link.to.switchId)!.push({
+      linkId: link.id,
+      port: link.to.port,
+      neighborId: link.from.switchId,
+      neighborPort: link.from.port,
+      cost
+    });
   }
 
   // 1. The root is simply the lowest Bridge ID. Nothing else is considered.
@@ -328,13 +331,13 @@ export function convergeStp({ switches, links, vlan, method = 'short' }: StpOpti
       { switchId: link.to.switchId, port: link.to.port, neighborId: link.from.switchId, neighborPort: link.from.port }
     ];
 
-    const rootEnd = ends.find(end => rootPortBySwitch.get(end.switchId)?.linkId === link.id);
-    let designatedEnd: typeof ends[number];
+    const rootEnd = ends.find((end) => rootPortBySwitch.get(end.switchId)?.linkId === link.id);
+    let designatedEnd: (typeof ends)[number];
     // Which criterion settled this segment: it is what the explanation has to name,
     // because "better cost" is simply false when the two costs are equal.
     let decidedBy: 'root-port' | 'cost' | 'bridge-id' | 'port-id';
     if (rootEnd) {
-      designatedEnd = ends.find(end => end !== rootEnd)!;
+      designatedEnd = ends.find((end) => end !== rootEnd)!;
       decidedBy = 'root-port';
     } else {
       const [left, right] = ends;

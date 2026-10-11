@@ -11,8 +11,8 @@ describe('IANA Service Name and Transport Protocol Port Number Registry', () => 
   it('keeps every curated port/protocol pair unique and valid', () => {
     expect(validatePortRegistry(PORT_REGISTRY_METADATA)).toEqual([]);
 
-    const pairs = PORT_REGISTRY_METADATA.flatMap(item =>
-      item.ports.flatMap(port => item.transports.map(transport => `${port}/${transport}`))
+    const pairs = PORT_REGISTRY_METADATA.flatMap((item) =>
+      item.ports.flatMap((port) => item.transports.map((transport) => `${port}/${transport}`))
     );
     expect(new Set(pairs).size).toBe(pairs.length);
     expect(PORT_REGISTRY_METADATA).toHaveLength(45);
@@ -38,17 +38,17 @@ describe('IANA Service Name and Transport Protocol Port Number Registry', () => 
   it('records the registry revision and verification date explicitly', () => {
     expect(IANA_PORT_REGISTRY_UPDATED_ON).toBe('2026-09-28');
     expect(PORT_REGISTRY_VERIFIED_ON).toBe('2026-09-30');
-    expect(PORT_REGISTRY_METADATA.every(item => item.verifiedOn === PORT_REGISTRY_VERIFIED_ON)).toBe(true);
+    expect(PORT_REGISTRY_METADATA.every((item) => item.verifiedOn === PORT_REGISTRY_VERIFIED_ON)).toBe(true);
   });
 
   it('links the cleartext mail and directory services to their TLS equivalents', () => {
-    const byService = new Map(PORT_REGISTRY_METADATA.map(item => [item.service, item]));
+    const byService = new Map(PORT_REGISTRY_METADATA.map((item) => [item.service, item]));
     expect(byService.get('IMAP')?.encryptedEquivalent).toMatchObject({ ports: [993], service: 'IMAP over TLS' });
     expect(byService.get('LDAP')?.encryptedEquivalent).toMatchObject({ ports: [636], service: 'LDAP over TLS' });
   });
 
   it('marks conventional conflicts as de-facto and explains the IANA assignment', () => {
-    const byService = new Map(PORT_REGISTRY_METADATA.map(item => [item.service, item]));
+    const byService = new Map(PORT_REGISTRY_METADATA.map((item) => [item.service, item]));
     for (const service of ['Oracle DB', 'RADIUS Auth (Alt)', 'RADIUS Acct (Alt)', 'Vite / Dev Server']) {
       expect(byService.get(service)).toMatchObject({ registrationStatus: 'de-facto' });
       expect(byService.get(service)?.ambiguity?.en).toBeTruthy();
@@ -57,7 +57,7 @@ describe('IANA Service Name and Transport Protocol Port Number Registry', () => 
   });
 
   it('uses the current IANA http-alt assignment for TCP 8080', () => {
-    expect(PORT_REGISTRY_METADATA.find(item => item.service === 'HTTP Alternate')).toMatchObject({
+    expect(PORT_REGISTRY_METADATA.find((item) => item.service === 'HTTP Alternate')).toMatchObject({
       ports: [8080],
       transports: ['TCP'],
       registrationStatus: 'assigned',

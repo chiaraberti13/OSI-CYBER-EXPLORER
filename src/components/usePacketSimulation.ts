@@ -6,7 +6,7 @@ import {
   type SimAction,
   type SimContext,
   type SimEffect,
-  type SimMachineState,
+  type SimMachineState
 } from '../lib/simulation';
 
 /**
@@ -64,13 +64,13 @@ export function usePacketSimulation(): PacketSimulationController {
     const machine: SimMachineState = {
       phase: store.simulationState,
       currentStep: store.currentStep,
-      paused: store.isPaused,
+      paused: store.isPaused
     };
     const ctx: SimContext = {
       protocol: store.selectedProtocol,
       attack: store.activeAttack,
       defenseEnabled: store.defenseEnabled,
-      language: store.language,
+      language: store.language
     };
     const { state, effects } = simulationReducer(machine, action, ctx);
     applyEffects(effects, store.audioEnabled);
@@ -83,7 +83,7 @@ export function usePacketSimulation(): PacketSimulationController {
   const reset = useCallback(() => dispatch({ type: 'RESET' }), [dispatch]);
   const togglePause = useCallback(
     () => dispatch({ type: useStore.getState().isPaused ? 'RESUME' : 'PAUSE' }),
-    [dispatch],
+    [dispatch]
   );
 
   // One interval for the whole run: it fires a TICK every `stepInterval` ms and

@@ -13,7 +13,9 @@ export default function OsiLabView() {
       <section className="lg:col-span-3 xl:col-span-3 flex flex-col gap-6">
         <div className="space-y-2.5">
           <h3 className="eyebrow px-1">{language === 'it' ? 'Console' : 'Console'}</h3>
-          <div className="h-[320px]"><Terminal /></div>
+          <div className="h-[320px]">
+            <Terminal />
+          </div>
         </div>
         <div className="space-y-2.5">
           <h3 className="eyebrow px-1">{language === 'it' ? 'Pacchetto' : 'Packet'}</h3>

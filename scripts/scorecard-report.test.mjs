@@ -19,12 +19,12 @@ test('shows real deltas without inventing scores for new, removed or inconclusiv
   const before = reportWith([
     { name: 'One', score: 2, reason: 'old' },
     { name: 'Two', score: -1, reason: 'inconclusive' },
-    { name: 'Gone', score: 5, reason: 'old' },
+    { name: 'Gone', score: 5, reason: 'old' }
   ]);
   const after = reportWith([
     { name: 'One', score: 0, reason: 'regression' },
     { name: 'Two', score: 10, reason: 'now measured' },
-    { name: 'New', score: 3, reason: 'new check' },
+    { name: 'New', score: 3, reason: 'new check' }
   ]);
   const markdown = formatScorecardTrend(after, before);
   assert.match(markdown, /One \| 2\/10 \| 0\/10 \| -2/);
@@ -43,19 +43,37 @@ test('accepts zero and CLI reports without aggregate scores; never calculates a 
 test('rejects reports for another repository or commit and malformed or duplicate check scores', () => {
   const check = { name: 'Valid', score: 10, reason: 'valid' };
   assert.throws(() => validateScorecardReport(baseline, '0'.repeat(40)), /workflow commit/);
-  assert.throws(() => validateScorecardReport({ ...baseline, repo: { ...baseline.repo, name: 'other/repo' } }), /repository/);
-  for (const checks of [[], [check, check], [{ ...check, score: -2 }], [{ ...check, score: 11 }], [{ ...check, score: 0.5 }], [{ ...check, name: '<script>' }], [{ ...check, reason: null }]]) {
+  assert.throws(
+    () => validateScorecardReport({ ...baseline, repo: { ...baseline.repo, name: 'other/repo' } }),
+    /repository/
+  );
+  for (const checks of [
+    [],
+    [check, check],
+    [{ ...check, score: -2 }],
+    [{ ...check, score: 11 }],
+    [{ ...check, score: 0.5 }],
+    [{ ...check, name: '<script>' }],
+    [{ ...check, reason: null }]
+  ]) {
     assert.throws(() => validateScorecardReport(reportWith(checks)));
   }
-  for (const value of [null, [], { ...baseline, date: 'invalid' }, { ...baseline, score: NaN }, { ...baseline, scorecard: { version: '<script>' } }]) {
+  for (const value of [
+    null,
+    [],
+    { ...baseline, date: 'invalid' },
+    { ...baseline, score: NaN },
+    { ...baseline, scorecard: { version: '<script>' } }
+  ]) {
     assert.throws(() => validateScorecardReport(value));
   }
 });
 
 test('escapes scanner reasons without allowing HTML or injected Markdown table rows', () => {
-  const markdown = formatScorecardTrend(reportWith([
-    { name: 'Safe', score: 0, reason: '<script>bad</script> | injected\nnext row `code`' },
-  ]), baseline);
+  const markdown = formatScorecardTrend(
+    reportWith([{ name: 'Safe', score: 0, reason: '<script>bad</script> | injected\nnext row `code`' }]),
+    baseline
+  );
   assert.ok(markdown.includes('&lt;script&gt;'));
   assert.ok(markdown.includes('\\| injected next row \\`code\\`'));
   assert.ok(!markdown.includes('<script>'));

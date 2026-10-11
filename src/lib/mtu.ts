@@ -73,12 +73,16 @@ const IPV6_FRAGMENT_HEADER = 8;
 
 export const ENCAPSULATIONS: EncapsulationOverhead[] = [
   {
-    id: 'none', bytes: 0, affectsIpMtu: true,
+    id: 'none',
+    bytes: 0,
+    affectsIpMtu: true,
     label: b('Nessun incapsulamento', 'No encapsulation'),
     detail: b('Ethernet standard: 1500 byte di MTU IP.', 'Standard Ethernet: 1500 bytes of IP MTU.')
   },
   {
-    id: 'dot1q', bytes: 4, affectsIpMtu: false,
+    id: 'dot1q',
+    bytes: 4,
+    affectsIpMtu: false,
     label: b('Trunk 802.1Q (+4 byte)', '802.1Q trunk (+4 bytes)'),
     detail: b(
       'Il tag VLAN allunga la TRAMA, non il pacchetto IP: la trama arriva a 1522 byte e lo switch la accetta come baby giant, ma l’MTU IP resta 1500. Sottrarre 4 dall’MTU IP per un trunk è un errore.',
@@ -86,17 +90,23 @@ export const ENCAPSULATIONS: EncapsulationOverhead[] = [
     )
   },
   {
-    id: 'pppoe', bytes: 8, affectsIpMtu: true,
+    id: 'pppoe',
+    bytes: 8,
+    affectsIpMtu: true,
     label: b('PPPoE (+8 byte)', 'PPPoE (+8 bytes)'),
     detail: b('Classico dell’accesso xDSL/FTTC: MTU IP a 1492.', 'The classic xDSL/FTTC case: IP MTU drops to 1492.')
   },
   {
-    id: 'gre', bytes: 24, affectsIpMtu: true,
+    id: 'gre',
+    bytes: 24,
+    affectsIpMtu: true,
     label: b('GRE (+24 byte)', 'GRE (+24 bytes)'),
     detail: b('20 byte di nuovo header IP più 4 di header GRE.', '20 bytes of new IP header plus 4 of GRE header.')
   },
   {
-    id: 'ipsec', bytes: 56, affectsIpMtu: true,
+    id: 'ipsec',
+    bytes: 56,
+    affectsIpMtu: true,
     label: b('IPsec ESP tunnel (+56 byte tipici)', 'IPsec ESP tunnel (+56 bytes typical)'),
     detail: b(
       'Valore tipico con AES-CBC e SHA: nuovo header IP, header ESP, IV, padding e ICV. Varia con gli algoritmi, quindi in produzione si misura invece di assumerlo.',
@@ -104,12 +114,19 @@ export const ENCAPSULATIONS: EncapsulationOverhead[] = [
     )
   },
   {
-    id: 'gre-ipsec', bytes: 80, affectsIpMtu: true,
+    id: 'gre-ipsec',
+    bytes: 80,
+    affectsIpMtu: true,
     label: b('GRE over IPsec (+80 byte)', 'GRE over IPsec (+80 bytes)'),
-    detail: b('I due incapsulamenti si sommano: 24 di GRE più 56 di ESP.', 'The two encapsulations add up: 24 for GRE plus 56 for ESP.')
+    detail: b(
+      'I due incapsulamenti si sommano: 24 di GRE più 56 di ESP.',
+      'The two encapsulations add up: 24 for GRE plus 56 for ESP.'
+    )
   },
   {
-    id: 'vxlan', bytes: 50, affectsIpMtu: true,
+    id: 'vxlan',
+    bytes: 50,
+    affectsIpMtu: true,
     label: b('VXLAN (+50 byte)', 'VXLAN (+50 bytes)'),
     detail: b(
       'Ethernet esterno, IP, UDP e header VXLAN: è il motivo per cui un underlay va portato a 1600 byte di MTU invece di 1500.',
@@ -131,7 +148,7 @@ export interface MtuOptions {
 }
 
 export function encapsulationById(id: string): EncapsulationOverhead {
-  const found = ENCAPSULATIONS.find(item => item.id === id);
+  const found = ENCAPSULATIONS.find((item) => item.id === id);
   if (!found) throw new Error('UNKNOWN_ENCAPSULATION');
   return found;
 }
@@ -155,12 +172,22 @@ export function analyseMtu({
   const tcpMss = Math.max(0, effectiveMtu - headerBytes - TCP_HEADER);
 
   const base: Omit<MtuResult, 'outcome' | 'fragments' | 'icmp' | 'explanation' | 'overheadFromFragmentation'> = {
-    version, linkMtu, overheadBytes, effectiveMtu, packetBytes, headerBytes, tcpMss
+    version,
+    linkMtu,
+    overheadBytes,
+    effectiveMtu,
+    packetBytes,
+    headerBytes,
+    tcpMss
   };
 
   if (effectiveMtu <= headerBytes + FRAGMENT_ALIGNMENT) {
     return {
-      ...base, outcome: 'impossible', fragments: [], icmp: null, overheadFromFragmentation: 0,
+      ...base,
+      outcome: 'impossible',
+      fragments: [],
+      icmp: null,
+      overheadFromFragmentation: 0,
       explanation: b(
         `Con ${overheadBytes} byte di incapsulamento su un MTU di ${linkMtu} non resta spazio utile per un pacchetto IP: la configurazione non è trasportabile.`,
         `With ${overheadBytes} bytes of encapsulation over an MTU of ${linkMtu} there is no usable room left for an IP packet: this configuration cannot carry traffic.`
@@ -170,7 +197,11 @@ export function analyseMtu({
 
   if (packetBytes <= effectiveMtu) {
     return {
-      ...base, outcome: 'fits', fragments: [], icmp: null, overheadFromFragmentation: 0,
+      ...base,
+      outcome: 'fits',
+      fragments: [],
+      icmp: null,
+      overheadFromFragmentation: 0,
       explanation: b(
         `Il pacchetto da ${packetBytes} byte entra nei ${effectiveMtu} byte disponibili dopo l’incapsulamento: passa intero, senza frammentazione. La MSS TCP più grande che non frammenta su questo percorso è ${tcpMss} byte.`,
         `The ${packetBytes}-byte packet fits within the ${effectiveMtu} bytes left after encapsulation: it passes whole, with no fragmentation. The largest TCP MSS that avoids fragmenting on this path is ${tcpMss} bytes.`
@@ -180,7 +211,10 @@ export function analyseMtu({
 
   if (version === 6) {
     return {
-      ...base, outcome: 'dropped-ipv6', fragments: [], overheadFromFragmentation: 0,
+      ...base,
+      outcome: 'dropped-ipv6',
+      fragments: [],
+      overheadFromFragmentation: 0,
       icmp: { name: 'ICMPv6 Packet Too Big', type: 2, code: 0, reportedMtu: effectiveMtu },
       explanation: b(
         `In IPv6 i router non frammentano mai: il pacchetto viene scartato e il router risponde con ICMPv6 Packet Too Big indicando ${effectiveMtu} byte. Solo la sorgente può frammentare, aggiungendo un fragment header di ${IPV6_FRAGMENT_HEADER} byte. Se ICMPv6 è filtrato, la sorgente non riceve l’avviso e la connessione si blocca senza errori visibili: è il PMTUD black hole.`,
@@ -191,8 +225,16 @@ export function analyseMtu({
 
   if (dontFragment) {
     return {
-      ...base, outcome: 'dropped-df', fragments: [], overheadFromFragmentation: 0,
-      icmp: { name: 'ICMP Destination Unreachable — Fragmentation Needed', type: 3, code: 4, reportedMtu: effectiveMtu },
+      ...base,
+      outcome: 'dropped-df',
+      fragments: [],
+      overheadFromFragmentation: 0,
+      icmp: {
+        name: 'ICMP Destination Unreachable — Fragmentation Needed',
+        type: 3,
+        code: 4,
+        reportedMtu: effectiveMtu
+      },
       explanation: b(
         `Il bit DF è impostato, quindi il router non può frammentare: scarta il pacchetto e risponde con ICMP tipo 3 codice 4, indicando ${effectiveMtu} byte come MTU del prossimo salto. È così che funziona la Path MTU Discovery — e se quel messaggio ICMP viene filtrato, la sorgente continua a inviare pacchetti troppo grandi senza mai saperlo.`,
         `The DF bit is set, so the router cannot fragment: it drops the packet and replies with ICMP type 3 code 4, reporting ${effectiveMtu} bytes as the next-hop MTU. This is how Path MTU Discovery works — and if that ICMP message is filtered, the source keeps sending packets that are too large and never finds out.`

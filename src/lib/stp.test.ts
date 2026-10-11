@@ -14,21 +14,28 @@ import { STP_LINKS, STP_SWITCHES } from '../content/stpTopology';
 
 const converge = (vlan: number, overrides: Partial<Record<string, number>> = {}, method: 'short' | 'long' = 'short') =>
   convergeStp({
-    switches: STP_SWITCHES.map(item => (
+    switches: STP_SWITCHES.map((item) =>
       overrides[item.id] === undefined
         ? item
-        : { ...item, priority: overrides[item.id]!, vlanPriority: { ...item.vlanPriority, [vlan]: overrides[item.id]! } }
-    )),
+        : {
+            ...item,
+            priority: overrides[item.id]!,
+            vlanPriority: { ...item.vlanPriority, [vlan]: overrides[item.id]! }
+          }
+    ),
     links: STP_LINKS,
     vlan,
     method
   });
 
 const portOf = (result: StpResult, switchId: string, port: string) =>
-  result.ports.find(item => item.switchId === switchId && item.port === port);
+  result.ports.find((item) => item.switchId === switchId && item.port === port);
 
 const discardingPorts = (result: StpResult) =>
-  result.ports.filter(item => item.state === 'discarding').map(item => `${item.switchId} ${item.port}`).sort();
+  result.ports
+    .filter((item) => item.state === 'discarding')
+    .map((item) => `${item.switchId} ${item.port}`)
+    .sort();
 
 describe('Bridge ID', () => {
   it('adds the VLAN to the configured priority, as the extended system ID does', () => {
@@ -65,7 +72,7 @@ describe('root bridge election', () => {
     const result = converge(10, { asw1: 4096 });
     expect(result.rootId).toBe('asw1');
     expect(result.rootPathCosts.dsw1).toBe(4);
-    const rootPorts = result.ports.filter(item => item.switchId === 'asw1' && item.role === 'root');
+    const rootPorts = result.ports.filter((item) => item.switchId === 'asw1' && item.role === 'root');
     expect(rootPorts).toHaveLength(0);
   });
 });
@@ -75,10 +82,16 @@ describe('root path cost', () => {
     // Cisco documents the short range as 1..65,535 and the long range as
     // 1..200,000,000. The roadmap names their IEEE origins explicitly.
     expect(STP_COST_MODELS.short).toEqual({
-      method: 'short', standard: 'IEEE 802.1D-1998', bits: 16, maximum: 65_535
+      method: 'short',
+      standard: 'IEEE 802.1D-1998',
+      bits: 16,
+      maximum: 65_535
     });
     expect(STP_COST_MODELS.long).toEqual({
-      method: 'long', standard: 'IEEE 802.1t / IEEE 802.1D-2004', bits: 32, maximum: 200_000_000
+      method: 'long',
+      standard: 'IEEE 802.1t / IEEE 802.1D-2004',
+      bits: 32,
+      maximum: 200_000_000
     });
   });
 
@@ -133,7 +146,12 @@ describe('complete root-port priority vector', () => {
 
   it('first prefers the lowest root path cost', () => {
     const decision = compareRootPortCandidates(
-      candidate({ rootPathCost: 10, senderBridgeId: senderBridge(60_000, 'ffffffffffff'), senderPortId: 600_000, localPortId: 600_000 }),
+      candidate({
+        rootPathCost: 10,
+        senderBridgeId: senderBridge(60_000, 'ffffffffffff'),
+        senderPortId: 600_000,
+        localPortId: 600_000
+      }),
       candidate({ rootPathCost: 20 })
     );
     expect(decision).toEqual({ comparison: -1, decidedBy: 'root-path-cost' });
@@ -156,10 +174,7 @@ describe('complete root-port priority vector', () => {
   });
 
   it('uses the lowest local Port ID only after every received field ties', () => {
-    const decision = compareRootPortCandidates(
-      candidate({ localPortId: 32_769 }),
-      candidate({ localPortId: 32_770 })
-    );
+    const decision = compareRootPortCandidates(candidate({ localPortId: 32_769 }), candidate({ localPortId: 32_770 }));
     expect(decision).toEqual({ comparison: -1, decidedBy: 'local-port-id' });
   });
 
@@ -177,22 +192,22 @@ describe('port roles', () => {
   it('gives every non-root switch exactly one root port, and the root none', () => {
     const result = converge(10);
     for (const item of STP_SWITCHES) {
-      const rootPorts = result.ports.filter(port => port.switchId === item.id && port.role === 'root');
+      const rootPorts = result.ports.filter((port) => port.switchId === item.id && port.role === 'root');
       expect(rootPorts.length, `${item.id} root ports`).toBe(item.id === result.rootId ? 0 : 1);
     }
   });
 
   it('leaves every port of the root bridge designated and forwarding', () => {
     const result = converge(10);
-    const rootPorts = result.ports.filter(port => port.switchId === 'dsw1');
+    const rootPorts = result.ports.filter((port) => port.switchId === 'dsw1');
     expect(rootPorts.length).toBe(3);
-    expect(rootPorts.every(port => port.role === 'designated' && port.state === 'forwarding')).toBe(true);
+    expect(rootPorts.every((port) => port.role === 'designated' && port.state === 'forwarding')).toBe(true);
   });
 
   it('gives every segment exactly one designated port', () => {
     const result = converge(10);
     for (const link of STP_LINKS) {
-      const designated = result.ports.filter(port => port.linkId === link.id && port.role === 'designated');
+      const designated = result.ports.filter((port) => port.linkId === link.id && port.role === 'designated');
       expect(designated.length, `${link.id} designated ports`).toBe(1);
     }
   });
@@ -235,7 +250,7 @@ describe('the result is a spanning tree', () => {
   it('leaves exactly one forwarding path per switch pair', () => {
     for (const vlan of [10, 20, 30]) {
       const result = converge(vlan);
-      const forwardingLinks = STP_LINKS.filter(link => !result.blockedLinkIds.includes(link.id));
+      const forwardingLinks = STP_LINKS.filter((link) => !result.blockedLinkIds.includes(link.id));
       // A loop-free tree over n nodes has exactly n - 1 edges.
       expect(forwardingLinks.length, `VLAN ${vlan}`).toBe(STP_SWITCHES.length - 1);
     }
@@ -264,26 +279,39 @@ describe('invalid topologies', () => {
   it('rejects nonsense input instead of inventing a tree', () => {
     expect(() => convergeStp({ switches: [], links: [], vlan: 10 })).toThrow('NO_SWITCHES');
     expect(() => convergeStp({ switches: STP_SWITCHES, links: STP_LINKS, vlan: 5000 })).toThrow('INVALID_VLAN');
-    expect(() => convergeStp({
-      switches: STP_SWITCHES,
-      links: [...STP_LINKS, { id: 'ghost', from: { switchId: 'dsw1', port: 'Gi1/0/9' }, to: { switchId: 'nope', port: 'Gi1/0/9' }, speed: '1 Gb/s' }],
-      vlan: 10
-    })).toThrow('UNKNOWN_SWITCH');
+    expect(() =>
+      convergeStp({
+        switches: STP_SWITCHES,
+        links: [
+          ...STP_LINKS,
+          {
+            id: 'ghost',
+            from: { switchId: 'dsw1', port: 'Gi1/0/9' },
+            to: { switchId: 'nope', port: 'Gi1/0/9' },
+            speed: '1 Gb/s'
+          }
+        ],
+        vlan: 10
+      })
+    ).toThrow('UNKNOWN_SWITCH');
   });
 
   it('refuses a switch with no path to the root', () => {
-    expect(() => convergeStp({
-      switches: [...STP_SWITCHES, { id: 'orphan', name: 'ORPHAN', mac: '0009.0000.9999', priority: 32768 }],
-      links: STP_LINKS,
-      vlan: 10
-    })).toThrow('UNREACHABLE_SWITCH');
+    expect(() =>
+      convergeStp({
+        switches: [...STP_SWITCHES, { id: 'orphan', name: 'ORPHAN', mac: '0009.0000.9999', priority: 32768 }],
+        links: STP_LINKS,
+        vlan: 10
+      })
+    ).toThrow('UNREACHABLE_SWITCH');
   });
 });
 
 describe('the explanation names the criterion that actually decided', () => {
   const reasonOf = (vlan: number, switchId: string, port: string) =>
-    convergeStp({ switches: STP_SWITCHES, links: STP_LINKS, vlan }).ports
-      .find(item => item.switchId === switchId && item.port === port)!.reason;
+    convergeStp({ switches: STP_SWITCHES, links: STP_LINKS, vlan }).ports.find(
+      (item) => item.switchId === switchId && item.port === port
+    )!.reason;
 
   it('says "lower Bridge ID" when the two ends cost the same', () => {
     // ASW1 and ASW2 both sit at cost 4 on the cross link, so cost cannot be the reason.

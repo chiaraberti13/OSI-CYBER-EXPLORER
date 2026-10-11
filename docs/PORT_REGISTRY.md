@@ -26,13 +26,13 @@ Each card records:
 
 ## Ambiguità esplicite / Explicit ambiguities
 
-| Porta / Port | Uso mostrato / Displayed use | Stato e motivo / Status and rationale |
-|---|---|---|
-| TCP 465 | Message Submission over TLS | Assegnata, ma con più nomi IANA (`submissions`, `urd`); la UI dichiara quale significato usa. / Assigned with multiple IANA names; the UI states which meaning it uses. |
-| TCP 1521 | Oracle Database | De facto: IANA assegna `ncube-lm` e registra l’uso non autorizzato della porta 1521. / De facto: IANA assigns `ncube-lm` and records unauthorized use of port 1521. |
-| UDP 1645/1646 | RADIUS legacy | De facto: IANA assegna rispettivamente `sightline` e `sa-msg-port`; per nuovi deployment si usano 1812/1813. / De facto: IANA assigns `sightline` and `sa-msg-port`; new deployments use 1812/1813. |
-| TCP 3000 | Vite / development server | De facto: IANA registra `hbci` e l’uso diffuso `remoteware-cl`. / De facto: IANA registers `hbci` and widespread `remoteware-cl` use. |
-| TCP 8080 | HTTP Alternate | Assegnata a `http-alt`: non viene più descritta come semplice convenzione non registrata. / Assigned to `http-alt`: it is no longer described as merely an unregistered convention. |
+| Porta / Port  | Uso mostrato / Displayed use | Stato e motivo / Status and rationale                                                                                                                                                               |
+| ------------- | ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| TCP 465       | Message Submission over TLS  | Assegnata, ma con più nomi IANA (`submissions`, `urd`); la UI dichiara quale significato usa. / Assigned with multiple IANA names; the UI states which meaning it uses.                             |
+| TCP 1521      | Oracle Database              | De facto: IANA assegna `ncube-lm` e registra l’uso non autorizzato della porta 1521. / De facto: IANA assigns `ncube-lm` and records unauthorized use of port 1521.                                 |
+| UDP 1645/1646 | RADIUS legacy                | De facto: IANA assegna rispettivamente `sightline` e `sa-msg-port`; per nuovi deployment si usano 1812/1813. / De facto: IANA assigns `sightline` and `sa-msg-port`; new deployments use 1812/1813. |
+| TCP 3000      | Vite / development server    | De facto: IANA registra `hbci` e l’uso diffuso `remoteware-cl`. / De facto: IANA registers `hbci` and widespread `remoteware-cl` use.                                                               |
+| TCP 8080      | HTTP Alternate               | Assegnata a `http-alt`: non viene più descritta come semplice convenzione non registrata. / Assigned to `http-alt`: it is no longer described as merely an unregistered convention.                 |
 
 ## Verifica automatica / Automated verification
 

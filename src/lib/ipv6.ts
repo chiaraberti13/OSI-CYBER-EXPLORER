@@ -41,7 +41,7 @@ function embedTrailingIpv4(address: string): string {
   const octets = tail.split('.');
   if (octets.length !== 4) throw new Error('INVALID_IPV6');
 
-  const values = octets.map(octet => {
+  const values = octets.map((octet) => {
     if (!/^\d{1,3}$/.test(octet)) throw new Error('INVALID_IPV6');
     const value = Number(octet);
     if (value > 255) throw new Error('INVALID_IPV6');
@@ -63,19 +63,20 @@ export function expandIpv6(input: string): string[] {
   const left = leftPart ? leftPart.split(':') : [];
   const right = rightPart ? rightPart.split(':') : [];
   const validHextet = /^[0-9a-f]{1,4}$/;
-  if (![...left, ...right].every(hextet => validHextet.test(hextet))) throw new Error('INVALID_IPV6');
+  if (![...left, ...right].every((hextet) => validHextet.test(hextet))) throw new Error('INVALID_IPV6');
 
   if (!compressed && left.length !== 8) throw new Error('INVALID_IPV6');
   const missing = 8 - left.length - right.length;
   if (compressed && missing < 1) throw new Error('INVALID_IPV6');
 
-  return [...left, ...Array.from({ length: Math.max(0, missing) }, () => '0'), ...right]
-    .map(hextet => hextet.padStart(4, '0'));
+  return [...left, ...Array.from({ length: Math.max(0, missing) }, () => '0'), ...right].map((hextet) =>
+    hextet.padStart(4, '0')
+  );
 }
 
 export function compressIpv6(hextets: string[]): string {
   if (hextets.length !== 8) throw new Error('INVALID_IPV6');
-  const normalized = hextets.map(hextet => Number.parseInt(hextet, 16).toString(16));
+  const normalized = hextets.map((hextet) => Number.parseInt(hextet, 16).toString(16));
   let bestStart = -1;
   let bestLength = 0;
   let currentStart = -1;
@@ -100,18 +101,18 @@ export function compressIpv6(hextets: string[]): string {
 }
 
 export function classifyIpv6(hextets: string[]): Ipv6AddressKind {
-  const values = hextets.map(hextet => Number.parseInt(hextet, 16));
-  const allZero = values.every(value => value === 0);
+  const values = hextets.map((hextet) => Number.parseInt(hextet, 16));
+  const allZero = values.every((value) => value === 0);
   if (allZero) return 'unspecified';
-  if (values.slice(0, 7).every(value => value === 0) && values[7] === 1) return 'loopback';
-  if (values.slice(0, 5).every(value => value === 0) && values[5] === 0xffff) return 'ipv4-mapped';
-  if (values.slice(0, 6).every(value => value === 0)) return 'ipv4-compatible';
-  const isWellKnownNat64 = values[0] === 0x0064 && values[1] === 0xff9b
-    && values.slice(2, 6).every(value => value === 0);
+  if (values.slice(0, 7).every((value) => value === 0) && values[7] === 1) return 'loopback';
+  if (values.slice(0, 5).every((value) => value === 0) && values[5] === 0xffff) return 'ipv4-mapped';
+  if (values.slice(0, 6).every((value) => value === 0)) return 'ipv4-compatible';
+  const isWellKnownNat64 =
+    values[0] === 0x0064 && values[1] === 0xff9b && values.slice(2, 6).every((value) => value === 0);
   const isLocalUseNat64 = values[0] === 0x0064 && values[1] === 0xff9b && values[2] === 0x0001;
   if (isWellKnownNat64 || isLocalUseNat64) return 'nat64';
-  const isDocumentation = (values[0] === 0x2001 && values[1] === 0x0db8)
-    || (values[0] === 0x3fff && (values[1] & 0xf000) === 0);
+  const isDocumentation =
+    (values[0] === 0x2001 && values[1] === 0x0db8) || (values[0] === 0x3fff && (values[1] & 0xf000) === 0);
   if (isDocumentation) return 'documentation';
   if ((values[0] & 0xff00) === 0xff00) return 'multicast';
   if ((values[0] & 0xffc0) === 0xfe80) return 'link-local';
@@ -148,13 +149,14 @@ export function inspectIpv6(input: string): Ipv6Details {
 
 export function macToModifiedEui64(mac: string): string {
   const octets = mac.trim().split(/[:-]/);
-  if (octets.length !== 6 || !octets.every(octet => /^[0-9a-fA-F]{2}$/.test(octet))) {
+  if (octets.length !== 6 || !octets.every((octet) => /^[0-9a-fA-F]{2}$/.test(octet))) {
     throw new Error('INVALID_MAC');
   }
-  const bytes = octets.map(octet => Number.parseInt(octet, 16));
+  const bytes = octets.map((octet) => Number.parseInt(octet, 16));
   bytes[0] ^= 0x02;
   const eui = [...bytes.slice(0, 3), 0xff, 0xfe, ...bytes.slice(3)];
-  return Array.from({ length: 4 }, (_, index) =>
-    `${eui[index * 2].toString(16).padStart(2, '0')}${eui[index * 2 + 1].toString(16).padStart(2, '0')}`
+  return Array.from(
+    { length: 4 },
+    (_, index) => `${eui[index * 2].toString(16).padStart(2, '0')}${eui[index * 2 + 1].toString(16).padStart(2, '0')}`
   ).join(':');
 }

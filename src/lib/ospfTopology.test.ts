@@ -6,14 +6,14 @@ const spf = (over: Partial<OspfSpfOptions> = {}) =>
   computeSpf({ routers: OSPF_ROUTERS, links: OSPF_LINKS, rootId: 'R1', ...over });
 
 const routeTo = (result: ReturnType<typeof computeSpf>, network: string) =>
-  result.routes.find(route => route.network === network)!;
+  result.routes.find((route) => route.network === network)!;
 
 describe('interface cost from the reference bandwidth', () => {
   it('uses the IOS default of 100 Mb/s, truncating the division', () => {
     const result = spf();
-    expect(result.linkCosts['r1-r2']).toBe(1);     // 1 Gb/s: 100/1000 floors to 0, raised to 1
-    expect(result.linkCosts['r2-r3']).toBe(10);    // 10 Mb/s
-    expect(result.linkCosts['r4-r5']).toBe(64);    // T1: 100/1.544 = 64.76 → 64
+    expect(result.linkCosts['r1-r2']).toBe(1); // 1 Gb/s: 100/1000 floors to 0, raised to 1
+    expect(result.linkCosts['r2-r3']).toBe(10); // 10 Mb/s
+    expect(result.linkCosts['r4-r5']).toBe(64); // T1: 100/1.544 = 64.76 → 64
   });
 
   it('separates speeds the default cannot rank apart once the reference is raised', () => {
@@ -62,7 +62,10 @@ describe('equal-cost multipath', () => {
     const branch = routeTo(spf(), '10.0.4.0');
     expect(branch.ecmp).toBe(true);
     expect(branch.nextHops).toEqual(['R2', 'R3']);
-    expect(branch.paths).toEqual([['R1', 'R2', 'R4'], ['R1', 'R3', 'R4']]);
+    expect(branch.paths).toEqual([
+      ['R1', 'R2', 'R4'],
+      ['R1', 'R3', 'R4']
+    ]);
   });
 
   it('stops load-balancing once the faster path is actually cheaper', () => {
@@ -92,7 +95,7 @@ describe('reconvergence when a link fails', () => {
   it('reports a router as unreachable when every path to it is down', () => {
     const result = spf({ downLinkIds: ['r2-r4', 'r3-r4'] });
     expect(result.unreachableRouters.sort()).toEqual(['R4', 'R5']);
-    expect(result.routes.some(route => route.network === '10.0.4.0')).toBe(false);
+    expect(result.routes.some((route) => route.network === '10.0.4.0')).toBe(false);
     // The routers still reachable keep their costs.
     expect(result.routerCosts).toEqual({ R1: 0, R2: 1, R3: 1 });
   });
@@ -109,7 +112,9 @@ describe('the root matters', () => {
     // 64 sul T1, piu un salto da R4 e uno da R2 o R3: 66.
     expect(fromR5.routerCosts.R1).toBe(66);
     // Everything R5 knows is behind the T1: one next hop for the whole network.
-    expect(new Set(fromR5.routes.filter(route => !route.local).map(route => route.nextHops.join()))).toEqual(new Set(['R4']));
+    expect(new Set(fromR5.routes.filter((route) => !route.local).map((route) => route.nextHops.join()))).toEqual(
+      new Set(['R4'])
+    );
   });
 });
 
@@ -117,7 +122,9 @@ describe('invalid topologies', () => {
   it('refuses input it cannot compute', () => {
     expect(() => computeSpf({ routers: [], links: [], rootId: 'R1' })).toThrow('NO_ROUTERS');
     expect(() => spf({ rootId: 'R9' })).toThrow('UNKNOWN_ROOT');
-    expect(() => spf({ links: [...OSPF_LINKS, { id: 'ghost', a: 'R1', b: 'R9', bandwidthMbps: 100 }] })).toThrow('UNKNOWN_ROUTER');
+    expect(() => spf({ links: [...OSPF_LINKS, { id: 'ghost', a: 'R1', b: 'R9', bandwidthMbps: 100 }] })).toThrow(
+      'UNKNOWN_ROUTER'
+    );
     expect(() => spf({ referenceBandwidthMbps: 0 })).toThrow('INVALID_REFERENCE_BANDWIDTH');
   });
 });

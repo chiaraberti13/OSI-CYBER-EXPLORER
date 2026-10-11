@@ -17,7 +17,7 @@ export const DEFAULT_PREFERENCES: Readonly<PersistedPreferences> = Object.freeze
   language: 'it',
   audioEnabled: true,
   simSpeed: 1,
-  hasSeenGuide: false,
+  hasSeenGuide: false
 });
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -38,18 +38,10 @@ export function sanitizePreferences(value: unknown): PersistedPreferences {
   }
 
   return {
-    language: value.language === 'it' || value.language === 'en'
-      ? value.language
-      : DEFAULT_PREFERENCES.language,
-    audioEnabled: typeof value.audioEnabled === 'boolean'
-      ? value.audioEnabled
-      : DEFAULT_PREFERENCES.audioEnabled,
-    simSpeed: isSimulationSpeed(value.simSpeed)
-      ? value.simSpeed
-      : DEFAULT_PREFERENCES.simSpeed,
-    hasSeenGuide: typeof value.hasSeenGuide === 'boolean'
-      ? value.hasSeenGuide
-      : DEFAULT_PREFERENCES.hasSeenGuide,
+    language: value.language === 'it' || value.language === 'en' ? value.language : DEFAULT_PREFERENCES.language,
+    audioEnabled: typeof value.audioEnabled === 'boolean' ? value.audioEnabled : DEFAULT_PREFERENCES.audioEnabled,
+    simSpeed: isSimulationSpeed(value.simSpeed) ? value.simSpeed : DEFAULT_PREFERENCES.simSpeed,
+    hasSeenGuide: typeof value.hasSeenGuide === 'boolean' ? value.hasSeenGuide : DEFAULT_PREFERENCES.hasSeenGuide
   };
 }
 
@@ -58,7 +50,5 @@ export function sanitizePreferences(value: unknown): PersistedPreferences {
  * schemas are not guessed: they are replaced with safe defaults.
  */
 export function migratePreferences(value: unknown, version: number): PersistedPreferences {
-  return version === 0
-    ? sanitizePreferences(value)
-    : { ...DEFAULT_PREFERENCES };
+  return version === 0 ? sanitizePreferences(value) : { ...DEFAULT_PREFERENCES };
 }

@@ -105,8 +105,14 @@ export function simulatePortSecurity(
 
     if (portState === 'err-disabled') {
       steps.push({
-        mac: formatMac(mac), at, action: 'port-down',
-        secureMacs: [...secure.values()], violationCount, portState, notified: false, agedOut: [],
+        mac: formatMac(mac),
+        at,
+        action: 'port-down',
+        secureMacs: [...secure.values()],
+        violationCount,
+        portState,
+        notified: false,
+        agedOut: [],
         reason: b(
           'La porta è in err-disable: non passa più nulla, nemmeno il traffico dell’host legittimo. Finché non interviene un operatore, questa trama non viene neppure esaminata.',
           'The port is err-disabled: nothing passes any more, not even the legitimate host’s traffic. Until an operator steps in, this frame is not even examined.'
@@ -133,8 +139,14 @@ export function simulatePortSecurity(
     if (known) {
       known.lastSeenAt = at;
       steps.push({
-        mac: formatMac(mac), at, action: 'allowed',
-        secureMacs: [...secure.values()], violationCount, portState, notified: false, agedOut,
+        mac: formatMac(mac),
+        at,
+        action: 'allowed',
+        secureMacs: [...secure.values()],
+        violationCount,
+        portState,
+        notified: false,
+        agedOut,
         reason: b(
           `${formatMac(mac)} è già un indirizzo sicuro su questa porta: la trama passa e l’ultima attività viene aggiornata.`,
           `${formatMac(mac)} is already a secure address on this port: the frame passes and the last-seen time is updated.`
@@ -146,8 +158,14 @@ export function simulatePortSecurity(
     if (secure.size < maximum) {
       secure.set(mac, { mac, kind: sticky ? 'sticky' : 'dynamic', learnedAt: at, lastSeenAt: at });
       steps.push({
-        mac: formatMac(mac), at, action: 'learned',
-        secureMacs: [...secure.values()], violationCount, portState, notified: false, agedOut,
+        mac: formatMac(mac),
+        at,
+        action: 'learned',
+        secureMacs: [...secure.values()],
+        violationCount,
+        portState,
+        notified: false,
+        agedOut,
         reason: sticky
           ? b(
               `${formatMac(mac)} viene appreso come indirizzo sicuro sticky (${secure.size} di ${maximum}) e scritto nella running configuration: sopravvive al riavvio se la configurazione viene salvata, e non invecchia.`,
@@ -189,8 +207,15 @@ export function simulatePortSecurity(
     }
 
     steps.push({
-      mac: formatMac(mac), at, action: 'violation',
-      secureMacs: [...secure.values()], violationCount, portState, notified, agedOut, reason
+      mac: formatMac(mac),
+      at,
+      action: 'violation',
+      secureMacs: [...secure.values()],
+      violationCount,
+      portState,
+      notified,
+      agedOut,
+      reason
     });
   }
 
@@ -205,8 +230,8 @@ export function simulatePortSecurity(
       ? [` switchport port-security aging time ${agingMinutes}`, ` switchport port-security aging type ${agingType}`]
       : []),
     ...[...secure.values()]
-      .filter(entry => entry.kind === 'sticky')
-      .map(entry => ` switchport port-security mac-address sticky ${formatMac(entry.mac)}`)
+      .filter((entry) => entry.kind === 'sticky')
+      .map((entry) => ` switchport port-security mac-address sticky ${formatMac(entry.mac)}`)
   ];
 
   return {
@@ -216,16 +241,17 @@ export function simulatePortSecurity(
     violationCount,
     secureMacs: [...secure.values()],
     configuration,
-    recovery: portState === 'err-disabled'
-      ? [
-          `interface ${interfaceName}`,
-          ' shutdown',
-          ' no shutdown',
-          '!',
-          '! oppure, per farla risalire da sola dopo 300 s / or, to let it recover on its own after 300 s',
-          'errdisable recovery cause psecure-violation',
-          'errdisable recovery interval 300'
-        ]
-      : null
+    recovery:
+      portState === 'err-disabled'
+        ? [
+            `interface ${interfaceName}`,
+            ' shutdown',
+            ' no shutdown',
+            '!',
+            '! oppure, per farla risalire da sola dopo 300 s / or, to let it recover on its own after 300 s',
+            'errdisable recovery cause psecure-violation',
+            'errdisable recovery interval 300'
+          ]
+        : null
   };
 }

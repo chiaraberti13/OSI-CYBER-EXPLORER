@@ -39,15 +39,15 @@ function assertBilingualParity(value: unknown, path: string): void {
 
 describe('study manual content integrity', () => {
   it('has unique chapter ids and orders', () => {
-    const ids = STUDY_MANUAL.map(c => c.id);
-    const orders = STUDY_MANUAL.map(c => c.order);
+    const ids = STUDY_MANUAL.map((c) => c.id);
+    const orders = STUDY_MANUAL.map((c) => c.order);
     expect(new Set(ids).size).toBe(ids.length);
     expect(new Set(orders).size).toBe(orders.length);
   });
 
   it('has unique topic ids and guided-lab ids across the whole manual', () => {
-    const topicIds = STUDY_MANUAL.flatMap(c => c.topics.map(t => t.id));
-    const labIds = allGuidedLabs().map(l => l.id);
+    const topicIds = STUDY_MANUAL.flatMap((c) => c.topics.map((t) => t.id));
+    const labIds = allGuidedLabs().map((l) => l.id);
     expect(new Set(topicIds).size, 'topic ids').toBe(topicIds.length);
     expect(new Set(labIds).size, 'guided-lab ids').toBe(labIds.length);
   });
@@ -94,7 +94,7 @@ describe('study manual content integrity', () => {
 
 describe('study manual selectors', () => {
   it('returns chapters sorted by study order', () => {
-    const orders = orderedChapters().map(c => c.order);
+    const orders = orderedChapters().map((c) => c.order);
     expect(orders).toEqual([...orders].sort((a, b) => a - b));
   });
 

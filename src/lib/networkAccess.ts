@@ -22,7 +22,10 @@ export function isValidVlan(vlan: number): boolean {
 
 export function parseVlanList(input: string): number[] {
   const vlans = new Set<number>();
-  const tokens = input.split(',').map(token => token.trim()).filter(Boolean);
+  const tokens = input
+    .split(',')
+    .map((token) => token.trim())
+    .filter(Boolean);
   if (tokens.length === 0) throw new Error('EMPTY_VLAN_LIST');
 
   for (const token of tokens) {
@@ -59,7 +62,12 @@ export function normalizeMac(mac: string): string {
 export function electRootBridge(candidates: BridgeCandidate[]): BridgeCandidate {
   if (candidates.length === 0) throw new Error('NO_BRIDGES');
   for (const bridge of candidates) {
-    if (!Number.isInteger(bridge.priority) || bridge.priority < 0 || bridge.priority > 61440 || bridge.priority % 4096 !== 0) {
+    if (
+      !Number.isInteger(bridge.priority) ||
+      bridge.priority < 0 ||
+      bridge.priority > 61440 ||
+      bridge.priority % 4096 !== 0
+    ) {
       throw new Error('INVALID_STP_PRIORITY');
     }
     normalizeMac(bridge.mac);

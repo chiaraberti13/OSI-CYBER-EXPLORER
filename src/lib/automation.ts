@@ -24,11 +24,7 @@ export interface JsonInspection {
   sensitivePaths: string[];
 }
 
-export type JsonInputErrorCode =
-  | 'JSON_INVALID'
-  | 'JSON_TOO_MANY_BYTES'
-  | 'JSON_TOO_DEEP'
-  | 'JSON_TOO_MANY_NODES';
+export type JsonInputErrorCode = 'JSON_INVALID' | 'JSON_TOO_MANY_BYTES' | 'JSON_TOO_DEEP' | 'JSON_TOO_MANY_NODES';
 
 export class JsonInputError extends Error {
   readonly code: JsonInputErrorCode;
@@ -116,9 +112,10 @@ export function isSensitiveJsonKey(key: string): boolean {
   if (COMPACT_SENSITIVE_KEYS.has(compactKey)) return true;
   if (SENSITIVE_TERMINAL_TOKENS.has(tokens.at(-1)!)) return true;
 
-  return SENSITIVE_TOKEN_SUFFIXES.some(suffix =>
-    suffix.length <= tokens.length
-    && suffix.every((token, index) => token === tokens[tokens.length - suffix.length + index])
+  return SENSITIVE_TOKEN_SUFFIXES.some(
+    (suffix) =>
+      suffix.length <= tokens.length &&
+      suffix.every((token, index) => token === tokens[tokens.length - suffix.length + index])
   );
 }
 
@@ -142,7 +139,7 @@ function displayValue(value: unknown, type: JsonNode['type']): string {
 
 function resolveJsonLimits(overrides: Partial<JsonInspectionLimits>): JsonInspectionLimits {
   const limits = { ...JSON_INPUT_LIMITS, ...overrides };
-  if (Object.values(limits).some(limit => !Number.isSafeInteger(limit) || limit < 1)) {
+  if (Object.values(limits).some((limit) => !Number.isSafeInteger(limit) || limit < 1)) {
     throw new TypeError('JSON limits must be positive safe integers');
   }
   return limits;
@@ -193,10 +190,7 @@ interface PendingJsonNode {
   redact?: boolean;
 }
 
-export function inspectJsonDocument(
-  input: string,
-  limitOverrides: Partial<JsonInspectionLimits> = {}
-): JsonInspection {
+export function inspectJsonDocument(input: string, limitOverrides: Partial<JsonInspectionLimits> = {}): JsonInspection {
   const limits = resolveJsonLimits(limitOverrides);
   assertJsonPreParseLimits(input, limits);
 
@@ -258,7 +252,9 @@ export function findSensitiveJsonPaths(input: string, maxNodes = JSON_INPUT_LIMI
   return inspectJsonDocument(input, { maxNodes }).sensitivePaths;
 }
 
-export function httpStatusFamily(status: number): 'success' | 'redirect' | 'client-error' | 'server-error' | 'informational' {
+export function httpStatusFamily(
+  status: number
+): 'success' | 'redirect' | 'client-error' | 'server-error' | 'informational' {
   if (!Number.isInteger(status) || status < 100 || status > 599) throw new Error('INVALID_HTTP_STATUS');
   if (status < 200) return 'informational';
   if (status < 300) return 'success';

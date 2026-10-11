@@ -1,11 +1,7 @@
 // @vitest-environment jsdom
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import {
-  DEFAULT_PREFERENCES,
-  PREFERENCES_STORAGE_KEY,
-  PREFERENCES_STORAGE_VERSION,
-} from './lib/preferences';
+import { DEFAULT_PREFERENCES, PREFERENCES_STORAGE_KEY, PREFERENCES_STORAGE_VERSION } from './lib/preferences';
 
 async function loadFreshStore() {
   vi.resetModules();
@@ -30,7 +26,7 @@ describe('persisted preference rehydration', () => {
       language: 'en',
       audioEnabled: false,
       simSpeed: 2,
-      hasSeenGuide: true,
+      hasSeenGuide: true
     };
     writeStoredState(previousPreferences, 0);
 
@@ -39,19 +35,22 @@ describe('persisted preference rehydration', () => {
     expect(store.getState()).toMatchObject(previousPreferences);
     expect(JSON.parse(localStorage.getItem(PREFERENCES_STORAGE_KEY) ?? '{}')).toEqual({
       state: previousPreferences,
-      version: PREFERENCES_STORAGE_VERSION,
+      version: PREFERENCES_STORAGE_VERSION
     });
   });
 
   it('sanitizes a tampered current-version state and ignores extra keys', async () => {
-    writeStoredState({
-      language: 'javascript:alert(1)',
-      audioEnabled: 'false',
-      simSpeed: Number.POSITIVE_INFINITY,
-      hasSeenGuide: { value: true },
-      logs: [{ message: 'injected session state' }],
-      activeAttack: 'spoofing',
-    }, PREFERENCES_STORAGE_VERSION);
+    writeStoredState(
+      {
+        language: 'javascript:alert(1)',
+        audioEnabled: 'false',
+        simSpeed: Number.POSITIVE_INFINITY,
+        hasSeenGuide: { value: true },
+        logs: [{ message: 'injected session state' }],
+        activeAttack: 'spoofing'
+      },
+      PREFERENCES_STORAGE_VERSION
+    );
 
     const store = await loadFreshStore();
     const state = store.getState();
@@ -62,12 +61,15 @@ describe('persisted preference rehydration', () => {
   });
 
   it('keeps valid fields and restores invalid fields independently', async () => {
-    writeStoredState({
-      language: 'en',
-      audioEnabled: null,
-      simSpeed: 0.5,
-      hasSeenGuide: false,
-    }, PREFERENCES_STORAGE_VERSION);
+    writeStoredState(
+      {
+        language: 'en',
+        audioEnabled: null,
+        simSpeed: 0.5,
+        hasSeenGuide: false
+      },
+      PREFERENCES_STORAGE_VERSION
+    );
 
     const store = await loadFreshStore();
 
@@ -75,7 +77,7 @@ describe('persisted preference rehydration', () => {
       language: 'en',
       audioEnabled: true,
       simSpeed: 0.5,
-      hasSeenGuide: false,
+      hasSeenGuide: false
     });
   });
 
@@ -88,12 +90,15 @@ describe('persisted preference rehydration', () => {
   });
 
   it('starts with defaults rather than guessing a future schema', async () => {
-    writeStoredState({
-      language: 'en',
-      audioEnabled: false,
-      simSpeed: 2,
-      hasSeenGuide: true,
-    }, PREFERENCES_STORAGE_VERSION + 1);
+    writeStoredState(
+      {
+        language: 'en',
+        audioEnabled: false,
+        simSpeed: 2,
+        hasSeenGuide: true
+      },
+      PREFERENCES_STORAGE_VERSION + 1
+    );
 
     const store = await loadFreshStore();
 

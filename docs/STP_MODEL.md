@@ -10,10 +10,10 @@ The simulator calculates one **Cisco Rapid PVST+** instance for the selected VLA
 
 ### Cost method / Metodo di costo
 
-| Selezione UI | Origine dichiarata | Campo | Intervallo | Esempi 10 Mb/s · 100 Mb/s · 1 Gb/s · 10 Gb/s |
-|---|---|---:|---:|---|
-| `short` | IEEE 802.1D-1998 | 16 bit | 1–65,535 | 100 · 19 · 4 · 2 |
-| `long` | IEEE 802.1t / IEEE 802.1D-2004 | 32 bit | 1–200,000,000 | 2,000,000 · 200,000 · 20,000 · 2,000 |
+| Selezione UI | Origine dichiarata             |  Campo |    Intervallo | Esempi 10 Mb/s · 100 Mb/s · 1 Gb/s · 10 Gb/s |
+| ------------ | ------------------------------ | -----: | ------------: | -------------------------------------------- |
+| `short`      | IEEE 802.1D-1998               | 16 bit |      1–65,535 | 100 · 19 · 4 · 2                             |
+| `long`       | IEEE 802.1t / IEEE 802.1D-2004 | 32 bit | 1–200,000,000 | 2,000,000 · 200,000 · 20,000 · 2,000         |
 
 La scelta è globale per la topologia simulata ed entra nel risultato come `StpResult.model.cost`; non è una semplice etichetta UI. Il metodo `short` resta selezionato di default per riflettere il default documentato da Cisco, ma la UI rende sempre visibile lo standard attivo.
 
@@ -42,11 +42,11 @@ Il confronto puro `compareRootPortCandidates` applica, senza saltare livelli, qu
 
 ## Distinzione dei protocolli / Protocol distinction
 
-| Modalità | Base | Istanze | Stato nel simulatore |
-|---|---|---|---|
-| PVST+ | Cisco, basato su IEEE 802.1D | una per VLAN | spiegato, non calcolato con stati classici |
-| Rapid PVST+ | Cisco, convergenza basata su IEEE 802.1w | una per VLAN | **modello applicato** |
-| MSTP | IEEE 802.1s, poi incorporato in IEEE 802.1Q; usa RSTP | più VLAN mappabili sulla stessa istanza | spiegato; regione e mapping VLAN non simulati |
+| Modalità    | Base                                                  | Istanze                                 | Stato nel simulatore                          |
+| ----------- | ----------------------------------------------------- | --------------------------------------- | --------------------------------------------- |
+| PVST+       | Cisco, basato su IEEE 802.1D                          | una per VLAN                            | spiegato, non calcolato con stati classici    |
+| Rapid PVST+ | Cisco, convergenza basata su IEEE 802.1w              | una per VLAN                            | **modello applicato**                         |
+| MSTP        | IEEE 802.1s, poi incorporato in IEEE 802.1Q; usa RSTP | più VLAN mappabili sulla stessa istanza | spiegato; regione e mapping VLAN non simulati |
 
 La UI espone questa distinzione accanto a ogni risultato. In particolare non chiama l'albero “MST” solo perché usa ruoli RSTP, e non mescola il ruolo `alternate` con i cinque stati classici di 802.1D.
 
@@ -57,4 +57,3 @@ The UI exposes this distinction beside every result. In particular, it does not 
 - Cisco, [Configuring Spanning Tree Protocol — Catalyst 9400](https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9400/software/release/17-3/configuration_guide/lyr2/b_173_lyr2_9400_cg/configuring_spanning_tree_protocol.html): composizione del Bridge ID, modalità PVST+/Rapid PVST+/MSTP, istanze e base IEEE.
 - Cisco, [Configuring Rapid PVST+ — Nexus 9000](https://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus9000/sw/92x/Layer-2_switching/configuration/guide/b-cisco-nexus-9000-nx-os-layer-2-switching-configuration-guide-92x/b-cisco-nexus-9000-nx-os-layer-2-switching-configuration-guide-92x_chapter_01001.html): tabelle short/long, intervalli di costo, default short, priorità valide ed extended system ID.
 - IEEE, riferimenti storici dichiarati nella roadmap: IEEE 802.1D-1998, IEEE 802.1t, IEEE 802.1w, IEEE 802.1s e IEEE 802.1D-2004. Gli standard successivi hanno incorporato o riallocato parte di questi contenuti in IEEE 802.1Q; le etichette storiche sono mantenute perché corrispondono alla terminologia didattica e ai comandi Cisco mostrati.
-

@@ -41,36 +41,67 @@ const VLSM_MAX_SEGMENTS = 32;
 const COPY = {
   it: {
     title: 'Pianificatore VLSM',
-    intro: 'VLSM significa assegnare a ogni segmento la subnet più piccola che lo contiene, invece di dividere il blocco in parti uguali. Il pianificatore ordina i requisiti dal più grande al più piccolo: è questa la regola che fa entrare i conti.',
-    base: 'Blocco di partenza', prefix: 'Prefisso', requirements: 'Requisiti', addRow: 'Aggiungi segmento',
-    remove: 'Rimuovi', name: 'Segmento', hosts: 'Host richiesti',
+    intro:
+      'VLSM significa assegnare a ogni segmento la subnet più piccola che lo contiene, invece di dividere il blocco in parti uguali. Il pianificatore ordina i requisiti dal più grande al più piccolo: è questa la regola che fa entrare i conti.',
+    base: 'Blocco di partenza',
+    prefix: 'Prefisso',
+    requirements: 'Requisiti',
+    addRow: 'Aggiungi segmento',
+    remove: 'Rimuovi',
+    name: 'Segmento',
+    hosts: 'Host richiesti',
     resultLabel: 'Piano di indirizzamento',
-    colSubnet: 'Subnet', colMask: 'Subnet mask', colRange: 'Intervallo utilizzabile', colBroadcast: 'Broadcast',
-    colUsable: 'Host disponibili', colWaste: 'Indirizzi sprecati',
-    utilisation: 'Blocco utilizzato', used: 'usati', of: 'su', nextFree: 'Primo indirizzo libero', full: 'Blocco esaurito',
+    colSubnet: 'Subnet',
+    colMask: 'Subnet mask',
+    colRange: 'Intervallo utilizzabile',
+    colBroadcast: 'Broadcast',
+    colUsable: 'Host disponibili',
+    colWaste: 'Indirizzi sprecati',
+    utilisation: 'Blocco utilizzato',
+    used: 'usati',
+    of: 'su',
+    nextFree: 'Primo indirizzo libero',
+    full: 'Blocco esaurito',
     errors: {
       INVALID_IPV4: 'Il blocco di partenza non è un indirizzo IPv4 valido.',
       INVALID_PREFIX: 'Il prefisso del blocco deve essere compreso tra /0 e /32.',
       INVALID_HOST_COUNT: 'Ogni segmento deve chiedere almeno 1 host, come numero intero.',
       HOSTS_EXCEED_IPV4: 'Un segmento chiede più host di quanti ne esistano in IPv4.',
-      BLOCK_TOO_SMALL: 'Il blocco non basta per questi requisiti: serve un prefisso più corto, oppure requisiti più piccoli.',
+      BLOCK_TOO_SMALL:
+        'Il blocco non basta per questi requisiti: serve un prefisso più corto, oppure requisiti più piccoli.',
       NO_REQUIREMENTS: 'Aggiungi almeno un segmento con un numero di host.',
       GENERIC: 'Controlla blocco, prefisso e host richiesti.'
     },
     why: 'Perché dal più grande al più piccolo',
-    whyBody: 'Una subnet può iniziare solo su un multiplo della propria dimensione. Se in un blocco /25 assegni prima una /28, la /26 che segue non può più partire da .16: deve saltare a .64, e i 48 indirizzi in mezzo restano utilizzabili solo da subnet più piccole — quindi la /27 richiesta dopo non trova più spazio allineato e il piano fallisce, pur avendo indirizzi liberi. Partendo dalla più grande, ogni subnet successiva è più piccola della precedente e cade sempre su un confine valido: nessuna frammentazione.',
+    whyBody:
+      'Una subnet può iniziare solo su un multiplo della propria dimensione. Se in un blocco /25 assegni prima una /28, la /26 che segue non può più partire da .16: deve saltare a .64, e i 48 indirizzi in mezzo restano utilizzabili solo da subnet più piccole — quindi la /27 richiesta dopo non trova più spazio allineato e il piano fallisce, pur avendo indirizzi liberi. Partendo dalla più grande, ogni subnet successiva è più piccola della precedente e cade sempre su un confine valido: nessuna frammentazione.',
     trap: 'Trappola d’esame',
-    trapBody: 'Il numero richiesto sono gli host utilizzabili, non gli indirizzi: 62 host stanno in una /26, ma 63 host obbligano a una /25. E un collegamento punto-punto tra due router chiede 2 host, quindi una /30 (o una /31, dove è supportata: non ha broadcast e usa entrambi gli indirizzi).'
+    trapBody:
+      'Il numero richiesto sono gli host utilizzabili, non gli indirizzi: 62 host stanno in una /26, ma 63 host obbligano a una /25. E un collegamento punto-punto tra due router chiede 2 host, quindi una /30 (o una /31, dove è supportata: non ha broadcast e usa entrambi gli indirizzi).'
   },
   en: {
     title: 'VLSM planner',
-    intro: 'VLSM means giving each segment the smallest subnet that holds it, instead of cutting the block into equal parts. The planner allocates from the largest requirement down: that ordering rule is what makes the arithmetic fit.',
-    base: 'Starting block', prefix: 'Prefix', requirements: 'Requirements', addRow: 'Add segment',
-    remove: 'Remove', name: 'Segment', hosts: 'Hosts needed',
+    intro:
+      'VLSM means giving each segment the smallest subnet that holds it, instead of cutting the block into equal parts. The planner allocates from the largest requirement down: that ordering rule is what makes the arithmetic fit.',
+    base: 'Starting block',
+    prefix: 'Prefix',
+    requirements: 'Requirements',
+    addRow: 'Add segment',
+    remove: 'Remove',
+    name: 'Segment',
+    hosts: 'Hosts needed',
     resultLabel: 'Addressing plan',
-    colSubnet: 'Subnet', colMask: 'Subnet mask', colRange: 'Usable range', colBroadcast: 'Broadcast',
-    colUsable: 'Usable hosts', colWaste: 'Wasted addresses',
-    utilisation: 'Block used', used: 'used', of: 'of', nextFree: 'First free address', full: 'Block exhausted',
+    colSubnet: 'Subnet',
+    colMask: 'Subnet mask',
+    colRange: 'Usable range',
+    colBroadcast: 'Broadcast',
+    colUsable: 'Usable hosts',
+    colWaste: 'Wasted addresses',
+    utilisation: 'Block used',
+    used: 'used',
+    of: 'of',
+    nextFree: 'First free address',
+    full: 'Block exhausted',
     errors: {
       INVALID_IPV4: 'The starting block is not a valid IPv4 address.',
       INVALID_PREFIX: 'The block prefix must be between /0 and /32.',
@@ -81,13 +112,15 @@ const COPY = {
       GENERIC: 'Check the block, the prefix, and the host counts.'
     },
     why: 'Why largest to smallest',
-    whyBody: 'A subnet can only start on a multiple of its own size. Allocate a /28 first inside a /25 and the /26 that follows can no longer start at .16: it has to jump to .64, and the 48 addresses in between stay usable only by smaller subnets — so the /27 requested next finds no aligned room and the plan fails while free addresses remain. Starting from the largest, every later subnet is smaller than the one before it and always lands on a valid boundary: no fragmentation.',
+    whyBody:
+      'A subnet can only start on a multiple of its own size. Allocate a /28 first inside a /25 and the /26 that follows can no longer start at .16: it has to jump to .64, and the 48 addresses in between stay usable only by smaller subnets — so the /27 requested next finds no aligned room and the plan fails while free addresses remain. Starting from the largest, every later subnet is smaller than the one before it and always lands on a valid boundary: no fragmentation.',
     trap: 'Exam trap',
-    trapBody: 'The number requested is usable hosts, not addresses: 62 hosts fit a /26, but 63 hosts force a /25. And a point-to-point link between two routers needs 2 hosts, so a /30 — or a /31 where it is supported, which has no broadcast and uses both addresses.'
+    trapBody:
+      'The number requested is usable hosts, not addresses: 62 hosts fit a /26, but 63 hosts force a /25. And a point-to-point link between two routers needs 2 hosts, so a /30 — or a /31 where it is supported, which has no broadcast and uses both addresses.'
   }
 } as const;
 
-type ErrorKey = keyof typeof COPY['it']['errors'];
+type ErrorKey = keyof (typeof COPY)['it']['errors'];
 
 function errorKeyOf(error: unknown): ErrorKey | null {
   const message = error instanceof Error ? error.message : '';
@@ -110,10 +143,12 @@ export default function VlsmPlanner() {
   const result = useMemo<{ plan: VlsmPlan; error: null } | { plan: null; error: unknown }>(() => {
     try {
       const requirements = rows
-        .filter(row => row.hosts.trim() !== '')
-        .map(row => ({
+        .filter((row) => row.hosts.trim() !== '')
+        .map((row) => ({
           id: row.id,
-          name: validateTextInput(row.name, { maxLength: INTERACTIVE_INPUT_LIMITS.labelCharacters, allowEmpty: true }) || row.id,
+          name:
+            validateTextInput(row.name, { maxLength: INTERACTIVE_INPUT_LIMITS.labelCharacters, allowEmpty: true }) ||
+            row.id,
           hosts: parseBoundedInteger(row.hosts, 1, 2 ** 30 - 2)
         }));
       return {
@@ -126,47 +161,71 @@ export default function VlsmPlanner() {
   }, [base, basePrefix, rows]);
 
   const updateRow = (id: string, patch: Partial<Row>) =>
-    setRows(current => current.map(row => (row.id === id ? { ...row, ...patch } : row)));
+    setRows((current) => current.map((row) => (row.id === id ? { ...row, ...patch } : row)));
 
   const addRow = () =>
-    setRows(current => current.length >= VLSM_MAX_SEGMENTS
-      ? current
-      : [...current, { id: `r${Date.now().toString(36)}`, name: '', hosts: '' }]);
+    setRows((current) =>
+      current.length >= VLSM_MAX_SEGMENTS
+        ? current
+        : [...current, { id: `r${Date.now().toString(36)}`, name: '', hosts: '' }]
+    );
 
   const removeRow = (id: string) =>
-    setRows(current => (current.length > 1 ? current.filter(row => row.id !== id) : current));
+    setRows((current) => (current.length > 1 ? current.filter((row) => row.id !== id) : current));
 
-  const inputClass = 'block w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-sm text-slate-900 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100';
+  const inputClass =
+    'block w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-sm text-slate-900 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100';
   const plan = result.plan;
 
   return (
     <section className="rounded-xl border border-slate-200 bg-white p-5 md:p-6" aria-labelledby="vlsm-title">
       <div className="flex items-center gap-3">
         <LayoutGrid className="h-5 w-5 text-indigo-600" />
-        <h2 id="vlsm-title" className="text-lg font-semibold text-slate-900">{copy.title}</h2>
+        <h2 id="vlsm-title" className="text-lg font-semibold text-slate-900">
+          {copy.title}
+        </h2>
       </div>
       <p className="mt-2 text-sm leading-relaxed text-slate-600">{copy.intro}</p>
 
       <div className="mt-5 grid gap-4 sm:grid-cols-[1fr_140px]">
         <label className="space-y-1.5 text-xs font-medium text-slate-600">
           {copy.base}
-          <input value={base} maxLength={INTERACTIVE_INPUT_LIMITS.ipv4Characters + 1} onChange={(event) => setBase(event.target.value)} inputMode="decimal" aria-invalid={result.error !== null} className={inputClass} />
+          <input
+            value={base}
+            maxLength={INTERACTIVE_INPUT_LIMITS.ipv4Characters + 1}
+            onChange={(event) => setBase(event.target.value)}
+            inputMode="decimal"
+            aria-invalid={result.error !== null}
+            className={inputClass}
+          />
         </label>
         <label className="space-y-1.5 text-xs font-medium text-slate-600">
           {copy.prefix}
-          <input inputMode="numeric" value={basePrefix} maxLength={2} onChange={(event) => setBasePrefix(event.target.value)} aria-invalid={result.error !== null} className={inputClass} />
+          <input
+            inputMode="numeric"
+            value={basePrefix}
+            maxLength={2}
+            onChange={(event) => setBasePrefix(event.target.value)}
+            aria-invalid={result.error !== null}
+            className={inputClass}
+          />
         </label>
       </div>
 
       <div className="mt-6">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h3 className="text-sm font-semibold text-slate-900">{copy.requirements}</h3>
-          <button type="button" onClick={addRow} disabled={rows.length >= VLSM_MAX_SEGMENTS} className="inline-flex items-center gap-1.5 rounded-lg border border-indigo-200 bg-indigo-50 px-2.5 py-1.5 text-xs font-semibold text-indigo-700 transition hover:bg-indigo-100 disabled:cursor-not-allowed disabled:opacity-50">
+          <button
+            type="button"
+            onClick={addRow}
+            disabled={rows.length >= VLSM_MAX_SEGMENTS}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-indigo-200 bg-indigo-50 px-2.5 py-1.5 text-xs font-semibold text-indigo-700 transition hover:bg-indigo-100 disabled:cursor-not-allowed disabled:opacity-50"
+          >
             <Plus className="h-3.5 w-3.5" /> {copy.addRow}
           </button>
         </div>
         <ul className="mt-3 space-y-2">
-          {rows.map(row => (
+          {rows.map((row) => (
             // On a phone the name takes the full width and the host count sits next to
             // the delete button, so a segment stays one visual block instead of three bars.
             <li key={row.id} className="grid grid-cols-[1fr_auto] gap-2 sm:grid-cols-[1fr_120px_auto]">
@@ -202,7 +261,10 @@ export default function VlsmPlanner() {
       </div>
 
       {result.error ? (
-        <div className="mt-5 flex items-start gap-2 rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700" role="alert">
+        <div
+          className="mt-5 flex items-start gap-2 rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700"
+          role="alert"
+        >
           <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" /> <span>{vlsmErrorMessage(result.error, language)}</span>
         </div>
       ) : plan ? (
@@ -221,19 +283,47 @@ export default function VlsmPlanner() {
                 cell: (allocation) => (
                   <span>
                     <span className="font-semibold text-slate-900">{allocation.name}</span>
-                    <span className="ml-2 font-mono text-xs text-indigo-700">{allocation.network}/{allocation.prefix}</span>
+                    <span className="ml-2 font-mono text-xs text-indigo-700">
+                      {allocation.network}/{allocation.prefix}
+                    </span>
                   </span>
                 )
               },
-              { id: 'mask', header: copy.colMask, cell: (a) => <span className="font-mono text-xs">{uintToIpv4(prefixToMask(a.prefix) >>> 0)}</span> },
-              { id: 'range', header: copy.colRange, cell: (a) => <span className="font-mono text-xs">{a.firstUsable} – {a.lastUsable}</span> },
-              { id: 'broadcast', header: copy.colBroadcast, cell: (a) => <span className="font-mono text-xs">{a.broadcast}</span> },
-              { id: 'usable', header: copy.colUsable, cell: (a) => <span className="font-mono text-xs">{a.usableHosts.toLocaleString(language)} / {a.requestedHosts.toLocaleString(language)}</span> },
+              {
+                id: 'mask',
+                header: copy.colMask,
+                cell: (a) => <span className="font-mono text-xs">{uintToIpv4(prefixToMask(a.prefix) >>> 0)}</span>
+              },
+              {
+                id: 'range',
+                header: copy.colRange,
+                cell: (a) => (
+                  <span className="font-mono text-xs">
+                    {a.firstUsable} – {a.lastUsable}
+                  </span>
+                )
+              },
+              {
+                id: 'broadcast',
+                header: copy.colBroadcast,
+                cell: (a) => <span className="font-mono text-xs">{a.broadcast}</span>
+              },
+              {
+                id: 'usable',
+                header: copy.colUsable,
+                cell: (a) => (
+                  <span className="font-mono text-xs">
+                    {a.usableHosts.toLocaleString(language)} / {a.requestedHosts.toLocaleString(language)}
+                  </span>
+                )
+              },
               {
                 id: 'waste',
                 header: copy.colWaste,
                 cell: (a) => (
-                  <span className={`font-mono text-xs ${a.wastedHosts > a.requestedHosts ? 'text-amber-700' : 'text-slate-600'}`}>
+                  <span
+                    className={`font-mono text-xs ${a.wastedHosts > a.requestedHosts ? 'text-amber-700' : 'text-slate-600'}`}
+                  >
                     {a.wastedHosts.toLocaleString(language)}
                   </span>
                 )
@@ -245,11 +335,15 @@ export default function VlsmPlanner() {
             <div className="flex flex-wrap items-baseline justify-between gap-2 text-xs text-slate-500">
               <span className="font-semibold uppercase tracking-wide text-slate-400">{copy.utilisation}</span>
               <span className="font-mono">
-                {plan.usedAddresses.toLocaleString(language)} {copy.of} {plan.totalAddresses.toLocaleString(language)} {copy.used} · {plan.utilisationPercent}%
+                {plan.usedAddresses.toLocaleString(language)} {copy.of} {plan.totalAddresses.toLocaleString(language)}{' '}
+                {copy.used} · {plan.utilisationPercent}%
               </span>
             </div>
             <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-slate-100" role="presentation">
-              <div className="h-full rounded-full bg-indigo-500" style={{ width: `${Math.min(100, plan.utilisationPercent)}%` }} />
+              <div
+                className="h-full rounded-full bg-indigo-500"
+                style={{ width: `${Math.min(100, plan.utilisationPercent)}%` }}
+              />
             </div>
             <p className="mt-3 text-xs text-slate-600">
               {copy.nextFree}: <span className="font-mono">{plan.nextFreeAddress ?? copy.full}</span>

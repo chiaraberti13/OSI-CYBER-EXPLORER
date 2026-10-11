@@ -25,40 +25,66 @@ const PRESETS: Preset[] = [
   { id: 'mgmt', label: { it: '4 host di management', en: '4 management hosts' }, first: '10.1.1.8', last: '10.1.1.11' },
   { id: 'single', label: { it: 'Un solo host', en: 'A single host' }, first: '10.1.1.9', last: '10.1.1.9' },
   { id: 'subnet', label: { it: 'Una /24 intera', en: 'A whole /24' }, first: '10.1.1.0', last: '10.1.1.255' },
-  { id: 'misaligned', label: { it: 'Intervallo disallineato', en: 'Misaligned range' }, first: '10.1.1.5', last: '10.1.1.8' },
-  { id: 'supernet', label: { it: 'Quattro /24 contigue', en: 'Four contiguous /24s' }, first: '10.1.0.0', last: '10.1.3.255' }
+  {
+    id: 'misaligned',
+    label: { it: 'Intervallo disallineato', en: 'Misaligned range' },
+    first: '10.1.1.5',
+    last: '10.1.1.8'
+  },
+  {
+    id: 'supernet',
+    label: { it: 'Quattro /24 contigue', en: 'Four contiguous /24s' },
+    first: '10.1.0.0',
+    last: '10.1.3.255'
+  }
 ];
 
 const COPY = {
   it: {
     title: 'Wildcard al contrario',
-    intro: 'Un requisito non arriva mai come “/28”: arriva come “consenti solo questi host”. Qui l’intervallo è l’ingresso e la ACE è l’uscita — compresa la risposta scomoda quando una sola wildcard non basta.',
-    first: 'Primo indirizzo', last: 'Ultimo indirizzo', presets: 'Casi tipici',
-    ace: 'ACE da scrivere', prefixEquivalent: 'Prefisso equivalente', wildcard: 'Wildcard mask',
+    intro:
+      'Un requisito non arriva mai come “/28”: arriva come “consenti solo questi host”. Qui l’intervallo è l’ingresso e la ACE è l’uscita — compresa la risposta scomoda quando una sola wildcard non basta.',
+    first: 'Primo indirizzo',
+    last: 'Ultimo indirizzo',
+    presets: 'Casi tipici',
+    ace: 'ACE da scrivere',
+    prefixEquivalent: 'Prefisso equivalente',
+    wildcard: 'Wildcard mask',
     exact: 'Corrispondenza esatta: questa ACE copre l’intervallo richiesto e nient’altro.',
     inexact: 'Nessuna wildcard copre esattamente questo intervallo.',
     extra: 'Indirizzi in più coinvolti',
-    inexactWhy: 'Una wildcard può descrivere solo un blocco allineato alla propria dimensione: il blocco più piccolo che contiene entrambi gli estremi è più largo dell’intervallo chiesto. Hai due strade: accettare gli indirizzi in più (e documentarlo), oppure scrivere più ACE, una per ogni blocco allineato che compone l’intervallo.',
+    inexactWhy:
+      'Una wildcard può descrivere solo un blocco allineato alla propria dimensione: il blocco più piccolo che contiene entrambi gli estremi è più largo dell’intervallo chiesto. Hai due strade: accettare gli indirizzi in più (e documentarlo), oppure scrivere più ACE, una per ogni blocco allineato che compone l’intervallo.',
     invalid: 'Inserisci due indirizzi IPv4 validi, con il primo non successivo al secondo.',
     rules: 'Come si legge una wildcard',
-    rulesBody: '0 significa “questo bit deve corrispondere”, 1 significa “questo bit è indifferente”. È l’opposto della subnet mask: /28 è 255.255.255.240 come mask e 0.0.0.15 come wildcard. Per ricavarla a mente: 255 meno ogni ottetto della mask.',
+    rulesBody:
+      '0 significa “questo bit deve corrispondere”, 1 significa “questo bit è indifferente”. È l’opposto della subnet mask: /28 è 255.255.255.240 come mask e 0.0.0.15 come wildcard. Per ricavarla a mente: 255 meno ogni ottetto della mask.',
     trap: 'Trappola d’esame',
-    trapBody: 'La wildcard non deve essere contigua, a differenza della subnet mask: una mask non contigua è illegale, una wildcard non contigua è legale. L’esempio canonico è selezionare un sottoinsieme regolare di subnet: 10.1.0.0 0.0.254.255 corrisponde a tutte e sole le subnet con terzo ottetto pari (10.1.0.0, 10.1.2.0, 10.1.4.0 …), perché il bit meno significativo del terzo ottetto resta a 0 nella wildcard e deve quindi corrispondere. Seconda trappola: l’indirizzo scritto nella ACE viene confrontato solo sui bit a 0 della wildcard, quindi 10.1.1.9 0.0.0.3 e 10.1.1.8 0.0.0.3 indicano lo stesso blocco.'
+    trapBody:
+      'La wildcard non deve essere contigua, a differenza della subnet mask: una mask non contigua è illegale, una wildcard non contigua è legale. L’esempio canonico è selezionare un sottoinsieme regolare di subnet: 10.1.0.0 0.0.254.255 corrisponde a tutte e sole le subnet con terzo ottetto pari (10.1.0.0, 10.1.2.0, 10.1.4.0 …), perché il bit meno significativo del terzo ottetto resta a 0 nella wildcard e deve quindi corrispondere. Seconda trappola: l’indirizzo scritto nella ACE viene confrontato solo sui bit a 0 della wildcard, quindi 10.1.1.9 0.0.0.3 e 10.1.1.8 0.0.0.3 indicano lo stesso blocco.'
   },
   en: {
     title: 'Wildcard, in reverse',
-    intro: 'A requirement never arrives as “/28”: it arrives as “permit only these hosts”. Here the range is the input and the ACE is the output — including the uncomfortable answer when one wildcard is not enough.',
-    first: 'First address', last: 'Last address', presets: 'Typical cases',
-    ace: 'ACE to write', prefixEquivalent: 'Prefix equivalent', wildcard: 'Wildcard mask',
+    intro:
+      'A requirement never arrives as “/28”: it arrives as “permit only these hosts”. Here the range is the input and the ACE is the output — including the uncomfortable answer when one wildcard is not enough.',
+    first: 'First address',
+    last: 'Last address',
+    presets: 'Typical cases',
+    ace: 'ACE to write',
+    prefixEquivalent: 'Prefix equivalent',
+    wildcard: 'Wildcard mask',
     exact: 'Exact match: this ACE covers the requested range and nothing else.',
     inexact: 'No wildcard covers this range exactly.',
     extra: 'Extra addresses pulled in',
-    inexactWhy: 'A wildcard can only describe a block aligned to its own size: the smallest block containing both ends is wider than the range you asked for. You have two options: accept the extra addresses (and document them), or write several ACEs, one per aligned block that makes up the range.',
+    inexactWhy:
+      'A wildcard can only describe a block aligned to its own size: the smallest block containing both ends is wider than the range you asked for. You have two options: accept the extra addresses (and document them), or write several ACEs, one per aligned block that makes up the range.',
     invalid: 'Enter two valid IPv4 addresses, with the first not after the second.',
     rules: 'How to read a wildcard',
-    rulesBody: '0 means “this bit must match”, 1 means “this bit is irrelevant”. It is the inverse of the subnet mask: /28 is 255.255.255.240 as a mask and 0.0.0.15 as a wildcard. To derive it in your head: 255 minus each octet of the mask.',
+    rulesBody:
+      '0 means “this bit must match”, 1 means “this bit is irrelevant”. It is the inverse of the subnet mask: /28 is 255.255.255.240 as a mask and 0.0.0.15 as a wildcard. To derive it in your head: 255 minus each octet of the mask.',
     trap: 'Exam trap',
-    trapBody: 'A wildcard need not be contiguous, unlike a subnet mask: a non-contiguous mask is illegal, a non-contiguous wildcard is legal. The canonical example is selecting a regular subset of subnets: 10.1.0.0 0.0.254.255 matches every subnet whose third octet is even, and only those (10.1.0.0, 10.1.2.0, 10.1.4.0 …), because the least significant bit of the third octet stays 0 in the wildcard and therefore has to match. Second trap: the address written in the ACE is compared only on the wildcard’s 0 bits, so 10.1.1.9 0.0.0.3 and 10.1.1.8 0.0.0.3 name the same block.'
+    trapBody:
+      'A wildcard need not be contiguous, unlike a subnet mask: a non-contiguous mask is illegal, a non-contiguous wildcard is legal. The canonical example is selecting a regular subset of subnets: 10.1.0.0 0.0.254.255 matches every subnet whose third octet is even, and only those (10.1.0.0, 10.1.2.0, 10.1.4.0 …), because the least significant bit of the third octet stays 0 in the wildcard and therefore has to match. Second trap: the address written in the ACE is compared only on the wildcard’s 0 bits, so 10.1.1.9 0.0.0.3 and 10.1.1.8 0.0.0.3 name the same block.'
   }
 } as const;
 
@@ -77,36 +103,56 @@ export default function WildcardBuilder() {
     }
   }, [first, last]);
 
-  const inputClass = 'block w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-sm text-slate-900 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100';
+  const inputClass =
+    'block w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-sm text-slate-900 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100';
   const match = result.match;
 
   return (
     <section className="rounded-xl border border-slate-200 bg-white p-5 md:p-6" aria-labelledby="wildcard-title">
       <div className="flex items-center gap-3">
         <Crosshair className="h-5 w-5 text-indigo-600" />
-        <h2 id="wildcard-title" className="text-lg font-semibold text-slate-900">{copy.title}</h2>
+        <h2 id="wildcard-title" className="text-lg font-semibold text-slate-900">
+          {copy.title}
+        </h2>
       </div>
       <p className="mt-2 text-sm leading-relaxed text-slate-600">{copy.intro}</p>
 
       <div className="mt-5 grid gap-4 sm:grid-cols-2">
         <label className="space-y-1.5 text-xs font-medium text-slate-600">
           {copy.first}
-          <input value={first} maxLength={INTERACTIVE_INPUT_LIMITS.ipv4Characters + 1} onChange={(event) => setFirst(event.target.value)} inputMode="decimal" aria-invalid={result.error !== null} className={inputClass} />
+          <input
+            value={first}
+            maxLength={INTERACTIVE_INPUT_LIMITS.ipv4Characters + 1}
+            onChange={(event) => setFirst(event.target.value)}
+            inputMode="decimal"
+            aria-invalid={result.error !== null}
+            className={inputClass}
+          />
         </label>
         <label className="space-y-1.5 text-xs font-medium text-slate-600">
           {copy.last}
-          <input value={last} maxLength={INTERACTIVE_INPUT_LIMITS.ipv4Characters + 1} onChange={(event) => setLast(event.target.value)} inputMode="decimal" aria-invalid={result.error !== null} className={inputClass} />
+          <input
+            value={last}
+            maxLength={INTERACTIVE_INPUT_LIMITS.ipv4Characters + 1}
+            onChange={(event) => setLast(event.target.value)}
+            inputMode="decimal"
+            aria-invalid={result.error !== null}
+            className={inputClass}
+          />
         </label>
       </div>
 
       <div className="mt-4">
         <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">{copy.presets}</p>
         <div className="mt-2 flex flex-wrap gap-2">
-          {PRESETS.map(preset => (
+          {PRESETS.map((preset) => (
             <button
               key={preset.id}
               type="button"
-              onClick={() => { setFirst(preset.first); setLast(preset.last); }}
+              onClick={() => {
+                setFirst(preset.first);
+                setLast(preset.last);
+              }}
               className={`rounded-lg border px-2.5 py-1.5 text-xs font-medium transition ${
                 first === preset.first && last === preset.last
                   ? 'border-indigo-300 bg-indigo-50 text-indigo-700'
@@ -120,7 +166,10 @@ export default function WildcardBuilder() {
       </div>
 
       {result.error || !match ? (
-        <p className="mt-5 flex items-center gap-2 rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700" role="alert">
+        <p
+          className="mt-5 flex items-center gap-2 rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700"
+          role="alert"
+        >
           <TriangleAlert className="h-4 w-4 shrink-0" /> {inputErrorMessage(result.error, language)}
         </p>
       ) : (
@@ -138,19 +187,25 @@ export default function WildcardBuilder() {
               <dd className="mt-1 font-mono text-sm font-semibold text-slate-800">{match.wildcard}</dd>
             </div>
             <div className="rounded-lg border border-slate-100 bg-slate-50 p-3">
-              <dt className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">{copy.prefixEquivalent}</dt>
+              <dt className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">
+                {copy.prefixEquivalent}
+              </dt>
               <dd className="mt-1 font-mono text-sm font-semibold text-slate-800">/{match.prefix}</dd>
             </div>
             <div className="rounded-lg border border-slate-100 bg-slate-50 p-3">
               <dt className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">{copy.extra}</dt>
-              <dd className={`mt-1 font-mono text-sm font-semibold ${match.exact ? 'text-emerald-700' : 'text-amber-700'}`}>
+              <dd
+                className={`mt-1 font-mono text-sm font-semibold ${match.exact ? 'text-emerald-700' : 'text-amber-700'}`}
+              >
                 {match.extraAddresses.toLocaleString(language)}
               </dd>
             </div>
           </dl>
 
           {match.exact ? (
-            <p className="rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-xs leading-relaxed text-emerald-800">{copy.exact}</p>
+            <p className="rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-xs leading-relaxed text-emerald-800">
+              {copy.exact}
+            </p>
           ) : (
             <div className="rounded-lg border border-amber-200 bg-amber-50 p-4">
               <p className="text-xs font-semibold text-amber-900">{copy.inexact}</p>

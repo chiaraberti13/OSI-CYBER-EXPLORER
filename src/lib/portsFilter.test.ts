@@ -14,10 +14,10 @@ describe('portsFilter', () => {
   it('filters ports by range and by search term', () => {
     const wellKnown = filterPorts(PORT_REGISTRY, 'well-known', '', 'en');
     expect(wellKnown.length).toBeGreaterThan(0);
-    expect(wellKnown.every(p => p.range === 'well-known')).toBe(true);
+    expect(wellKnown.every((p) => p.range === 'well-known')).toBe(true);
 
     const https = filterPorts(PORT_REGISTRY, 'all', '443', 'it');
-    expect(https.some(p => p.ports.join(' / ').includes('443'))).toBe(true);
+    expect(https.some((p) => p.ports.join(' / ').includes('443'))).toBe(true);
     expect(filterPorts(PORT_REGISTRY, 'all', 'zzz-no-match-zzz', 'en')).toEqual([]);
   });
 
@@ -30,12 +30,12 @@ describe('portsFilter', () => {
   it('filters devices by category', () => {
     const security = filterDevices(DEVICE_REGISTRY, 'security', '', 'en');
     expect(security.length).toBeGreaterThan(0);
-    expect(security.every(d => d.category === 'security')).toBe(true);
+    expect(security.every((d) => d.category === 'security')).toBe(true);
   });
 
   it('keeps registry invariants: unique protocol and device names', () => {
-    expect(new Set(PROTOCOL_REGISTRY.map(p => p.name)).size).toBe(PROTOCOL_REGISTRY.length);
-    expect(new Set(DEVICE_REGISTRY.map(d => d.name)).size).toBe(DEVICE_REGISTRY.length);
+    expect(new Set(PROTOCOL_REGISTRY.map((p) => p.name)).size).toBe(PROTOCOL_REGISTRY.length);
+    expect(new Set(DEVICE_REGISTRY.map((d) => d.name)).size).toBe(DEVICE_REGISTRY.length);
   });
 
   it('shuffles without mutating the source', () => {

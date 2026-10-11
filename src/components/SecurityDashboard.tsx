@@ -3,13 +3,12 @@ import { useStore } from '../store';
 import { useShallow } from 'zustand/react/shallow';
 
 export default function SecurityDashboard() {
-  const {
-  language,
-  setActiveView,
-} = useStore(useShallow((state) => ({
-  language: state.language,
-  setActiveView: state.setActiveView,
-})));
+  const { language, setActiveView } = useStore(
+    useShallow((state) => ({
+      language: state.language,
+      setActiveView: state.setActiveView
+    }))
+  );
 
   const securitySystems = [
     {
@@ -42,7 +41,7 @@ export default function SecurityDashboard() {
       color: 'bg-blue-500/10 text-blue-600 border-blue-200',
       description: {
         en: 'Runs as a daemon inside servers. Monitors system integrity, login logs and file modifications (checksums).',
-        it: 'Gira come demone nei server. Controlla l\'integrità del sistema, i log di accesso e le modifiche ai file (checksum).'
+        it: "Gira come demone nei server. Controlla l'integrità del sistema, i log di accesso e le modifiche ai file (checksum)."
       }
     },
     {
@@ -53,7 +52,7 @@ export default function SecurityDashboard() {
       color: 'bg-purple-500/10 text-purple-600 border-purple-200',
       description: {
         en: 'Hooks process activity to block malicious registry changes, commands and rogue syscalls in real time.',
-        it: 'Intercetta l\'attività dei processi per bloccare in tempo reale modifiche al registro, comandi e syscall malevoli.'
+        it: "Intercetta l'attività dei processi per bloccare in tempo reale modifiche al registro, comandi e syscall malevoli."
       }
     },
     {
@@ -108,7 +107,7 @@ export default function SecurityDashboard() {
           </h2>
           <p className="text-slate-300 text-[13px] leading-relaxed">
             {language === 'en'
-              ? 'The defenders\' side: which appliances watch the network, where they sit, and the key difference between detecting an attack (IDS) and actively blocking it (IPS). To run attacks and defenses hands-on, use the Attack & Defense Lab.'
+              ? "The defenders' side: which appliances watch the network, where they sit, and the key difference between detecting an attack (IDS) and actively blocking it (IPS). To run attacks and defenses hands-on, use the Attack & Defense Lab."
               : 'Il lato dei difensori: quali apparati sorvegliano la rete, dove si posizionano e la differenza chiave tra rilevare un attacco (IDS) e bloccarlo attivamente (IPS). Per provare attacchi e difese in pratica, usa il Laboratorio Attacco & Difesa.'}
           </p>
 
@@ -121,7 +120,7 @@ export default function SecurityDashboard() {
               <p className="text-slate-400 text-xs">
                 {language === 'en'
                   ? 'Passive, out-of-band. Reads a copy of the traffic (TAP/mirror): it can flag, log and alert, but cannot stop the attack. It adds no latency.'
-                  : 'Passivo, fuori linea. Legge una copia del traffico (TAP/mirror): può segnalare, registrare e allertare, ma non blocca l\'attacco. Non rallenta la rete.'}
+                  : "Passivo, fuori linea. Legge una copia del traffico (TAP/mirror): può segnalare, registrare e allertare, ma non blocca l'attacco. Non rallenta la rete."}
               </p>
             </div>
             <div className="p-4 bg-slate-800/40 rounded-lg border border-slate-800/60">
@@ -153,11 +152,16 @@ export default function SecurityDashboard() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {securitySystems.map(sys => (
-            <div key={sys.id} className="bg-white border border-slate-200/80 rounded-lg p-5 space-y-4 hover:shadow-md transition-all">
+          {securitySystems.map((sys) => (
+            <div
+              key={sys.id}
+              className="bg-white border border-slate-200/80 rounded-lg p-5 space-y-4 hover:shadow-md transition-all"
+            >
               <div className="flex items-start justify-between">
                 <div>
-                  <span className={`inline-block px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase border ${sys.color}`}>
+                  <span
+                    className={`inline-block px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase border ${sys.color}`}
+                  >
                     {sys.title}
                   </span>
                   <h4 className="font-bold text-slate-800 text-sm mt-2">{sys.fullName}</h4>

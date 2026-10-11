@@ -8,17 +8,31 @@ import { ATTACK_SCENARIOS } from '../content/attackScenarios';
 import { ATTACK_WALKTHROUGHS } from '../content/attackWalkthroughs';
 import { AttackWalkthrough, StepActor } from '../types';
 import {
-  Skull, ShieldCheck, ShieldOff, Server, Play, Pause, RotateCcw, ChevronRight,
-  Crosshair, Search, AlertTriangle, CheckCircle2, Radio, Target, Ban
+  Skull,
+  ShieldCheck,
+  ShieldOff,
+  Server,
+  Play,
+  Pause,
+  RotateCcw,
+  ChevronRight,
+  Crosshair,
+  Search,
+  AlertTriangle,
+  CheckCircle2,
+  Radio,
+  Target,
+  Ban
 } from 'lucide-react';
 
 const T = {
   it: {
     title: 'Laboratorio Attacco & Difesa',
-    subtitle: 'Il laboratorio pratico completo: scegli un attacco, guarda come si svolge passo dopo passo e attiva la difesa per vedere dove e come viene neutralizzato.',
+    subtitle:
+      'Il laboratorio pratico completo: scegli un attacco, guarda come si svolge passo dopo passo e attiva la difesa per vedere dove e come viene neutralizzato.',
     pick: 'Scegli un attacco',
     search: 'Cerca attacco, tecnica o livello...',
-    goal: 'Obiettivo dell\'attaccante',
+    goal: "Obiettivo dell'attaccante",
     attacker: 'Attaccante',
     target: 'Bersaglio',
     defenseOff: 'Difesa: OFF',
@@ -27,8 +41,8 @@ const T = {
     pause: 'Pausa',
     next: 'Passo',
     reset: 'Reset',
-    hint: 'Premi Riproduci o avanza un passo alla volta per vedere l\'attacco svilupparsi.',
-    killchain: 'Sequenza dell\'attacco',
+    hint: "Premi Riproduci o avanza un passo alla volta per vedere l'attacco svilupparsi.",
+    killchain: "Sequenza dell'attacco",
     defenseCard: 'Contromisura',
     blocked: 'Bloccato dalla difesa',
     outcomeKO: 'Attacco riuscito',
@@ -39,14 +53,16 @@ const T = {
     why: 'Perché funziona',
     replay: 'Rivedi',
     tip: 'Suggerimento: prova lo stesso attacco con la difesa OFF e poi ON per confrontare gli esiti.',
-    simulationNotice: 'Simulazione locale e non esecutiva. Usala solo in ambienti posseduti o esplicitamente autorizzati: non genera traffico, non esegue comandi e omette prerequisiti e payload operativi.'
+    simulationNotice:
+      'Simulazione locale e non esecutiva. Usala solo in ambienti posseduti o esplicitamente autorizzati: non genera traffico, non esegue comandi e omette prerequisiti e payload operativi.'
   },
   en: {
     title: 'Attack & Defense Lab',
-    subtitle: 'The complete hands-on lab: pick an attack, watch how it unfolds step by step, then turn on the defense to see exactly where and how it gets neutralized.',
+    subtitle:
+      'The complete hands-on lab: pick an attack, watch how it unfolds step by step, then turn on the defense to see exactly where and how it gets neutralized.',
     pick: 'Choose an attack',
     search: 'Search attack, technique or layer...',
-    goal: 'Attacker\'s goal',
+    goal: "Attacker's goal",
     attacker: 'Attacker',
     target: 'Target',
     defenseOff: 'Defense: OFF',
@@ -67,7 +83,8 @@ const T = {
     why: 'Why it works',
     replay: 'Replay',
     tip: 'Tip: run the same attack with the defense OFF, then ON, to compare the outcomes.',
-    simulationNotice: 'Local, non-executing simulation. Use it only in owned or explicitly authorised environments: it generates no traffic, runs no commands, and omits operational prerequisites and payloads.'
+    simulationNotice:
+      'Local, non-executing simulation. Use it only in owned or explicitly authorised environments: it generates no traffic, runs no commands, and omits operational prerequisites and payloads.'
   }
 };
 
@@ -78,11 +95,34 @@ const SEVERITY_STYLE: Record<string, string> = {
   critical: 'bg-red-50 text-red-700 border-red-200'
 };
 
-const ACTOR_STYLE: Record<StepActor, { dot: string; badge: string; label: { it: string; en: string }; Icon: LucideIcon }> = {
-  attacker: { dot: 'bg-red-500', badge: 'text-red-600 bg-red-50 border-red-100', label: { it: 'Attaccante', en: 'Attacker' }, Icon: Skull },
-  victim:   { dot: 'bg-blue-500', badge: 'text-blue-600 bg-blue-50 border-blue-100', label: { it: 'Bersaglio', en: 'Target' }, Icon: Server },
-  network:  { dot: 'bg-violet-500', badge: 'text-violet-600 bg-violet-50 border-violet-100', label: { it: 'Rete', en: 'Network' }, Icon: Radio },
-  defense:  { dot: 'bg-emerald-500', badge: 'text-emerald-600 bg-emerald-50 border-emerald-100', label: { it: 'Difesa', en: 'Defense' }, Icon: ShieldCheck }
+const ACTOR_STYLE: Record<
+  StepActor,
+  { dot: string; badge: string; label: { it: string; en: string }; Icon: LucideIcon }
+> = {
+  attacker: {
+    dot: 'bg-red-500',
+    badge: 'text-red-600 bg-red-50 border-red-100',
+    label: { it: 'Attaccante', en: 'Attacker' },
+    Icon: Skull
+  },
+  victim: {
+    dot: 'bg-blue-500',
+    badge: 'text-blue-600 bg-blue-50 border-blue-100',
+    label: { it: 'Bersaglio', en: 'Target' },
+    Icon: Server
+  },
+  network: {
+    dot: 'bg-violet-500',
+    badge: 'text-violet-600 bg-violet-50 border-violet-100',
+    label: { it: 'Rete', en: 'Network' },
+    Icon: Radio
+  },
+  defense: {
+    dot: 'bg-emerald-500',
+    badge: 'text-emerald-600 bg-emerald-50 border-emerald-100',
+    label: { it: 'Difesa', en: 'Defense' },
+    Icon: ShieldCheck
+  }
 };
 
 type TimelineEntry =
@@ -102,10 +142,10 @@ export default function AttackLab() {
   const playRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const wt = useMemo(
-    () => ATTACK_WALKTHROUGHS.find(w => w.scenarioId === selectedId) || ATTACK_WALKTHROUGHS[0],
+    () => ATTACK_WALKTHROUGHS.find((w) => w.scenarioId === selectedId) || ATTACK_WALKTHROUGHS[0],
     [selectedId]
   );
-  const layerColor = OSI_LAYERS.find(l => l.id === wt.layer)?.color || '#6366f1';
+  const layerColor = OSI_LAYERS.find((l) => l.id === wt.layer)?.color || '#6366f1';
 
   // Build the ordered timeline based on whether the defense is active.
   const timeline = useMemo<TimelineEntry[]>(() => {
@@ -140,7 +180,7 @@ export default function AttackLab() {
   useEffect(() => {
     if (!playing) return;
     playRef.current = setInterval(() => {
-      setRevealed(prev => {
+      setRevealed((prev) => {
         if (prev >= timeline.length) {
           setPlaying(false);
           return prev;
@@ -149,42 +189,62 @@ export default function AttackLab() {
       });
     }, 1100);
     return () => {
-      if (playRef.current) { clearInterval(playRef.current); playRef.current = null; }
+      if (playRef.current) {
+        clearInterval(playRef.current);
+        playRef.current = null;
+      }
     };
   }, [playing, timeline.length]);
 
   const atEnd = revealed >= timeline.length;
 
   const handlePlay = () => {
-    if (atEnd) { setRevealed(0); setPlaying(true); return; }
-    setPlaying(p => !p);
+    if (atEnd) {
+      setRevealed(0);
+      setPlaying(true);
+      return;
+    }
+    setPlaying((p) => !p);
   };
-  const handleNext = () => { setPlaying(false); setRevealed(r => Math.min(r + 1, timeline.length)); };
-  const handleReset = () => { setPlaying(false); setRevealed(0); };
+  const handleNext = () => {
+    setPlaying(false);
+    setRevealed((r) => Math.min(r + 1, timeline.length));
+  };
+  const handleReset = () => {
+    setPlaying(false);
+    setRevealed(0);
+  };
 
   // Attacks grouped by OSI layer (top-down 7 → 1), respecting the search filter.
   const grouped = useMemo(() => {
     const q = query.trim().toLowerCase();
     const match = (w: AttackWalkthrough) => {
       if (!q) return true;
-      const sc = ATTACK_SCENARIOS.find(s => s.id === w.scenarioId);
+      const sc = ATTACK_SCENARIOS.find((s) => s.id === w.scenarioId);
       const hay = [
-        sc?.name.it, sc?.name.en, sc?.description.it, sc?.description.en,
-        `l${w.layer}`, `livello ${w.layer}`, `layer ${w.layer}`
-      ].join(' ').toLowerCase();
+        sc?.name.it,
+        sc?.name.en,
+        sc?.description.it,
+        sc?.description.en,
+        `l${w.layer}`,
+        `livello ${w.layer}`,
+        `layer ${w.layer}`
+      ]
+        .join(' ')
+        .toLowerCase();
       return hay.includes(q);
     };
-    const layers = Array.from(new Set(ATTACK_WALKTHROUGHS.map(w => w.layer))).sort((a, b) => b - a);
+    const layers = Array.from(new Set(ATTACK_WALKTHROUGHS.map((w) => w.layer))).sort((a, b) => b - a);
     return layers
-      .map(layer => ({
+      .map((layer) => ({
         layer,
-        name: OSI_LAYERS.find(l => l.id === layer)?.translations[language].name || `L${layer}`,
-        items: ATTACK_WALKTHROUGHS.filter(w => w.layer === layer && match(w))
+        name: OSI_LAYERS.find((l) => l.id === layer)?.translations[language].name || `L${layer}`,
+        items: ATTACK_WALKTHROUGHS.filter((w) => w.layer === layer && match(w))
       }))
-      .filter(g => g.items.length > 0);
+      .filter((g) => g.items.length > 0);
   }, [query, language]);
 
-  const nameOf = (id: string) => ATTACK_SCENARIOS.find(s => s.id === id)?.name[language] || id;
+  const nameOf = (id: string) => ATTACK_SCENARIOS.find((s) => s.id === id)?.name[language] || id;
 
   return (
     <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
@@ -202,9 +262,14 @@ export default function AttackLab() {
           </div>
           <h1 className="text-2xl md:text-3xl font-semibold tracking-tight uppercase">{t.title}</h1>
           <p className="text-slate-400 text-sm mt-2 max-w-2xl leading-relaxed">{t.subtitle}</p>
-          <div className="mt-4 flex max-w-3xl items-start gap-2 rounded-lg border border-amber-300/30 bg-amber-300/10 px-3 py-2 text-xs leading-relaxed text-amber-100" role="note">
+          <div
+            className="mt-4 flex max-w-3xl items-start gap-2 rounded-lg border border-amber-300/30 bg-amber-300/10 px-3 py-2 text-xs leading-relaxed text-amber-100"
+            role="note"
+          >
             <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
-            <span><strong>{uiMessages(language).shared.simulationOnly}</strong> {t.simulationNotice}</span>
+            <span>
+              <strong>{uiMessages(language).shared.simulationOnly}</strong> {t.simulationNotice}
+            </span>
           </div>
         </div>
       </div>
@@ -218,7 +283,7 @@ export default function AttackLab() {
               <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 value={query}
-                onChange={e => setQuery(e.target.value)}
+                onChange={(e) => setQuery(e.target.value)}
                 placeholder={t.search}
                 aria-label={t.search}
                 className="w-full bg-white border border-slate-200 rounded-lg pl-9 pr-3 py-2 text-xs text-slate-700 placeholder:text-slate-400 outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-100"
@@ -226,16 +291,19 @@ export default function AttackLab() {
             </div>
           </div>
           <div className="max-h-[420px] lg:max-h-[640px] overflow-y-auto custom-scrollbar p-3 space-y-4">
-            {grouped.map(group => (
+            {grouped.map((group) => (
               <div key={group.layer}>
                 <div className="flex items-center gap-2 px-1 mb-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: OSI_LAYERS.find(l => l.id === group.layer)?.color }} />
+                  <span
+                    className="w-1.5 h-1.5 rounded-full"
+                    style={{ backgroundColor: OSI_LAYERS.find((l) => l.id === group.layer)?.color }}
+                  />
                   <span className="text-[9px] font-semibold text-slate-500 uppercase tracking-wider">
                     L{group.layer} · {group.name}
                   </span>
                 </div>
                 <div className="space-y-1">
-                  {group.items.map(w => {
+                  {group.items.map((w) => {
                     const active = w.scenarioId === selectedId;
                     return (
                       <button
@@ -249,7 +317,9 @@ export default function AttackLab() {
                         }`}
                       >
                         <span className="truncate">{nameOf(w.scenarioId)}</span>
-                        <span className={`text-[8px] font-semibold uppercase px-1.5 py-0.5 rounded border shrink-0 ${SEVERITY_STYLE[w.severity]}`}>
+                        <span
+                          className={`text-[8px] font-semibold uppercase px-1.5 py-0.5 rounded border shrink-0 ${SEVERITY_STYLE[w.severity]}`}
+                        >
                           {w.severity}
                         </span>
                       </button>
@@ -273,7 +343,9 @@ export default function AttackLab() {
                 >
                   {t.layer} {wt.layer}
                 </span>
-                <span className={`text-[10px] font-semibold uppercase px-2 py-1 rounded-md border ${SEVERITY_STYLE[wt.severity]}`}>
+                <span
+                  className={`text-[10px] font-semibold uppercase px-2 py-1 rounded-md border ${SEVERITY_STYLE[wt.severity]}`}
+                >
                   {t.severity}: {wt.severity}
                 </span>
               </div>
@@ -281,14 +353,15 @@ export default function AttackLab() {
               <div className="mt-2 flex items-start gap-2 max-w-xl">
                 <Crosshair className="w-3.5 h-3.5 text-red-500 mt-0.5 shrink-0" />
                 <p className="text-sm text-slate-600 leading-relaxed">
-                  <span className="font-bold text-slate-800">{t.goal}: </span>{wt.goal[language]}
+                  <span className="font-bold text-slate-800">{t.goal}: </span>
+                  {wt.goal[language]}
                 </p>
               </div>
             </div>
 
             {/* Defense toggle */}
             <button
-              onClick={() => setDefenseOn(v => !v)}
+              onClick={() => setDefenseOn((v) => !v)}
               aria-pressed={defenseOn}
               className={`flex items-center gap-2.5 px-4 py-3 rounded-lg border-2 font-semibold text-sm uppercase tracking-wide transition-all ${
                 defenseOn
@@ -302,11 +375,15 @@ export default function AttackLab() {
           </div>
 
           {/* Stage: attacker → target with shield */}
-          <div className={`relative rounded-lg border p-5 mb-5 overflow-hidden transition-colors ${
-            atEnd && !defenseOn ? 'border-red-200 bg-red-50/40'
-            : atEnd && defenseOn ? 'border-emerald-200 bg-emerald-50/40'
-            : 'border-slate-200 bg-slate-50/60'
-          }`}>
+          <div
+            className={`relative rounded-lg border p-5 mb-5 overflow-hidden transition-colors ${
+              atEnd && !defenseOn
+                ? 'border-red-200 bg-red-50/40'
+                : atEnd && defenseOn
+                  ? 'border-emerald-200 bg-emerald-50/40'
+                  : 'border-slate-200 bg-slate-50/60'
+            }`}
+          >
             <div className="flex items-center justify-between gap-3">
               {/* Attacker */}
               <div className="flex flex-col items-center gap-1.5 w-24">
@@ -332,7 +409,9 @@ export default function AttackLab() {
                     initial={false}
                     animate={{ scale: defenseOn ? 1 : 0.85, opacity: defenseOn ? 1 : 0.35 }}
                     className={`w-10 h-10 rounded-full flex items-center justify-center border-2 ${
-                      defenseOn ? 'bg-emerald-500 border-emerald-600 text-white' : 'bg-white border-slate-200 text-slate-300'
+                      defenseOn
+                        ? 'bg-emerald-500 border-emerald-600 text-white'
+                        : 'bg-white border-slate-200 text-slate-300'
                     }`}
                   >
                     <ShieldCheck className="w-5 h-5" />
@@ -342,10 +421,11 @@ export default function AttackLab() {
 
               {/* Target */}
               <div className="flex flex-col items-center gap-1.5 w-24">
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors ${
-                  atEnd && !defenseOn ? 'bg-red-600 text-white shadow-red-500/20'
-                  : 'bg-slate-800 text-white'
-                }`}>
+                <div
+                  className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors ${
+                    atEnd && !defenseOn ? 'bg-red-600 text-white shadow-red-500/20' : 'bg-slate-800 text-white'
+                  }`}
+                >
                   <Server className="w-6 h-6" />
                 </div>
                 <span className="text-[9px] font-semibold uppercase tracking-wider text-slate-500">{t.target}</span>
@@ -367,7 +447,8 @@ export default function AttackLab() {
               disabled={atEnd}
               className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-white border border-slate-200 text-slate-600 text-xs font-bold uppercase tracking-wider hover:border-slate-300 disabled:opacity-30 transition-all"
             >
-              {t.next}<ChevronRight className="w-3.5 h-3.5" />
+              {t.next}
+              <ChevronRight className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={handleReset}
@@ -406,16 +487,22 @@ export default function AttackLab() {
                         <div className="w-7 h-7 rounded-lg bg-emerald-600 text-white flex items-center justify-center">
                           <ShieldCheck className="w-4 h-4" />
                         </div>
-                        <span className="text-[10px] font-semibold uppercase tracking-wider text-emerald-700">{t.defenseCard}</span>
+                        <span className="text-[10px] font-semibold uppercase tracking-wider text-emerald-700">
+                          {t.defenseCard}
+                        </span>
                         <span className="text-sm font-semibold text-emerald-900">· {wt.defense.name[language]}</span>
                       </div>
                       <div className="grid sm:grid-cols-2 gap-3 pl-9">
                         <div>
-                          <p className="text-[9px] font-semibold uppercase tracking-wider text-emerald-600 mb-0.5">{t.how}</p>
+                          <p className="text-[9px] font-semibold uppercase tracking-wider text-emerald-600 mb-0.5">
+                            {t.how}
+                          </p>
                           <p className="text-xs text-slate-700 leading-relaxed">{wt.defense.action[language]}</p>
                         </div>
                         <div>
-                          <p className="text-[9px] font-semibold uppercase tracking-wider text-emerald-600 mb-0.5">{t.why}</p>
+                          <p className="text-[9px] font-semibold uppercase tracking-wider text-emerald-600 mb-0.5">
+                            {t.why}
+                          </p>
                           <p className="text-xs text-slate-700 leading-relaxed">{wt.defense.mechanism[language]}</p>
                         </div>
                       </div>
@@ -434,11 +521,15 @@ export default function AttackLab() {
                         ok ? 'border-emerald-300 bg-emerald-50' : 'border-red-300 bg-red-50'
                       }`}
                     >
-                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-white shrink-0 ${ok ? 'bg-emerald-600' : 'bg-red-600'}`}>
+                      <div
+                        className={`w-8 h-8 rounded-lg flex items-center justify-center text-white shrink-0 ${ok ? 'bg-emerald-600' : 'bg-red-600'}`}
+                      >
                         {ok ? <CheckCircle2 className="w-5 h-5" /> : <AlertTriangle className="w-5 h-5" />}
                       </div>
                       <div>
-                        <p className={`text-sm font-semibold uppercase tracking-wide ${ok ? 'text-emerald-700' : 'text-red-700'}`}>
+                        <p
+                          className={`text-sm font-semibold uppercase tracking-wide ${ok ? 'text-emerald-700' : 'text-red-700'}`}
+                        >
                           {ok ? t.outcomeOK : t.outcomeKO}
                         </p>
                         <p className="text-xs text-slate-700 leading-relaxed mt-0.5">
@@ -469,15 +560,20 @@ export default function AttackLab() {
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className={`text-[8px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded border ${actor.badge}`}>
+                        <span
+                          className={`text-[8px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded border ${actor.badge}`}
+                        >
                           {actor.label[language]}
                         </span>
-                        <h4 className={`text-sm font-bold ${entry.blocked ? 'text-slate-500 line-through decoration-red-300' : 'text-slate-900'}`}>
+                        <h4
+                          className={`text-sm font-bold ${entry.blocked ? 'text-slate-500 line-through decoration-red-300' : 'text-slate-900'}`}
+                        >
                           {entry.step.title[language]}
                         </h4>
                         {entry.blocked && (
                           <span className="inline-flex items-center gap-1 text-[8px] font-semibold uppercase tracking-wider text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded">
-                            <Ban className="w-2.5 h-2.5" />{t.blocked}
+                            <Ban className="w-2.5 h-2.5" />
+                            {t.blocked}
                           </span>
                         )}
                       </div>

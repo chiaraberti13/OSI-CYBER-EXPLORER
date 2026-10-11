@@ -16,8 +16,11 @@ export function validateScorecardReport(value, expectedCommit) {
   if (expectedCommit !== undefined && value.repo.commit !== expectedCommit) {
     throw new Error('Scorecard report does not match the workflow commit.');
   }
-  if (typeof value.date !== 'string' || !/^\d{4}-\d{2}-\d{2}(?:T.*Z)?$/.test(value.date)
-      || Number.isNaN(Date.parse(value.date))) {
+  if (
+    typeof value.date !== 'string' ||
+    !/^\d{4}-\d{2}-\d{2}(?:T.*Z)?$/.test(value.date) ||
+    Number.isNaN(Date.parse(value.date))
+  ) {
     throw new Error('Scorecard report date is invalid.');
   }
   if (typeof value.scorecard?.version !== 'string' || !/^v\d+\.\d+\.\d+$/.test(value.scorecard.version)) {
@@ -46,8 +49,12 @@ export function validateScorecardReport(value, expectedCommit) {
 }
 
 function cell(value) {
-  return String(value).replaceAll('\\', '\\\\').replaceAll('|', '\\|')
-    .replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('`', '\\`')
+  return String(value)
+    .replaceAll('\\', '\\\\')
+    .replaceAll('|', '\\|')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('`', '\\`')
     .replace(/[\r\n]+/g, ' ');
 }
 
@@ -87,14 +94,20 @@ export function formatScorecardTrend(current, baseline, expectedCommit) {
     '- Engine changes may change scoring; inspect reasons before comparing / Una nuova versione può cambiare il punteggio: confrontare anche i motivi.',
     '',
     '| Check / Controllo | Baseline | Current / Attuale | Change / Variazione | Reason / Motivo attuale |',
-    '| --- | --- | --- | --- | --- |',
+    '| --- | --- | --- | --- | --- |'
   ];
   for (const name of names) {
     const currentCheck = newChecks.get(name);
     const previousCheck = oldChecks.get(name);
-    lines.push(`| ${name} | ${scoreLabel(previousCheck)} | ${scoreLabel(currentCheck)} | ${changeLabel(currentCheck, previousCheck)} | ${cell(currentCheck?.reason ?? 'Check absent in current scan / Controllo assente nella scansione attuale')} |`);
+    lines.push(
+      `| ${name} | ${scoreLabel(previousCheck)} | ${scoreLabel(currentCheck)} | ${changeLabel(currentCheck, previousCheck)} | ${cell(currentCheck?.reason ?? 'Check absent in current scan / Controllo assente nella scansione attuale')} |`
+    );
   }
-  lines.push('', 'Decisions and limitations / Decisioni e limiti: [repository posture / postura del repository](https://github.com/chiaraberti13/OSI-CYBER-EXPLORER/blob/main/docs/REPOSITORY_POSTURE.md).', '');
+  lines.push(
+    '',
+    'Decisions and limitations / Decisioni e limiti: [repository posture / postura del repository](https://github.com/chiaraberti13/OSI-CYBER-EXPLORER/blob/main/docs/REPOSITORY_POSTURE.md).',
+    ''
+  );
   return lines.join('\n');
 }
 
@@ -120,7 +133,7 @@ async function main() {
   }
   const [current, baseline] = await Promise.all([
     readReport(options.get('--input')),
-    readReport(options.get('--baseline')),
+    readReport(options.get('--baseline'))
   ]);
   const report = formatScorecardTrend(current, baseline, options.get('--commit'));
   await writeFile(options.get('--output'), report, 'utf8');

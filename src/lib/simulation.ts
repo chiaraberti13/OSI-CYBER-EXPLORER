@@ -59,11 +59,7 @@ export interface SimContext {
 
 /** Actions that drive the simulation machine. */
 export type SimAction =
-  | { type: 'START' }
-  | { type: 'TICK' }
-  | { type: 'PAUSE' }
-  | { type: 'RESUME' }
-  | { type: 'RESET' };
+  { type: 'START' } | { type: 'TICK' } | { type: 'PAUSE' } | { type: 'RESUME' } | { type: 'RESET' };
 
 /** The engine's own state: phase, the OSI layer currently processed and pause flag. */
 export interface SimMachineState {
@@ -89,7 +85,7 @@ export const INITIAL_STEP: OsiLayerId = TOP_LAYER;
 export const INITIAL_SIM_STATE: SimMachineState = {
   phase: 'idle',
   currentStep: INITIAL_STEP,
-  paused: false,
+  paused: false
 };
 
 /**
@@ -131,9 +127,7 @@ export function startupLogMessage(protocol: SimProtocol, language: Language): st
         ? 'FTP Control: Connecting to command port 21...'
         : 'Controllo FTP: Connessione alla porta comandi 21...';
     case 'SMTP':
-      return en
-        ? 'SMTP Session: Sending EHLO to mail gateway...'
-        : 'Sessione SMTP: Invio EHLO al gateway di posta...';
+      return en ? 'SMTP Session: Sending EHLO to mail gateway...' : 'Sessione SMTP: Invio EHLO al gateway di posta...';
     case 'DNS':
       return en ? 'DNS Query: Resolving domain name...' : 'Query DNS: Risoluzione nome dominio...';
     case 'BGP':
@@ -153,7 +147,7 @@ export function startupLogMessage(protocol: SimProtocol, language: Language): st
  */
 export function buildEncapsulationHeader(
   step: number,
-  protocol: SimProtocol,
+  protocol: SimProtocol
 ): { details: string; fields: HeaderField[] } {
   let details = `L${step} Header Added`;
   let fields: HeaderField[] = [];
@@ -166,7 +160,7 @@ export function buildEncapsulationHeader(
         { key: 'Method', value: 'GET' },
         { key: 'Path', value: '/index.html' },
         { key: 'Host', value: 'example.com' },
-        { key: 'Agent', value: 'Mozilla/5.0' },
+        { key: 'Agent', value: 'Mozilla/5.0' }
       ];
     } else if (step === 6) {
       details = secureWeb
@@ -176,17 +170,17 @@ export function buildEncapsulationHeader(
         ? [
             { key: 'Record', value: 'Application Data' },
             { key: 'Version', value: 'TLS 1.3' },
-            { key: 'Content', value: 'Encrypted' },
+            { key: 'Content', value: 'Encrypted' }
           ]
         : [
             { key: 'Charset', value: 'UTF-8' },
-            { key: 'Encryption', value: 'None' },
+            { key: 'Encryption', value: 'None' }
           ];
     } else if (step === 5) {
       details = 'Session semantics: no universal OSI Layer 5 header';
       fields = [
         { key: 'Model', value: 'Conceptual OSI function' },
-        { key: 'State', value: 'Established' },
+        { key: 'State', value: 'Established' }
       ];
     } else if (step === 4) {
       details = `TCP: PSH, ACK, destination port ${secureWeb ? '443' : '80'}`;
@@ -194,7 +188,7 @@ export function buildEncapsulationHeader(
         { key: 'SrcPort', value: '54321' },
         { key: 'DstPort', value: secureWeb ? '443' : '80' },
         { key: 'SeqNo', value: '120485' },
-        { key: 'Flags', value: 'PSH, ACK' },
+        { key: 'Flags', value: 'PSH, ACK' }
       ];
     } else if (step === 3) {
       details = 'IPv4: 192.168.1.10 -> 198.51.100.14';
@@ -202,14 +196,14 @@ export function buildEncapsulationHeader(
         { key: 'SrcIP', value: '192.168.1.10' },
         { key: 'DstIP', value: '198.51.100.14' },
         { key: 'TTL', value: '64' },
-        { key: 'Proto', value: '0x06 (TCP)' },
+        { key: 'Proto', value: '0x06 (TCP)' }
       ];
     } else if (step === 2) {
       details = 'MAC: 00:0C:29... -> 00:50:56...';
       fields = [
         { key: 'SrcMAC', value: '00:0C:29:C0:00:08' },
         { key: 'DstMAC', value: '00:50:56:C0:00:01' },
-        { key: 'VLAN', value: '10' },
+        { key: 'VLAN', value: '10' }
       ];
     }
   } else if (protocol === 'SSH') {
@@ -218,14 +212,14 @@ export function buildEncapsulationHeader(
       fields = [
         { key: 'MsgId', value: '34' },
         { key: 'EncData', value: '4f2a...88bc' },
-        { key: 'MAC', value: 'SHA256' },
+        { key: 'MAC', value: 'SHA256' }
       ];
     } else if (step === 4) {
       details = 'TCP Port 22 (SSH)';
       fields = [
         { key: 'SrcPort', value: '55231' },
         { key: 'DstPort', value: '22' },
-        { key: 'SeqNo', value: '1001' },
+        { key: 'SeqNo', value: '1001' }
       ];
     } else {
       details = `L${step} Overhead`;
@@ -236,13 +230,13 @@ export function buildEncapsulationHeader(
       fields = [
         { key: 'Prefix', value: 'USER' },
         { key: 'Arg', value: 'anonymous' },
-        { key: 'EOL', value: 'CRLF' },
+        { key: 'EOL', value: 'CRLF' }
       ];
     } else if (step === 4) {
       details = 'TCP Port 21 (FTP-Control)';
       fields = [
         { key: 'SrcPort', value: '55678' },
-        { key: 'DstPort', value: '21' },
+        { key: 'DstPort', value: '21' }
       ];
     } else {
       details = `L${step} Overhead`;
@@ -252,13 +246,13 @@ export function buildEncapsulationHeader(
       details = 'SMTP: MAIL FROM:<sender@example.com>';
       fields = [
         { key: 'Command', value: 'MAIL FROM' },
-        { key: 'Sender', value: 'sender@example.com' },
+        { key: 'Sender', value: 'sender@example.com' }
       ];
     } else if (step === 4) {
       details = 'TCP Port 25 (SMTP)';
       fields = [
         { key: 'SrcPort', value: '5590' },
-        { key: 'DstPort', value: '25' },
+        { key: 'DstPort', value: '25' }
       ];
     } else {
       details = `L${step} Overhead`;
@@ -270,27 +264,27 @@ export function buildEncapsulationHeader(
         { key: 'ID', value: '0x3a4b' },
         { key: 'Flags', value: 'Standard Query' },
         { key: 'Name', value: 'example.com' },
-        { key: 'Type', value: 'A (IPv4 Address)' },
+        { key: 'Type', value: 'A (IPv4 Address)' }
       ];
     } else if (step === 4) {
       details = 'UDP Port 53';
       fields = [
         { key: 'SrcPort', value: '55667' },
         { key: 'DstPort', value: '53 (DNS)' },
-        { key: 'Len', value: '38' },
+        { key: 'Len', value: '38' }
       ];
     } else if (step === 3) {
       details = 'IP Dest: 203.0.113.8';
       fields = [
         { key: 'SrcIP', value: '192.168.1.10' },
         { key: 'DstIP', value: '203.0.113.8' },
-        { key: 'TTL', value: '64' },
+        { key: 'TTL', value: '64' }
       ];
     } else if (step === 2) {
       details = 'Ethernet II: ARP Resolved';
       fields = [
         { key: 'SrcMAC', value: '00:0C:29:C0:00:08' },
-        { key: 'DstMAC', value: '00:50:56:C0:00:01' },
+        { key: 'DstMAC', value: '00:50:56:C0:00:01' }
       ];
     } else {
       details = `L${step} Overhead`;
@@ -302,27 +296,27 @@ export function buildEncapsulationHeader(
         { key: 'MsgType', value: 'UPDATE' },
         { key: 'Prefix', value: '192.168.100.0/24' },
         { key: 'Origin', value: 'IGP' },
-        { key: 'AS_PATH', value: '65001 65002' },
+        { key: 'AS_PATH', value: '65001 65002' }
       ];
     } else if (step === 4) {
       details = 'TCP Port 179 (BGP)';
       fields = [
         { key: 'SrcPort', value: '49172' },
         { key: 'DstPort', value: '179' },
-        { key: 'Flags', value: 'PUSH, ACK' },
+        { key: 'Flags', value: 'PUSH, ACK' }
       ];
     } else if (step === 3) {
       details = 'IP: Internal Routing';
       fields = [
         { key: 'SrcIP', value: '10.0.0.1' },
-        { key: 'DstIP', value: '10.0.0.2' },
+        { key: 'DstIP', value: '10.0.0.2' }
       ];
     } else if (step === 2) {
       details = 'Ethernet II frame toward the next-hop router';
       fields = [
         { key: 'SrcMAC', value: '00:1B:54:AA:10:01' },
         { key: 'DstMAC', value: '00:1B:54:AA:10:02' },
-        { key: 'EtherType', value: '0x0800 (IPv4)' },
+        { key: 'EtherType', value: '0x0800 (IPv4)' }
       ];
     } else {
       details = `L${step} Routing Overhead`;
@@ -333,28 +327,28 @@ export function buildEncapsulationHeader(
       fields = [
         { key: 'Type', value: '8 (Echo Request)' },
         { key: 'Code', value: '0' },
-        { key: 'Payload', value: '32 Bytes' },
+        { key: 'Payload', value: '32 Bytes' }
       ];
     } else if (step === 4) {
       details = 'UDP: Checksum 0xAC3F';
       fields = [
         { key: 'SrcPort', value: '32768' },
         { key: 'DstPort', value: '7' },
-        { key: 'Length', value: '40' },
+        { key: 'Length', value: '40' }
       ];
     } else if (step === 3) {
       details = 'ICMP Over IP: Type 8, Code 0';
       fields = [
         { key: 'SrcIP', value: '192.168.1.5' },
         { key: 'DstIP', value: '203.0.113.8' },
-        { key: 'TTL', value: '128' },
+        { key: 'TTL', value: '128' }
       ];
     } else if (step === 2) {
       details = 'Ethernet II: IPv4 Payload';
       fields = [
         { key: 'SrcMAC', value: 'B4:2E:99:A1:C2:E0' },
         { key: 'DstMAC', value: 'E4:F4:C6:D1:B2:A1' },
-        { key: 'Type', value: '0x0800' },
+        { key: 'Type', value: '0x0800' }
       ];
     }
   }
@@ -371,9 +365,9 @@ function start(state: SimMachineState, ctx: SimContext): SimResult {
     {
       kind: 'log',
       message: ctx.language === 'en' ? 'Starting packet encapsulation...' : 'Inizio incapsulamento pacchetto...',
-      severity: 'info',
+      severity: 'info'
     },
-    { kind: 'audio', cue: 'start' },
+    { kind: 'audio', cue: 'start' }
   ];
   return { state: { phase: 'encapsulating', currentStep: INITIAL_STEP, paused: false }, effects };
 }
@@ -388,9 +382,9 @@ function reset(ctx: SimContext): SimResult {
       {
         kind: 'log',
         message: ctx.language === 'en' ? 'Simulation reset.' : 'Simulazione resettata.',
-        severity: 'warning',
-      },
-    ],
+        severity: 'warning'
+      }
+    ]
   };
 }
 
@@ -413,8 +407,8 @@ function tickEncapsulating(state: SimMachineState, ctx: SimContext): SimResult {
         { kind: 'addHeader', header },
         { kind: 'log', message, severity: 'success' },
         { kind: 'selectLayer', layerId: currentStep },
-        { kind: 'audio', cue: 'step' },
-      ],
+        { kind: 'audio', cue: 'step' }
+      ]
     };
   }
 
@@ -423,8 +417,8 @@ function tickEncapsulating(state: SimMachineState, ctx: SimContext): SimResult {
     {
       kind: 'log',
       message: ctx.language === 'en' ? 'Transmitting via Physical Media...' : 'Trasmissione via Media Fisico...',
-      severity: 'info',
-    },
+      severity: 'info'
+    }
   ];
 
   if (ctx.attack !== 'none' && !ctx.defenseEnabled) {
@@ -434,7 +428,7 @@ function tickEncapsulating(state: SimMachineState, ctx: SimContext): SimResult {
         ctx.language === 'en'
           ? `CRITICAL: ${ctx.attack.toUpperCase()} attack successful! Connection dropped.`
           : `CRITICO: Attacco ${ctx.attack.toUpperCase()} riuscito! Connessione interrotta.`,
-      severity: 'danger',
+      severity: 'danger'
     });
     effects.push({ kind: 'audio', cue: 'alert' });
     return { state: { ...state, phase: 'interrupted' }, effects };
@@ -447,7 +441,7 @@ function tickEncapsulating(state: SimMachineState, ctx: SimContext): SimResult {
         ctx.language === 'en'
           ? `Defense mitigated ${ctx.attack.toUpperCase()} attack.`
           : `La difesa ha mitigato l'attacco ${ctx.attack.toUpperCase()}.`,
-      severity: 'success',
+      severity: 'success'
     });
   }
   effects.push({
@@ -456,7 +450,7 @@ function tickEncapsulating(state: SimMachineState, ctx: SimContext): SimResult {
       ctx.language === 'en'
         ? 'Packet reaching destination. Starting decapsulation...'
         : 'Il pacchetto raggiunge il destinatario. Inizio decapsulamento...',
-    severity: 'info',
+    severity: 'info'
   });
   return { state: { ...state, phase: 'decapsulating' }, effects };
 }
@@ -473,8 +467,8 @@ function tickDecapsulating(state: SimMachineState, ctx: SimContext): SimResult {
       effects: [
         { kind: 'log', message: `L${currentStep} decapsulated (${pduName})`, severity: 'success' },
         { kind: 'selectLayer', layerId: nextStep },
-        { kind: 'audio', cue: 'step' },
-      ],
+        { kind: 'audio', cue: 'step' }
+      ]
     };
   }
 
@@ -487,10 +481,10 @@ function tickDecapsulating(state: SimMachineState, ctx: SimContext): SimResult {
           ctx.language === 'en'
             ? 'Data successfully delivered to Application Layer.'
             : 'Dati consegnati con successo al Livello Applicazione.',
-        severity: 'success',
+        severity: 'success'
       },
-      { kind: 'audio', cue: 'success' },
-    ],
+      { kind: 'audio', cue: 'success' }
+    ]
   };
 }
 

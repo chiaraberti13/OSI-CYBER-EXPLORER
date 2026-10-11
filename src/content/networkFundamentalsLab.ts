@@ -43,7 +43,10 @@ export const TRANSPORT_ROWS = [
   {
     property: { it: 'Controllo', en: 'Control' },
     tcp: { it: 'Controllo di flusso e congestione', en: 'Flow and congestion control' },
-    udp: { it: 'Overhead minimo; il controllo spetta all’applicazione', en: 'Minimal overhead; control belongs to the application' }
+    udp: {
+      it: 'Overhead minimo; il controllo spetta all’applicazione',
+      en: 'Minimal overhead; control belongs to the application'
+    }
   },
   {
     property: { it: 'Impieghi tipici', en: 'Typical uses' },
@@ -60,18 +63,33 @@ export const INTERFACE_STATES = [
   },
   {
     state: 'down / down',
-    cause: { it: 'Problema fisico: cavo, transceiver, alimentazione, speed o porta remota.', en: 'Physical problem: cable, transceiver, power, speed, or remote port.' },
+    cause: {
+      it: 'Problema fisico: cavo, transceiver, alimentazione, speed o porta remota.',
+      en: 'Physical problem: cable, transceiver, power, speed, or remote port.'
+    },
     action: { it: 'Controlla LED, cablaggio e show interfaces.', en: 'Check LEDs, cabling, and show interfaces.' }
   },
   {
     state: 'up / down',
-    cause: { it: 'Il livello fisico è attivo, ma il protocollo di linea non funziona.', en: 'The physical layer is active, but the line protocol is not operational.' },
-    action: { it: 'Controlla encapsulation, keepalive, VLAN e configurazione del peer.', en: 'Check encapsulation, keepalives, VLANs, and peer configuration.' }
+    cause: {
+      it: 'Il livello fisico è attivo, ma il protocollo di linea non funziona.',
+      en: 'The physical layer is active, but the line protocol is not operational.'
+    },
+    action: {
+      it: 'Controlla encapsulation, keepalive, VLAN e configurazione del peer.',
+      en: 'Check encapsulation, keepalives, VLANs, and peer configuration.'
+    }
   },
   {
     state: 'up / up + CRC/input errors',
-    cause: { it: 'Rumore, cablaggio difettoso, transceiver o duplex mismatch.', en: 'Noise, faulty cabling, transceiver issues, or duplex mismatch.' },
-    action: { it: 'Confronta speed/duplex e analizza i contatori incrementali.', en: 'Compare speed/duplex settings and inspect increasing counters.' }
+    cause: {
+      it: 'Rumore, cablaggio difettoso, transceiver o duplex mismatch.',
+      en: 'Noise, faulty cabling, transceiver issues, or duplex mismatch.'
+    },
+    action: {
+      it: 'Confronta speed/duplex e analizza i contatori incrementali.',
+      en: 'Compare speed/duplex settings and inspect increasing counters.'
+    }
   }
 ];
 
@@ -221,7 +239,10 @@ export const ATTACK_ITEMS = [
   { it: 'IP spoofing e falsificazione dell’indirizzo sorgente', en: 'IP spoofing and source-address forgery' },
   { it: 'SYN flood, UDP flood e reflection/amplification', en: 'SYN floods, UDP floods, and reflection/amplification' },
   { it: 'Sniffing su mezzi condivisi o compromessi', en: 'Sniffing on shared or compromised media' },
-  { it: 'Rogue Router Advertisement e Neighbor Discovery spoofing', en: 'Rogue Router Advertisements and Neighbor Discovery spoofing' }
+  {
+    it: 'Rogue Router Advertisement e Neighbor Discovery spoofing',
+    en: 'Rogue Router Advertisements and Neighbor Discovery spoofing'
+  }
 ];
 
 export const DEFENSE_ITEMS = [

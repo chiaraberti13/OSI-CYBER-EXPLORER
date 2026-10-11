@@ -20,34 +20,81 @@ export interface StpSwitchMeta extends StpSwitch {
 
 export const STP_SWITCHES: StpSwitchMeta[] = [
   {
-    id: 'dsw1', name: 'DSW1', mac: '0001.0000.1111', priority: 32768, vlanPriority: { 10: 24576 },
+    id: 'dsw1',
+    name: 'DSW1',
+    mac: '0001.0000.1111',
+    priority: 32768,
+    vlanPriority: { 10: 24576 },
     layer: 'distribution',
     role: b('Distribuzione, root designata per la VLAN 10', 'Distribution, intended root for VLAN 10')
   },
   {
-    id: 'dsw2', name: 'DSW2', mac: '0002.0000.2222', priority: 32768, vlanPriority: { 20: 24576 },
+    id: 'dsw2',
+    name: 'DSW2',
+    mac: '0002.0000.2222',
+    priority: 32768,
+    vlanPriority: { 20: 24576 },
     layer: 'distribution',
     role: b('Distribuzione, root designata per la VLAN 20', 'Distribution, intended root for VLAN 20')
   },
   {
-    id: 'asw1', name: 'ASW1', mac: '0003.0000.3333', priority: 32768,
+    id: 'asw1',
+    name: 'ASW1',
+    mac: '0003.0000.3333',
+    priority: 32768,
     layer: 'access',
-    role: b('Access switch, doppio uplink verso la distribuzione', 'Access switch, dual-homed to the distribution layer')
+    role: b(
+      'Access switch, doppio uplink verso la distribuzione',
+      'Access switch, dual-homed to the distribution layer'
+    )
   },
   {
-    id: 'asw2', name: 'ASW2', mac: '0004.0000.4444', priority: 32768,
+    id: 'asw2',
+    name: 'ASW2',
+    mac: '0004.0000.4444',
+    priority: 32768,
     layer: 'access',
     role: b('Access switch, doppio uplink e collegamento verso ASW1', 'Access switch, dual-homed plus a link to ASW1')
   }
 ];
 
 export const STP_LINKS: StpLink[] = [
-  { id: 'core', from: { switchId: 'dsw1', port: 'Gi1/0/1' }, to: { switchId: 'dsw2', port: 'Gi1/0/1' }, speed: '10 Gb/s' },
-  { id: 'a1-d1', from: { switchId: 'asw1', port: 'Gi1/0/24' }, to: { switchId: 'dsw1', port: 'Gi1/0/11' }, speed: '1 Gb/s' },
-  { id: 'a1-d2', from: { switchId: 'asw1', port: 'Gi1/0/23' }, to: { switchId: 'dsw2', port: 'Gi1/0/11' }, speed: '1 Gb/s' },
-  { id: 'a2-d1', from: { switchId: 'asw2', port: 'Gi1/0/24' }, to: { switchId: 'dsw1', port: 'Gi1/0/12' }, speed: '1 Gb/s' },
-  { id: 'a2-d2', from: { switchId: 'asw2', port: 'Gi1/0/23' }, to: { switchId: 'dsw2', port: 'Gi1/0/12' }, speed: '1 Gb/s' },
-  { id: 'access', from: { switchId: 'asw1', port: 'Gi1/0/1' }, to: { switchId: 'asw2', port: 'Gi1/0/1' }, speed: '100 Mb/s' }
+  {
+    id: 'core',
+    from: { switchId: 'dsw1', port: 'Gi1/0/1' },
+    to: { switchId: 'dsw2', port: 'Gi1/0/1' },
+    speed: '10 Gb/s'
+  },
+  {
+    id: 'a1-d1',
+    from: { switchId: 'asw1', port: 'Gi1/0/24' },
+    to: { switchId: 'dsw1', port: 'Gi1/0/11' },
+    speed: '1 Gb/s'
+  },
+  {
+    id: 'a1-d2',
+    from: { switchId: 'asw1', port: 'Gi1/0/23' },
+    to: { switchId: 'dsw2', port: 'Gi1/0/11' },
+    speed: '1 Gb/s'
+  },
+  {
+    id: 'a2-d1',
+    from: { switchId: 'asw2', port: 'Gi1/0/24' },
+    to: { switchId: 'dsw1', port: 'Gi1/0/12' },
+    speed: '1 Gb/s'
+  },
+  {
+    id: 'a2-d2',
+    from: { switchId: 'asw2', port: 'Gi1/0/23' },
+    to: { switchId: 'dsw2', port: 'Gi1/0/12' },
+    speed: '1 Gb/s'
+  },
+  {
+    id: 'access',
+    from: { switchId: 'asw1', port: 'Gi1/0/1' },
+    to: { switchId: 'asw2', port: 'Gi1/0/1' },
+    speed: '100 Mb/s'
+  }
 ];
 
 /** The VLANs the lab converges; two is enough to show per-VLAN trees. */

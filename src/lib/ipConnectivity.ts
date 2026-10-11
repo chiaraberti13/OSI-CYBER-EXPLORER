@@ -63,34 +63,39 @@ export function routeMatches(route: Ipv4Route, destination: string): boolean {
   assertPrefix(route.prefix);
   const mask = prefixToMask(route.prefix);
   const routeNetwork = ipv4ToUint(normalizeNetwork(route.network, route.prefix));
-  return ((ipv4ToUint(destination) & mask) >>> 0) === routeNetwork;
+  return (ipv4ToUint(destination) & mask) >>> 0 === routeNetwork;
 }
 
 export function selectBestRoutes(routes: Ipv4Route[], destination: string): Ipv4Route[] {
   ipv4ToUint(destination);
-  const matches = routes.filter(route => routeMatches(route, destination));
+  const matches = routes.filter((route) => routeMatches(route, destination));
   if (matches.length === 0) return [];
 
-  const longestPrefix = Math.max(...matches.map(route => route.prefix));
-  const longest = matches.filter(route => route.prefix === longestPrefix);
-  const lowestDistance = Math.min(...longest.map(route => route.administrativeDistance));
-  const trusted = longest.filter(route => route.administrativeDistance === lowestDistance);
-  const lowestMetric = Math.min(...trusted.map(route => route.metric));
-  return trusted.filter(route => route.metric === lowestMetric);
+  const longestPrefix = Math.max(...matches.map((route) => route.prefix));
+  const longest = matches.filter((route) => route.prefix === longestPrefix);
+  const lowestDistance = Math.min(...longest.map((route) => route.administrativeDistance));
+  const trusted = longest.filter((route) => route.administrativeDistance === lowestDistance);
+  const lowestMetric = Math.min(...trusted.map((route) => route.metric));
+  return trusted.filter((route) => route.metric === lowestMetric);
 }
 
 export function calculateOspfCost(interfaceBandwidthMbps: number, referenceBandwidthMbps = 100): number {
   if (!Number.isFinite(interfaceBandwidthMbps) || interfaceBandwidthMbps <= 0) throw new Error('INVALID_BANDWIDTH');
-  if (!Number.isFinite(referenceBandwidthMbps) || referenceBandwidthMbps <= 0) throw new Error('INVALID_REFERENCE_BANDWIDTH');
+  if (!Number.isFinite(referenceBandwidthMbps) || referenceBandwidthMbps <= 0)
+    throw new Error('INVALID_REFERENCE_BANDWIDTH');
   return Math.max(1, Math.floor(referenceBandwidthMbps / interfaceBandwidthMbps));
 }
 
 function highestIpv4(addresses: string[]): string | null {
   if (addresses.length === 0) return null;
-  return addresses.reduce((highest, address) => ipv4ToUint(address) > ipv4ToUint(highest) ? address : highest);
+  return addresses.reduce((highest, address) => (ipv4ToUint(address) > ipv4ToUint(highest) ? address : highest));
 }
 
-export function selectOspfRouterId(configured: string | undefined, loopbacks: string[], interfaces: string[]): RouterIdSelection {
+export function selectOspfRouterId(
+  configured: string | undefined,
+  loopbacks: string[],
+  interfaces: string[]
+): RouterIdSelection {
   if (configured) return { routerId: uintToIpv4(ipv4ToUint(configured)), source: 'configured' };
   const loopback = highestIpv4(loopbacks);
   if (loopback) return { routerId: loopback, source: 'loopback' };
@@ -113,20 +118,21 @@ function byOspfRank(left: OspfCandidate, right: OspfCandidate): number {
  */
 export function electOspfDrBdr(candidates: OspfCandidate[], current: OspfElectionState = {}): OspfElectionResult {
   const eligible = candidates
-    .filter(candidate => {
-      if (!Number.isInteger(candidate.priority) || candidate.priority < 0 || candidate.priority > 255) throw new Error('INVALID_OSPF_PRIORITY');
+    .filter((candidate) => {
+      if (!Number.isInteger(candidate.priority) || candidate.priority < 0 || candidate.priority > 255)
+        throw new Error('INVALID_OSPF_PRIORITY');
       ipv4ToUint(candidate.routerId);
       return candidate.priority > 0;
     })
     .sort(byOspfRank);
 
   // A seated role only survives if that router is still present and still eligible.
-  const seatedDr = eligible.find(candidate => candidate.id === current.drId) ?? null;
-  const seatedBdr = eligible.find(candidate => candidate.id === current.bdrId) ?? null;
+  const seatedDr = eligible.find((candidate) => candidate.id === current.drId) ?? null;
+  const seatedBdr = eligible.find((candidate) => candidate.id === current.bdrId) ?? null;
 
   // Step 1: elect the BDR among the routers that are not the DR.
-  const bdrPool = eligible.filter(candidate => candidate !== seatedDr);
-  let bdr = seatedBdr && seatedBdr !== seatedDr ? seatedBdr : bdrPool[0] ?? null;
+  const bdrPool = eligible.filter((candidate) => candidate !== seatedDr);
+  let bdr = seatedBdr && seatedBdr !== seatedDr ? seatedBdr : (bdrPool[0] ?? null);
 
   // Step 2: the DR is the seated one, otherwise the BDR is promoted and a new BDR is elected.
   let dr = seatedDr;
@@ -134,7 +140,7 @@ export function electOspfDrBdr(candidates: OspfCandidate[], current: OspfElectio
   if (!dr && bdr) {
     dr = bdr;
     promotedBdr = true;
-    bdr = bdrPool.filter(candidate => candidate !== dr)[0] ?? null;
+    bdr = bdrPool.filter((candidate) => candidate !== dr)[0] ?? null;
   }
 
   const best = eligible[0] ?? null;

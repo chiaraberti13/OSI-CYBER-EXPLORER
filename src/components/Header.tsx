@@ -4,15 +4,13 @@ import { BookOpen } from 'lucide-react';
 import { uiMessages } from '../i18n';
 
 export default function Header() {
-  const {
-  language,
-  setLanguage,
-  setIsGuideOpen,
-} = useStore(useShallow((state) => ({
-  language: state.language,
-  setLanguage: state.setLanguage,
-  setIsGuideOpen: state.setIsGuideOpen,
-})));
+  const { language, setLanguage, setIsGuideOpen } = useStore(
+    useShallow((state) => ({
+      language: state.language,
+      setLanguage: state.setLanguage,
+      setIsGuideOpen: state.setIsGuideOpen
+    }))
+  );
   const copy = uiMessages(language).header;
 
   return (
@@ -22,9 +20,7 @@ export default function Header() {
           <div className="w-6 h-6 border border-slate-300 flex items-center justify-center rounded-md">
             <div className="w-2.5 h-2.5 border border-slate-900 rotate-45" />
           </div>
-          <h1 className="font-medium text-slate-900 text-sm tracking-tight">
-            OSI Cyber Explorer
-          </h1>
+          <h1 className="font-medium text-slate-900 text-sm tracking-tight">OSI Cyber Explorer</h1>
         </div>
 
         <div className="flex items-center gap-3">

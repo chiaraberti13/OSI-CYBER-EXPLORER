@@ -18,9 +18,7 @@ import type { AclAction, AclAddress, AclRule, IpProtocol } from './securityFunda
  */
 
 export type AddressScope =
-  | { kind: 'any' }
-  | { kind: 'host'; address: string }
-  | { kind: 'subnet'; address: string; wildcard: string };
+  { kind: 'any' } | { kind: 'host'; address: string } | { kind: 'subnet'; address: string; wildcard: string };
 
 export interface AclIntent {
   id: string;
@@ -96,10 +94,10 @@ function careBits(address: AclAddress): number {
  * covers the host, never the other way round".
  */
 function addressCovers(outer: AclAddress, inner: AclAddress): boolean {
-  const outerCare = (~ipv4ToUint(outer.wildcard)) >>> 0;
-  const innerCare = (~ipv4ToUint(inner.wildcard)) >>> 0;
+  const outerCare = ~ipv4ToUint(outer.wildcard) >>> 0;
+  const innerCare = ~ipv4ToUint(inner.wildcard) >>> 0;
   if ((outerCare & ~innerCare) >>> 0) return false;
-  return (((ipv4ToUint(outer.address) ^ ipv4ToUint(inner.address)) & outerCare) >>> 0) === 0;
+  return ((ipv4ToUint(outer.address) ^ ipv4ToUint(inner.address)) & outerCare) >>> 0 === 0;
 }
 
 function protocolCovers(outer: IpProtocol, inner: IpProtocol): boolean {
@@ -119,9 +117,23 @@ export function aceCovers(outer: AclRule, inner: AclRule): boolean {
 }
 
 const PORT_NAMES: Record<number, string> = {
-  20: 'ftp-data', 21: 'ftp', 22: 'ssh', 23: 'telnet', 25: 'smtp', 53: 'domain',
-  67: 'bootps', 68: 'bootpc', 69: 'tftp', 80: 'www', 110: 'pop3', 123: 'ntp',
-  143: 'imap', 161: 'snmp', 443: 'https', 445: 'microsoft-ds', 514: 'syslog',
+  20: 'ftp-data',
+  21: 'ftp',
+  22: 'ssh',
+  23: 'telnet',
+  25: 'smtp',
+  53: 'domain',
+  67: 'bootps',
+  68: 'bootpc',
+  69: 'tftp',
+  80: 'www',
+  110: 'pop3',
+  123: 'ntp',
+  143: 'imap',
+  161: 'snmp',
+  443: 'https',
+  445: 'microsoft-ds',
+  514: 'syslog',
   3389: 'rdp'
 };
 
@@ -221,14 +233,16 @@ export function buildAcl(intents: AclIntent[], options: BuildAclOptions = {}): B
       text: intentToText(intent, sequence),
       status,
       coveredBy,
-      specificity: careBits(rule.source) + careBits(rule.destination)
-        + (rule.destinationPort !== undefined ? 1 : 0)
-        + (rule.protocol !== 'ip' ? 1 : 0),
+      specificity:
+        careBits(rule.source) +
+        careBits(rule.destination) +
+        (rule.destinationPort !== undefined ? 1 : 0) +
+        (rule.protocol !== 'ip' ? 1 : 0),
       note
     });
   });
 
-  const hasDeadRules = aces.some(ace => ace.status !== 'active');
+  const hasDeadRules = aces.some((ace) => ace.status !== 'active');
 
   // Most specific first is the order in which a specific decision is never swallowed by
   // a general one. Equal specificity keeps the order the author chose.
@@ -237,14 +251,14 @@ export function buildAcl(intents: AclIntent[], options: BuildAclOptions = {}): B
     const reordered = intents
       .map((intent, index) => ({ intent, index, ace: aces[index] }))
       .sort((left, right) => right.ace.specificity - left.ace.specificity || left.index - right.index)
-      .map(item => item.intent);
+      .map((item) => item.intent);
     const rebuilt = buildOrder(reordered);
-    suggestedOrder = rebuilt.every(ace => ace.status === 'active') ? reordered.map(intent => intent.id) : null;
+    suggestedOrder = rebuilt.every((ace) => ace.status === 'active') ? reordered.map((intent) => intent.id) : null;
   }
 
   const configuration = [
     `ip access-list extended ${name}`,
-    ...aces.map(ace => ` ${ace.text}`),
+    ...aces.map((ace) => ` ${ace.text}`),
     ' remark implicit deny ip any any',
     '!',
     ...(options.interfaceName
@@ -270,9 +284,9 @@ function buildOrder(intents: AclIntent[]): Array<{ status: AceStatus }> {
   const rules: AclRule[] = [];
   return intents.map((intent, index) => {
     const rule = intentToRule(intent, (index + 1) * 10);
-    const covered = rules.find(earlier => aceCovers(earlier, rule));
+    const covered = rules.find((earlier) => aceCovers(earlier, rule));
     rules.push(rule);
     if (!covered) return { status: 'active' as AceStatus };
-    return { status: covered.action === rule.action ? 'redundant' as AceStatus : 'shadowed' as AceStatus };
+    return { status: covered.action === rule.action ? ('redundant' as AceStatus) : ('shadowed' as AceStatus) };
   });
 }

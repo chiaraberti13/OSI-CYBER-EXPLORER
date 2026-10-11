@@ -11,7 +11,7 @@ function expectBilingual(value: Bilingual, label: string, min = 20) {
 
 describe('network concepts (CCNA 1.1, 1.2, 1.3)', () => {
   it('describes every component with its decision, boundary, and misconception', () => {
-    const ids = NETWORK_COMPONENTS.map(item => item.id);
+    const ids = NETWORK_COMPONENTS.map((item) => item.id);
     expect(new Set(ids).size).toBe(ids.length);
     expect(NETWORK_COMPONENTS.length).toBeGreaterThanOrEqual(7);
     for (const component of NETWORK_COMPONENTS) {
@@ -24,10 +24,10 @@ describe('network concepts (CCNA 1.1, 1.2, 1.3)', () => {
   });
 
   it('covers the topology architectures the objective names', () => {
-    const ids = TOPOLOGY_ARCHITECTURES.map(item => item.id);
+    const ids = TOPOLOGY_ARCHITECTURES.map((item) => item.id);
     expect(new Set(ids).size).toBe(ids.length);
     for (const expected of ['two-tier', 'three-tier', 'spine-leaf', 'soho', 'wan', 'cloud']) {
-      expect(TOPOLOGY_ARCHITECTURES.map(item => item.id)).toContain(expected);
+      expect(TOPOLOGY_ARCHITECTURES.map((item) => item.id)).toContain(expected);
     }
     for (const topology of TOPOLOGY_ARCHITECTURES) {
       expectBilingual(topology.name, `${topology.id}.name`, 1);
@@ -39,7 +39,7 @@ describe('network concepts (CCNA 1.1, 1.2, 1.3)', () => {
 
   it('covers copper, both fibre types, pinouts, and negotiation', () => {
     for (const expected of ['utp', 'mmf', 'smf', 'pinout', 'negotiation']) {
-      expect(CABLING_TYPES.map(item => item.id)).toContain(expected);
+      expect(CABLING_TYPES.map((item) => item.id)).toContain(expected);
     }
     for (const cable of CABLING_TYPES) {
       expectBilingual(cable.name, `${cable.id}.name`, 1);
@@ -58,9 +58,9 @@ describe('network concepts (CCNA 1.1, 1.2, 1.3)', () => {
 
 describe('domain concept checklists', () => {
   it('covers all six domains exactly once', () => {
-    const covered = DOMAIN_CHECKLISTS.map(list => list.domainId);
+    const covered = DOMAIN_CHECKLISTS.map((list) => list.domainId);
     expect(new Set(covered).size).toBe(covered.length);
-    expect([...covered].sort()).toEqual([...CCNA_DOMAINS.map(domain => domain.id)].sort());
+    expect([...covered].sort()).toEqual([...CCNA_DOMAINS.map((domain) => domain.id)].sort());
   });
 
   it('states a concept, where to observe it, and a pitfall for every item', () => {

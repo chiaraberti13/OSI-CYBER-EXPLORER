@@ -10,8 +10,8 @@ import { DOMAIN_LAB_VIEWS } from '../lib/navigation';
 import SecurityResponsePlaybooks from './SecurityResponsePlaybooks';
 
 const PLANES: SecurityPlane[] = ['physical', 'data', 'control', 'management', 'application', 'identity'];
-const DOMAIN_BY_ID = new Map(CCNA_DOMAINS.map(domain => [domain.id, domain]));
-const ATTACK_FAMILY_BY_ID = new Map(ATTACK_FAMILIES.map(family => [family.id, family]));
+const DOMAIN_BY_ID = new Map(CCNA_DOMAINS.map((domain) => [domain.id, domain]));
+const ATTACK_FAMILY_BY_ID = new Map(ATTACK_FAMILIES.map((family) => [family.id, family]));
 
 const PLANE_LABELS: Record<SecurityPlane, { it: string; en: string }> = {
   physical: { it: 'Fisico', en: 'Physical' },
@@ -30,8 +30,8 @@ const FIELD_STYLES = {
 } as const;
 
 export default function SecurityCoverageView() {
-  const language = useStore(state => state.language);
-  const setActiveView = useStore(state => state.setActiveView);
+  const language = useStore((state) => state.language);
+  const setActiveView = useStore((state) => state.setActiveView);
   const [query, setQuery] = useState('');
   const [domain, setDomain] = useState<'all' | CcnaDomainId>('all');
   const [family, setFamily] = useState('all');
@@ -46,8 +46,14 @@ export default function SecurityCoverageView() {
       if (plane !== 'all' && !technique.planes.includes(plane)) return false;
       if (!normalizedQuery) return true;
 
-      return [technique.name, technique.attack, technique.prevent, technique.detect, technique.respondRecover, technique.verify]
-        .some(field => field[language].toLocaleLowerCase(language).includes(normalizedQuery));
+      return [
+        technique.name,
+        technique.attack,
+        technique.prevent,
+        technique.detect,
+        technique.respondRecover,
+        technique.verify
+      ].some((field) => field[language].toLocaleLowerCase(language).includes(normalizedQuery));
     });
   }, [domain, family, language, plane, query]);
 
@@ -64,19 +70,25 @@ export default function SecurityCoverageView() {
     document.getElementById('coverage-filters')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }, []);
 
-  const openDomainLab = useCallback((selectedDomain: CcnaDomainId) => {
-    setActiveView(DOMAIN_LAB_VIEWS[selectedDomain]);
-  }, [setActiveView]);
+  const openDomainLab = useCallback(
+    (selectedDomain: CcnaDomainId) => {
+      setActiveView(DOMAIN_LAB_VIEWS[selectedDomain]);
+    },
+    [setActiveView]
+  );
 
-  const selectTechnique = useCallback((techniqueId: string) => {
-    const technique = SECURITY_TECHNIQUES.find(item => item.id === techniqueId);
-    if (!technique) return;
-    setDomain('all');
-    setFamily('all');
-    setPlane('all');
-    setQuery(technique.name[language]);
-    document.getElementById('coverage-filters')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }, [language]);
+  const selectTechnique = useCallback(
+    (techniqueId: string) => {
+      const technique = SECURITY_TECHNIQUES.find((item) => item.id === techniqueId);
+      if (!technique) return;
+      setDomain('all');
+      setFamily('all');
+      setPlane('all');
+      setQuery(technique.name[language]);
+      document.getElementById('coverage-filters')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    },
+    [language]
+  );
 
   return (
     <div className="space-y-6">
@@ -104,12 +116,15 @@ export default function SecurityCoverageView() {
         </div>
       </header>
 
-      <section aria-label={language === 'it' ? 'Riepilogo copertura' : 'Coverage summary'} className="grid gap-3 sm:grid-cols-3">
+      <section
+        aria-label={language === 'it' ? 'Riepilogo copertura' : 'Coverage summary'}
+        className="grid gap-3 sm:grid-cols-3"
+      >
         {[
           { value: SECURITY_TECHNIQUES.length, it: 'Tecniche documentate', en: 'Documented techniques' },
           { value: ATTACK_FAMILIES.length, it: 'Famiglie di attacco', en: 'Attack families' },
           { value: CCNA_DOMAINS.length, it: 'Domini CCNA coperti', en: 'CCNA domains covered' }
-        ].map(item => (
+        ].map((item) => (
           <div key={item.en} className="rounded-xl border border-slate-200 bg-white p-4">
             <p className="text-2xl font-semibold text-slate-900">{item.value}</p>
             <p className="mt-1 text-xs font-medium text-slate-500">{language === 'it' ? item.it : item.en}</p>
@@ -117,17 +132,9 @@ export default function SecurityCoverageView() {
         ))}
       </section>
 
-      <SecurityCoverageMatrix
-        language={language}
-        onOpenLab={openDomainLab}
-        onSelect={selectCoverage}
-      />
+      <SecurityCoverageMatrix language={language} onOpenLab={openDomainLab} onSelect={selectCoverage} />
 
-      <SecurityResponsePlaybooks
-        language={language}
-        onOpenDomain={openDomainLab}
-        onTechniqueSelect={selectTechnique}
-      />
+      <SecurityResponsePlaybooks language={language} onOpenDomain={openDomainLab} onTechniqueSelect={selectTechnique} />
 
       <section aria-labelledby="coverage-filters" className="rounded-xl border border-slate-200 bg-white p-4">
         <div className="mb-3 flex items-center justify-between gap-3">
@@ -135,7 +142,11 @@ export default function SecurityCoverageView() {
             <Filter className="h-4 w-4 text-indigo-600" aria-hidden="true" />
             {language === 'it' ? 'Filtra il catalogo' : 'Filter the catalog'}
           </h2>
-          <button type="button" onClick={clearFilters} className="text-xs font-semibold text-indigo-600 hover:text-indigo-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400">
+          <button
+            type="button"
+            onClick={clearFilters}
+            className="text-xs font-semibold text-indigo-600 hover:text-indigo-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
+          >
             {language === 'it' ? 'Azzera filtri' : 'Clear filters'}
           </button>
         </div>
@@ -143,83 +154,167 @@ export default function SecurityCoverageView() {
           <label className="relative">
             <span className="sr-only">{language === 'it' ? 'Cerca nel catalogo' : 'Search the catalog'}</span>
             <Search className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-slate-400" aria-hidden="true" />
-            <input value={query} onChange={event => setQuery(event.target.value)} placeholder={language === 'it' ? 'Cerca tecnica o difesa…' : 'Search technique or defense…'} className="w-full rounded-lg border border-slate-200 py-2 pl-9 pr-3 text-sm text-slate-700 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" />
+            <input
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder={language === 'it' ? 'Cerca tecnica o difesa…' : 'Search technique or defense…'}
+              className="w-full rounded-lg border border-slate-200 py-2 pl-9 pr-3 text-sm text-slate-700 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
+            />
           </label>
           <label>
             <span className="sr-only">{uiMessages(language).shared.ccnaDomain}</span>
-            <select value={domain} onChange={event => setDomain(event.target.value as 'all' | CcnaDomainId)} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-100">
+            <select
+              value={domain}
+              onChange={(event) => setDomain(event.target.value as 'all' | CcnaDomainId)}
+              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-100"
+            >
               <option value="all">{language === 'it' ? 'Tutti i domini CCNA' : 'All CCNA domains'}</option>
-              {CCNA_DOMAINS.map(item => <option key={item.id} value={item.id}>{item.number}. {item.title[language]}</option>)}
+              {CCNA_DOMAINS.map((item) => (
+                <option key={item.id} value={item.id}>
+                  {item.number}. {item.title[language]}
+                </option>
+              ))}
             </select>
           </label>
           <label>
             <span className="sr-only">{uiMessages(language).shared.attackFamily}</span>
-            <select value={family} onChange={event => setFamily(event.target.value)} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-100">
+            <select
+              value={family}
+              onChange={(event) => setFamily(event.target.value)}
+              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-100"
+            >
               <option value="all">{uiMessages(language).shared.allFamilies}</option>
-              {ATTACK_FAMILIES.map(item => <option key={item.id} value={item.id}>{item.name[language]}</option>)}
+              {ATTACK_FAMILIES.map((item) => (
+                <option key={item.id} value={item.id}>
+                  {item.name[language]}
+                </option>
+              ))}
             </select>
           </label>
           <label>
             <span className="sr-only">{uiMessages(language).shared.securityPlane}</span>
-            <select value={plane} onChange={event => setPlane(event.target.value as 'all' | SecurityPlane)} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-100">
+            <select
+              value={plane}
+              onChange={(event) => setPlane(event.target.value as 'all' | SecurityPlane)}
+              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-100"
+            >
               <option value="all">{uiMessages(language).shared.allPlanes}</option>
-              {PLANES.map(item => <option key={item} value={item}>{PLANE_LABELS[item][language]}</option>)}
+              {PLANES.map((item) => (
+                <option key={item} value={item}>
+                  {PLANE_LABELS[item][language]}
+                </option>
+              ))}
             </select>
           </label>
         </div>
       </section>
 
       <div className="flex items-center justify-between gap-4">
-        <h2 className="text-lg font-semibold text-slate-900">{language === 'it' ? 'Tecniche e contromisure' : 'Techniques and countermeasures'}</h2>
+        <h2 className="text-lg font-semibold text-slate-900">
+          {language === 'it' ? 'Tecniche e contromisure' : 'Techniques and countermeasures'}
+        </h2>
         <p className="text-xs font-semibold text-slate-500" aria-live="polite">
           {filteredTechniques.length} {uiMessages(language).shared.results}
         </p>
       </div>
 
       {filteredTechniques.length > 0 ? (
-        <section aria-label={language === 'it' ? 'Tecniche di sicurezza' : 'Security techniques'} className="grid gap-4 xl:grid-cols-2">
-          {filteredTechniques.map(technique => {
+        <section
+          aria-label={language === 'it' ? 'Tecniche di sicurezza' : 'Security techniques'}
+          className="grid gap-4 xl:grid-cols-2"
+        >
+          {filteredTechniques.map((technique) => {
             const familyItem = ATTACK_FAMILY_BY_ID.get(technique.familyId);
             return (
-              <article key={technique.id} className="rounded-xl border border-slate-200 bg-white p-5 deferred-card [contain-intrinsic-height:auto_520px]">
+              <article
+                key={technique.id}
+                className="rounded-xl border border-slate-200 bg-white p-5 deferred-card [contain-intrinsic-height:auto_520px]"
+              >
                 <div className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 pb-4">
                   <div>
-                    <p className="text-[10px] font-semibold uppercase tracking-wider text-indigo-600">{familyItem?.name[language]}</p>
+                    <p className="text-[10px] font-semibold uppercase tracking-wider text-indigo-600">
+                      {familyItem?.name[language]}
+                    </p>
                     <h3 className="mt-1 text-base font-semibold text-slate-900">{technique.name[language]}</h3>
                   </div>
                   <div className="flex flex-wrap justify-end gap-1.5">
-                    {technique.planes.map(item => <span key={item} className="rounded-full bg-slate-100 px-2 py-1 text-[10px] font-semibold text-slate-600">{PLANE_LABELS[item][language]}</span>)}
+                    {technique.planes.map((item) => (
+                      <span
+                        key={item}
+                        className="rounded-full bg-slate-100 px-2 py-1 text-[10px] font-semibold text-slate-600"
+                      >
+                        {PLANE_LABELS[item][language]}
+                      </span>
+                    ))}
                   </div>
                 </div>
 
                 <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                  <InfoBlock icon={Crosshair} label={language === 'it' ? 'Attacco: meccanismo' : 'Attack: mechanism'} text={technique.attack[language]} style={FIELD_STYLES.attack} />
-                  <InfoBlock icon={ShieldCheck} label={language === 'it' ? 'Prevenzione' : 'Prevention'} text={technique.prevent[language]} style={FIELD_STYLES.prevent} />
-                  <InfoBlock icon={Activity} label={language === 'it' ? 'Rilevamento' : 'Detection'} text={technique.detect[language]} style={FIELD_STYLES.detect} />
-                  <InfoBlock icon={Wrench} label={language === 'it' ? 'Risposta e ripristino' : 'Response and recovery'} text={technique.respondRecover[language]} style={FIELD_STYLES.respond} />
+                  <InfoBlock
+                    icon={Crosshair}
+                    label={language === 'it' ? 'Attacco: meccanismo' : 'Attack: mechanism'}
+                    text={technique.attack[language]}
+                    style={FIELD_STYLES.attack}
+                  />
+                  <InfoBlock
+                    icon={ShieldCheck}
+                    label={language === 'it' ? 'Prevenzione' : 'Prevention'}
+                    text={technique.prevent[language]}
+                    style={FIELD_STYLES.prevent}
+                  />
+                  <InfoBlock
+                    icon={Activity}
+                    label={language === 'it' ? 'Rilevamento' : 'Detection'}
+                    text={technique.detect[language]}
+                    style={FIELD_STYLES.detect}
+                  />
+                  <InfoBlock
+                    icon={Wrench}
+                    label={language === 'it' ? 'Risposta e ripristino' : 'Response and recovery'}
+                    text={technique.respondRecover[language]}
+                    style={FIELD_STYLES.respond}
+                  />
                 </div>
 
                 <div className="mt-3 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
-                  <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">{uiMessages(language).shared.operationalVerification}</p>
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+                    {uiMessages(language).shared.operationalVerification}
+                  </p>
                   <p className="mt-1 font-mono text-xs leading-relaxed text-slate-700">{technique.verify[language]}</p>
                 </div>
                 <p className="mt-3 text-[10px] text-slate-400">
-                  {uiMessages(language).shared.domains}: {technique.domains.map(id => DOMAIN_BY_ID.get(id)?.title[language]).join(' · ')}
+                  {uiMessages(language).shared.domains}:{' '}
+                  {technique.domains.map((id) => DOMAIN_BY_ID.get(id)?.title[language]).join(' · ')}
                 </p>
               </article>
             );
           })}
         </section>
       ) : (
-        <div className="rounded-xl border border-dashed border-slate-300 bg-white p-8 text-center text-sm text-slate-500" role="status">
-          {language === 'it' ? 'Nessuna tecnica corrisponde ai filtri selezionati.' : 'No techniques match the selected filters.'}
+        <div
+          className="rounded-xl border border-dashed border-slate-300 bg-white p-8 text-center text-sm text-slate-500"
+          role="status"
+        >
+          {language === 'it'
+            ? 'Nessuna tecnica corrisponde ai filtri selezionati.'
+            : 'No techniques match the selected filters.'}
         </div>
       )}
     </div>
   );
 }
 
-function InfoBlock({ icon: Icon, label, text, style }: { icon: typeof Activity; label: string; text: string; style: string }) {
+function InfoBlock({
+  icon: Icon,
+  label,
+  text,
+  style
+}: {
+  icon: typeof Activity;
+  label: string;
+  text: string;
+  style: string;
+}) {
   return (
     <div className={`rounded-lg border p-3 ${style}`}>
       <p className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider">

@@ -96,7 +96,10 @@ export const PORT_REGISTRY_METADATA: readonly PortRegistryMetadata[] = [
   entry('NetBIOS-SSN', [139], ['TCP'], { iana: ['netbios-ssn'] }),
   entry('IMAP', [143], ['TCP'], { iana: ['imap'], encrypted: secure([993], 'IMAP over TLS', ['TCP']) }),
   entry('SNMP', [161], ['UDP'], { iana: ['snmp'], encrypted: secure([161], 'SNMPv3 authPriv', ['UDP']) }),
-  entry('SNMP Trap', [162], ['UDP'], { iana: ['snmptrap'], encrypted: secure([162], 'SNMPv3 authPriv traps', ['UDP']) }),
+  entry('SNMP Trap', [162], ['UDP'], {
+    iana: ['snmptrap'],
+    encrypted: secure([162], 'SNMPv3 authPriv traps', ['UDP'])
+  }),
   entry('BGP', [179], ['TCP'], { iana: ['bgp'] }),
   entry('LDAP', [389], ['TCP', 'UDP'], { iana: ['ldap'], encrypted: secure([636], 'LDAP over TLS', ['TCP']) }),
   entry('HTTPS', [443], ['TCP', 'UDP'], { iana: ['https'] }),
@@ -109,11 +112,17 @@ export const PORT_REGISTRY_METADATA: readonly PortRegistryMetadata[] = [
     }
   }),
   entry('Syslog', [514], ['UDP'], { iana: ['syslog'], encrypted: secure([6514], 'Syslog over TLS', ['TCP']) }),
-  entry('SMTP Submission', [587], ['TCP'], { iana: ['submission'], encrypted: secure([587], 'Message Submission with STARTTLS', ['TCP']) }),
+  entry('SMTP Submission', [587], ['TCP'], {
+    iana: ['submission'],
+    encrypted: secure([587], 'Message Submission with STARTTLS', ['TCP'])
+  }),
   entry('LDAPS', [636], ['TCP'], { iana: ['ldaps'] }),
   entry('IMAPS', [993], ['TCP'], { iana: ['imaps'] }),
   entry('POP3S', [995], ['TCP'], { iana: ['pop3s'] }),
-  entry('MSSQL', [1433], ['TCP'], { iana: ['ms-sql-s'], encrypted: secure([1433], 'Microsoft SQL Server with TLS', ['TCP']) }),
+  entry('MSSQL', [1433], ['TCP'], {
+    iana: ['ms-sql-s'],
+    encrypted: secure([1433], 'Microsoft SQL Server with TLS', ['TCP'])
+  }),
   entry('Oracle DB', [1521], ['TCP'], {
     status: 'de-facto',
     iana: ['ncube-lm'],
@@ -150,8 +159,14 @@ export const PORT_REGISTRY_METADATA: readonly PortRegistryMetadata[] = [
     }
   }),
   entry('MySQL', [3306], ['TCP'], { iana: ['mysql'], encrypted: secure([3306], 'MySQL with TLS', ['TCP']) }),
-  entry('RDP', [3389], ['TCP', 'UDP'], { iana: ['ms-wbt-server'], encrypted: secure([3389], 'RDP with TLS and NLA', ['TCP', 'UDP']) }),
-  entry('PostgreSQL', [5432], ['TCP'], { iana: ['postgresql'], encrypted: secure([5432], 'PostgreSQL with TLS', ['TCP']) }),
+  entry('RDP', [3389], ['TCP', 'UDP'], {
+    iana: ['ms-wbt-server'],
+    encrypted: secure([3389], 'RDP with TLS and NLA', ['TCP', 'UDP'])
+  }),
+  entry('PostgreSQL', [5432], ['TCP'], {
+    iana: ['postgresql'],
+    encrypted: secure([5432], 'PostgreSQL with TLS', ['TCP'])
+  }),
   entry('Redis', [6379], ['TCP'], { iana: ['redis'], encrypted: secure([6379], 'Redis with TLS', ['TCP']) }),
   entry('Syslog over TLS', [6514], ['TCP'], { iana: ['syslog-tls'] }),
   entry('HTTP Alternate', [8080], ['TCP'], { iana: ['http-alt'], encrypted: secure([443], 'HTTPS', ['TCP', 'UDP']) }),
@@ -167,7 +182,7 @@ export function validatePortRegistry(entries: readonly PortRegistryMetadata[]): 
       errors.push(`incomplete:${item.service || '<missing>'}`);
     }
     if (!/^\d{4}-\d{2}-\d{2}$/.test(item.verifiedOn)) errors.push(`date:${item.service}`);
-    if (item.ports.some(port => classifyPortRange(port) !== item.range)) errors.push(`range:${item.service}`);
+    if (item.ports.some((port) => classifyPortRange(port) !== item.range)) errors.push(`range:${item.service}`);
     if (item.registrationStatus === 'assigned' && item.ianaServiceNames.length === 0) {
       errors.push(`iana-name:${item.service}`);
     }
@@ -193,15 +208,17 @@ export function validatePortRegistry(entries: readonly PortRegistryMetadata[]): 
   return errors;
 }
 
-export function mergePortRegistry<T extends { service: string }>(content: readonly T[]): Array<T & PortRegistryMetadata> {
-  const metadata = new Map(PORT_REGISTRY_METADATA.map(item => [item.service, item]));
-  const merged = content.map(item => {
+export function mergePortRegistry<T extends { service: string }>(
+  content: readonly T[]
+): Array<T & PortRegistryMetadata> {
+  const metadata = new Map(PORT_REGISTRY_METADATA.map((item) => [item.service, item]));
+  const merged = content.map((item) => {
     const normative = metadata.get(item.service);
     if (!normative) throw new Error(`MISSING_PORT_METADATA:${item.service}`);
     return { ...item, ...normative };
   });
-  const contentNames = new Set(content.map(item => item.service));
-  const orphan = PORT_REGISTRY_METADATA.find(item => !contentNames.has(item.service));
+  const contentNames = new Set(content.map((item) => item.service));
+  const orphan = PORT_REGISTRY_METADATA.find((item) => !contentNames.has(item.service));
   if (orphan) throw new Error(`MISSING_PORT_CONTENT:${orphan.service}`);
   return merged;
 }

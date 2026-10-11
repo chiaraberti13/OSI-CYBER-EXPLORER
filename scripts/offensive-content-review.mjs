@@ -34,42 +34,46 @@ function matches(source, pattern) {
 }
 
 export function extractIds(source, pattern) {
-  return matches(source, pattern).map(match => match[1]);
+  return matches(source, pattern).map((match) => match[1]);
 }
 
 function isAllowedHost(hostname) {
   const host = hostname.toLowerCase().replace(/\.$/, '');
-  return host === 'localhost'
-    || host.endsWith('.localhost')
-    || host.endsWith('.example.test')
-    || host === 'example.test'
-    || host === 'example.com'
-    || host === 'example.org'
-    || host === 'example.net';
+  return (
+    host === 'localhost' ||
+    host.endsWith('.localhost') ||
+    host.endsWith('.example.test') ||
+    host === 'example.test' ||
+    host === 'example.com' ||
+    host === 'example.org' ||
+    host === 'example.net'
+  );
 }
 
 function isAllowedIpv4(address) {
   const octets = address.split('.').map(Number);
-  if (octets.length !== 4 || octets.some(octet => !Number.isInteger(octet) || octet < 0 || octet > 255)) return false;
+  if (octets.length !== 4 || octets.some((octet) => !Number.isInteger(octet) || octet < 0 || octet > 255)) return false;
   const [a, b, c] = octets;
-  return a === 10
-    || a === 127
-    || (a === 169 && b === 254)
-    || (a === 172 && b >= 16 && b <= 31)
-    || (a === 192 && b === 168)
-    || (a === 192 && b === 0 && c === 2)
-    || (a === 198 && b === 51 && c === 100)
-    || (a === 203 && b === 0 && c === 113)
-    || address === '0.0.0.0'
-    || address === '255.255.255.255';
+  return (
+    a === 10 ||
+    a === 127 ||
+    (a === 169 && b === 254) ||
+    (a === 172 && b >= 16 && b <= 31) ||
+    (a === 192 && b === 168) ||
+    (a === 192 && b === 0 && c === 2) ||
+    (a === 198 && b === 51 && c === 100) ||
+    (a === 203 && b === 0 && c === 113) ||
+    address === '0.0.0.0' ||
+    address === '255.255.255.255'
+  );
 }
 
 function hostFindings(source, file) {
   const findings = [];
   const candidates = [
-    ...matches(source, /https?:\/\/([a-z0-9.-]+)(?=[:/\s'"`]|$)/i).map(match => match[1]),
-    ...matches(source, /\bdig\b[^\n;]*\s([a-z0-9-]+(?:\.[a-z0-9-]+)+)(?=[:\s'"`;]|$)/i).map(match => match[1]),
-    ...matches(source, /\bopenssl\s+s_client\s+-connect\s+([a-z0-9.-]+)(?=[:\s'"`]|$)/i).map(match => match[1])
+    ...matches(source, /https?:\/\/([a-z0-9.-]+)(?=[:/\s'"`]|$)/i).map((match) => match[1]),
+    ...matches(source, /\bdig\b[^\n;]*\s([a-z0-9-]+(?:\.[a-z0-9-]+)+)(?=[:\s'"`;]|$)/i).map((match) => match[1]),
+    ...matches(source, /\bopenssl\s+s_client\s+-connect\s+([a-z0-9.-]+)(?=[:\s'"`]|$)/i).map((match) => match[1])
   ];
 
   for (const host of new Set(candidates)) {
@@ -78,10 +82,12 @@ function hostFindings(source, file) {
     }
   }
   for (const match of matches(source, /\b((?:\d{1,3}\.){3}\d{1,3})\b/)) {
-    if (!isAllowedIpv4(match[1])) findings.push({ rule: 'OC-T02', file, message: `non-documentation IPv4 target: ${match[1]}` });
+    if (!isAllowedIpv4(match[1]))
+      findings.push({ rule: 'OC-T02', file, message: `non-documentation IPv4 target: ${match[1]}` });
   }
   for (const match of matches(source, /\b((?:[a-z0-9-]+\.)+(?:com|net|org))\b/i)) {
-    if (!isAllowedHost(match[1])) findings.push({ rule: 'OC-T03', file, message: `non-documentation domain: ${match[1]}` });
+    if (!isAllowedHost(match[1]))
+      findings.push({ rule: 'OC-T03', file, message: `non-documentation domain: ${match[1]}` });
   }
   return findings;
 }
@@ -97,12 +103,13 @@ export function validateRegistry(registry, inventory, today = new Date()) {
   }
   const registeredSources = new Set(registry.sourceFiles ?? []);
   for (const file of REQUIRED_SOURCE_FILES) {
-    if (!registeredSources.has(file)) findings.push({ rule: 'OC-S03', message: `required source is not reviewed: ${file}` });
+    if (!registeredSources.has(file))
+      findings.push({ rule: 'OC-S03', message: `required source is not reviewed: ${file}` });
   }
 
   const expected = new Set([
-    ...inventory.scenarios.map(id => `attack-scenario:${id}`),
-    ...inventory.paths.map(id => `attack-path:${id}`)
+    ...inventory.scenarios.map((id) => `attack-scenario:${id}`),
+    ...inventory.paths.map((id) => `attack-path:${id}`)
   ]);
   const seen = new Set();
   for (const review of registry.reviews ?? []) {
@@ -116,7 +123,12 @@ export function validateRegistry(registry, inventory, today = new Date()) {
     const next = new Date(`${review.nextReviewBy}T00:00:00Z`);
     const maximum = new Date(reviewed);
     maximum.setUTCDate(maximum.getUTCDate() + registry.cadenceDays);
-    if (!Number.isFinite(reviewed.valueOf()) || !Number.isFinite(next.valueOf()) || next <= reviewed || next > maximum) {
+    if (
+      !Number.isFinite(reviewed.valueOf()) ||
+      !Number.isFinite(next.valueOf()) ||
+      next <= reviewed ||
+      next > maximum
+    ) {
       findings.push({ rule: 'OC-C05', message: `invalid review window: ${key}` });
     }
     const todayStart = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()));
@@ -142,7 +154,7 @@ export function scanSources(sources) {
 }
 
 export async function reviewRepository(root = ROOT, today = new Date()) {
-  const read = relative => readFile(path.join(root, relative), 'utf8');
+  const read = (relative) => readFile(path.join(root, relative), 'utf8');
   const [registrySource, scenariosSource, walkthroughsSource, pathsSource] = await Promise.all([
     read(REGISTRY_PATH),
     read('src/content/attackScenarios.ts'),
@@ -153,7 +165,7 @@ export async function reviewRepository(root = ROOT, today = new Date()) {
   const inventory = {
     scenarios: extractIds(scenariosSource, /\bid:\s*['"]([^'"]+)['"]/),
     walkthroughs: extractIds(walkthroughsSource, /\bscenarioId:\s*['"]([^'"]+)['"]/),
-    paths: extractIds(pathsSource, /\bp\(\s*['"]([^'"]+)['"]/),
+    paths: extractIds(pathsSource, /\bp\(\s*['"]([^'"]+)['"]/)
   };
   const findings = validateRegistry(registry, inventory, today);
   const scenarioSet = new Set(inventory.scenarios);
@@ -165,9 +177,9 @@ export async function reviewRepository(root = ROOT, today = new Date()) {
     if (!scenarioSet.has(id)) findings.push({ rule: 'OC-I02', message: `walkthrough without scenario: ${id}` });
   }
 
-  const sources = Object.fromEntries(await Promise.all(
-    registry.sourceFiles.map(async file => [file, await read(file)])
-  ));
+  const sources = Object.fromEntries(
+    await Promise.all(registry.sourceFiles.map(async (file) => [file, await read(file)]))
+  );
   findings.push(...scanSources(sources));
   return { findings, inventory, reviewedFiles: registry.sourceFiles.length };
 }
@@ -182,7 +194,9 @@ async function main() {
     process.exitCode = 1;
     return;
   }
-  console.log(`Offensive-content review passed: ${result.inventory.scenarios.length} scenarios, ${result.inventory.paths.length} paths, ${result.reviewedFiles} source files.`);
+  console.log(
+    `Offensive-content review passed: ${result.inventory.scenarios.length} scenarios, ${result.inventory.paths.length} paths, ${result.reviewedFiles} source files.`
+  );
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) await main();

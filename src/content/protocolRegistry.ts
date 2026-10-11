@@ -31,7 +31,7 @@ export const PROTOCOL_REGISTRY: ProtocolInfo[] = [
     },
     useCase: {
       en: 'Resolving domain coordinates prior to initiating TCP connection handshakes.',
-      it: 'Risoluzione delle coordinate dei server prima di avviare l\'handshake TCP.'
+      it: "Risoluzione delle coordinate dei server prima di avviare l'handshake TCP."
     },
     security: {
       en: 'Vulnerable to spoofing and redirection unless hardened via DNSSEC cryptographic signatures.',
@@ -65,7 +65,7 @@ export const PROTOCOL_REGISTRY: ProtocolInfo[] = [
     type: 'Application',
     description: {
       en: 'Standard mechanism for transmitting messages between mail transfer agents (MTAs).',
-      it: 'Meccanismo standard per la trasmissione e l\'instradamento dei messaggi tra server di posta (MTA).'
+      it: "Meccanismo standard per la trasmissione e l'instradamento dei messaggi tra server di posta (MTA)."
     },
     useCase: {
       en: 'Pushing newly composed emails from client environments out to local or foreign mail servers.',
@@ -130,7 +130,7 @@ export const PROTOCOL_REGISTRY: ProtocolInfo[] = [
     },
     security: {
       en: 'Highly vulnerable to spoofed Source IPs, which makes it ideal for Reflective DDoS amplification attacks.',
-      it: 'Vulnerabile al falsificamento dell\'IP sorgente, utile per sferrare attacchi amplificati DDoS riflessi.'
+      it: "Vulnerabile al falsificamento dell'IP sorgente, utile per sferrare attacchi amplificati DDoS riflessi."
     },
     isSecure: false
   },
@@ -282,7 +282,7 @@ export const PROTOCOL_REGISTRY: ProtocolInfo[] = [
     },
     security: {
       en: 'Plaintext by default, exposing email messages and passwords. Always mandate secure SSL/TLS versions (IMAPS / POP3S).',
-      it: 'In chiaro di default, esibendo messaggi e password. Richiedere l\'uso delle versioni TLS (IMAPS / POP3S).'
+      it: "In chiaro di default, esibendo messaggi e password. Richiedere l'uso delle versioni TLS (IMAPS / POP3S)."
     },
     isSecure: false
   },
@@ -301,7 +301,7 @@ export const PROTOCOL_REGISTRY: ProtocolInfo[] = [
     },
     security: {
       en: 'SSL and TLS 1.0/1.1 are obsolete and vulnerable (e.g., POODLE, BEAST). Enforce modern TLS 1.2 or TLS 1.3.',
-      it: 'Le vecchie versioni SSL/TLS 1.0/1.1 sono deprecate e vulnerabili. Obbligare l\'uso di TLS 1.2 o TLS 1.3.'
+      it: "Le vecchie versioni SSL/TLS 1.0/1.1 sono deprecate e vulnerabili. Obbligare l'uso di TLS 1.2 o TLS 1.3."
     },
     isSecure: true
   },
@@ -331,7 +331,7 @@ export const PROTOCOL_REGISTRY: ProtocolInfo[] = [
     type: 'Network',
     description: {
       en: 'A link-state interior gateway routing protocol used to distribute routing information within a single network domain.',
-      it: 'Protocollo di routing interno di tipo link-state per calcolare l\'itinerario di costo minimo in un\'organizzazione.'
+      it: "Protocollo di routing interno di tipo link-state per calcolare l'itinerario di costo minimo in un'organizzazione."
     },
     useCase: {
       en: 'Dynamic auto-configuration of routing tables inside campus or enterprise local area network structures.',
@@ -339,7 +339,7 @@ export const PROTOCOL_REGISTRY: ProtocolInfo[] = [
     },
     security: {
       en: 'Vulnerable to routing table injection or route poisoning unless configured with cryptographic MD5 passwords.',
-      it: 'Soggetto a iniezioni di rotte fasulle. Proteggere con chiavi crittografiche d\'area (autenticazione MD5).'
+      it: "Soggetto a iniezioni di rotte fasulle. Proteggere con chiavi crittografiche d'area (autenticazione MD5)."
     },
     isSecure: false
   },
@@ -369,7 +369,7 @@ export const PROTOCOL_REGISTRY: ProtocolInfo[] = [
     type: 'Data Link / Physical',
     description: {
       en: 'Over-the-air communication standard allowing mobile nodes to communicate using radio waves.',
-      it: 'Standard di comunicazione radio per collegare dispositivi mobili a reti locali senza l\'uso di cavi.'
+      it: "Standard di comunicazione radio per collegare dispositivi mobili a reti locali senza l'uso di cavi."
     },
     useCase: {
       en: 'Providing local networking access for smartphones, laptops, and smart home IoT appliances wirelessly.',

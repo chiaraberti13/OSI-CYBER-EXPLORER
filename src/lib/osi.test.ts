@@ -6,7 +6,7 @@ const ALL: SimProtocol[] = ['HTTP', 'HTTPS', 'DNS', 'BGP', 'SSH', 'FTP', 'SMTP']
 describe('l4ProtocolFor', () => {
   it('maps DNS to UDP and everything else to TCP', () => {
     expect(l4ProtocolFor('DNS')).toBe('UDP');
-    for (const p of ALL.filter(p => p !== 'DNS')) {
+    for (const p of ALL.filter((p) => p !== 'DNS')) {
       expect(l4ProtocolFor(p)).toBe('TCP');
     }
   });

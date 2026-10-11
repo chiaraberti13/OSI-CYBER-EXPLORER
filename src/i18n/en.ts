@@ -6,12 +6,12 @@ export const en = {
     loadingModule: 'Loading module…',
     skipToContent: 'Skip to content',
     backToOsi: 'Back to the OSI overview',
-    footer: 'Educational app · © 2026 Chiara Berti',
+    footer: 'Educational app · © 2026 Chiara Berti'
   },
   header: {
     openGuide: 'Open the guide',
     guide: 'Guide',
-    language: 'Language',
+    language: 'Language'
   },
   navigation: {
     label: 'Lab navigation',
@@ -27,7 +27,7 @@ export const en = {
     copyLink: 'Copy link to this lab',
     linkCopied: 'Link copied',
     scrollLabsLeft: 'Scroll labs left',
-    scrollLabsRight: 'Scroll labs right',
+    scrollLabsRight: 'Scroll labs right'
   },
   manual: {
     heading: 'Study manual',
@@ -56,13 +56,14 @@ export const en = {
     difficultyAdvanced: 'Advanced',
     certCcna: 'CCNA 200-301',
     certSecurityPlus: 'CompTIA Security+ SY0-701',
-    certBoth: 'CCNA 200-301 · Security+ SY0-701',
+    certBoth: 'CCNA 200-301 · Security+ SY0-701'
   },
   error: {
     chunkTitle: 'This section could not be loaded',
-    chunkBody: 'The module failed to download, most likely because of a temporary network issue. Your data and preferences have not been lost.',
+    chunkBody:
+      'The module failed to download, most likely because of a temporary network issue. Your data and preferences have not been lost.',
     reload: 'Reload the page',
-    role: 'Error message',
+    role: 'Error message'
   },
   shared: {
     results: 'results',
@@ -86,6 +87,6 @@ export const en = {
     ccnaDomain: 'CCNA domain',
     attackFamily: 'Attack family',
     simulationOnly: 'Simulation only.',
-    normalBehavior: 'Normal behavior',
-  },
+    normalBehavior: 'Normal behavior'
+  }
 } as const satisfies UiMessages;

@@ -7,13 +7,26 @@ import { VIEW_REGISTRY } from '../content/viewRegistry';
 import { useStore } from '../store';
 import ViewLink from './ViewLink';
 
-const CHECKLIST_BY_DOMAIN = new Map<string, (typeof DOMAIN_CHECKLISTS)[number]>(DOMAIN_CHECKLISTS.map(list => [list.domainId, list]));
+const CHECKLIST_BY_DOMAIN = new Map<string, (typeof DOMAIN_CHECKLISTS)[number]>(
+  DOMAIN_CHECKLISTS.map((list) => [list.domainId, list])
+);
 
 export default function CurriculumView() {
-  const language = useStore(state => state.language);
-  const checklistLabels = language === 'it'
-    ? { title: 'Concetti da saper spiegare', observe: 'Dove osservarlo', pitfall: 'Errore rivelatore', note: 'Non è un quiz e non produce un punteggio: è un elenco di concetti da usare per decidere cosa rivedere. Ogni voce dice dove nella piattaforma puoi vedere il concetto in funzione e quale errore rivela che non è ancora solido.' }
-    : { title: 'Concepts you should be able to explain', observe: 'Where to observe it', pitfall: 'Revealing mistake', note: 'This is not a quiz and produces no score: it is a list of concepts to help you decide what to revisit. Each entry names where in the platform you can watch the concept at work and which mistake reveals it is not yet solid.' };
+  const language = useStore((state) => state.language);
+  const checklistLabels =
+    language === 'it'
+      ? {
+          title: 'Concetti da saper spiegare',
+          observe: 'Dove osservarlo',
+          pitfall: 'Errore rivelatore',
+          note: 'Non è un quiz e non produce un punteggio: è un elenco di concetti da usare per decidere cosa rivedere. Ogni voce dice dove nella piattaforma puoi vedere il concetto in funzione e quale errore rivela che non è ancora solido.'
+        }
+      : {
+          title: 'Concepts you should be able to explain',
+          observe: 'Where to observe it',
+          pitfall: 'Revealing mistake',
+          note: 'This is not a quiz and produces no score: it is a list of concepts to help you decide what to revisit. Each entry names where in the platform you can watch the concept at work and which mistake reveals it is not yet solid.'
+        };
 
   return (
     <div className="space-y-8">
@@ -70,18 +83,25 @@ export default function CurriculumView() {
             </a>
           </div>
           <div className="mt-4 grid gap-3 lg:grid-cols-2">
-            {CCNA_BLUEPRINT_DOMAINS.map(domain => (
+            {CCNA_BLUEPRINT_DOMAINS.map((domain) => (
               <details key={domain.number} className="rounded-lg border border-slate-200 bg-slate-50/60">
                 <summary className="flex cursor-pointer items-center gap-2 p-3 text-xs font-semibold text-slate-800">
-                  <span>{domain.number}. {domain.title[language]}</span>
-                  <span className="ml-auto font-normal text-slate-500">{domain.topics.length} · {domain.weight}%</span>
+                  <span>
+                    {domain.number}. {domain.title[language]}
+                  </span>
+                  <span className="ml-auto font-normal text-slate-500">
+                    {domain.topics.length} · {domain.weight}%
+                  </span>
                 </summary>
                 <ul className="space-y-3 border-t border-slate-200 p-3">
-                  {domain.topics.map(entry => (
+                  {domain.topics.map((entry) => (
                     <li key={entry.id} className="text-xs leading-relaxed text-slate-700">
-                      <p><span className="font-mono font-semibold text-indigo-700">{entry.id}</span> {entry.title[language]}</p>
+                      <p>
+                        <span className="font-mono font-semibold text-indigo-700">{entry.id}</span>{' '}
+                        {entry.title[language]}
+                      </p>
                       <div className="mt-1 flex flex-wrap gap-1.5">
-                        {entry.destinations.map(destination => (
+                        {entry.destinations.map((destination) => (
                           <ViewLink
                             key={destination}
                             view={destination}
@@ -131,7 +151,9 @@ export default function CurriculumView() {
                     {language === 'it' ? 'Contenuti' : 'Topics'}
                   </h4>
                   <ul className="mt-2 space-y-1.5 text-xs leading-relaxed text-slate-600">
-                    {domain.topics.map((topic) => <li key={topic.en}>• {topic[language]}</li>)}
+                    {domain.topics.map((topic) => (
+                      <li key={topic.en}>• {topic[language]}</li>
+                    ))}
                   </ul>
                 </div>
                 <div>
@@ -139,7 +161,9 @@ export default function CurriculumView() {
                     {language === 'it' ? 'Attacchi e difese' : 'Attacks and defenses'}
                   </h4>
                   <ul className="mt-2 space-y-1.5 text-xs leading-relaxed text-slate-600">
-                    {domain.securityLinks.map((item) => <li key={item.en}>• {item[language]}</li>)}
+                    {domain.securityLinks.map((item) => (
+                      <li key={item.en}>• {item[language]}</li>
+                    ))}
                   </ul>
                 </div>
               </div>
@@ -153,16 +177,24 @@ export default function CurriculumView() {
                   <summary className="flex cursor-pointer items-center gap-2 p-3 text-xs font-semibold text-slate-700">
                     <ListChecks className="h-4 w-4 shrink-0 text-indigo-600" aria-hidden="true" />
                     {checklistLabels.title}
-                    <span className="ml-auto font-normal text-slate-400">{CHECKLIST_BY_DOMAIN.get(domain.id)!.items.length}</span>
+                    <span className="ml-auto font-normal text-slate-400">
+                      {CHECKLIST_BY_DOMAIN.get(domain.id)!.items.length}
+                    </span>
                   </summary>
                   <div className="border-t border-slate-200 p-3">
                     <p className="text-[11px] leading-relaxed text-slate-500">{checklistLabels.note}</p>
                     <ul className="mt-3 space-y-3">
-                      {CHECKLIST_BY_DOMAIN.get(domain.id)!.items.map(entry => (
+                      {CHECKLIST_BY_DOMAIN.get(domain.id)!.items.map((entry) => (
                         <li key={entry.id} className="rounded-lg border border-slate-200 bg-white p-3">
-                          <p className="text-xs font-medium leading-relaxed text-slate-800">{entry.concept[language]}</p>
-                          <p className="mt-2 text-[11px] leading-relaxed text-sky-900"><strong>{checklistLabels.observe}:</strong> {entry.observeIn[language]}</p>
-                          <p className="mt-1 text-[11px] leading-relaxed text-amber-900"><strong>{checklistLabels.pitfall}:</strong> {entry.pitfall[language]}</p>
+                          <p className="text-xs font-medium leading-relaxed text-slate-800">
+                            {entry.concept[language]}
+                          </p>
+                          <p className="mt-2 text-[11px] leading-relaxed text-sky-900">
+                            <strong>{checklistLabels.observe}:</strong> {entry.observeIn[language]}
+                          </p>
+                          <p className="mt-1 text-[11px] leading-relaxed text-amber-900">
+                            <strong>{checklistLabels.pitfall}:</strong> {entry.pitfall[language]}
+                          </p>
                         </li>
                       ))}
                     </ul>
@@ -206,7 +238,9 @@ export default function CurriculumView() {
                   view="securitycore"
                   className="mt-4 inline-block rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-800 transition-colors hover:bg-rose-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400"
                 >
-                  {language === 'it' ? 'Apri il laboratorio Security Fundamentals' : 'Open the Security Fundamentals lab'}
+                  {language === 'it'
+                    ? 'Apri il laboratorio Security Fundamentals'
+                    : 'Open the Security Fundamentals lab'}
                 </ViewLink>
               ) : null}
               {domain.id === 'automation-programmability' ? (

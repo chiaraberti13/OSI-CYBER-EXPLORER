@@ -7,7 +7,7 @@ import {
   evaluateSecurityHeaders,
   formatMarkdownSummary,
   parseCsp,
-  validateTargetUrl,
+  validateTargetUrl
 } from './deployment-security.mjs';
 
 const secureHeaders = {
@@ -19,17 +19,14 @@ const secureHeaders = {
   'referrer-policy': 'strict-origin-when-cross-origin',
   'strict-transport-security': 'max-age=63072000; includeSubDomains; preload',
   'x-content-type-options': 'nosniff',
-  'x-frame-options': 'DENY',
+  'x-frame-options': 'DENY'
 };
 
 test('accepts only the production deployment and its Vercel previews', () => {
-  assert.equal(
-    validateTargetUrl('https://osi-cyber-explorer.vercel.app'),
-    'https://osi-cyber-explorer.vercel.app/',
-  );
+  assert.equal(validateTargetUrl('https://osi-cyber-explorer.vercel.app'), 'https://osi-cyber-explorer.vercel.app/');
   assert.equal(
     validateTargetUrl('https://osi-cyber-explorer-git-main-team.vercel.app/path?q=1#hash'),
-    'https://osi-cyber-explorer-git-main-team.vercel.app/',
+    'https://osi-cyber-explorer-git-main-team.vercel.app/'
   );
 });
 
@@ -41,16 +38,14 @@ test('rejects unsafe, unrelated and ambiguous targets', () => {
     'https://osi-cyber-explorer.vercel.app.evil.example',
     'https://other-project.vercel.app',
     ' https://osi-cyber-explorer.vercel.app',
-    'not-a-url',
+    'not-a-url'
   ]) {
     assert.throws(() => validateTargetUrl(url), /Target URL/);
   }
 });
 
 test('parses CSP directives case-insensitively', () => {
-  const csp = parseCsp(
-    "DEFAULT-SRC 'SELF'; object-src 'none'; upgrade-insecure-requests; default-src *",
-  );
+  const csp = parseCsp("DEFAULT-SRC 'SELF'; object-src 'none'; upgrade-insecure-requests; default-src *");
   assert.deepEqual(csp.get('default-src'), ["'self'"]);
   assert.deepEqual(csp.get('upgrade-insecure-requests'), []);
 });
@@ -60,7 +55,7 @@ test('passes the expected production security policy', () => {
     targetUrl: 'https://osi-cyber-explorer.vercel.app',
     responseUrl: 'https://osi-cyber-explorer.vercel.app/',
     status: 200,
-    headers: secureHeaders,
+    headers: secureHeaders
   });
 
   assert.equal(report.passed, true);
@@ -76,8 +71,8 @@ test('reports stable finding identifiers for missing or weakened controls', () =
     headers: {
       ...secureHeaders,
       'content-security-policy': "default-src 'self'; script-src 'self' 'unsafe-eval'",
-      'x-content-type-options': '',
-    },
+      'x-content-type-options': ''
+    }
   });
 
   assert.equal(report.passed, false);
@@ -94,13 +89,13 @@ test('requires HSTS only on the canonical production hostname', () => {
     targetUrl: 'https://osi-cyber-explorer.vercel.app',
     responseUrl: 'https://osi-cyber-explorer.vercel.app/',
     status: 200,
-    headers: { ...secureHeaders, 'strict-transport-security': 'max-age=300' },
+    headers: { ...secureHeaders, 'strict-transport-security': 'max-age=300' }
   });
   const preview = evaluateSecurityHeaders({
     targetUrl: 'https://osi-cyber-explorer-preview.vercel.app',
     responseUrl: 'https://osi-cyber-explorer-preview.vercel.app/',
     status: 200,
-    headers: { ...secureHeaders, 'strict-transport-security': '' },
+    headers: { ...secureHeaders, 'strict-transport-security': '' }
   });
 
   assert.ok(production.findings.some(({ id }) => id === 'header-strict-transport-security'));
@@ -110,7 +105,8 @@ test('requires HSTS only on the canonical production hostname', () => {
 test('scopes application HSTS to the exact canonical host, without applying preload to previews', async () => {
   const configuration = JSON.parse(await readFile(new URL('../vercel.json', import.meta.url), 'utf8'));
   const hstsRules = configuration.headers.filter((rule) =>
-    rule.headers.some((header) => header.key.toLowerCase() === 'strict-transport-security'));
+    rule.headers.some((header) => header.key.toLowerCase() === 'strict-transport-security')
+  );
   assert.equal(hstsRules.length, 1);
   assert.equal(hstsRules[0].source, '/(.*)');
   assert.deepEqual(hstsRules[0].has, [{ type: 'host', value: 'osi-cyber-explorer.vercel.app' }]);
@@ -125,7 +121,7 @@ test('produces a compact comparable Markdown summary', () => {
     targetUrl: 'https://osi-cyber-explorer.vercel.app',
     responseUrl: 'https://osi-cyber-explorer.vercel.app/',
     status: 200,
-    headers: secureHeaders,
+    headers: secureHeaders
   });
   const markdown = formatMarkdownSummary(report);
 
@@ -136,7 +132,7 @@ test('produces a compact comparable Markdown summary', () => {
 test('records request and redirect failures with a stable finding identifier', () => {
   const report = createDeploymentFailureReport({
     targetUrl: 'https://osi-cyber-explorer-preview.vercel.app',
-    error: new Error('Deployment redirected outside the approved origin allowlist.'),
+    error: new Error('Deployment redirected outside the approved origin allowlist.')
   });
   const markdown = formatMarkdownSummary(report);
 

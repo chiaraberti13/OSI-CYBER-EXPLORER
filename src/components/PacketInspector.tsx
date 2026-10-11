@@ -12,17 +12,14 @@ import HeaderSpecificationSummary from './HeaderSpecificationSummary';
  * learner literally sees a packet being wrapped layer by layer.
  */
 export default function PacketInspector() {
-  const {
-  packetHeaders,
-  language,
-  currentStep,
-  simulationState,
-} = useStore(useShallow((state) => ({
-  packetHeaders: state.packetHeaders,
-  language: state.language,
-  currentStep: state.currentStep,
-  simulationState: state.simulationState,
-})));
+  const { packetHeaders, language, currentStep, simulationState } = useStore(
+    useShallow((state) => ({
+      packetHeaders: state.packetHeaders,
+      language: state.language,
+      currentStep: state.currentStep,
+      simulationState: state.simulationState
+    }))
+  );
 
   const t = {
     it: {
@@ -53,14 +50,12 @@ export default function PacketInspector() {
 
       <div className="p-3 max-h-[320px] overflow-y-auto custom-scrollbar" aria-live="polite">
         {packetHeaders.length === 0 ? (
-          <p className="text-xs text-slate-400 leading-relaxed text-center py-8 px-2">
-            {t.empty}
-          </p>
+          <p className="text-xs text-slate-400 leading-relaxed text-center py-8 px-2">{t.empty}</p>
         ) : (
           <div className="space-y-1.5">
             <AnimatePresence initial={false}>
               {packetHeaders.map((h, i) => {
-                const layer = OSI_LAYERS.find(l => l.id === h.layer);
+                const layer = OSI_LAYERS.find((l) => l.id === h.layer);
                 const color = layer?.color || '#64748b';
                 const isCurrent =
                   (simulationState === 'encapsulating' || simulationState === 'decapsulating') &&
@@ -81,8 +76,7 @@ export default function PacketInspector() {
                     >
                       <div className="flex items-center gap-2 flex-wrap">
                         <span className="inline-flex items-center gap-1.5 text-[10px] font-mono text-slate-500">
-                          <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: color }} />
-                          L{h.layer}
+                          <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: color }} />L{h.layer}
                         </span>
                         <span className="text-xs font-medium text-slate-800">{h.protocol}</span>
                         <span className="text-[9px] font-mono text-slate-400 border border-slate-200/70 px-1.5 py-0.5 rounded">

@@ -103,11 +103,16 @@ export function simulateDhcp({
   if (mode === 'renew') {
     steps.push({
       message: 'REQUEST',
-      from: CLIENT.name, to: SERVER.name,
-      sourceIp: OFFERED.address, destinationIp: SERVER.ip,
-      sourceMac: CLIENT.mac, destinationMac: usesRelay ? RELAY.mac : SERVER.mac,
+      from: CLIENT.name,
+      to: SERVER.name,
+      sourceIp: OFFERED.address,
+      destinationIp: SERVER.ip,
+      sourceMac: CLIENT.mac,
+      destinationMac: usesRelay ? RELAY.mac : SERVER.mac,
       udp: { source: 68, destination: 67 },
-      broadcast: false, giaddr: '0.0.0.0', option82: false,
+      broadcast: false,
+      giaddr: '0.0.0.0',
+      option82: false,
       note: b(
         `Al tempo T1, cioè al 50% del lease (${lease.t1Seconds} s), il client rinnova: invia una REQUEST in UNICAST direttamente al proprio server, usando l'indirizzo che già possiede. Non c'è nessuna DISCOVER e nessuna OFFER — il rinnovo non è un DORA, sono solo due messaggi. Se il server non risponde, al tempo T2 (87,5% del lease, ${lease.t2Seconds} s) il client torna a mandare la REQUEST in broadcast per farsi rispondere da qualunque server.`,
         `At time T1, that is 50% of the lease (${lease.t1Seconds} s), the client renews: it sends a REQUEST as a UNICAST straight to its own server, using the address it already holds. There is no DISCOVER and no OFFER — a renewal is not a DORA, it is two messages. If the server does not answer, at time T2 (87.5% of the lease, ${lease.t2Seconds} s) the client goes back to broadcasting the REQUEST so that any server can reply.`
@@ -117,22 +122,29 @@ export function simulateDhcp({
     if (poolExhausted) {
       steps.push({
         message: 'NAK',
-        from: SERVER.name, to: CLIENT.name,
-        sourceIp: SERVER.ip, destinationIp: '255.255.255.255',
-        sourceMac: SERVER.mac, destinationMac: BROADCAST_MAC,
+        from: SERVER.name,
+        to: CLIENT.name,
+        sourceIp: SERVER.ip,
+        destinationIp: '255.255.255.255',
+        sourceMac: SERVER.mac,
+        destinationMac: BROADCAST_MAC,
         udp: { source: 67, destination: 68 },
-        broadcast: true, giaddr, option82: false,
+        broadcast: true,
+        giaddr,
+        option82: false,
         note: b(
-          'Il server rifiuta il rinnovo con un DHCPNAK: l\'indirizzo non è più suo da assegnare, per esempio perché il pool è stato cambiato o la voce è stata rimossa. Ricevuto un NAK il client deve abbandonare l\'indirizzo e ripartire da una DISCOVER.',
+          "Il server rifiuta il rinnovo con un DHCPNAK: l'indirizzo non è più suo da assegnare, per esempio perché il pool è stato cambiato o la voce è stata rimossa. Ricevuto un NAK il client deve abbandonare l'indirizzo e ripartire da una DISCOVER.",
           'The server refuses the renewal with a DHCPNAK: the address is no longer its to assign, for example because the pool changed or the binding was removed. On receiving a NAK the client must abandon the address and start over from a DISCOVER.'
         )
       });
       return {
-        steps, leased: false, lease: null,
+        steps,
+        leased: false,
+        lease: null,
         failure: {
           code: 'RENEW_NAK',
           note: b(
-            'Rinnovo rifiutato: il client perde l\'indirizzo e ricomincia il DORA da zero.',
+            "Rinnovo rifiutato: il client perde l'indirizzo e ricomincia il DORA da zero.",
             'Renewal refused: the client loses the address and restarts the DORA from scratch.'
           )
         }
@@ -141,13 +153,18 @@ export function simulateDhcp({
 
     steps.push({
       message: 'ACK',
-      from: SERVER.name, to: CLIENT.name,
-      sourceIp: SERVER.ip, destinationIp: OFFERED.address,
-      sourceMac: SERVER.mac, destinationMac: CLIENT.mac,
+      from: SERVER.name,
+      to: CLIENT.name,
+      sourceIp: SERVER.ip,
+      destinationIp: OFFERED.address,
+      sourceMac: SERVER.mac,
+      destinationMac: CLIENT.mac,
       udp: { source: 67, destination: 68 },
-      broadcast: false, giaddr: '0.0.0.0', option82: false,
+      broadcast: false,
+      giaddr: '0.0.0.0',
+      option82: false,
       note: b(
-        'Il server conferma con un ACK in unicast e il lease riparte da capo. L\'indirizzo non cambia: è lo stesso binding, con il timer azzerato.',
+        "Il server conferma con un ACK in unicast e il lease riparte da capo. L'indirizzo non cambia: è lo stesso binding, con il timer azzerato.",
         'The server confirms with a unicast ACK and the lease starts over. The address does not change: it is the same binding, with the timer reset.'
       )
     });
@@ -157,20 +174,27 @@ export function simulateDhcp({
   // 1. DISCOVER — the client has no address yet, so it comes from 0.0.0.0.
   steps.push({
     message: 'DISCOVER',
-    from: CLIENT.name, to: usesRelay ? RELAY.name : SERVER.name,
-    sourceIp: '0.0.0.0', destinationIp: '255.255.255.255',
-    sourceMac: CLIENT.mac, destinationMac: BROADCAST_MAC,
+    from: CLIENT.name,
+    to: usesRelay ? RELAY.name : SERVER.name,
+    sourceIp: '0.0.0.0',
+    destinationIp: '255.255.255.255',
+    sourceMac: CLIENT.mac,
+    destinationMac: BROADCAST_MAC,
     udp: { source: 68, destination: 67 },
-    broadcast: true, giaddr: '0.0.0.0', option82: false,
+    broadcast: true,
+    giaddr: '0.0.0.0',
+    option82: false,
     note: b(
-      'Il client non ha ancora un indirizzo, quindi il pacchetto parte da 0.0.0.0 verso il broadcast limitato 255.255.255.255, con MAC di destinazione ffff.ffff.ffff. Non può essere altrimenti: non sa né il proprio indirizzo né quello del server. Il campo giaddr è a zero, perché nessun relay l\'ha ancora toccato.',
+      "Il client non ha ancora un indirizzo, quindi il pacchetto parte da 0.0.0.0 verso il broadcast limitato 255.255.255.255, con MAC di destinazione ffff.ffff.ffff. Non può essere altrimenti: non sa né il proprio indirizzo né quello del server. Il campo giaddr è a zero, perché nessun relay l'ha ancora toccato.",
       'The client has no address yet, so the packet leaves from 0.0.0.0 toward the limited broadcast 255.255.255.255, with destination MAC ffff.ffff.ffff. It cannot be otherwise: it knows neither its own address nor the server’s. The giaddr field is zero, because no relay has touched it yet.'
     )
   });
 
   if (usesRelay && !relayConfigured) {
     return {
-      steps, leased: false, lease: null,
+      steps,
+      leased: false,
+      lease: null,
       failure: {
         code: 'NO_RELAY',
         note: b(
@@ -184,11 +208,16 @@ export function simulateDhcp({
   if (usesRelay) {
     steps.push({
       message: 'DISCOVER',
-      from: RELAY.name, to: SERVER.name,
-      sourceIp: RELAY.clientSubnetIp, destinationIp: SERVER.ip,
-      sourceMac: RELAY.mac, destinationMac: SERVER.mac,
+      from: RELAY.name,
+      to: SERVER.name,
+      sourceIp: RELAY.clientSubnetIp,
+      destinationIp: SERVER.ip,
+      sourceMac: RELAY.mac,
+      destinationMac: SERVER.mac,
       udp: { source: 67, destination: 67 },
-      broadcast: false, giaddr, option82,
+      broadcast: false,
+      giaddr,
+      option82,
       note: b(
         `Il relay riscrive il pacchetto: da broadcast diventa un UNICAST verso ${SERVER.ip}, la sorgente diventa l'indirizzo dell'interfaccia rivolta al client e soprattutto il campo giaddr viene impostato a ${giaddr}. È quel campo che dice al server da quale pool prendere l'indirizzo — senza di esso il server non saprebbe a quale subnet appartiene il client. Nota anche la porta sorgente: il relay parla come un agente DHCP, quindi usa la 67, non la 68.`,
         `The relay rewrites the packet: the broadcast becomes a UNICAST toward ${SERVER.ip}, the source becomes the address of the interface facing the client, and above all the giaddr field is set to ${giaddr}. That field is what tells the server which pool to take the address from — without it the server would not know which subnet the client is on. Note the source port too: the relay speaks as a DHCP agent, so it uses 67, not 68.`
@@ -198,7 +227,9 @@ export function simulateDhcp({
 
   if (poolExhausted) {
     return {
-      steps, leased: false, lease: null,
+      steps,
+      leased: false,
+      lease: null,
       failure: {
         code: 'POOL_EXHAUSTED',
         note: b(
@@ -211,11 +242,13 @@ export function simulateDhcp({
 
   if (option82 && !usesRelay) {
     return {
-      steps, leased: false, lease: null,
+      steps,
+      leased: false,
+      lease: null,
       failure: {
         code: 'OPTION82_WITHOUT_RELAY',
         note: b(
-          'L\'Option 82 è stata inserita da uno switch che non è il relay, quindi il pacchetto arriva al server con le informazioni dell\'agente ma con giaddr a 0.0.0.0. Molti server, IOS compreso, scartano questa combinazione perché è contraddittoria. Si risolve con ip dhcp relay information trusted sull\'interfaccia (oppure no ip dhcp snooping information option sullo switch): è una delle cause più subdole di DHCP che smette di funzionare il giorno in cui si abilita lo snooping.',
+          "L'Option 82 è stata inserita da uno switch che non è il relay, quindi il pacchetto arriva al server con le informazioni dell'agente ma con giaddr a 0.0.0.0. Molti server, IOS compreso, scartano questa combinazione perché è contraddittoria. Si risolve con ip dhcp relay information trusted sull'interfaccia (oppure no ip dhcp snooping information option sullo switch): è una delle cause più subdole di DHCP che smette di funzionare il giorno in cui si abilita lo snooping.",
           'Option 82 was inserted by a switch that is not the relay, so the packet reaches the server carrying agent information but with giaddr at 0.0.0.0. Many servers, IOS included, discard this combination because it contradicts itself. The fix is ip dhcp relay information trusted on the interface (or no ip dhcp snooping information option on the switch): it is one of the most insidious reasons DHCP stops working the day snooping is enabled.'
         )
       }
@@ -226,18 +259,25 @@ export function simulateDhcp({
   if (snoopingUntrustedServer) {
     steps.push({
       message: 'OFFER',
-      from: SERVER.name, to: CLIENT.name,
-      sourceIp: usesRelay ? SERVER.ip : SERVER.ip, destinationIp: usesRelay ? giaddr : '255.255.255.255',
-      sourceMac: SERVER.mac, destinationMac: usesRelay ? RELAY.mac : BROADCAST_MAC,
+      from: SERVER.name,
+      to: CLIENT.name,
+      sourceIp: usesRelay ? SERVER.ip : SERVER.ip,
+      destinationIp: usesRelay ? giaddr : '255.255.255.255',
+      sourceMac: SERVER.mac,
+      destinationMac: usesRelay ? RELAY.mac : BROADCAST_MAC,
       udp: { source: 67, destination: usesRelay ? 67 : 68 },
-      broadcast: !usesRelay, giaddr, option82,
+      broadcast: !usesRelay,
+      giaddr,
+      option82,
       note: b(
-        'L\'OFFER viene generata, ma arriva su una porta che DHCP snooping non considera trusted: lo switch la scarta. È il comportamento corretto, non un guasto — è esattamente il controllo che blocca un server DHCP non autorizzato collegato da un utente. Se la porta è quella del server legittimo, va dichiarata con ip dhcp snooping trust.',
+        "L'OFFER viene generata, ma arriva su una porta che DHCP snooping non considera trusted: lo switch la scarta. È il comportamento corretto, non un guasto — è esattamente il controllo che blocca un server DHCP non autorizzato collegato da un utente. Se la porta è quella del server legittimo, va dichiarata con ip dhcp snooping trust.",
         'The OFFER is generated, but it arrives on a port DHCP snooping does not consider trusted: the switch drops it. This is correct behaviour, not a fault — it is exactly the control that stops an unauthorized DHCP server plugged in by a user. If that port is the legitimate server’s, it has to be declared with ip dhcp snooping trust.'
       )
     });
     return {
-      steps, leased: false, lease: null,
+      steps,
+      leased: false,
+      lease: null,
       failure: {
         code: 'SNOOPING_UNTRUSTED',
         note: b(
@@ -250,18 +290,23 @@ export function simulateDhcp({
 
   steps.push({
     message: 'OFFER',
-    from: SERVER.name, to: usesRelay ? RELAY.name : CLIENT.name,
-    sourceIp: SERVER.ip, destinationIp: usesRelay ? giaddr : '255.255.255.255',
-    sourceMac: SERVER.mac, destinationMac: usesRelay ? RELAY.mac : BROADCAST_MAC,
+    from: SERVER.name,
+    to: usesRelay ? RELAY.name : CLIENT.name,
+    sourceIp: SERVER.ip,
+    destinationIp: usesRelay ? giaddr : '255.255.255.255',
+    sourceMac: SERVER.mac,
+    destinationMac: usesRelay ? RELAY.mac : BROADCAST_MAC,
     udp: { source: 67, destination: usesRelay ? 67 : 68 },
-    broadcast: !usesRelay, giaddr, option82,
+    broadcast: !usesRelay,
+    giaddr,
+    option82,
     note: usesRelay
       ? b(
           `Il server risponde in unicast al relay, all'indirizzo che ha trovato in giaddr (${giaddr}), e prende l'indirizzo dal pool corrispondente a quella subnet. Sarà poi il relay a consegnare l'offerta al client, che ancora non ha un indirizzo.`,
           `The server replies as a unicast to the relay, at the address it found in giaddr (${giaddr}), and takes the address from the pool matching that subnet. It is then the relay that delivers the offer to the client, which still has no address.`
         )
       : b(
-          'Il server è nella stessa subnet e risponde con l\'offerta. Il client non ha ancora un indirizzo, quindi la risposta viaggia in broadcast: il client la riconosce come propria dal proprio MAC contenuto nel campo chaddr e dallo XID della transazione.',
+          "Il server è nella stessa subnet e risponde con l'offerta. Il client non ha ancora un indirizzo, quindi la risposta viaggia in broadcast: il client la riconosce come propria dal proprio MAC contenuto nel campo chaddr e dallo XID della transazione.",
           'The server is in the same subnet and replies with the offer. The client still has no address, so the reply travels as a broadcast: the client recognises it as its own from its MAC in the chaddr field and from the transaction XID.'
         )
   });
@@ -269,13 +314,18 @@ export function simulateDhcp({
   if (usesRelay) {
     steps.push({
       message: 'OFFER',
-      from: RELAY.name, to: CLIENT.name,
-      sourceIp: RELAY.clientSubnetIp, destinationIp: '255.255.255.255',
-      sourceMac: RELAY.mac, destinationMac: BROADCAST_MAC,
+      from: RELAY.name,
+      to: CLIENT.name,
+      sourceIp: RELAY.clientSubnetIp,
+      destinationIp: '255.255.255.255',
+      sourceMac: RELAY.mac,
+      destinationMac: BROADCAST_MAC,
       udp: { source: 67, destination: 68 },
-      broadcast: true, giaddr, option82,
+      broadcast: true,
+      giaddr,
+      option82,
       note: b(
-        'Il relay consegna l\'offerta sulla subnet del client, in broadcast, perché il client non ha ancora un indirizzo con cui essere raggiunto in unicast.',
+        "Il relay consegna l'offerta sulla subnet del client, in broadcast, perché il client non ha ancora un indirizzo con cui essere raggiunto in unicast.",
         'The relay delivers the offer onto the client’s subnet, as a broadcast, because the client still has no address to be reached at as a unicast.'
       )
     });
@@ -284,11 +334,16 @@ export function simulateDhcp({
   // 3. REQUEST — broadcast again, on purpose.
   steps.push({
     message: 'REQUEST',
-    from: CLIENT.name, to: usesRelay ? RELAY.name : SERVER.name,
-    sourceIp: '0.0.0.0', destinationIp: '255.255.255.255',
-    sourceMac: CLIENT.mac, destinationMac: BROADCAST_MAC,
+    from: CLIENT.name,
+    to: usesRelay ? RELAY.name : SERVER.name,
+    sourceIp: '0.0.0.0',
+    destinationIp: '255.255.255.255',
+    sourceMac: CLIENT.mac,
+    destinationMac: BROADCAST_MAC,
     udp: { source: 68, destination: 67 },
-    broadcast: true, giaddr: '0.0.0.0', option82: false,
+    broadcast: true,
+    giaddr: '0.0.0.0',
+    option82: false,
     note: b(
       `Qui sta il dettaglio che sfugge: il client ha già scelto il server, ma manda la REQUEST ancora in BROADCAST, e ancora da 0.0.0.0. Il motivo è che l'indirizzo offerto non è suo finché non arriva l'ACK, e soprattutto che gli altri server che avevano fatto un'offerta devono vedere quale è stata accettata per ritirare la propria e liberare l'indirizzo. Il server scelto è indicato dall'option 54 (Server Identifier) dentro il pacchetto, non dall'indirizzo di destinazione.`,
       `Here is the detail that gets missed: the client has already chosen the server, yet it sends the REQUEST as a BROADCAST, and still from 0.0.0.0. The reason is that the offered address is not the client’s until the ACK arrives, and above all that the other servers which made an offer must see which one was accepted so they can withdraw theirs and release the address. The chosen server is named by option 54 (Server Identifier) inside the packet, not by the destination address.`
@@ -298,11 +353,16 @@ export function simulateDhcp({
   // 4. ACK
   steps.push({
     message: 'ACK',
-    from: SERVER.name, to: CLIENT.name,
-    sourceIp: SERVER.ip, destinationIp: usesRelay ? giaddr : '255.255.255.255',
-    sourceMac: SERVER.mac, destinationMac: usesRelay ? RELAY.mac : BROADCAST_MAC,
+    from: SERVER.name,
+    to: CLIENT.name,
+    sourceIp: SERVER.ip,
+    destinationIp: usesRelay ? giaddr : '255.255.255.255',
+    sourceMac: SERVER.mac,
+    destinationMac: usesRelay ? RELAY.mac : BROADCAST_MAC,
     udp: { source: 67, destination: usesRelay ? 67 : 68 },
-    broadcast: !usesRelay, giaddr, option82,
+    broadcast: !usesRelay,
+    giaddr,
+    option82,
     note: b(
       `Con l'ACK il binding diventa effettivo: indirizzo ${OFFERED.address}, mask ${OFFERED.mask}, default gateway ${OFFERED.gateway} (option 3) e DNS ${OFFERED.dns} (option 6). Da questo momento partono i timer: rinnovo a T1, cioè al 50% del lease, e rebinding a T2, all'87,5%.`,
       `With the ACK the binding takes effect: address ${OFFERED.address}, mask ${OFFERED.mask}, default gateway ${OFFERED.gateway} (option 3) and DNS ${OFFERED.dns} (option 6). From this moment the timers run: renewal at T1, 50% of the lease, and rebinding at T2, at 87.5%.`

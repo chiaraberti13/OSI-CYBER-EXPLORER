@@ -21,9 +21,21 @@ describe('VLAN and 802.1Q trunk logic', () => {
   });
 
   it('distinguishes tagged, native, and pruned traffic', () => {
-    expect(evaluateTrunkFrame(20, 99, [10, 20, 99])).toEqual({ forwarded: true, tagged: true, reason: 'allowed-tagged' });
-    expect(evaluateTrunkFrame(99, 99, [10, 20, 99])).toEqual({ forwarded: true, tagged: false, reason: 'native-untagged' });
-    expect(evaluateTrunkFrame(30, 99, [10, 20, 99])).toEqual({ forwarded: false, tagged: false, reason: 'not-allowed' });
+    expect(evaluateTrunkFrame(20, 99, [10, 20, 99])).toEqual({
+      forwarded: true,
+      tagged: true,
+      reason: 'allowed-tagged'
+    });
+    expect(evaluateTrunkFrame(99, 99, [10, 20, 99])).toEqual({
+      forwarded: true,
+      tagged: false,
+      reason: 'native-untagged'
+    });
+    expect(evaluateTrunkFrame(30, 99, [10, 20, 99])).toEqual({
+      forwarded: false,
+      tagged: false,
+      reason: 'not-allowed'
+    });
   });
 });
 

@@ -29,7 +29,12 @@ describe('REST method semantics', () => {
 });
 
 describe('JSON inspection', () => {
-  const document = JSON.stringify({ hostname: 'R1', interfaces: [{ name: 'Gi0/0', enabled: true }], mtu: 1500, description: null });
+  const document = JSON.stringify({
+    hostname: 'R1',
+    interfaces: [{ name: 'Gi0/0', enabled: true }],
+    mtu: 1500,
+    description: null
+  });
 
   it('flattens objects and arrays into typed JSON paths', () => {
     const nodes = flattenJsonDocument(document);
@@ -44,10 +49,25 @@ describe('JSON inspection', () => {
 
   it('detects supported secret-key variants across case and separators', () => {
     const keys = [
-      'authorization', 'AUTHORIZATION', 'access_token', 'access-token', 'accessToken',
-      'refresh_token', 'idToken', 'api_key', 'api-key', 'apiKey', 'client_secret',
-      'clientSecret', 'secretKey', 'private_key', 'dbPassword', 'passwd',
-      'credentials', 'snmpCommunity', 'community_string'
+      'authorization',
+      'AUTHORIZATION',
+      'access_token',
+      'access-token',
+      'accessToken',
+      'refresh_token',
+      'idToken',
+      'api_key',
+      'api-key',
+      'apiKey',
+      'client_secret',
+      'clientSecret',
+      'secretKey',
+      'private_key',
+      'dbPassword',
+      'passwd',
+      'credentials',
+      'snmpCommunity',
+      'community_string'
     ];
 
     expect(keys.every(isSensitiveJsonKey)).toBe(true);
@@ -61,9 +81,15 @@ describe('JSON inspection', () => {
 
   it('avoids ordinary metadata and security-related false positives', () => {
     const ordinaryKeys = [
-      'tokenBucket', 'tokenExpiry', 'passwordPolicy', 'secretariat',
-      'authorizationServer', 'privateKeyAlgorithm', 'apiKeyName',
-      'communityDescription', 'credentialRotationDate'
+      'tokenBucket',
+      'tokenExpiry',
+      'passwordPolicy',
+      'secretariat',
+      'authorizationServer',
+      'privateKeyAlgorithm',
+      'apiKeyName',
+      'communityDescription',
+      'credentialRotationDate'
     ];
 
     expect(ordinaryKeys.some(isSensitiveJsonKey)).toBe(false);
@@ -71,34 +97,38 @@ describe('JSON inspection', () => {
 
   it('detects likely secrets without retaining their values in inspection results', () => {
     const marker = 'value-that-must-never-survive';
-    const inspection = inspectJsonDocument(JSON.stringify({
-      username: 'netops',
-      apiToken: marker,
-      nested: { private_key: marker }
-    }));
+    const inspection = inspectJsonDocument(
+      JSON.stringify({
+        username: 'netops',
+        apiToken: marker,
+        nested: { private_key: marker }
+      })
+    );
 
     expect(inspection.sensitivePaths).toEqual(['$.apiToken', '$.nested.private_key']);
-    expect(inspection.nodes.filter(node => inspection.sensitivePaths.includes(node.path)))
-      .toEqual(expect.arrayContaining([
+    expect(inspection.nodes.filter((node) => inspection.sensitivePaths.includes(node.path))).toEqual(
+      expect.arrayContaining([
         expect.objectContaining({ path: '$.apiToken', value: REDACTED_JSON_VALUE }),
         expect.objectContaining({ path: '$.nested.private_key', value: REDACTED_JSON_VALUE })
-      ]));
+      ])
+    );
     expect(JSON.stringify(inspection)).not.toContain(marker);
   });
 
   it('redacts every descendant of a sensitive container', () => {
-    const inspection = inspectJsonDocument(JSON.stringify({
-      credentials: {
-        username: 'netops',
-        password: 'never-visible'
-      },
-      hostname: 'R1'
-    }));
+    const inspection = inspectJsonDocument(
+      JSON.stringify({
+        credentials: {
+          username: 'netops',
+          password: 'never-visible'
+        },
+        hostname: 'R1'
+      })
+    );
 
     expect(inspection.sensitivePaths).toEqual(['$.credentials', '$.credentials.password']);
-    expect(inspection.nodes.find(node => node.path === '$.credentials.username')?.value)
-      .toBe(REDACTED_JSON_VALUE);
-    expect(inspection.nodes.find(node => node.path === '$.hostname')?.value).toBe('R1');
+    expect(inspection.nodes.find((node) => node.path === '$.credentials.username')?.value).toBe(REDACTED_JSON_VALUE);
+    expect(inspection.nodes.find((node) => node.path === '$.hostname')?.value).toBe('R1');
     expect(JSON.stringify(inspection)).not.toContain('never-visible');
     expect(JSON.stringify(inspection)).not.toContain('netops');
   });
@@ -143,14 +173,12 @@ describe('JSON inspection', () => {
   it('rejects stack-exhaustion payloads before parsing or recursive traversal', () => {
     const deeplyNested = '['.repeat(10_000) + '0' + ']'.repeat(10_000);
 
-    expect(() => inspectJsonDocument(deeplyNested)).toThrowError(
-      expect.objectContaining({ code: 'JSON_TOO_DEEP' })
-    );
+    expect(() => inspectJsonDocument(deeplyNested)).toThrowError(expect.objectContaining({ code: 'JSON_TOO_DEEP' }));
   });
 
   it('handles a deterministic fuzz corpus without leaking native parser or stack errors', () => {
     fc.assert(
-      fc.property(fc.json({ maxDepth: 6 }), input => {
+      fc.property(fc.json({ maxDepth: 6 }), (input) => {
         try {
           inspectJsonDocument(input);
           return true;

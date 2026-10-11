@@ -4,16 +4,45 @@ import type { AppView } from '../store';
 
 /** Every view the app can render, mirrored from the AppView union in the store. */
 const ALL_APP_VIEWS: AppView[] = [
-  'manual', 'curriculum', 'pathtrace', 'fundamentals', 'access', 'routing', 'services', 'securitycore', 'automation',
-  'coverage', 'attackpaths', 'hardening', 'detection', 'recovery', 'ipv6security', 'segmentation',
-  'identitytrust', 'routingsecurity', 'wirelesssecurity', 'vpnsecurity', 'availability', 'inspection',
-  'managementsecurity', 'endpointsecurity', 'applicationsecurity', 'emailsecurity', 'layer2security',
-  'defense', 'evidence', 'osi', 'attacklab', 'ports', 'security', 'glossary'
+  'manual',
+  'curriculum',
+  'pathtrace',
+  'fundamentals',
+  'access',
+  'routing',
+  'services',
+  'securitycore',
+  'automation',
+  'coverage',
+  'attackpaths',
+  'hardening',
+  'detection',
+  'recovery',
+  'ipv6security',
+  'segmentation',
+  'identitytrust',
+  'routingsecurity',
+  'wirelesssecurity',
+  'vpnsecurity',
+  'availability',
+  'inspection',
+  'managementsecurity',
+  'endpointsecurity',
+  'applicationsecurity',
+  'emailsecurity',
+  'layer2security',
+  'defense',
+  'evidence',
+  'osi',
+  'attacklab',
+  'ports',
+  'security',
+  'glossary'
 ];
 
 describe('navigation model', () => {
   it('reaches every view exactly once', () => {
-    const views = NAV_ENTRIES.map(item => item.entry.view);
+    const views = NAV_ENTRIES.map((item) => item.entry.view);
     expect(new Set(views).size, 'a view is listed twice').toBe(views.length);
     expect([...views].sort()).toEqual([...ALL_APP_VIEWS].sort());
   });
@@ -27,7 +56,7 @@ describe('navigation model', () => {
   });
 
   it('labels and hints every entry in both languages', () => {
-    const ids = NAV_GROUPS.map(group => group.id);
+    const ids = NAV_GROUPS.map((group) => group.id);
     expect(new Set(ids).size).toBe(ids.length);
 
     for (const group of NAV_GROUPS) {
@@ -54,18 +83,18 @@ describe('navigation model', () => {
   });
 
   it('finds views by label, keyword, and accent-insensitive text', () => {
-    expect(searchNav('ospf', 'it').map(item => item.entry.view)).toContain('routing');
-    expect(searchNav('wpa3', 'it').map(item => item.entry.view)).toContain('wirelesssecurity');
+    expect(searchNav('ospf', 'it').map((item) => item.entry.view)).toContain('routing');
+    expect(searchNav('wpa3', 'it').map((item) => item.entry.view)).toContain('wirelesssecurity');
     // "identità" is reachable by typing it without the accent
-    expect(searchNav('identita', 'it').map(item => item.entry.view)).toContain('identitytrust');
-    expect(searchNav('GLOSSARIO', 'it').map(item => item.entry.view)).toEqual(['glossary']);
+    expect(searchNav('identita', 'it').map((item) => item.entry.view)).toContain('identitytrust');
+    expect(searchNav('GLOSSARIO', 'it').map((item) => item.entry.view)).toEqual(['glossary']);
   });
 
   it('narrows instead of widening when several terms are typed', () => {
     const single = searchNav('dns', 'it');
     const both = searchNav('dns tunneling', 'it');
     expect(single.length).toBeGreaterThan(both.length);
-    expect(both.map(item => item.entry.view)).toEqual(['applicationsecurity']);
+    expect(both.map((item) => item.entry.view)).toEqual(['applicationsecurity']);
   });
 
   it('finds every interactive exercise by the name a learner would type', () => {
@@ -90,7 +119,10 @@ describe('navigation model', () => {
       ['wildcard', 'securitycore']
     ];
     for (const [query, view] of cases) {
-      expect(searchNav(query, 'it').map(item => item.entry.view), `"${query}"`).toContain(view);
+      expect(
+        searchNav(query, 'it').map((item) => item.entry.view),
+        `"${query}"`
+      ).toContain(view);
     }
   });
 
@@ -101,26 +133,47 @@ describe('navigation model', () => {
 
 describe('navOverflow (UX-07 tab overflow affordance)', () => {
   it('reports no overflow when content fits', () => {
-    expect(navOverflow({ scrollLeft: 0, scrollWidth: 300, clientWidth: 300 })).toEqual({ canScrollLeft: false, canScrollRight: false });
+    expect(navOverflow({ scrollLeft: 0, scrollWidth: 300, clientWidth: 300 })).toEqual({
+      canScrollLeft: false,
+      canScrollRight: false
+    });
     // Sub-pixel difference within tolerance is still "fits".
-    expect(navOverflow({ scrollLeft: 0, scrollWidth: 301, clientWidth: 300 })).toEqual({ canScrollLeft: false, canScrollRight: false });
+    expect(navOverflow({ scrollLeft: 0, scrollWidth: 301, clientWidth: 300 })).toEqual({
+      canScrollLeft: false,
+      canScrollRight: false
+    });
   });
 
   it('shows only the right affordance at the start of an overflowing row', () => {
-    expect(navOverflow({ scrollLeft: 0, scrollWidth: 800, clientWidth: 300 })).toEqual({ canScrollLeft: false, canScrollRight: true });
+    expect(navOverflow({ scrollLeft: 0, scrollWidth: 800, clientWidth: 300 })).toEqual({
+      canScrollLeft: false,
+      canScrollRight: true
+    });
   });
 
   it('shows both affordances in the middle', () => {
-    expect(navOverflow({ scrollLeft: 200, scrollWidth: 800, clientWidth: 300 })).toEqual({ canScrollLeft: true, canScrollRight: true });
+    expect(navOverflow({ scrollLeft: 200, scrollWidth: 800, clientWidth: 300 })).toEqual({
+      canScrollLeft: true,
+      canScrollRight: true
+    });
   });
 
   it('shows only the left affordance at the end', () => {
-    expect(navOverflow({ scrollLeft: 500, scrollWidth: 800, clientWidth: 300 })).toEqual({ canScrollLeft: true, canScrollRight: false });
+    expect(navOverflow({ scrollLeft: 500, scrollWidth: 800, clientWidth: 300 })).toEqual({
+      canScrollLeft: true,
+      canScrollRight: false
+    });
   });
 
   it('clamps rubber-band over-scroll past either edge', () => {
     // Negative (bounce left) and beyond-max (bounce right) must not flip the flags.
-    expect(navOverflow({ scrollLeft: -20, scrollWidth: 800, clientWidth: 300 })).toEqual({ canScrollLeft: false, canScrollRight: true });
-    expect(navOverflow({ scrollLeft: 520, scrollWidth: 800, clientWidth: 300 })).toEqual({ canScrollLeft: true, canScrollRight: false });
+    expect(navOverflow({ scrollLeft: -20, scrollWidth: 800, clientWidth: 300 })).toEqual({
+      canScrollLeft: false,
+      canScrollRight: true
+    });
+    expect(navOverflow({ scrollLeft: 520, scrollWidth: 800, clientWidth: 300 })).toEqual({
+      canScrollLeft: true,
+      canScrollRight: false
+    });
   });
 });

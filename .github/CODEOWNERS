@@ -36,6 +36,10 @@
 # Security policy, scanners, and deployment hardening
 /.gitleaks.toml @chiaraberti13
 /eslint.config.js @chiaraberti13
+/.editorconfig @chiaraberti13
+/.prettierignore @chiaraberti13
+/.prettierrc.json @chiaraberti13
+/CONTRIBUTING.md @chiaraberti13
 /osv-scanner.toml @chiaraberti13
 /SECURITY.md @chiaraberti13
 /docs/FRONTEND_SECURITY.md @chiaraberti13

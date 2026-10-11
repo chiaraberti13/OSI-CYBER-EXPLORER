@@ -11,13 +11,14 @@ export function filterPorts(
   language: Language
 ): PortInfo[] {
   const term = searchTerm.toLowerCase();
-  return registry.filter(p => {
+  return registry.filter((p) => {
     const rangeMatch = range === 'all' || p.range === range;
-    const searchMatch = !searchTerm ||
+    const searchMatch =
+      !searchTerm ||
       p.ports.join(' / ').includes(term) ||
       p.transports.join(' ').toLowerCase().includes(term) ||
       p.registrationStatus.includes(term) ||
-      p.ianaServiceNames.some(name => name.includes(term)) ||
+      p.ianaServiceNames.some((name) => name.includes(term)) ||
       p.encryptedEquivalent?.service.toLowerCase().includes(term) ||
       p.service.toLowerCase().includes(term) ||
       p.name.toLowerCase().includes(term) ||
@@ -32,14 +33,15 @@ export function filterProtocols(
   language: Language
 ): ProtocolInfo[] {
   const term = searchTerm.toLowerCase();
-  return registry.filter(p =>
-    !searchTerm ||
-    p.name.toLowerCase().includes(term) ||
-    p.fullName.toLowerCase().includes(term) ||
-    p.type.toLowerCase().includes(term) ||
-    p.description[language].toLowerCase().includes(term) ||
-    p.useCase[language].toLowerCase().includes(term) ||
-    p.security[language].toLowerCase().includes(term)
+  return registry.filter(
+    (p) =>
+      !searchTerm ||
+      p.name.toLowerCase().includes(term) ||
+      p.fullName.toLowerCase().includes(term) ||
+      p.type.toLowerCase().includes(term) ||
+      p.description[language].toLowerCase().includes(term) ||
+      p.useCase[language].toLowerCase().includes(term) ||
+      p.security[language].toLowerCase().includes(term)
   );
 }
 
@@ -50,9 +52,10 @@ export function filterDevices(
   language: Language
 ): DeviceInfo[] {
   const term = searchTerm.toLowerCase();
-  return registry.filter(d => {
+  return registry.filter((d) => {
     const categoryMatch = category === 'all' || d.category === category;
-    const searchMatch = !searchTerm ||
+    const searchMatch =
+      !searchTerm ||
       d.name.toLowerCase().includes(term) ||
       d.fullName.toLowerCase().includes(term) ||
       d.layer.toLowerCase().includes(term) ||

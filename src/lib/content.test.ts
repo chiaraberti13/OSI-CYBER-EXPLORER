@@ -32,7 +32,7 @@ import {
   MITRE_ATTACK_VERSION,
   securityReferenceUrl,
   type SecurityReference,
-  type SecurityReferenceKind,
+  type SecurityReferenceKind
 } from '../content/securityReferences';
 
 /** A value that must carry both an Italian and an English string. */
@@ -44,7 +44,7 @@ function expectBilingual(value: { it?: string; en?: string } | undefined, label:
 
 describe('OSI_LAYERS', () => {
   it('defines exactly the 7 layers with unique ids 1..7', () => {
-    const ids = OSI_LAYERS.map(l => l.id).sort((a, b) => a - b);
+    const ids = OSI_LAYERS.map((l) => l.id).sort((a, b) => a - b);
     expect(ids).toEqual([1, 2, 3, 4, 5, 6, 7]);
   });
 
@@ -53,7 +53,9 @@ describe('OSI_LAYERS', () => {
     // the Italian Layer 7 block once had one attack fewer than the English one.
     for (const layer of OSI_LAYERS) {
       expect(layer.translations.it.attacks?.length, `L${layer.id} attacks`).toBe(layer.translations.en.attacks?.length);
-      expect(layer.translations.it.defenses?.length, `L${layer.id} defenses`).toBe(layer.translations.en.defenses?.length);
+      expect(layer.translations.it.defenses?.length, `L${layer.id} defenses`).toBe(
+        layer.translations.en.defenses?.length
+      );
     }
   });
 
@@ -69,7 +71,7 @@ describe('OSI_LAYERS', () => {
 
 describe('ATTACK_SCENARIOS', () => {
   it('has unique ids and a valid target layer', () => {
-    const ids = ATTACK_SCENARIOS.map(s => s.id);
+    const ids = ATTACK_SCENARIOS.map((s) => s.id);
     expect(new Set(ids).size).toBe(ids.length);
     for (const s of ATTACK_SCENARIOS) {
       expect(s.targetLayer, `${s.id} targetLayer`).toBeGreaterThanOrEqual(1);
@@ -92,13 +94,16 @@ const REFERENCE_PATTERNS = {
   ieee: /^IEEE 802(?:\.\d+)+(?:-[12]\d{3})?$/,
   nist: /^SP \d+-\d+[A-Z]?(?: Rev\. \d+)?$/,
   attack: /^T\d{4}(?:\.\d{3})?$/,
-  cisco: /^Cisco [A-Za-z0-9][A-Za-z0-9 .:/_-]*$/,
+  cisco: /^Cisco [A-Za-z0-9][A-Za-z0-9 .:/_-]*$/
 } as const satisfies Record<SecurityReferenceKind, RegExp>;
 
 function expectValidReferences(references: readonly SecurityReference[], owner: string) {
   const unique = new Set<string>();
   for (const reference of references) {
-    expect(REFERENCE_PATTERNS[reference.kind].test(reference.id), `${owner}: invalid ${reference.kind} id '${reference.id}'`).toBe(true);
+    expect(
+      REFERENCE_PATTERNS[reference.kind].test(reference.id),
+      `${owner}: invalid ${reference.kind} id '${reference.id}'`
+    ).toBe(true);
     const key = `${reference.kind}:${reference.id}`;
     expect(unique.has(key), `${owner}: duplicate reference '${key}'`).toBe(false);
     unique.add(key);
@@ -107,7 +112,7 @@ function expectValidReferences(references: readonly SecurityReference[], owner: 
     expect(url.protocol, `${owner}: ${key} must resolve over HTTPS`).toBe('https:');
     expect(
       ['datatracker.ietf.org', 'standards.ieee.org', 'csrc.nist.gov', 'attack.mitre.org', 'www.cisco.com'],
-      `${owner}: ${key} has an unapproved authority`,
+      `${owner}: ${key} has an unapproved authority`
     ).toContain(url.hostname);
   }
 }
@@ -134,10 +139,10 @@ describe('structured security references', () => {
 });
 
 describe('ATTACK_WALKTHROUGHS', () => {
-  const scenarioIds = new Set(ATTACK_SCENARIOS.map(s => s.id));
+  const scenarioIds = new Set(ATTACK_SCENARIOS.map((s) => s.id));
 
   it('has unique scenarioIds that all reference a real scenario', () => {
-    const ids = ATTACK_WALKTHROUGHS.map(w => w.scenarioId);
+    const ids = ATTACK_WALKTHROUGHS.map((w) => w.scenarioId);
     expect(new Set(ids).size).toBe(ids.length);
     for (const w of ATTACK_WALKTHROUGHS) {
       expect(scenarioIds.has(w.scenarioId), `${w.scenarioId} has no matching scenario`).toBe(true);
@@ -145,17 +150,16 @@ describe('ATTACK_WALKTHROUGHS', () => {
   });
 
   it('keeps each walkthrough on the same primary layer as its scenario', () => {
-    const scenarios = new Map(ATTACK_SCENARIOS.map(s => [s.id, s]));
+    const scenarios = new Map(ATTACK_SCENARIOS.map((s) => [s.id, s]));
     for (const walkthrough of ATTACK_WALKTHROUGHS) {
-      expect(
-        walkthrough.layer,
-        `${walkthrough.scenarioId} layer differs from its scenario`
-      ).toBe(scenarios.get(walkthrough.scenarioId)?.targetLayer);
+      expect(walkthrough.layer, `${walkthrough.scenarioId} layer differs from its scenario`).toBe(
+        scenarios.get(walkthrough.scenarioId)?.targetLayer
+      );
     }
   });
 
   it('covers all 7 OSI layers', () => {
-    const layers = new Set(ATTACK_WALKTHROUGHS.map(w => w.layer));
+    const layers = new Set(ATTACK_WALKTHROUGHS.map((w) => w.layer));
     expect([...layers].sort((a, b) => a - b)).toEqual([1, 2, 3, 4, 5, 6, 7]);
   });
 
@@ -191,7 +195,7 @@ describe('ATTACK_WALKTHROUGHS', () => {
 
 describe('GLOSSARY_TERMS', () => {
   it('has unique terms and a bilingual definition each', () => {
-    const terms = GLOSSARY_TERMS.map(t => t.term.toLowerCase());
+    const terms = GLOSSARY_TERMS.map((t) => t.term.toLowerCase());
     expect(new Set(terms).size).toBe(terms.length);
     for (const t of GLOSSARY_TERMS) {
       expect(t.term?.trim(), 'term text').toBeTruthy();
@@ -214,18 +218,31 @@ describe('GLOSSARY_TERMS', () => {
 
 /** The closed CCNA 200-301 domain set; `satisfies` makes the type the single source. */
 const ALL_DOMAINS = [
-  'network-fundamentals', 'network-access', 'ip-connectivity',
-  'ip-services', 'security-fundamentals', 'automation-programmability',
+  'network-fundamentals',
+  'network-access',
+  'ip-connectivity',
+  'ip-services',
+  'security-fundamentals',
+  'automation-programmability'
 ] as const satisfies readonly CcnaDomainId[];
 
 /** The closed security-plane set shared by taxonomy, controls, and scenarios. */
 const ALL_PLANES = [
-  'physical', 'data', 'control', 'management', 'application', 'identity',
+  'physical',
+  'data',
+  'control',
+  'management',
+  'application',
+  'identity'
 ] as const satisfies readonly SecurityPlane[];
 
 /** The closed defensive-function set used by DEFENSE_CONTROLS. */
 const ALL_FUNCTIONS = [
-  'prevent', 'detect', 'contain', 'recover', 'compensate',
+  'prevent',
+  'detect',
+  'contain',
+  'recover',
+  'compensate'
 ] as const satisfies readonly DefenseFunction[];
 
 /** The closed evidence-severity set used by SECURITY_EVIDENCE_CASES annotations. */
@@ -255,20 +272,20 @@ const SCENARIO_DATASETS: ReadonlyArray<readonly [string, readonly ReferencingSce
   ['ROUTING_SECURITY_SCENARIOS', ROUTING_SECURITY_SCENARIOS],
   ['SEGMENTATION_SCENARIOS', SEGMENTATION_SCENARIOS],
   ['VPN_PKI_SCENARIOS', VPN_PKI_SCENARIOS],
-  ['WIRELESS_SECURITY_SCENARIOS', WIRELESS_SECURITY_SCENARIOS],
+  ['WIRELESS_SECURITY_SCENARIOS', WIRELESS_SECURITY_SCENARIOS]
 ];
 
 const ALL_SCENARIOS: readonly ReferencingScenario[] = SCENARIO_DATASETS.flatMap(([, rows]) => rows);
 
-const DOMAIN_IDS = new Set<string>(CCNA_DOMAINS.map(d => d.id));
-const FAMILY_IDS = new Set<string>(ATTACK_FAMILIES.map(f => f.id));
-const TECHNIQUE_IDS = new Set<string>(SECURITY_TECHNIQUES.map(t => t.id));
-const CONTROL_IDS = new Set<string>(DEFENSE_CONTROLS.map(c => c.id));
-const EVIDENCE_IDS = new Set<string>(SECURITY_EVIDENCE_CASES.map(e => e.id));
+const DOMAIN_IDS = new Set<string>(CCNA_DOMAINS.map((d) => d.id));
+const FAMILY_IDS = new Set<string>(ATTACK_FAMILIES.map((f) => f.id));
+const TECHNIQUE_IDS = new Set<string>(SECURITY_TECHNIQUES.map((t) => t.id));
+const CONTROL_IDS = new Set<string>(DEFENSE_CONTROLS.map((c) => c.id));
+const EVIDENCE_IDS = new Set<string>(SECURITY_EVIDENCE_CASES.map((e) => e.id));
 
 /** Collects dangling ids: every id in `ids` that is not present in `registry`. */
 function danglingRefs(source: string, ids: readonly string[], registry: Set<string>, registryName: string): string[] {
-  return ids.filter(id => !registry.has(id)).map(id => `${source} → '${id}' is not a ${registryName}`);
+  return ids.filter((id) => !registry.has(id)).map((id) => `${source} → '${id}' is not a ${registryName}`);
 }
 
 describe('security taxonomy — identifiers', () => {
@@ -286,11 +303,11 @@ describe('security taxonomy — identifiers', () => {
       ['SECURITY_PLAYBOOKS', SECURITY_PLAYBOOKS],
       ['ATTACK_PATHS', ATTACK_PATHS],
       ['SECURITY_EVIDENCE_CASES', SECURITY_EVIDENCE_CASES],
-      ...SCENARIO_DATASETS,
+      ...SCENARIO_DATASETS
     ];
     const problems: string[] = [];
     for (const [name, rows] of datasets) {
-      const ids = rows.map(r => r.id);
+      const ids = rows.map((r) => r.id);
       for (const id of ids) {
         if (typeof id !== 'string' || id.trim() === '') problems.push(`${name} has an empty id`);
       }
@@ -330,8 +347,22 @@ describe('security taxonomy — reference integrity', () => {
       problems.push(...danglingRefs(`path '${a.id}'.familyIds`, a.familyIds, FAMILY_IDS, 'family'));
       problems.push(...danglingRefs(`path '${a.id}'.domains`, a.domains, DOMAIN_IDS, 'domain'));
       for (const stage of a.stages) {
-        problems.push(...danglingRefs(`path '${a.id}' stage '${stage.id}'.techniqueIds`, stage.techniqueIds, TECHNIQUE_IDS, 'technique'));
-        problems.push(...danglingRefs(`path '${a.id}' stage '${stage.id}'.defenseControlIds`, stage.defenseControlIds, CONTROL_IDS, 'control'));
+        problems.push(
+          ...danglingRefs(
+            `path '${a.id}' stage '${stage.id}'.techniqueIds`,
+            stage.techniqueIds,
+            TECHNIQUE_IDS,
+            'technique'
+          )
+        );
+        problems.push(
+          ...danglingRefs(
+            `path '${a.id}' stage '${stage.id}'.defenseControlIds`,
+            stage.defenseControlIds,
+            CONTROL_IDS,
+            'control'
+          )
+        );
       }
     }
     for (const [name, rows] of SCENARIO_DATASETS) {
@@ -348,10 +379,12 @@ describe('security taxonomy — reference integrity', () => {
   it('keeps every evidence annotation anchored to a line of the same case', () => {
     const problems: string[] = [];
     for (const evidenceCase of SECURITY_EVIDENCE_CASES) {
-      const lineIds = new Set(evidenceCase.output.map(line => line.id));
-      if (lineIds.size !== evidenceCase.output.length) problems.push(`evidence '${evidenceCase.id}' repeats an output line id`);
+      const lineIds = new Set(evidenceCase.output.map((line) => line.id));
+      if (lineIds.size !== evidenceCase.output.length)
+        problems.push(`evidence '${evidenceCase.id}' repeats an output line id`);
       for (const annotation of evidenceCase.annotations) {
-        if (!lineIds.has(annotation.lineId)) problems.push(`evidence '${evidenceCase.id}' annotates missing line '${annotation.lineId}'`);
+        if (!lineIds.has(annotation.lineId))
+          problems.push(`evidence '${evidenceCase.id}' annotates missing line '${annotation.lineId}'`);
       }
     }
     expect(problems).toEqual([]);
@@ -366,22 +399,29 @@ describe('security taxonomy — allowed values', () => {
     const problems: string[] = [];
 
     const checkPlanes = (source: string, planes: readonly string[]) =>
-      problems.push(...planes.filter(p => !planeSet.has(p)).map(p => `${source} uses unknown plane '${p}'`));
+      problems.push(...planes.filter((p) => !planeSet.has(p)).map((p) => `${source} uses unknown plane '${p}'`));
 
-    ATTACK_FAMILIES.forEach(f => checkPlanes(`family '${f.id}'`, f.planes));
-    SECURITY_TECHNIQUES.forEach(t => checkPlanes(`technique '${t.id}'`, t.planes));
-    DEFENSE_CONTROLS.forEach(c => {
+    ATTACK_FAMILIES.forEach((f) => checkPlanes(`family '${f.id}'`, f.planes));
+    SECURITY_TECHNIQUES.forEach((t) => checkPlanes(`technique '${t.id}'`, t.planes));
+    DEFENSE_CONTROLS.forEach((c) => {
       checkPlanes(`control '${c.id}'`, c.planes);
-      problems.push(...c.functions.filter(fn => !functionSet.has(fn)).map(fn => `control '${c.id}' uses unknown function '${fn}'`));
+      problems.push(
+        ...c.functions
+          .filter((fn) => !functionSet.has(fn))
+          .map((fn) => `control '${c.id}' uses unknown function '${fn}'`)
+      );
     });
     for (const [name, rows] of SCENARIO_DATASETS) {
       for (const s of rows) if (s.planes) checkPlanes(`${name} '${s.id}'`, s.planes);
     }
     for (const evidenceCase of SECURITY_EVIDENCE_CASES) {
-      if (!planeSet.has(evidenceCase.plane)) problems.push(`evidence '${evidenceCase.id}' uses unknown plane '${evidenceCase.plane}'`);
-      problems.push(...evidenceCase.annotations
-        .filter(a => !severitySet.has(a.severity))
-        .map(a => `evidence '${evidenceCase.id}' uses unknown severity '${a.severity}'`));
+      if (!planeSet.has(evidenceCase.plane))
+        problems.push(`evidence '${evidenceCase.id}' uses unknown plane '${evidenceCase.plane}'`);
+      problems.push(
+        ...evidenceCase.annotations
+          .filter((a) => !severitySet.has(a.severity))
+          .map((a) => `evidence '${evidenceCase.id}' uses unknown severity '${a.severity}'`)
+      );
     }
 
     expect(problems).toEqual([]);
@@ -409,8 +449,8 @@ describe('security taxonomy — relationship coverage', () => {
 
   it('defends every technique with at least one control (technique ↔ control)', () => {
     const defended = new Set<string>();
-    for (const c of DEFENSE_CONTROLS) c.techniqueIds.forEach(id => defended.add(id));
-    const undefended = [...TECHNIQUE_IDS].filter(id => !defended.has(id));
+    for (const c of DEFENSE_CONTROLS) c.techniqueIds.forEach((id) => defended.add(id));
+    const undefended = [...TECHNIQUE_IDS].filter((id) => !defended.has(id));
     expect(undefended, 'these techniques have no defending control').toEqual([]);
   });
 
@@ -419,30 +459,48 @@ describe('security taxonomy — relationship coverage', () => {
     const control = new Set<string>();
     const family = new Set<string>();
     for (const s of ALL_SCENARIOS) {
-      s.techniqueIds.forEach(id => technique.add(id));
-      s.controlIds.forEach(id => control.add(id));
+      s.techniqueIds.forEach((id) => technique.add(id));
+      s.controlIds.forEach((id) => control.add(id));
     }
     for (const t of SECURITY_TECHNIQUES) family.add(t.familyId);
-    for (const c of DEFENSE_CONTROLS) c.techniqueIds.forEach(id => technique.add(id));
-    for (const d of DETECTION_USE_CASES) { d.familyIds.forEach(id => family.add(id)); d.techniqueIds.forEach(id => technique.add(id)); }
-    for (const p of SECURITY_PLAYBOOKS) p.techniqueIds.forEach(id => technique.add(id));
+    for (const c of DEFENSE_CONTROLS) c.techniqueIds.forEach((id) => technique.add(id));
+    for (const d of DETECTION_USE_CASES) {
+      d.familyIds.forEach((id) => family.add(id));
+      d.techniqueIds.forEach((id) => technique.add(id));
+    }
+    for (const p of SECURITY_PLAYBOOKS) p.techniqueIds.forEach((id) => technique.add(id));
     for (const a of ATTACK_PATHS) {
-      a.familyIds.forEach(id => family.add(id));
-      a.stages.forEach(stage => { stage.techniqueIds.forEach(id => technique.add(id)); stage.defenseControlIds.forEach(id => control.add(id)); });
+      a.familyIds.forEach((id) => family.add(id));
+      a.stages.forEach((stage) => {
+        stage.techniqueIds.forEach((id) => technique.add(id));
+        stage.defenseControlIds.forEach((id) => control.add(id));
+      });
     }
 
-    expect([...TECHNIQUE_IDS].filter(id => !technique.has(id)), 'orphan techniques').toEqual([]);
-    expect([...CONTROL_IDS].filter(id => !control.has(id)), 'orphan controls').toEqual([]);
-    expect([...FAMILY_IDS].filter(id => !family.has(id)), 'orphan families').toEqual([]);
+    expect(
+      [...TECHNIQUE_IDS].filter((id) => !technique.has(id)),
+      'orphan techniques'
+    ).toEqual([]);
+    expect(
+      [...CONTROL_IDS].filter((id) => !control.has(id)),
+      'orphan controls'
+    ).toEqual([]);
+    expect(
+      [...FAMILY_IDS].filter((id) => !family.has(id)),
+      'orphan families'
+    ).toEqual([]);
   });
 
   it('covers every CCNA domain with scenarios and exactly one checklist', () => {
-    const checklistDomains = DOMAIN_CHECKLISTS.map(c => c.domainId);
+    const checklistDomains = DOMAIN_CHECKLISTS.map((c) => c.domainId);
     expect(new Set(checklistDomains).size, 'a domain has two checklists').toBe(checklistDomains.length);
     expect([...checklistDomains].sort()).toEqual([...DOMAIN_IDS].sort());
 
     const scenarioDomains = new Set<string>();
-    ALL_SCENARIOS.forEach(s => s.domains.forEach(d => scenarioDomains.add(d)));
-    expect([...DOMAIN_IDS].filter(d => !scenarioDomains.has(d)), 'domains with no scenario').toEqual([]);
+    ALL_SCENARIOS.forEach((s) => s.domains.forEach((d) => scenarioDomains.add(d)));
+    expect(
+      [...DOMAIN_IDS].filter((d) => !scenarioDomains.has(d)),
+      'domains with no scenario'
+    ).toEqual([]);
   });
 });

@@ -27,7 +27,7 @@ function resetStore(): void {
     selectedProtocol: 'HTTP',
     hasSimulated: false,
     isPaused: false,
-    isGuideOpen: false,
+    isGuideOpen: false
   });
 }
 
@@ -47,18 +47,25 @@ describe('store slices and granular subscriptions', () => {
     let profilerCommits = 0;
 
     function Probe() {
-      useStore(useShallow((state) => ({
-        simulationState: state.simulationState,
-        currentStep: state.currentStep,
-      })));
+      useStore(
+        useShallow((state) => ({
+          simulationState: state.simulationState,
+          currentStep: state.currentStep
+        }))
+      );
       renders += 1;
       return null;
     }
 
     render(
-      <Profiler id="simulation-selector" onRender={() => { profilerCommits += 1; }}>
+      <Profiler
+        id="simulation-selector"
+        onRender={() => {
+          profilerCommits += 1;
+        }}
+      >
         <Probe />
-      </Profiler>,
+      </Profiler>
     );
     expect(renders).toBe(1);
     expect(profilerCommits).toBe(1);
@@ -80,10 +87,12 @@ describe('store slices and granular subscriptions', () => {
     let renders = 0;
 
     function Probe() {
-      useStore(useShallow((state) => ({
-        activeView: state.activeView,
-        selectedLayerId: state.selectedLayerId,
-      })));
+      useStore(
+        useShallow((state) => ({
+          activeView: state.activeView,
+          selectedLayerId: state.selectedLayerId
+        }))
+      );
       renders += 1;
       return null;
     }

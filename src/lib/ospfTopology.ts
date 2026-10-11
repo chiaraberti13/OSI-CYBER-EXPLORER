@@ -81,7 +81,11 @@ export interface OspfSpfOptions {
   maximumPaths?: number;
 }
 
-interface Edge { to: string; cost: number; linkId: string }
+interface Edge {
+  to: string;
+  cost: number;
+  linkId: string;
+}
 
 export function computeSpf({
   routers,
@@ -93,10 +97,10 @@ export function computeSpf({
 }: OspfSpfOptions): OspfSpfResult {
   if (routers.length === 0) throw new Error('NO_ROUTERS');
   if (maximumPaths < 1) throw new Error('INVALID_MAXIMUM_PATHS');
-  const byId = new Map(routers.map(router => [router.id, router]));
+  const byId = new Map(routers.map((router) => [router.id, router]));
   if (!byId.has(rootId)) throw new Error('UNKNOWN_ROOT');
 
-  const adjacency = new Map<string, Edge[]>(routers.map(router => [router.id, []]));
+  const adjacency = new Map<string, Edge[]>(routers.map((router) => [router.id, []]));
   const linkCosts: Record<string, number> = {};
   for (const link of links) {
     if (!byId.has(link.a) || !byId.has(link.b)) throw new Error('UNKNOWN_ROUTER');
@@ -108,8 +112,8 @@ export function computeSpf({
   }
 
   // Dijkstra, keeping every predecessor that ties on cost.
-  const cost = new Map<string, number>(routers.map(router => [router.id, Number.POSITIVE_INFINITY]));
-  const predecessors = new Map<string, Set<string>>(routers.map(router => [router.id, new Set<string>()]));
+  const cost = new Map<string, number>(routers.map((router) => [router.id, Number.POSITIVE_INFINITY]));
+  const predecessors = new Map<string, Set<string>>(routers.map((router) => [router.id, new Set<string>()]));
   const settled = new Set<string>();
   cost.set(rootId, 0);
 
@@ -118,7 +122,10 @@ export function computeSpf({
     let best = Number.POSITIVE_INFINITY;
     for (const router of routers) {
       const value = cost.get(router.id)!;
-      if (!settled.has(router.id) && value < best) { best = value; current = router.id; }
+      if (!settled.has(router.id) && value < best) {
+        best = value;
+        current = router.id;
+      }
     }
     if (current === null) break;
     settled.add(current);
@@ -166,7 +173,9 @@ export function computeSpf({
     const paths = pathsTo(router.id);
     for (const network of router.networks) {
       const stubCost = network.cost ?? 1;
-      const nextHops = [...new Set(paths.map(path => path[1]).filter((hop): hop is string => hop !== undefined))].sort();
+      const nextHops = [
+        ...new Set(paths.map((path) => path[1]).filter((hop): hop is string => hop !== undefined))
+      ].sort();
       routes.push({
         network: normalizeNetwork(network.address, network.prefix),
         prefix: network.prefix,
@@ -191,8 +200,8 @@ export function computeSpf({
     costBySpeed.get(value)!.add(link.bandwidthMbps);
   }
   const indistinguishableLinks = links
-    .filter(link => (costBySpeed.get(calculateOspfCost(link.bandwidthMbps, referenceBandwidthMbps))?.size ?? 0) > 1)
-    .map(link => link.id);
+    .filter((link) => (costBySpeed.get(calculateOspfCost(link.bandwidthMbps, referenceBandwidthMbps))?.size ?? 0) > 1)
+    .map((link) => link.id);
 
   return { rootId, referenceBandwidthMbps, routerCosts, routes, unreachableRouters, linkCosts, indistinguishableLinks };
 }

@@ -12,7 +12,7 @@ const REQUIRED_HEADERS = [
     name: 'content-security-policy',
     severity: 'high',
     expected: 'an enforced Content-Security-Policy header',
-    validate: (value) => Boolean(value),
+    validate: (value) => Boolean(value)
   },
   {
     id: 'header-content-security-policy-report-only',
@@ -20,15 +20,14 @@ const REQUIRED_HEADERS = [
     severity: 'medium',
     expected: "require-trusted-types-for 'script'",
     validate: (value) =>
-      value.toLowerCase().split(/\s+/).includes('require-trusted-types-for') &&
-      value.toLowerCase().includes("'script'"),
+      value.toLowerCase().split(/\s+/).includes('require-trusted-types-for') && value.toLowerCase().includes("'script'")
   },
   {
     id: 'header-content-type-options',
     name: 'x-content-type-options',
     severity: 'medium',
     expected: 'nosniff',
-    validate: (value) => value.toLowerCase() === 'nosniff',
+    validate: (value) => value.toLowerCase() === 'nosniff'
   },
   {
     id: 'header-referrer-policy',
@@ -36,9 +35,7 @@ const REQUIRED_HEADERS = [
     severity: 'medium',
     expected: 'no-referrer, same-origin, strict-origin or strict-origin-when-cross-origin',
     validate: (value) =>
-      ['no-referrer', 'same-origin', 'strict-origin', 'strict-origin-when-cross-origin'].includes(
-        value.toLowerCase(),
-      ),
+      ['no-referrer', 'same-origin', 'strict-origin', 'strict-origin-when-cross-origin'].includes(value.toLowerCase())
   },
   {
     id: 'header-permissions-policy',
@@ -47,23 +44,23 @@ const REQUIRED_HEADERS = [
     expected: 'camera=(), geolocation=() and microphone=()',
     validate: (value) =>
       ['camera=()', 'geolocation=()', 'microphone=()'].every((control) =>
-        value.toLowerCase().replaceAll(' ', '').includes(control),
-      ),
+        value.toLowerCase().replaceAll(' ', '').includes(control)
+      )
   },
   {
     id: 'header-frame-options',
     name: 'x-frame-options',
     severity: 'medium',
     expected: 'DENY',
-    validate: (value) => value.toUpperCase() === 'DENY',
+    validate: (value) => value.toUpperCase() === 'DENY'
   },
   {
     id: 'header-cross-origin-opener-policy',
     name: 'cross-origin-opener-policy',
     severity: 'medium',
     expected: 'same-origin',
-    validate: (value) => value.toLowerCase() === 'same-origin',
-  },
+    validate: (value) => value.toLowerCase() === 'same-origin'
+  }
 ];
 
 const REQUIRED_CSP = new Map([
@@ -73,7 +70,7 @@ const REQUIRED_CSP = new Map([
   ['frame-ancestors', ["'none'"]],
   ['script-src', ["'self'"]],
   ['connect-src', ["'self'"]],
-  ['upgrade-insecure-requests', []],
+  ['upgrade-insecure-requests', []]
 ]);
 
 function finding({ id, severity, message, expected, actual = null }) {
@@ -116,7 +113,10 @@ export function parseCsp(value) {
     const [name, ...sources] = tokens;
     const normalizedName = name.toLowerCase();
     if (!directives.has(normalizedName)) {
-      directives.set(normalizedName, sources.map((source) => source.toLowerCase()));
+      directives.set(
+        normalizedName,
+        sources.map((source) => source.toLowerCase())
+      );
     }
   }
   return directives;
@@ -135,8 +135,8 @@ export function evaluateSecurityHeaders({ targetUrl, responseUrl, status, header
         severity: 'high',
         message: `Deployment returned HTTP ${status}.`,
         expected: 'a 2xx or 3xx response',
-        actual: String(status),
-      }),
+        actual: String(status)
+      })
     );
   }
 
@@ -149,8 +149,8 @@ export function evaluateSecurityHeaders({ targetUrl, responseUrl, status, header
           severity: requirement.severity,
           message: `${requirement.name} is missing or does not match the deployment policy.`,
           expected: requirement.expected,
-          actual: value || null,
-        }),
+          actual: value || null
+        })
       );
     }
   }
@@ -164,8 +164,8 @@ export function evaluateSecurityHeaders({ targetUrl, responseUrl, status, header
           id: `csp-${directive}`,
           severity: 'high',
           message: `CSP directive ${directive} is missing.`,
-          expected: requiredSources.length ? requiredSources.join(' ') : 'directive present',
-        }),
+          expected: requiredSources.length ? requiredSources.join(' ') : 'directive present'
+        })
       );
       continue;
     }
@@ -179,8 +179,8 @@ export function evaluateSecurityHeaders({ targetUrl, responseUrl, status, header
             severity: 'high',
             message: `CSP directive ${directive} does not contain ${source}.`,
             expected: source,
-            actual: actualSources.join(' '),
-          }),
+            actual: actualSources.join(' ')
+          })
         );
       }
     }
@@ -195,8 +195,8 @@ export function evaluateSecurityHeaders({ targetUrl, responseUrl, status, header
           severity: 'high',
           message: `CSP script-src contains ${unsafeSource}.`,
           expected: `${unsafeSource} absent`,
-          actual: scriptSources.join(' '),
-        }),
+          actual: scriptSources.join(' ')
+        })
       );
     }
   }
@@ -212,8 +212,8 @@ export function evaluateSecurityHeaders({ targetUrl, responseUrl, status, header
           severity: 'high',
           message: 'Production HSTS is missing or shorter than one year.',
           expected: 'max-age of at least 31536000 seconds',
-          actual: hsts || null,
-        }),
+          actual: hsts || null
+        })
       );
     }
   }
@@ -229,9 +229,9 @@ export function evaluateSecurityHeaders({ targetUrl, responseUrl, status, header
     summary: {
       total: findings.length,
       high: findings.filter((item) => item.severity === 'high').length,
-      medium: findings.filter((item) => item.severity === 'medium').length,
+      medium: findings.filter((item) => item.severity === 'medium').length
     },
-    findings,
+    findings
   };
 }
 
@@ -255,9 +255,9 @@ export function createDeploymentFailureReport({ targetUrl, error }) {
         severity: 'high',
         message: 'The deployment could not be inspected inside the approved origin boundary.',
         expected: 'a reachable allowlisted deployment without redirects to another origin',
-        actual: message,
-      }),
-    ],
+        actual: message
+      })
+    ]
   };
 }
 
@@ -269,18 +269,14 @@ export function formatMarkdownSummary(report) {
     `- Result: **${result}**`,
     `- Environment: \`${report.environment}\``,
     `- Target: \`${report.target}\``,
-    `- Final response: \`${
-      report.status === null ? 'not available' : `${report.status} ${report.responseUrl}`
-    }\``,
-    `- Findings: **${report.summary.total}** (${report.summary.high} high, ${report.summary.medium} medium)`,
+    `- Final response: \`${report.status === null ? 'not available' : `${report.status} ${report.responseUrl}`}\``,
+    `- Findings: **${report.summary.total}** (${report.summary.high} high, ${report.summary.medium} medium)`
   ];
 
   if (report.findings.length > 0) {
     lines.push('', '| Severity | Finding | Expected | Actual |', '|---|---|---|---|');
     for (const item of report.findings) {
-      lines.push(
-        `| ${item.severity} | ${item.id} | ${item.expected} | ${item.actual ?? 'missing'} |`,
-      );
+      lines.push(`| ${item.severity} | ${item.id} | ${item.expected} | ${item.actual ?? 'missing'} |`);
     }
   }
 
@@ -294,7 +290,7 @@ async function fetchDeployment(targetUrl, fetchImpl = fetch) {
     const response = await fetchImpl(currentUrl, {
       headers: { 'user-agent': 'osi-cyber-explorer-deployment-security/1.0' },
       redirect: 'manual',
-      signal: AbortSignal.timeout(30_000),
+      signal: AbortSignal.timeout(30_000)
     });
     if (![301, 302, 303, 307, 308].includes(response.status)) return response;
 
@@ -343,7 +339,7 @@ async function main() {
       targetUrl: normalizedTarget,
       responseUrl: response.url || normalizedTarget,
       status: response.status,
-      headers: response.headers,
+      headers: response.headers
     });
   } catch (error) {
     report = createDeploymentFailureReport({ targetUrl: normalizedTarget, error });

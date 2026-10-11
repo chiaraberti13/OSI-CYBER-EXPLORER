@@ -44,7 +44,9 @@ describe('central interactive input validation', () => {
 
   it('validates wildcard ranges before calculating the ACE', () => {
     expect(parseWildcardRange('10.1.1.8', '10.1.1.11')).toMatchObject({
-      address: '10.1.1.8', wildcard: '0.0.0.3', exact: true
+      address: '10.1.1.8',
+      wildcard: '0.0.0.3',
+      exact: true
     });
     expectCode(() => parseWildcardRange('10.1.1.11', '10.1.1.8'), 'INVALID_RANGE');
   });
@@ -61,8 +63,15 @@ describe('central interactive input validation', () => {
     expect(parseRelativeResourcePath('/api/v1/devices/R1')).toBe('/api/v1/devices/R1');
     expect(parseRelativeResourcePath('/')).toBe('/');
     for (const invalid of [
-      'https://evil.example/api', '//evil.example/api', '/api/../admin', '/api/%2e%2e/admin',
-      '/api/%2Fadmin', '/api?token=x', '/api#fragment', '/api//devices', '/api\\devices'
+      'https://evil.example/api',
+      '//evil.example/api',
+      '/api/../admin',
+      '/api/%2e%2e/admin',
+      '/api/%2Fadmin',
+      '/api?token=x',
+      '/api#fragment',
+      '/api//devices',
+      '/api\\devices'
     ]) {
       expectCode(() => parseRelativeResourcePath(invalid), 'INVALID_RESOURCE_PATH');
     }

@@ -4,15 +4,13 @@ import { useShallow } from 'zustand/react/shallow';
 import { motion, AnimatePresence } from 'motion/react';
 
 export default function Terminal() {
-  const {
-  logs,
-  clearLogs,
-  language,
-} = useStore(useShallow((state) => ({
-  logs: state.logs,
-  clearLogs: state.clearLogs,
-  language: state.language,
-})));
+  const { logs, clearLogs, language } = useStore(
+    useShallow((state) => ({
+      logs: state.logs,
+      clearLogs: state.clearLogs,
+      language: state.language
+    }))
+  );
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -26,14 +24,16 @@ export default function Terminal() {
       clear: 'Clear',
       terminal: 'System Logs',
       emptyTitle: 'Console ready',
-      emptyBody: 'Choose a protocol and press "Start Simulation" to watch a packet travel down and up the 7 OSI layers.',
+      emptyBody:
+        'Choose a protocol and press "Start Simulation" to watch a packet travel down and up the 7 OSI layers.',
       emptyHint: 'Tip: inject an attack and toggle the Shield to see defenses in action.'
     },
     it: {
       clear: 'Pulisci',
       terminal: 'Log di Sistema',
       emptyTitle: 'Console pronta',
-      emptyBody: 'Scegli un protocollo e premi "Avvia Simulazione" per vedere un pacchetto scendere e risalire i 7 livelli OSI.',
+      emptyBody:
+        'Scegli un protocollo e premi "Avvia Simulazione" per vedere un pacchetto scendere e risalire i 7 livelli OSI.',
       emptyHint: 'Suggerimento: inietta un attacco e attiva lo Shield per vedere le difese in azione.'
     }
   }[language];
@@ -43,9 +43,7 @@ export default function Terminal() {
       <div className="px-3 py-2 flex justify-between items-center border-b border-slate-100">
         <div className="flex items-center gap-2.5">
           <span className="text-slate-300 font-mono text-xs select-none">$_</span>
-          <span className="text-slate-500 font-medium font-sans text-xs">
-            {labels.terminal}
-          </span>
+          <span className="text-slate-500 font-medium font-sans text-xs">{labels.terminal}</span>
         </div>
         <button
           onClick={clearLogs}
@@ -67,9 +65,7 @@ export default function Terminal() {
             <div className="w-8 h-8 rounded-md border border-slate-200 flex items-center justify-center mb-3">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
             </div>
-            <p className="text-xs font-semibold text-slate-500 mb-1.5 not-italic font-sans">
-              {labels.emptyTitle}
-            </p>
+            <p className="text-xs font-semibold text-slate-500 mb-1.5 not-italic font-sans">{labels.emptyTitle}</p>
             <p className="text-[10px] text-slate-400 leading-relaxed max-w-[220px] normal-case tracking-normal font-sans mb-3">
               {labels.emptyBody}
             </p>
@@ -87,13 +83,15 @@ export default function Terminal() {
               className="flex gap-3 leading-relaxed"
             >
               <span className="text-slate-400 shrink-0 font-bold opacity-80">[{log.timestamp}]</span>
-              <span className={`
+              <span
+                className={`
                 ${log.type === 'info' ? 'text-slate-700' : ''}
                 ${log.type === 'warning' ? 'text-amber-600' : ''}
                 ${log.type === 'danger' ? 'text-red-600 font-bold' : ''}
                 ${log.type === 'success' ? 'text-emerald-600 font-bold' : ''}
                 break-words
-              `}>
+              `}
+              >
                 {log.message}
               </span>
             </motion.div>

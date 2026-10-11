@@ -7,7 +7,7 @@ updates:
     cooldown:
       default-days: 7
       include:
-        - "*"
+        - '*'
     open-pull-requests-limit: 5
 
   - package-ecosystem: npm
@@ -20,5 +20,5 @@ updates:
       semver-minor-days: 7
       semver-patch-days: 3
       include:
-        - "*"
+        - '*'
     open-pull-requests-limit: 5

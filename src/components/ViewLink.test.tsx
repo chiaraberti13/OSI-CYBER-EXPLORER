@@ -31,8 +31,12 @@ describe('ViewLink', () => {
     render(<ViewLink view="routing">Routing</ViewLink>);
     const link = screen.getByRole('link', { name: 'Routing' });
     for (const options of [
-      { metaKey: true }, { ctrlKey: true }, { shiftKey: true }, { altKey: true },
-      { button: 1 }, { button: 2 },
+      { metaKey: true },
+      { ctrlKey: true },
+      { shiftKey: true },
+      { altKey: true },
+      { button: 1 },
+      { button: 2 }
     ]) {
       const event = new MouseEvent('click', { bubbles: true, cancelable: true, ...options });
       fireEvent(link, event);
@@ -42,23 +46,33 @@ describe('ViewLink', () => {
   });
 
   it('respects an explicit new-tab target and a caller that cancels navigation', () => {
-    const { rerender } = render(<ViewLink view="routing" target="_blank">Routing</ViewLink>);
+    const { rerender } = render(
+      <ViewLink view="routing" target="_blank">
+        Routing
+      </ViewLink>
+    );
     fireEvent.click(screen.getByRole('link'));
     expect(useStore.getState().activeView).toBe('osi');
-    rerender(<ViewLink view="routing" onClick={event => event.preventDefault()}>Routing</ViewLink>);
+    rerender(
+      <ViewLink view="routing" onClick={(event) => event.preventDefault()}>
+        Routing
+      </ViewLink>
+    );
     fireEvent.click(screen.getByRole('link'));
     expect(useStore.getState().activeView).toBe('osi');
   });
 
   it('makes every curriculum and blueprint destination a real link', () => {
     render(<CurriculumView />);
-    const hashes = screen.getAllByRole('link').map(link => link.getAttribute('href'));
-    expect(hashes.sort()).toEqual([
-      ...Object.values(DOMAIN_LAB_VIEWS).map(view => `#/${view}`),
-      '#/coverage',
-      ...CCNA_BLUEPRINT_TOPICS.flatMap(entry => entry.destinations.map(view => `#/${view}`)),
-      CCNA_BLUEPRINT.source.url
-    ].sort());
+    const hashes = screen.getAllByRole('link').map((link) => link.getAttribute('href'));
+    expect(hashes.sort()).toEqual(
+      [
+        ...Object.values(DOMAIN_LAB_VIEWS).map((view) => `#/${view}`),
+        '#/coverage',
+        ...CCNA_BLUEPRINT_TOPICS.flatMap((entry) => entry.destinations.map((view) => `#/${view}`)),
+        CCNA_BLUEPRINT.source.url
+      ].sort()
+    );
     expect(screen.getByRole('link', { name: 'Fonte ufficiale Cisco (PDF)' })).toHaveProperty('target', '_blank');
   });
 });

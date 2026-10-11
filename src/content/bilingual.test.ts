@@ -48,16 +48,26 @@ const CONTENT_DIR = 'src/content';
  */
 const PENDING_TRANSLATION_REVIEW = new Set(['deviceRegistry.ts', 'portContent.ts', 'protocolRegistry.ts']);
 
-interface Pair { file: string; line: number; it: string; en: string }
+interface Pair {
+  file: string;
+  line: number;
+  it: string;
+  en: string;
+}
 
 /** Pairs each it:/en: string with its immediate sibling in the same object literal. */
 function bilingualPairs(): Pair[] {
   const pairs: Pair[] = [];
-  for (const file of readdirSync(CONTENT_DIR).filter(name => name.endsWith('.ts') && !name.endsWith('.test.ts') && !PENDING_TRANSLATION_REVIEW.has(name))) {
+  for (const file of readdirSync(CONTENT_DIR).filter(
+    (name) => name.endsWith('.ts') && !name.endsWith('.test.ts') && !PENDING_TRANSLATION_REVIEW.has(name)
+  )) {
     const text = readFileSync(`${CONTENT_DIR}/${file}`, 'utf8');
     const matcher = /\b(it|en)\s*:\s*(['"`])((?:\\.|(?!\2)[^\\])*)\2/g;
-    const hits = [...text.matchAll(matcher)].map(match => ({
-      lang: match[1], body: match[3], at: match.index ?? 0, end: (match.index ?? 0) + match[0].length
+    const hits = [...text.matchAll(matcher)].map((match) => ({
+      lang: match[1],
+      body: match[3],
+      at: match.index ?? 0,
+      end: (match.index ?? 0) + match[0].length
     }));
     for (let index = 0; index + 1 < hits.length; index += 1) {
       const left = hits[index];
@@ -109,11 +119,11 @@ describe('bilingual content', () => {
   });
 
   it('keeps the two languages within a plausible length of each other', () => {
-    const offenders = PAIRS.filter(pair => {
+    const offenders = PAIRS.filter((pair) => {
       const shortest = Math.min(pair.it.length, pair.en.length);
       const longest = Math.max(pair.it.length, pair.en.length);
       return longest >= 70 && longest / Math.max(1, shortest) > 1.45;
-    }).map(pair => `${pair.file}:${pair.line} (it ${pair.it.length} / en ${pair.en.length})`);
+    }).map((pair) => `${pair.file}:${pair.line} (it ${pair.it.length} / en ${pair.en.length})`);
     expect(offenders, 'one language carries a clause the other dropped').toEqual([]);
   });
 
@@ -123,8 +133,8 @@ describe('bilingual content', () => {
       if (Math.max(pair.it.length, pair.en.length) < 60) continue;
       const italian = technicalTokens(pair.it);
       const english = technicalTokens(pair.en);
-      const onlyItalian = [...italian].filter(token => !english.has(token));
-      const onlyEnglish = [...english].filter(token => !italian.has(token));
+      const onlyItalian = [...italian].filter((token) => !english.has(token));
+      const onlyEnglish = [...english].filter((token) => !italian.has(token));
       if (onlyItalian.length + onlyEnglish.length > 0) {
         offenders.push(`${pair.file}:${pair.line} it-only[${onlyItalian}] en-only[${onlyEnglish}]`);
       }
@@ -166,14 +176,17 @@ const SECURITY_DATASETS: ReadonlyArray<readonly [string, unknown]> = [
   ['ROUTING_SECURITY_SCENARIOS', ROUTING_SECURITY_SCENARIOS],
   ['SEGMENTATION_SCENARIOS', SEGMENTATION_SCENARIOS],
   ['VPN_PKI_SCENARIOS', VPN_PKI_SCENARIOS],
-  ['WIRELESS_SECURITY_SCENARIOS', WIRELESS_SECURITY_SCENARIOS],
+  ['WIRELESS_SECURITY_SCENARIOS', WIRELESS_SECURITY_SCENARIOS]
 ];
 
 /** An object is a translation pair when it carries both `it` and `en` as strings. */
 function isBilingualPair(value: Record<string, unknown>): boolean {
-  return 'it' in value && 'en' in value
-    && (typeof value.it === 'string' || typeof value.it === 'undefined')
-    && (typeof value.en === 'string' || typeof value.en === 'undefined');
+  return (
+    'it' in value &&
+    'en' in value &&
+    (typeof value.it === 'string' || typeof value.it === 'undefined') &&
+    (typeof value.en === 'string' || typeof value.en === 'undefined')
+  );
 }
 
 /** Walks a value and records every `{ it, en }` pair whose sides are missing or empty. */

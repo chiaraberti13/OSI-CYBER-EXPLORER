@@ -30,8 +30,9 @@ describe('StudyManualView (EDU-01)', () => {
     expect(screen.getAllByText('Mostra la soluzione commentata').length).toBeGreaterThan(0);
 
     // At least one guided lab opens the OSI stack lab via a real, copyable link.
-    const osiLinks = screen.getAllByRole('link', { name: /Apri il laboratorio/ })
-      .filter(a => a.getAttribute('href') === '#/osi');
+    const osiLinks = screen
+      .getAllByRole('link', { name: /Apri il laboratorio/ })
+      .filter((a) => a.getAttribute('href') === '#/osi');
     expect(osiLinks.length).toBeGreaterThan(0);
   });
 

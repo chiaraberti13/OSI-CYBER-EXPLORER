@@ -17,7 +17,7 @@ const FOCUSABLE_SELECTOR = [
 
 /** Focusable descendants in DOM order, skipping elements hidden with display/visibility. */
 export function getFocusableElements(container: HTMLElement): HTMLElement[] {
-  return Array.from(container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter(element => {
+  return Array.from(container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter((element) => {
     if (element.hasAttribute('inert') || element.closest('[inert]')) return false;
     const style = element.ownerDocument.defaultView?.getComputedStyle(element);
     return style?.display !== 'none' && style?.visibility !== 'hidden';

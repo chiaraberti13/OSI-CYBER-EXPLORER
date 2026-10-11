@@ -41,8 +41,15 @@
             "it": "Ricontrollati comandi Cisco IOS/IOS XE e Linux esposti nei laboratori; restano esempi contestuali con verifica e rollback.",
             "en": "Rechecked Cisco IOS/IOS XE and Linux commands exposed by the labs; they remain contextual examples with verification and rollback."
           },
-          "sources": ["https://www.cisco.com/c/en/us/support/ios-nx-os-software/ios-xe-17/products-command-reference-list.html", "https://man7.org/linux/man-pages/"],
-          "evidence": ["src/content/hardeningConfigs.ts", "src/content/ipServicesLab.ts", "src/content/networkAccessLab.ts"]
+          "sources": [
+            "https://www.cisco.com/c/en/us/support/ios-nx-os-software/ios-xe-17/products-command-reference-list.html",
+            "https://man7.org/linux/man-pages/"
+          ],
+          "evidence": [
+            "src/content/hardeningConfigs.ts",
+            "src/content/ipServicesLab.ts",
+            "src/content/networkAccessLab.ts"
+          ]
         },
         {
           "scope": "deprecated-protocols",
@@ -51,7 +58,11 @@
             "it": "TLS 1.0/1.1 e SNMPv1/v2c erano già indicati come legacy; aggiunto il divieto esplicito di SSHv1 e mantenute le alternative TLS moderne, SSHv2 e SNMPv3 authPriv.",
             "en": "TLS 1.0/1.1 and SNMPv1/v2c were already marked legacy; added an explicit SSHv1 prohibition and retained modern TLS, SSHv2, and SNMPv3 authPriv alternatives."
           },
-          "sources": ["https://www.rfc-editor.org/rfc/rfc8996.html", "https://www.rfc-editor.org/rfc/rfc4253.html", "https://www.rfc-editor.org/rfc/rfc3414.html"],
+          "sources": [
+            "https://www.rfc-editor.org/rfc/rfc8996.html",
+            "https://www.rfc-editor.org/rfc/rfc4253.html",
+            "https://www.rfc-editor.org/rfc/rfc3414.html"
+          ],
           "evidence": ["src/content/protocolRegistry.ts", "src/content/ipServicesLab.ts"]
         },
         {
@@ -61,8 +72,15 @@
             "it": "Confermati TLS 1.2/1.3, chiavi RSA da almeno 2048 bit negli esempi e l’uso didattico di SHA-1/3DES/WEP solo come tecnologie legacy o deboli.",
             "en": "Confirmed TLS 1.2/1.3, RSA keys of at least 2048 bits in examples, and SHA-1/3DES/WEP only as legacy or weak teaching material."
           },
-          "sources": ["https://csrc.nist.gov/pubs/sp/800/131/a/r2/final", "https://www.rfc-editor.org/rfc/rfc8446.html"],
-          "evidence": ["src/content/hardeningConfigs.ts", "src/content/securityFundamentalsLab.ts", "src/content/protocolRegistry.ts"]
+          "sources": [
+            "https://csrc.nist.gov/pubs/sp/800/131/a/r2/final",
+            "https://www.rfc-editor.org/rfc/rfc8446.html"
+          ],
+          "evidence": [
+            "src/content/hardeningConfigs.ts",
+            "src/content/securityFundamentalsLab.ts",
+            "src/content/protocolRegistry.ts"
+          ]
         },
         {
           "scope": "ccna-blueprint",

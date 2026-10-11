@@ -3,13 +3,74 @@ type Language = 'it' | 'en';
 type Localized = Record<Language, string>;
 
 export const ROUTES: Ipv4Route[] = [
-  { id: 'local-lan', source: 'local', network: '10.10.10.1', prefix: 32, administrativeDistance: 0, metric: 0, exitInterface: 'Gi0/1' },
-  { id: 'connected-lan', source: 'connected', network: '10.10.10.0', prefix: 24, administrativeDistance: 0, metric: 0, exitInterface: 'Gi0/1' },
-  { id: 'ospf-branch-a', source: 'ospf', network: '10.10.0.0', prefix: 16, administrativeDistance: 110, metric: 20, nextHop: '192.0.2.2', exitInterface: 'Gi0/0' },
-  { id: 'static-campus', source: 'static', network: '10.0.0.0', prefix: 8, administrativeDistance: 1, metric: 0, nextHop: '192.0.2.6', exitInterface: 'Gi0/2' },
-  { id: 'ospf-dc-a', source: 'ospf', network: '172.16.0.0', prefix: 16, administrativeDistance: 110, metric: 30, nextHop: '192.0.2.2', exitInterface: 'Gi0/0' },
-  { id: 'ospf-dc-b', source: 'ospf', network: '172.16.0.0', prefix: 16, administrativeDistance: 110, metric: 30, nextHop: '192.0.2.10', exitInterface: 'Gi0/3' },
-  { id: 'default', source: 'static', network: '0.0.0.0', prefix: 0, administrativeDistance: 1, metric: 0, nextHop: '198.51.100.1', exitInterface: 'Gi0/4' }
+  {
+    id: 'local-lan',
+    source: 'local',
+    network: '10.10.10.1',
+    prefix: 32,
+    administrativeDistance: 0,
+    metric: 0,
+    exitInterface: 'Gi0/1'
+  },
+  {
+    id: 'connected-lan',
+    source: 'connected',
+    network: '10.10.10.0',
+    prefix: 24,
+    administrativeDistance: 0,
+    metric: 0,
+    exitInterface: 'Gi0/1'
+  },
+  {
+    id: 'ospf-branch-a',
+    source: 'ospf',
+    network: '10.10.0.0',
+    prefix: 16,
+    administrativeDistance: 110,
+    metric: 20,
+    nextHop: '192.0.2.2',
+    exitInterface: 'Gi0/0'
+  },
+  {
+    id: 'static-campus',
+    source: 'static',
+    network: '10.0.0.0',
+    prefix: 8,
+    administrativeDistance: 1,
+    metric: 0,
+    nextHop: '192.0.2.6',
+    exitInterface: 'Gi0/2'
+  },
+  {
+    id: 'ospf-dc-a',
+    source: 'ospf',
+    network: '172.16.0.0',
+    prefix: 16,
+    administrativeDistance: 110,
+    metric: 30,
+    nextHop: '192.0.2.2',
+    exitInterface: 'Gi0/0'
+  },
+  {
+    id: 'ospf-dc-b',
+    source: 'ospf',
+    network: '172.16.0.0',
+    prefix: 16,
+    administrativeDistance: 110,
+    metric: 30,
+    nextHop: '192.0.2.10',
+    exitInterface: 'Gi0/3'
+  },
+  {
+    id: 'default',
+    source: 'static',
+    network: '0.0.0.0',
+    prefix: 0,
+    administrativeDistance: 1,
+    metric: 0,
+    nextHop: '198.51.100.1',
+    exitInterface: 'Gi0/4'
+  }
 ];
 
 export const ROUTE_CODES: Record<RouteSource, string> = {
@@ -21,56 +82,140 @@ export const ROUTE_CODES: Record<RouteSource, string> = {
 };
 
 export const OSPF_STATES: Array<{ state: string; detail: Localized }> = [
-  { state: 'Down', detail: { it: 'Nessun Hello valido ricevuto durante il dead interval.', en: 'No valid Hello received within the dead interval.' } },
-  { state: 'Init', detail: { it: 'È stato ricevuto un Hello, ma il router locale non compare ancora tra i neighbor.', en: 'A Hello was received, but the local router is not yet listed as a neighbor.' } },
-  { state: '2-Way', detail: { it: 'Comunicazione bidirezionale; su reti multiaccess avviene l’elezione DR/BDR.', en: 'Bidirectional communication; DR/BDR election occurs on multiaccess networks.' } },
-  { state: 'ExStart', detail: { it: 'I router negoziano master/slave e sequence number per lo scambio DBD.', en: 'Routers negotiate master/slave roles and sequence numbers for DBD exchange.' } },
-  { state: 'Exchange', detail: { it: 'Vengono scambiati i Database Description packet.', en: 'Database Description packets are exchanged.' } },
-  { state: 'Loading', detail: { it: 'LSR, LSU e LSAck sincronizzano le LSA mancanti o più recenti.', en: 'LSRs, LSUs, and LSAcks synchronize missing or newer LSAs.' } },
-  { state: 'Full', detail: { it: 'Le link-state database dei due neighbor sono sincronizzate.', en: 'The neighbors’ link-state databases are synchronized.' } }
+  {
+    state: 'Down',
+    detail: {
+      it: 'Nessun Hello valido ricevuto durante il dead interval.',
+      en: 'No valid Hello received within the dead interval.'
+    }
+  },
+  {
+    state: 'Init',
+    detail: {
+      it: 'È stato ricevuto un Hello, ma il router locale non compare ancora tra i neighbor.',
+      en: 'A Hello was received, but the local router is not yet listed as a neighbor.'
+    }
+  },
+  {
+    state: '2-Way',
+    detail: {
+      it: 'Comunicazione bidirezionale; su reti multiaccess avviene l’elezione DR/BDR.',
+      en: 'Bidirectional communication; DR/BDR election occurs on multiaccess networks.'
+    }
+  },
+  {
+    state: 'ExStart',
+    detail: {
+      it: 'I router negoziano master/slave e sequence number per lo scambio DBD.',
+      en: 'Routers negotiate master/slave roles and sequence numbers for DBD exchange.'
+    }
+  },
+  {
+    state: 'Exchange',
+    detail: {
+      it: 'Vengono scambiati i Database Description packet.',
+      en: 'Database Description packets are exchanged.'
+    }
+  },
+  {
+    state: 'Loading',
+    detail: {
+      it: 'LSR, LSU e LSAck sincronizzano le LSA mancanti o più recenti.',
+      en: 'LSRs, LSUs, and LSAcks synchronize missing or newer LSAs.'
+    }
+  },
+  {
+    state: 'Full',
+    detail: {
+      it: 'Le link-state database dei due neighbor sono sincronizzate.',
+      en: 'The neighbors’ link-state databases are synchronized.'
+    }
+  }
 ];
 
 export const SECURITY_ROWS: Array<{ attack: Localized; effect: Localized; defense: Localized; evidence: string }> = [
   {
     attack: { it: 'Neighbor OSPF non autorizzato', en: 'Unauthorized OSPF neighbor' },
-    effect: { it: 'Un router ostile forma un’adiacenza e tenta di introdurre informazioni di routing.', en: 'A hostile router forms an adjacency and attempts to introduce routing information.' },
-    defense: { it: 'Autenticazione OSPF coerente su entrambi i peer, passive-interface di default e adiacenze solo sui link previsti.', en: 'Consistent OSPF authentication on both peers, passive-interface by default, and adjacencies only on intended links.' },
+    effect: {
+      it: 'Un router ostile forma un’adiacenza e tenta di introdurre informazioni di routing.',
+      en: 'A hostile router forms an adjacency and attempts to introduce routing information.'
+    },
+    defense: {
+      it: 'Autenticazione OSPF coerente su entrambi i peer, passive-interface di default e adiacenze solo sui link previsti.',
+      en: 'Consistent OSPF authentication on both peers, passive-interface by default, and adjacencies only on intended links.'
+    },
     evidence: 'show ip ospf neighbor detail'
   },
   {
     attack: { it: 'LSA false o route injection', en: 'Forged LSA or route injection' },
-    effect: { it: 'Rotte più specifiche, default o metriche alterate deviano il traffico verso black hole o intercettazione.', en: 'More-specific routes, defaults, or altered metrics redirect traffic toward a black hole or interception point.' },
-    defense: { it: 'Autenticazione protegge il dominio da dispositivi esterni; filtri e policy di redistribuzione limitano anche errori o router interni compromessi.', en: 'Authentication protects the domain from external devices; redistribution filters and policy also limit mistakes or compromised internal routers.' },
+    effect: {
+      it: 'Rotte più specifiche, default o metriche alterate deviano il traffico verso black hole o intercettazione.',
+      en: 'More-specific routes, defaults, or altered metrics redirect traffic toward a black hole or interception point.'
+    },
+    defense: {
+      it: 'Autenticazione protegge il dominio da dispositivi esterni; filtri e policy di redistribuzione limitano anche errori o router interni compromessi.',
+      en: 'Authentication protects the domain from external devices; redistribution filters and policy also limit mistakes or compromised internal routers.'
+    },
     evidence: 'show ip ospf database'
   },
   {
     attack: { it: 'Hello/LSA flooding', en: 'Hello/LSA flooding' },
-    effect: { it: 'Consumo di CPU e instabilità delle adiacenze o della LSDB.', en: 'CPU exhaustion and instability of adjacencies or the LSDB.' },
-    defense: { it: 'CoPP per proteggere il control plane, autenticazione, policing e monitoraggio delle variazioni LSA/neighbor.', en: 'CoPP to protect the control plane, authentication, policing, and monitoring of LSA/neighbor churn.' },
+    effect: {
+      it: 'Consumo di CPU e instabilità delle adiacenze o della LSDB.',
+      en: 'CPU exhaustion and instability of adjacencies or the LSDB.'
+    },
+    defense: {
+      it: 'CoPP per proteggere il control plane, autenticazione, policing e monitoraggio delle variazioni LSA/neighbor.',
+      en: 'CoPP to protect the control plane, authentication, policing, and monitoring of LSA/neighbor churn.'
+    },
     evidence: 'show policy-map control-plane'
   },
   {
     attack: { it: 'Route hijacking più specifico', en: 'More-specific route hijacking' },
-    effect: { it: 'Una rotta con prefisso più lungo vince anche contro una sorgente con distanza amministrativa migliore.', en: 'A longer-prefix route wins even against a source with a better administrative distance.' },
-    defense: { it: 'Prefix filtering, summarization controllata, autenticazione del protocollo e allarmi per nuovi prefissi critici.', en: 'Prefix filtering, controlled summarization, protocol authentication, and alerts for new critical prefixes.' },
+    effect: {
+      it: 'Una rotta con prefisso più lungo vince anche contro una sorgente con distanza amministrativa migliore.',
+      en: 'A longer-prefix route wins even against a source with a better administrative distance.'
+    },
+    defense: {
+      it: 'Prefix filtering, summarization controllata, autenticazione del protocollo e allarmi per nuovi prefissi critici.',
+      en: 'Prefix filtering, controlled summarization, protocol authentication, and alerts for new critical prefixes.'
+    },
     evidence: 'show ip route <prefix>'
   },
   {
     attack: { it: 'ICMP redirect spoofing', en: 'ICMP redirect spoofing' },
-    effect: { it: 'Un host può accettare un next hop malevolo sulla rete locale.', en: 'A host may accept a malicious next hop on the local network.' },
-    defense: { it: 'Disabilita ICMP Redirect sulle interfacce dove non serve, applica segmentazione e protezioni di access layer.', en: 'Disable ICMP Redirects on interfaces where they are not required, and apply segmentation and access-layer protections.' },
+    effect: {
+      it: 'Un host può accettare un next hop malevolo sulla rete locale.',
+      en: 'A host may accept a malicious next hop on the local network.'
+    },
+    defense: {
+      it: 'Disabilita ICMP Redirect sulle interfacce dove non serve, applica segmentazione e protezioni di access layer.',
+      en: 'Disable ICMP Redirects on interfaces where they are not required, and apply segmentation and access-layer protections.'
+    },
     evidence: 'show ip interface'
   },
   {
     attack: { it: 'IP source routing', en: 'IP source routing' },
-    effect: { it: 'Opzioni IPv4 consentono al mittente di influenzare il percorso e tentare di aggirare controlli.', en: 'IPv4 options allow the sender to influence the path and attempt to bypass controls.' },
-    defense: { it: 'Mantieni disabilitato IP source routing e filtra pacchetti con opzioni anomale ai confini.', en: 'Keep IP source routing disabled and filter packets with abnormal options at boundaries.' },
+    effect: {
+      it: 'Opzioni IPv4 consentono al mittente di influenzare il percorso e tentare di aggirare controlli.',
+      en: 'IPv4 options allow the sender to influence the path and attempt to bypass controls.'
+    },
+    defense: {
+      it: 'Mantieni disabilitato IP source routing e filtra pacchetti con opzioni anomale ai confini.',
+      en: 'Keep IP source routing disabled and filter packets with abnormal options at boundaries.'
+    },
     evidence: 'show running-config | include source-route'
   },
   {
     attack: { it: 'Spoofing dell’indirizzo sorgente', en: 'Source-address spoofing' },
-    effect: { it: 'Il traffico usa indirizzi impossibili o appartenenti ad altre reti per nascondere l’origine o amplificare attacchi.', en: 'Traffic uses impossible or foreign source addresses to hide its origin or amplify attacks.' },
-    defense: { it: 'uRPF dove la topologia lo consente, ACL anti-spoofing e BCP 38 agli edge; valuta i percorsi asimmetrici.', en: 'uRPF where topology permits, anti-spoofing ACLs, and BCP 38 at edges; account for asymmetric paths.' },
+    effect: {
+      it: 'Il traffico usa indirizzi impossibili o appartenenti ad altre reti per nascondere l’origine o amplificare attacchi.',
+      en: 'Traffic uses impossible or foreign source addresses to hide its origin or amplify attacks.'
+    },
+    defense: {
+      it: 'uRPF dove la topologia lo consente, ACL anti-spoofing e BCP 38 agli edge; valuta i percorsi asimmetrici.',
+      en: 'uRPF where topology permits, anti-spoofing ACLs, and BCP 38 at edges; account for asymmetric paths.'
+    },
     evidence: 'show ip interface | include verify'
   }
 ];
@@ -145,28 +290,58 @@ export const ROUTE_TABLE_LEGEND: Array<{ token: string; detail: Localized }> = [
 export const FHRP_ROWS: Array<{ property: Localized; hsrp: Localized; vrrp: Localized }> = [
   {
     property: { it: 'Standard e ruoli', en: 'Standard and roles' },
-    hsrp: { it: 'Cisco; un router Active e uno Standby, gli altri restano in Listen.', en: 'Cisco; one Active router and one Standby, the others stay in Listen.' },
-    vrrp: { it: 'Standard aperto (RFC 5798); un Master e uno o più Backup.', en: 'Open standard (RFC 5798); one Master and one or more Backups.' }
+    hsrp: {
+      it: 'Cisco; un router Active e uno Standby, gli altri restano in Listen.',
+      en: 'Cisco; one Active router and one Standby, the others stay in Listen.'
+    },
+    vrrp: {
+      it: 'Standard aperto (RFC 5798); un Master e uno o più Backup.',
+      en: 'Open standard (RFC 5798); one Master and one or more Backups.'
+    }
   },
   {
     property: { it: 'Indirizzi virtuali', en: 'Virtual addresses' },
-    hsrp: { it: 'IP virtuale configurato dall’amministratore; MAC virtuale 0000.0C07.ACxx (xx = gruppo) in HSRPv1.', en: 'Administrator-configured virtual IP; virtual MAC 0000.0C07.ACxx (xx = group) in HSRPv1.' },
-    vrrp: { it: 'IP virtuale che può coincidere con quello reale del Master; MAC virtuale 0000.5E00.01xx.', en: 'Virtual IP that may be the Master’s own address; virtual MAC 0000.5E00.01xx.' }
+    hsrp: {
+      it: 'IP virtuale configurato dall’amministratore; MAC virtuale 0000.0C07.ACxx (xx = gruppo) in HSRPv1.',
+      en: 'Administrator-configured virtual IP; virtual MAC 0000.0C07.ACxx (xx = group) in HSRPv1.'
+    },
+    vrrp: {
+      it: 'IP virtuale che può coincidere con quello reale del Master; MAC virtuale 0000.5E00.01xx.',
+      en: 'Virtual IP that may be the Master’s own address; virtual MAC 0000.5E00.01xx.'
+    }
   },
   {
     property: { it: 'Elezione e subentro', en: 'Election and takeover' },
-    hsrp: { it: 'Vince la priorità più alta (default 100), poi l’IP più alto; senza il comando preempt il router a priorità maggiore non subentra.', en: 'Highest priority wins (default 100), then the highest IP; without the preempt command a higher-priority router does not take over.' },
-    vrrp: { it: 'Vince la priorità più alta (default 100) e il preempt è attivo per impostazione predefinita.', en: 'Highest priority wins (default 100) and preemption is enabled by default.' }
+    hsrp: {
+      it: 'Vince la priorità più alta (default 100), poi l’IP più alto; senza il comando preempt il router a priorità maggiore non subentra.',
+      en: 'Highest priority wins (default 100), then the highest IP; without the preempt command a higher-priority router does not take over.'
+    },
+    vrrp: {
+      it: 'Vince la priorità più alta (default 100) e il preempt è attivo per impostazione predefinita.',
+      en: 'Highest priority wins (default 100) and preemption is enabled by default.'
+    }
   },
   {
     property: { it: 'Distribuzione del carico', en: 'Load sharing' },
-    hsrp: { it: 'Un solo gateway attivo per gruppo: si distribuisce il carico creando più gruppi e alternando l’Active per VLAN.', en: 'One active gateway per group: load is shared by creating multiple groups and alternating the Active per VLAN.' },
-    vrrp: { it: 'Stesso principio con più gruppi; GLBP (Cisco) distribuisce invece il carico tra gateway nello stesso gruppo.', en: 'Same principle with multiple groups; Cisco GLBP instead shares load across gateways within one group.' }
+    hsrp: {
+      it: 'Un solo gateway attivo per gruppo: si distribuisce il carico creando più gruppi e alternando l’Active per VLAN.',
+      en: 'One active gateway per group: load is shared by creating multiple groups and alternating the Active per VLAN.'
+    },
+    vrrp: {
+      it: 'Stesso principio con più gruppi; GLBP (Cisco) distribuisce invece il carico tra gateway nello stesso gruppo.',
+      en: 'Same principle with multiple groups; Cisco GLBP instead shares load across gateways within one group.'
+    }
   },
   {
     property: { it: 'Failover e verifica', en: 'Failover and verification' },
-    hsrp: { it: 'Hello e hold timer rilevano la perdita del peer; l’object tracking abbassa la priorità se cade l’uplink, non solo l’interfaccia locale.', en: 'Hello and hold timers detect peer loss; object tracking lowers the priority when the uplink fails, not just the local interface.' },
-    vrrp: { it: 'Advertisement periodici e master down interval; la verifica si fa su stato, priorità e ARP del client.', en: 'Periodic advertisements and a master down interval; verification covers state, priority, and the client ARP entry.' }
+    hsrp: {
+      it: 'Hello e hold timer rilevano la perdita del peer; l’object tracking abbassa la priorità se cade l’uplink, non solo l’interfaccia locale.',
+      en: 'Hello and hold timers detect peer loss; object tracking lowers the priority when the uplink fails, not just the local interface.'
+    },
+    vrrp: {
+      it: 'Advertisement periodici e master down interval; la verifica si fa su stato, priorità e ARP del client.',
+      en: 'Periodic advertisements and a master down interval; verification covers state, priority, and the client ARP entry.'
+    }
   }
 ];
 

@@ -1,18 +1,7 @@
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
-import {
-  addressKind,
-  calculateIpv4Subnet,
-  ipv4ToUint,
-  uintToIpv4
-} from './ipv4';
-import {
-  classifyIpv6,
-  compressIpv6,
-  expandIpv6,
-  inspectIpv6,
-  macToModifiedEui64
-} from './ipv6';
+import { addressKind, calculateIpv4Subnet, ipv4ToUint, uintToIpv4 } from './ipv4';
+import { classifyIpv6, compressIpv6, expandIpv6, inspectIpv6, macToModifiedEui64 } from './ipv6';
 
 const PROPERTY_PARAMETERS = { seed: 0x4f5349, numRuns: 1_000 } as const;
 
@@ -95,22 +84,17 @@ describe('Modified EUI-64 (RFC 4291 section 2.5.1 and appendix A)', () => {
 describe('address conversion properties (RFC 791 section 3.2; RFC 4291 section 2.2)', () => {
   it('ipv4ToUint ∘ uintToIpv4 is the identity over every 32-bit unsigned integer', () => {
     fc.assert(
-      fc.property(fc.integer({ min: 0, max: 0xffff_ffff }), value =>
-        ipv4ToUint(uintToIpv4(value)) === value
-      ),
+      fc.property(fc.integer({ min: 0, max: 0xffff_ffff }), (value) => ipv4ToUint(uintToIpv4(value)) === value),
       PROPERTY_PARAMETERS
     );
   });
 
   it('expandIpv6 ∘ compressIpv6 preserves every expanded 128-bit address', () => {
     fc.assert(
-      fc.property(
-        fc.array(fc.integer({ min: 0, max: 0xffff }), { minLength: 8, maxLength: 8 }),
-        values => {
-          const expanded = values.map(value => value.toString(16).padStart(4, '0'));
-          return expandIpv6(compressIpv6(expanded)).join(':') === expanded.join(':');
-        }
-      ),
+      fc.property(fc.array(fc.integer({ min: 0, max: 0xffff }), { minLength: 8, maxLength: 8 }), (values) => {
+        const expanded = values.map((value) => value.toString(16).padStart(4, '0'));
+        return expandIpv6(compressIpv6(expanded)).join(':') === expanded.join(':');
+      }),
       PROPERTY_PARAMETERS
     );
   });

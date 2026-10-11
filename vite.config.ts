@@ -9,23 +9,25 @@ export default defineConfig(({ mode }) => ({
     react(),
     tailwindcss(),
     ...(mode === 'analyze'
-      ? [visualizer({
-          filename: 'dist/bundle-report.html',
-          template: 'treemap',
-          gzipSize: true,
-          brotliSize: true,
-          open: false,
-        })]
-      : []),
+      ? [
+          visualizer({
+            filename: 'dist/bundle-report.html',
+            template: 'treemap',
+            gzipSize: true,
+            brotliSize: true,
+            open: false
+          })
+        ]
+      : [])
   ],
   build: {
     // The budget gate resolves entry and lazy-route chunks from stable source keys,
     // never from volatile content hashes in file names.
-    manifest: true,
+    manifest: true
   },
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url)),
-    },
-  },
+      '@': fileURLToPath(new URL('./src', import.meta.url))
+    }
+  }
 }));

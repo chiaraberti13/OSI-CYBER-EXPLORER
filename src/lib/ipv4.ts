@@ -43,7 +43,7 @@ export function ipv4ToUint(address: string): number {
 
 export function uintToIpv4(value: number): string {
   const unsigned = value >>> 0;
-  return [24, 16, 8, 0].map(shift => (unsigned >>> shift) & 0xff).join('.');
+  return [24, 16, 8, 0].map((shift) => (unsigned >>> shift) & 0xff).join('.');
 }
 
 export function prefixToMask(prefix: number): number {
@@ -53,40 +53,37 @@ export function prefixToMask(prefix: number): number {
 
 export function addressKind(value: number): Ipv4AddressKind {
   const address = value >>> 0;
-  const matches = (mask: number, expected: number) => ((address & mask) >>> 0) === (expected >>> 0);
+  const matches = (mask: number, expected: number) => (address & mask) >>> 0 === expected >>> 0;
   if (address === 0) return 'unspecified';
   if (address === 0xffffffff) return 'limited-broadcast';
   if (matches(0xff000000, 0x7f000000)) return 'loopback';
   if (matches(0xffff0000, 0xa9fe0000)) return 'link-local';
   if (matches(0xf0000000, 0xe0000000)) return 'multicast';
-  if (
-    matches(0xff000000, 0x0a000000) ||
-    matches(0xfff00000, 0xac100000) ||
-    matches(0xffff0000, 0xc0a80000)
-  ) return 'private';
+  if (matches(0xff000000, 0x0a000000) || matches(0xfff00000, 0xac100000) || matches(0xffff0000, 0xc0a80000))
+    return 'private';
   if (matches(0xffc00000, 0x64400000)) return 'shared';
-  if (
-    matches(0xffffff00, 0xc0000200) ||
-    matches(0xffffff00, 0xc6336400) ||
-    matches(0xffffff00, 0xcb007100)
-  ) return 'documentation';
+  if (matches(0xffffff00, 0xc0000200) || matches(0xffffff00, 0xc6336400) || matches(0xffffff00, 0xcb007100))
+    return 'documentation';
   if (
     matches(0xff000000, 0x00000000) ||
     matches(0xffffff00, 0xc0000000) ||
     matches(0xfffe0000, 0xc6120000) ||
     matches(0xf0000000, 0xf0000000)
-  ) return 'special-use';
+  )
+    return 'special-use';
   return 'public';
 }
 
 function binaryOctets(value: number): string[] {
-  return uintToIpv4(value).split('.').map(octet => Number(octet).toString(2).padStart(8, '0'));
+  return uintToIpv4(value)
+    .split('.')
+    .map((octet) => Number(octet).toString(2).padStart(8, '0'));
 }
 
 export function calculateIpv4Subnet(address: string, prefix: number): Ipv4Subnet {
   const ip = ipv4ToUint(address);
   const mask = prefixToMask(prefix);
-  const wildcard = (~mask) >>> 0;
+  const wildcard = ~mask >>> 0;
   const network = (ip & mask) >>> 0;
   const broadcast = (network | wildcard) >>> 0;
   const totalAddresses = 2 ** (32 - prefix);
@@ -261,7 +258,7 @@ export function wildcardForRange(firstAddress: string, lastAddress: string): Wil
     if (blockStart + size - 1 >= last) {
       return {
         address: uintToIpv4(blockStart),
-        wildcard: uintToIpv4((~mask) >>> 0),
+        wildcard: uintToIpv4(~mask >>> 0),
         prefix,
         exact: blockStart === first && size === requested,
         extraAddresses: size - requested

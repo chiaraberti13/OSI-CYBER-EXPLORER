@@ -5,15 +5,45 @@ import { SECURITY_PLAYBOOKS, type SecurityPlaybook } from '../content/securityPl
 import { SECURITY_TECHNIQUES, type CcnaDomainId } from '../content/securityCoverage';
 import type { Language } from '../types';
 
-const DOMAIN_BY_ID = new Map(CCNA_DOMAINS.map(domain => [domain.id, domain]));
-const TECHNIQUE_BY_ID = new Map(SECURITY_TECHNIQUES.map(technique => [technique.id, technique]));
+const DOMAIN_BY_ID = new Map(CCNA_DOMAINS.map((domain) => [domain.id, domain]));
+const TECHNIQUE_BY_ID = new Map(SECURITY_TECHNIQUES.map((technique) => [technique.id, technique]));
 
 const PHASES = [
-  { field: 'stabilize', icon: Siren, it: 'Stabilizza', en: 'Stabilize', style: 'border-rose-100 bg-rose-50/60 text-rose-950' },
-  { field: 'evidence', icon: Archive, it: 'Raccogli evidenze', en: 'Collect evidence', style: 'border-violet-100 bg-violet-50/60 text-violet-950' },
-  { field: 'contain', icon: Shield, it: 'Contieni', en: 'Contain', style: 'border-amber-100 bg-amber-50/60 text-amber-950' },
-  { field: 'recover', icon: RotateCcw, it: 'Ripristina', en: 'Recover', style: 'border-sky-100 bg-sky-50/60 text-sky-950' },
-  { field: 'validate', icon: CheckCircle2, it: 'Verifica', en: 'Validate', style: 'border-emerald-100 bg-emerald-50/60 text-emerald-950' }
+  {
+    field: 'stabilize',
+    icon: Siren,
+    it: 'Stabilizza',
+    en: 'Stabilize',
+    style: 'border-rose-100 bg-rose-50/60 text-rose-950'
+  },
+  {
+    field: 'evidence',
+    icon: Archive,
+    it: 'Raccogli evidenze',
+    en: 'Collect evidence',
+    style: 'border-violet-100 bg-violet-50/60 text-violet-950'
+  },
+  {
+    field: 'contain',
+    icon: Shield,
+    it: 'Contieni',
+    en: 'Contain',
+    style: 'border-amber-100 bg-amber-50/60 text-amber-950'
+  },
+  {
+    field: 'recover',
+    icon: RotateCcw,
+    it: 'Ripristina',
+    en: 'Recover',
+    style: 'border-sky-100 bg-sky-50/60 text-sky-950'
+  },
+  {
+    field: 'validate',
+    icon: CheckCircle2,
+    it: 'Verifica',
+    en: 'Validate',
+    style: 'border-emerald-100 bg-emerald-50/60 text-emerald-950'
+  }
 ] as const satisfies ReadonlyArray<{
   field: keyof Pick<SecurityPlaybook, 'stabilize' | 'evidence' | 'contain' | 'recover' | 'validate'>;
   icon: typeof Siren;
@@ -31,12 +61,15 @@ interface SecurityResponsePlaybooksProps {
 function SecurityResponsePlaybooks({ language, onOpenDomain, onTechniqueSelect }: SecurityResponsePlaybooksProps) {
   const [selectedId, setSelectedId] = useState(SECURITY_PLAYBOOKS[0].id);
   const selected = useMemo(
-    () => SECURITY_PLAYBOOKS.find(playbook => playbook.id === selectedId) ?? SECURITY_PLAYBOOKS[0],
+    () => SECURITY_PLAYBOOKS.find((playbook) => playbook.id === selectedId) ?? SECURITY_PLAYBOOKS[0],
     [selectedId]
   );
 
   return (
-    <section aria-labelledby="response-playbooks-title" className="rounded-xl border border-slate-200 bg-white p-4 md:p-5">
+    <section
+      aria-labelledby="response-playbooks-title"
+      className="rounded-xl border border-slate-200 bg-white p-4 md:p-5"
+    >
       <div className="flex items-start gap-3">
         <div className="rounded-lg bg-rose-50 p-2 text-rose-700">
           <Siren className="h-5 w-5" aria-hidden="true" />
@@ -53,8 +86,11 @@ function SecurityResponsePlaybooks({ language, onOpenDomain, onTechniqueSelect }
         </div>
       </div>
 
-      <div className="mt-4 flex flex-wrap gap-2" aria-label={language === 'it' ? 'Selezione playbook' : 'Playbook selection'}>
-        {SECURITY_PLAYBOOKS.map(playbook => {
+      <div
+        className="mt-4 flex flex-wrap gap-2"
+        aria-label={language === 'it' ? 'Selezione playbook' : 'Playbook selection'}
+      >
+        {SECURITY_PLAYBOOKS.map((playbook) => {
           const active = selected.id === playbook.id;
           return (
             <button
@@ -73,12 +109,14 @@ function SecurityResponsePlaybooks({ language, onOpenDomain, onTechniqueSelect }
       <article className="mt-3 rounded-xl border border-slate-200 bg-slate-50/50 p-4">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-rose-600">{language === 'it' ? 'Segnali iniziali' : 'Initial signals'}</p>
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-rose-600">
+              {language === 'it' ? 'Segnali iniziali' : 'Initial signals'}
+            </p>
             <h3 className="mt-1 text-lg font-semibold text-slate-900">{selected.title[language]}</h3>
             <p className="mt-2 max-w-4xl text-sm leading-relaxed text-slate-600">{selected.signal[language]}</p>
           </div>
           <div className="flex flex-wrap gap-1.5">
-            {selected.domains.map(domainId => {
+            {selected.domains.map((domainId) => {
               const domain = DOMAIN_BY_ID.get(domainId);
               return (
                 <button
@@ -95,7 +133,7 @@ function SecurityResponsePlaybooks({ language, onOpenDomain, onTechniqueSelect }
         </div>
 
         <div className="mt-5 grid gap-3 lg:grid-cols-5">
-          {PHASES.map(phase => {
+          {PHASES.map((phase) => {
             const Icon = phase.icon;
             return (
               <section key={phase.field} className={`rounded-lg border p-3 ${phase.style}`}>
@@ -104,7 +142,9 @@ function SecurityResponsePlaybooks({ language, onOpenDomain, onTechniqueSelect }
                   {phase[language]}
                 </h4>
                 <ul className="mt-2 space-y-2 text-xs leading-relaxed">
-                  {selected[phase.field].map(item => <li key={item.en}>• {item[language]}</li>)}
+                  {selected[phase.field].map((item) => (
+                    <li key={item.en}>• {item[language]}</li>
+                  ))}
                 </ul>
               </section>
             );
@@ -117,7 +157,9 @@ function SecurityResponsePlaybooks({ language, onOpenDomain, onTechniqueSelect }
             {language === 'it' ? 'Errori operativi da evitare' : 'Operational mistakes to avoid'}
           </h4>
           <ul className="mt-2 grid gap-2 text-xs leading-relaxed md:grid-cols-2">
-            {selected.pitfalls.map(item => <li key={item.en}>• {item[language]}</li>)}
+            {selected.pitfalls.map((item) => (
+              <li key={item.en}>• {item[language]}</li>
+            ))}
           </ul>
         </div>
 
@@ -126,7 +168,7 @@ function SecurityResponsePlaybooks({ language, onOpenDomain, onTechniqueSelect }
             <Search className="h-3.5 w-3.5" aria-hidden="true" />
             {language === 'it' ? 'Tecniche correlate' : 'Related techniques'}
           </span>
-          {selected.techniqueIds.map(techniqueId => {
+          {selected.techniqueIds.map((techniqueId) => {
             const technique = TECHNIQUE_BY_ID.get(techniqueId);
             return (
               <button

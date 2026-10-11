@@ -6,57 +6,62 @@ import { ShieldCheck, Skull } from 'lucide-react';
 
 export default function OsiStack() {
   const {
-  selectedLayerId,
-  setSelectedLayerId,
-  language,
-  currentStep,
-  simulationState,
-  activeAttack,
-  defenseEnabled,
-  activeScenarioId,
-} = useStore(useShallow((state) => ({
-  selectedLayerId: state.selectedLayerId,
-  setSelectedLayerId: state.setSelectedLayerId,
-  language: state.language,
-  currentStep: state.currentStep,
-  simulationState: state.simulationState,
-  activeAttack: state.activeAttack,
-  defenseEnabled: state.defenseEnabled,
-  activeScenarioId: state.activeScenarioId,
-})));
+    selectedLayerId,
+    setSelectedLayerId,
+    language,
+    currentStep,
+    simulationState,
+    activeAttack,
+    defenseEnabled,
+    activeScenarioId
+  } = useStore(
+    useShallow((state) => ({
+      selectedLayerId: state.selectedLayerId,
+      setSelectedLayerId: state.setSelectedLayerId,
+      language: state.language,
+      currentStep: state.currentStep,
+      simulationState: state.simulationState,
+      activeAttack: state.activeAttack,
+      defenseEnabled: state.defenseEnabled,
+      activeScenarioId: state.activeScenarioId
+    }))
+  );
 
   // UX-05: the layer states were shown only through colour and English-only words.
   // These labels localise them and are rendered as text (plus icons) so the state
   // is understandable without colour perception; selection is exposed with
   // aria-pressed below.
-  const stateLabels = language === 'it'
-    ? { transforming: 'in trasformazione', compromised: 'compromesso', hardened: 'protetto' }
-    : { transforming: 'transforming', compromised: 'compromised', hardened: 'hardened' };
+  const stateLabels =
+    language === 'it'
+      ? { transforming: 'in trasformazione', compromised: 'compromesso', hardened: 'protetto' }
+      : { transforming: 'transforming', compromised: 'compromised', hardened: 'hardened' };
 
   return (
     <div className="flex flex-col w-full bg-white rounded-lg border border-slate-200/70 overflow-hidden divide-y divide-slate-100">
       {OSI_LAYERS.map((layer) => {
         const isSelected = selectedLayerId === layer.id;
-        const isActive = (simulationState === 'encapsulating' || simulationState === 'decapsulating') && currentStep === layer.id;
-        const isTargeted = simulationState === 'interrupted' && (
-          (activeAttack === 'mitm' && (layer.id === 2 || layer.id === 3)) ||
-          (activeAttack === 'dos' && (layer.id === 7 || layer.id === 4)) ||
-          (activeAttack === 'spoofing' && layer.id === 3) ||
-          (activeAttack === 'replay' && layer.id === 5) ||
-          (activeAttack === 'eavesdropping' && layer.id === 1) ||
-          (activeAttack === 'injection' && layer.id === 7) ||
-          (activeScenarioId === 'l1-jamming' && layer.id === 1)
-        );
+        const isActive =
+          (simulationState === 'encapsulating' || simulationState === 'decapsulating') && currentStep === layer.id;
+        const isTargeted =
+          simulationState === 'interrupted' &&
+          ((activeAttack === 'mitm' && (layer.id === 2 || layer.id === 3)) ||
+            (activeAttack === 'dos' && (layer.id === 7 || layer.id === 4)) ||
+            (activeAttack === 'spoofing' && layer.id === 3) ||
+            (activeAttack === 'replay' && layer.id === 5) ||
+            (activeAttack === 'eavesdropping' && layer.id === 1) ||
+            (activeAttack === 'injection' && layer.id === 7) ||
+            (activeScenarioId === 'l1-jamming' && layer.id === 1));
 
-        const isMitigated = activeAttack !== 'none' && defenseEnabled && (
-          (activeAttack === 'mitm' && (layer.id === 2 || layer.id === 3)) ||
-          (activeAttack === 'dos' && (layer.id === 7 || layer.id === 4)) ||
-          (activeAttack === 'spoofing' && layer.id === 3) ||
-          (activeAttack === 'replay' && layer.id === 5) ||
-          (activeAttack === 'eavesdropping' && layer.id === 1) ||
-          (activeAttack === 'injection' && layer.id === 7) ||
-          (activeScenarioId === 'l1-jamming' && layer.id === 1)
-        );
+        const isMitigated =
+          activeAttack !== 'none' &&
+          defenseEnabled &&
+          ((activeAttack === 'mitm' && (layer.id === 2 || layer.id === 3)) ||
+            (activeAttack === 'dos' && (layer.id === 7 || layer.id === 4)) ||
+            (activeAttack === 'spoofing' && layer.id === 3) ||
+            (activeAttack === 'replay' && layer.id === 5) ||
+            (activeAttack === 'eavesdropping' && layer.id === 1) ||
+            (activeAttack === 'injection' && layer.id === 7) ||
+            (activeScenarioId === 'l1-jamming' && layer.id === 1));
 
         const layerInfo = layer.translations[language];
 
@@ -83,16 +88,26 @@ export default function OsiStack() {
             />
 
             <div className="flex items-center gap-4 min-w-0">
-              <span className={`text-[11px] font-mono w-4 text-center shrink-0 ${
-                isSelected ? 'text-slate-900' : isTargeted ? 'text-red-500' : 'text-slate-300'
-              }`}>
+              <span
+                className={`text-[11px] font-mono w-4 text-center shrink-0 ${
+                  isSelected ? 'text-slate-900' : isTargeted ? 'text-red-500' : 'text-slate-300'
+                }`}
+              >
                 {layer.id}
               </span>
 
               <div className="min-w-0">
-                <h3 className={`text-[13px] font-medium leading-tight truncate ${
-                  isTargeted ? 'text-red-600' : isActive ? 'text-emerald-600' : isSelected ? 'text-slate-900' : 'text-slate-500'
-                }`}>
+                <h3
+                  className={`text-[13px] font-medium leading-tight truncate ${
+                    isTargeted
+                      ? 'text-red-600'
+                      : isActive
+                        ? 'text-emerald-600'
+                        : isSelected
+                          ? 'text-slate-900'
+                          : 'text-slate-500'
+                  }`}
+                >
                   {layerInfo.name}
                 </h3>
                 <div className="flex items-center gap-2 mt-0.5">

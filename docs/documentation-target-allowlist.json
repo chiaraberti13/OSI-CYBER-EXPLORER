@@ -1,13 +1,6 @@
 {
   "schemaVersion": 1,
-  "reservedDomainSuffixes": [
-    "example.com",
-    "example.org",
-    "example.net",
-    "example.test",
-    "test",
-    "localhost"
-  ],
+  "reservedDomainSuffixes": ["example.com", "example.org", "example.net", "example.test", "test", "localhost"],
   "externalDomainExceptions": [
     {
       "domain": "attack.mitre.org",
@@ -53,7 +46,11 @@
   "ipv4LiteralExceptions": [
     {
       "address": "1.1.1.1",
-      "files": ["src/content/ospfTopology.ts", "src/content/ipConnectivityLab.ts", "src/components/IpConnectivityLab.tsx"],
+      "files": [
+        "src/content/ospfTopology.ts",
+        "src/content/ipConnectivityLab.ts",
+        "src/components/IpConnectivityLab.tsx"
+      ],
       "purpose": "Conventional OSPF router ID, not a traffic destination"
     },
     {

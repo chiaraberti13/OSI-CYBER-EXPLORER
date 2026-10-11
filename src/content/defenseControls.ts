@@ -20,35 +20,782 @@ export interface DefenseControl {
 }
 
 const b = (it: string, en: string): Bilingual => ({ it, en });
-const d = (id: string, name: Bilingual, functions: DefenseFunction[], planes: SecurityPlane[], domains: CcnaDomainId[], techniqueIds: string[], enforcement: Bilingual, dependsOn: Bilingual, verify: Bilingual, limitation: Bilingual): DefenseControl => ({
-  id, name, functions, planes, domains, techniqueIds, enforcement, dependsOn, verify, limitation,
-  references: [...DEFENSIVE_CONTROL_BASELINE_REFERENCES],
+const d = (
+  id: string,
+  name: Bilingual,
+  functions: DefenseFunction[],
+  planes: SecurityPlane[],
+  domains: CcnaDomainId[],
+  techniqueIds: string[],
+  enforcement: Bilingual,
+  dependsOn: Bilingual,
+  verify: Bilingual,
+  limitation: Bilingual
+): DefenseControl => ({
+  id,
+  name,
+  functions,
+  planes,
+  domains,
+  techniqueIds,
+  enforcement,
+  dependsOn,
+  verify,
+  limitation,
+  references: [...DEFENSIVE_CONTROL_BASELINE_REFERENCES]
 });
 
 export const DEFENSE_CONTROLS: DefenseControl[] = [
-  d('physical-media-hardening', b('Hardening fisico e del mezzo', 'Physical and media hardening'), ['prevent', 'detect', 'recover'], ['physical'], ['network-fundamentals'], ['physical-tapping', 'rf-jamming', 'rogue-device'], b('Armadi, porte, cablaggi, alimentazione, sensori e controllo dell’accesso fisico.', 'Racks, ports, cabling, power, sensors, and physical access control.'), b('Inventario, ownership, percorsi ridondanti e procedure di ispezione.', 'Inventory, ownership, redundant paths, and inspection procedures.'), b('Audit fisico, tamper evidence, DOM/transceiver e test del percorso alternativo.', 'Physical audit, tamper evidence, DOM/transceiver data, and alternate-path tests.'), b('Non protegge il contenuto intercettato su infrastruttura autorizzata: serve cifratura end-to-end.', 'It does not protect content intercepted on authorized infrastructure: end-to-end encryption is required.')),
-  d('segmentation-least-reachability', b('Segmentazione e least reachability', 'Segmentation and least reachability'), ['prevent', 'detect', 'contain', 'compensate'], ['data', 'control', 'management'], ['network-fundamentals', 'network-access', 'ip-connectivity', 'security-fundamentals'], ['rogue-device', 'vlan-switch-spoofing', 'session-hijack-reset', 'malware-ransomware', 'inter-vlan-policy-bypass', 'vrf-route-leak', 'east-west-lateral-movement', 'overlay-tenant-escape'], b('VLAN/VRF, ACL, firewall e policy dinamiche limitano chi può raggiungere cosa.', 'VLANs/VRFs, ACLs, firewalls, and dynamic policy limit who can reach what.'), b('Inventario dei flussi, classificazione degli asset e routing simmetrico dove richiesto.', 'Flow inventory, asset classification, and symmetric routing where required.'), b('Test di reachability consentita e negata, ACL counters, route lookup e flow logs.', 'Allowed and denied reachability tests, ACL counters, route lookups, and flow logs.'), b('Una VLAN non è da sola un confine di sicurezza; regole errate possono creare isolamento apparente.', 'A VLAN alone is not a security boundary; incorrect rules may create only apparent isolation.')),
-  d('dot1x-nac', b('802.1X, EAP-TLS e NAC', '802.1X, EAP-TLS, and NAC'), ['prevent', 'detect', 'contain'], ['data', 'identity'], ['network-access', 'security-fundamentals'], ['rogue-device', 'nac-posture-bypass', 'evil-twin-deauth'], b('Autentica identità di utente/dispositivo e applica autorizzazione o quarantena per sessione.', 'Authenticates user/device identity and applies per-session authorization or quarantine.'), b('PKI affidabile, RADIUS ridondante, supplicant gestiti e fallback MAB limitato.', 'Trusted PKI, redundant RADIUS, managed supplicants, and restricted MAB fallback.'), b('show authentication sessions details · RADIUS live logs · test di failover.', 'show authentication sessions details · RADIUS live logs · failover tests.'), b('Il profiling non equivale ad autenticazione e un fail-open permissivo può annullare il controllo.', 'Profiling is not authentication, and permissive fail-open behavior can nullify the control.')),
-  d('l2-first-hop-security', b('First Hop Security Layer 2', 'Layer 2 First Hop Security'), ['prevent', 'detect', 'contain'], ['data', 'control'], ['network-access', 'ip-services'], ['arp-poisoning', 'rogue-dhcp', 'dhcp-starvation', 'ipv6-ra-nd-spoofing', 'rogue-dhcpv6', 'ipv6-neighbor-cache-exhaustion'], b('DHCP Snooping alimenta DAI/IP Source Guard; RA Guard, DHCPv6 Guard e IPv6 Source Guard proteggono IPv6.', 'DHCP Snooping feeds DAI/IP Source Guard; RA Guard, DHCPv6 Guard, and IPv6 Source Guard protect IPv6.'), b('Trust boundary corretta, binding affidabili, rate coerenti e gestione degli host statici.', 'Correct trust boundaries, reliable bindings, appropriate rates, and handling of static hosts.'), b('Binding, inspection statistics, violation log e test da porte trusted/untrusted.', 'Bindings, inspection statistics, violation logs, and tests from trusted/untrusted ports.'), b('Trust configurato sulla porta sbagliata aggira la difesa; device intermedi possono richiedere policy specifiche.', 'Trust on the wrong port bypasses the defense; intermediate devices may require specific policy.')),
-  d('stp-edge-protection', b('Protezioni STP deterministiche', 'Deterministic STP protections'), ['prevent', 'detect', 'contain'], ['control', 'data'], ['network-access'], ['stp-manipulation'], b('Root Guard, BPDU Guard, Loop Guard e root priority proteggono ruoli e topologia.', 'Root Guard, BPDU Guard, Loop Guard, and root priority protect roles and topology.'), b('Classificazione corretta di edge, uplink, link unidirezionali e root previsto.', 'Correct classification of edge ports, uplinks, unidirectional links, and expected root.'), b('show spanning-tree detail · inconsistentports · test controllato della porta edge.', 'show spanning-tree detail · inconsistentports · controlled edge-port test.'), b('Una protezione applicata al ruolo sbagliato può causare outage; non sostituisce il progetto senza loop.', 'A protection applied to the wrong role can cause an outage; it does not replace loop-free design.')),
-  d('source-validation-copp', b('Validazione sorgente e CoPP', 'Source validation and CoPP'), ['prevent', 'detect', 'contain', 'compensate'], ['data', 'control'], ['network-fundamentals', 'ip-connectivity'], ['ip-spoofing', 'syn-flood', 'udp-amplification', 'ospf-injection'], b('uRPF/ACL contrastano sorgenti impossibili; CoPP limita traffico destinato alla CPU.', 'uRPF/ACLs counter impossible sources; CoPP limits traffic destined to the CPU.'), b('Conoscenza del routing asimmetrico, classificazione del control plane e baseline dei protocolli.', 'Knowledge of asymmetric routing, control-plane classification, and protocol baselines.'), b('uRPF drop, ACL counters, CoPP class statistics, CPU e adiacenze.', 'uRPF drops, ACL counters, CoPP class statistics, CPU, and adjacencies.'), b('Strict uRPF può scartare traffico legittimo asimmetrico; CoPP non protegge la banda del link.', 'Strict uRPF may drop legitimate asymmetric traffic; CoPP does not protect link bandwidth.')),
-  d('dual-stack-policy-parity', b('Parità di sicurezza dual-stack', 'Dual-stack security parity'), ['prevent', 'detect', 'contain', 'compensate'], ['data', 'control', 'management', 'application'], ['network-fundamentals', 'network-access', 'ip-connectivity', 'ip-services', 'security-fundamentals'], ['ipv6-ra-nd-spoofing', 'rogue-dhcpv6', 'icmpv6-filtering-abuse', 'ipv6-extension-header-evasion', 'ipv6-fragmentation-evasion', 'ipv6-transition-tunnel-bypass', 'dual-stack-policy-bypass'], b('Applica inventario, routing, ACL, firewall, IDS/IPS, DNS e telemetria equivalenti a IPv4 e IPv6.', 'Applies equivalent inventory, routing, ACL, firewall, IDS/IPS, DNS, and telemetry controls to IPv4 and IPv6.'), b('Ownership comune, IPAM/DNS aggiornati, policy versionate e piattaforme capaci di analizzare IPv6 nativo e incapsulato.', 'Shared ownership, current IPAM/DNS, versioned policy, and platforms able to parse native and encapsulated IPv6.'), b('Matrice di reachability A/AAAA, diff delle policy, flow log per entrambe le famiglie e test di PMTUD/ND.', 'A/AAAA reachability matrix, policy diffs, flow logs for both families, and PMTUD/ND testing.'), b('La mera presenza di regole IPv6 non prova equivalenza semantica; NAT non sostituisce firewalling o policy stateful.', 'The mere presence of IPv6 rules does not prove semantic equivalence; NAT does not replace firewalling or stateful policy.')),
-  d('routing-trust-policy', b('Fiducia e policy del routing', 'Routing trust and policy'), ['prevent', 'detect', 'contain'], ['control', 'data'], ['ip-connectivity'], ['ospf-injection', 'bgp-hijack', 'icmp-redirect-source-route', 'route-redistribution-abuse', 'fhrp-gateway-takeover'], b('Autenticazione, passive-interface, prefix/max-prefix policy, RPKI e monitoring degli annunci.', 'Authentication, passive interfaces, prefix/max-prefix policy, RPKI, and announcement monitoring.'), b('Inventario peer, ROA aggiornati, policy versionate e canale di coordinamento upstream.', 'Peer inventory, current ROAs, versioned policy, and an upstream coordination channel.'), b('Neighbor/LSDB, received routes, RPKI state e confronto da collector indipendenti.', 'Neighbor/LSDB data, received routes, RPKI state, and comparison from independent collectors.'), b('RPKI valida l’origine, non l’intero AS path; una policy troppo stretta può isolare prefissi legittimi.', 'RPKI validates origin, not the full AS path; overly strict policy can isolate legitimate prefixes.')),
-  d('routing-change-assurance', b('Assurance delle modifiche di routing', 'Routing change assurance'), ['prevent', 'detect', 'contain', 'recover'], ['control', 'data', 'management'], ['ip-connectivity', 'automation-programmability'], ['route-redistribution-abuse', 'bgp-hijack', 'vrf-route-leak', 'rib-fib-programming-abuse', 'automation-supply-chain-drift'], b('Pre-check, diff, allowlist di prefissi, canary, pause di convergenza, stop condition e rollback limitano il blast radius.', 'Pre-checks, diffs, prefix allowlists, canaries, convergence pauses, stop conditions, and rollback limit blast radius.'), b('Source of truth, snapshot RIB/FIB, OOB, baseline di neighbor/route count e rollback provato.', 'A source of truth, RIB/FIB snapshots, OOB access, neighbor/route-count baselines, and proven rollback.'), b('Confronta intent, RIB, FIB, neighbor, route count, next hop e flussi sintetici prima/dopo il change.', 'Compare intent, RIB, FIB, neighbors, route counts, next hops, and synthetic flows before/after the change.'), b('Un job SUCCESS non prova convergenza, simmetria del ritorno o correttezza del forwarding hardware.', 'A SUCCESS job does not prove convergence, return-path symmetry, or correct hardware forwarding.')),
-  d('aaa-privileged-access', b('AAA, MFA e accesso privilegiato', 'AAA, MFA, and privileged access'), ['prevent', 'detect', 'contain', 'recover'], ['management', 'identity'], ['ip-services', 'security-fundamentals'], ['credential-attacks', 'ssh-management-attacks', 'aaa-protocol-abuse'], b('Identità centralizzata, MFA, RBAC, command authorization/accounting e jump host limitano l’amministrazione.', 'Central identity, MFA, RBAC, command authorization/accounting, and jump hosts constrain administration.'), b('Time sync, server AAA ridondanti, fallback locale testato e procedure break-glass.', 'Time synchronization, redundant AAA servers, tested local fallback, and break-glass procedures.'), b('Test AAA, accounting completo, session recording, access review e prova di failover.', 'AAA testing, complete accounting, session recording, access review, and failover testing.'), b('MFA non impedisce abuso di sessioni già autenticate; un fallback errato può creare lockout o bypass.', 'MFA does not prevent abuse of already authenticated sessions; incorrect fallback may cause lockout or bypass.')),
-  d('management-plane-isolation', b('Isolamento del management plane', 'Management-plane isolation'), ['prevent', 'detect', 'contain', 'recover'], ['management', 'identity', 'control'], ['ip-services', 'security-fundamentals'], ['management-plane-exposure', 'ssh-management-attacks', 'snmp-community-abuse', 'aaa-protocol-abuse'], b('OOB o management VRF, infrastructure ACL, jump host e CoPP limitano raggiungibilità e carico dei servizi amministrativi.', 'OOB or a management VRF, infrastructure ACLs, a jump host, and CoPP restrict reachability and load on administrative services.'), b('Interfacce sorgente definite, AAA e collector ridondanti, time sync e fallback break-glass testato.', 'Defined source interfaces, redundant AAA and collectors, time synchronization, and tested break-glass fallback.'), b('Test positivo dal jump host e negativo dalle zone utente, accounting comandi, service binding e CoPP counters.', 'Positive testing from the jump host and negative testing from user zones, command accounting, service bindings, and CoPP counters.'), b('Una management VRF condivide ancora apparato e possibili failure domain; non equivale automaticamente a una rete OOB fisica.', 'A management VRF still shares the device and possible failure domains; it is not automatically equivalent to a physical OOB network.')),
-  d('cryptographic-trust', b('Crittografia, PKI e VPN', 'Cryptography, PKI, and VPN'), ['prevent', 'detect', 'recover'], ['data', 'identity'], ['security-fundamentals'], ['physical-tapping', 'tls-downgrade-cert-abuse', 'vpn-weak-crypto', 'pki-trust-abuse'], b('TLS/IPsec, certificati e lifecycle delle chiavi proteggono confidenzialità, integrità e identità dei peer.', 'TLS/IPsec, certificates, and key lifecycle protect confidentiality, integrity, and peer identity.'), b('Trust store minimo, algoritmi moderni, HSM/TPM, revoca e inventario delle dipendenze.', 'Minimal trust stores, modern algorithms, HSM/TPM, revocation, and dependency inventory.'), b('Handshake/suite effettivi, chain/nome, CRL/OCSP, CT e test di rekey.', 'Actual handshakes/suites, chain/name validation, CRL/OCSP, CT, and rekey tests.'), b('La cifratura non rende affidabile un endpoint compromesso e può ridurre la visibilità dei sensori.', 'Encryption does not make a compromised endpoint trustworthy and may reduce sensor visibility.')),
-  d('identity-lifecycle-session-control', b('Lifecycle di identità e sessioni', 'Identity and session lifecycle'), ['prevent', 'detect', 'contain', 'recover'], ['identity', 'management', 'application'], ['security-fundamentals', 'automation-programmability'], ['credential-attacks', 'replay', 'mfa-fatigue-token-theft', 'certificate-enrollment-abuse', 'privileged-command-abuse', 'vpn-split-tunnel-pivot', 'api-auth-token-abuse'], b('Owner, scadenza, scope, rotazione, reauthentication e revoca coordinano account, chiavi, certificati, token e sessioni.', 'Ownership, expiry, scope, rotation, reauthentication, and revocation coordinate accounts, keys, certificates, tokens, and sessions.'), b('Inventory centrale, IdP/CA/secret manager integrati, time sync e processi joiner-mover-leaver affidabili.', 'A central inventory, integrated IdP/CA/secret manager, time synchronization, and reliable joiner-mover-leaver processes.'), b('Riconcilia identità e credenziali, verifica last use/owner/expiry e testa revoca e deprovisioning end-to-end.', 'Reconcile identities and credentials, verify last use/owner/expiry, and test revocation and deprovisioning end to end.'), b('Disabilitare un account non revoca automaticamente token, certificati, API key e sessioni già emessi.', 'Disabling an account does not automatically revoke already issued tokens, certificates, API keys, and sessions.')),
-  d('firewall-ids-ips', b('Firewall stateful, IDS e IPS', 'Stateful firewall, IDS, and IPS'), ['prevent', 'detect', 'contain', 'compensate'], ['data', 'application'], ['security-fundamentals'], ['network-reconnaissance', 'injection', 'syn-flood', 'session-hijack-reset'], b('Policy stateful riduce la superficie; IDS osserva, IPS può bloccare inline firme e anomalie.', 'Stateful policy reduces surface; IDS observes, while inline IPS can block signatures and anomalies.'), b('Posizionamento, traffico decifrato dove autorizzato, tuning, capacity e change control.', 'Placement, authorized decrypted traffic, tuning, capacity, and change control.'), b('Rule hit, session log, packet capture, signature event, bypass/fail mode e latency.', 'Rule hits, session logs, packet captures, signature events, bypass/fail modes, and latency.'), b('Falsi positivi e tecniche sconosciute restano possibili; non ferma un DDoS che satura il link a monte.', 'False positives and unknown techniques remain possible; it cannot stop a DDoS saturating the upstream link.')),
-  d('telemetry-independent-evidence', b('Telemetria e fonti indipendenti', 'Telemetry and independent sources'), ['detect', 'contain', 'recover', 'compensate'], ['management', 'application'], ['ip-services', 'security-fundamentals'], ['syslog-manipulation', 'snmp-community-abuse', 'ntp-manipulation', 'dns-tunneling'], b('Syslog remoto, NetFlow, SNMPv3, NTP e audit immutabile permettono correlazione e ricostruzione.', 'Remote Syslog, NetFlow, SNMPv3, NTP, and immutable auditing enable correlation and reconstruction.'), b('Timestamp coerenti, collector ridondanti, retention, normalizzazione e controllo degli accessi.', 'Consistent timestamps, redundant collectors, retention, normalization, and access control.'), b('Evento campione end-to-end, gap/duplicate check, integrity e confronto con una fonte indipendente.', 'End-to-end sample event, gap/duplicate checks, integrity, and comparison with an independent source.'), b('La telemetria può essere incompleta, ritardata o manipolata; assenza di evento non prova assenza di attività.', 'Telemetry may be incomplete, delayed, or manipulated; absence of an event does not prove absence of activity.')),
-  d('automation-guardrails', b('Guardrail di automazione e recovery', 'Automation guardrails and recovery'), ['prevent', 'detect', 'contain', 'recover'], ['management', 'application'], ['automation-programmability'], ['api-auth-token-abuse', 'controller-compromise', 'automation-supply-chain-drift', 'ai-telemetry-poisoning'], b('Scoped identity, signed artifact, schema validation, plan/dry-run, approval, canary e rollback limitano il blast radius.', 'Scoped identities, signed artifacts, schema validation, plans/dry runs, approvals, canaries, and rollback limit blast radius.'), b('Source of truth, inventory affidabile, backup testato, separazione dei ruoli e audit immutabile.', 'A source of truth, reliable inventory, tested backups, separation of duties, and immutable auditing.'), b('Firma/provenienza, diff previsto/reale, idempotenza, canary health e restore test.', 'Signatures/provenance, intended versus actual diffs, idempotency, canary health, and restore tests.'), b('Un job SUCCESS non garantisce stato corretto; rollback non testato e scope dinamico restano rischi critici.', 'A SUCCESS job does not guarantee correct state; untested rollback and dynamic scope remain critical risks.')),
-  d('wireless-rf-trust-defense', b('Difesa RF e catena di fiducia wireless', 'RF defense and wireless trust chain'), ['prevent', 'detect', 'contain', 'compensate'], ['physical', 'data', 'control', 'identity', 'management'], ['network-fundamentals', 'network-access', 'security-fundamentals'], ['rf-jamming', 'rogue-device', 'evil-twin-deauth', 'wireless-rogue-bridge', 'wireless-management-frame-abuse', 'wireless-psk-compromise', 'wireless-transition-downgrade', 'eap-server-certificate-bypass', 'wireless-controller-capwap-abuse', 'wireless-client-isolation-bypass'], b('Progettazione RF, WIDS/WIPS, PMF, WPA3/802.1X, trust AP–WLC, segmentazione e profili client gestiti proteggono mezzo, accesso e infrastruttura.', 'RF design, WIDS/WIPS, PMF, WPA3/802.1X, AP-to-WLC trust, segmentation, and managed client profiles protect the medium, access, and infrastructure.'), b('Site survey e inventory di AP/BSSID/client, PKI/RADIUS affidabili, switchport protette, management isolato e capability note.', 'Site surveys and AP/BSSID/client inventory, trusted PKI/RADIUS, protected switchports, isolated management, and known capabilities.'), b('Correla spectrum/WLC/WIDS, capture 802.11, RADIUS, NAC e dati cablati; prova cifratura, AKM, PMF, policy e reachability per client.', 'Correlate spectrum/WLC/WIDS, 802.11 captures, RADIUS, NAC, and wired data; prove per-client cipher, AKM, PMF, policy, and reachability.'), b('Nessun singolo controllo risolve ogni rischio: PMF non ferma il jamming, WIDS non prova da solo un rogue on-wire e un captive portal non cifra il mezzo radio.', 'No single control addresses every risk: PMF does not stop jamming, WIDS alone does not prove an on-wire rogue, and a captive portal does not encrypt the radio medium.')),
-  d('vpn-pki-assurance', b('Assurance VPN, IPsec e PKI', 'VPN, IPsec, and PKI assurance'), ['prevent', 'detect', 'contain', 'recover'], ['data', 'control', 'identity', 'management'], ['ip-connectivity', 'ip-services', 'security-fundamentals', 'automation-programmability'], ['vpn-weak-crypto', 'pki-trust-abuse', 'ike-policy-downgrade', 'vpn-peer-impersonation', 'vpn-traffic-selector-bypass', 'vpn-route-policy-leak', 'vpn-failover-policy-drift', 'vpn-split-tunnel-pivot', 'vpn-dns-leak', 'ipsec-replay-rekey-abuse', 'certificate-enrollment-abuse'], b('IKEv2, suite robuste, identità peer validate, selector minimi, policy post-decryption e routing controllato proteggono negoziazione e forwarding.', 'IKEv2, strong suites, validated peer identities, minimal selectors, post-decryption policy, and controlled routing protect negotiation and forwarding.'), b('Inventory di peer/certificati, PKI e time sync affidabili, source of truth per route e flussi, failover e revoca testati.', 'Peer/certificate inventory, reliable PKI and time synchronization, a source of truth for routes and flows, and tested failover and revocation.'), b('Correla IKE SA, CHILD_SA/SPI, suite, identità, selector, contatori, RIB/FIB, policy hit e flusso bidirezionale.', 'Correlate IKE SAs, CHILD SAs/SPIs, suites, identities, selectors, counters, the RIB/FIB, policy hits, and bidirectional flows.'), b('Un tunnel UP non prova cifratura del flusso atteso, autorizzazione, simmetria del ritorno o validità corrente del certificato.', 'An UP tunnel does not prove encryption of the intended flow, authorization, return-path symmetry, or current certificate validity.')),
-  d('availability-capacity-protection', b('Protezione della disponibilità e della capacità', 'Availability and capacity protection'), ['prevent', 'detect', 'contain', 'recover', 'compensate'], ['physical', 'data', 'control', 'application', 'management'], ['network-fundamentals', 'network-access', 'ip-connectivity', 'ip-services', 'security-fundamentals'], ['link-saturation-ddos', 'syn-flood', 'udp-amplification', 'control-plane-protocol-flood', 'mac-flooding', 'dhcp-starvation', 'l2-broadcast-storm', 'ipv6-neighbor-cache-exhaustion', 'ipv6-fragmentation-evasion', 'dns-resource-exhaustion', 'nat-state-exhaustion', 'qos-starvation-abuse'], b('Capacity planning, rate/policer per risorsa, protezioni di protocollo, ridondanza e mitigazione upstream preservano i servizi essenziali.', 'Capacity planning, per-resource rates/policers, protocol protections, redundancy, and upstream mitigation preserve essential services.'), b('Baseline per bit/s, packet/s, CPU, queue, stato e latency; ownership provider; priorità dei servizi e procedure di escalation provate.', 'Baselines for bit/s, packet/s, CPU, queues, state, and latency; provider ownership; service priorities; and tested escalation procedures.'), b('Identifica la risorsa esaurita correlando interface/queue, CPU/CoPP, tabelle/stato e test sintetici prima e durante la mitigazione.', 'Identify the exhausted resource by correlating interfaces/queues, CPU/CoPP, tables/state, and synthetic tests before and during mitigation.'), b('Un controllo posto dopo il collo di bottiglia non recupera capacità già consumata; rate troppo stretti possono trasformare la difesa in outage.', 'A control placed after the bottleneck cannot recover already consumed capacity; overly tight rates can turn the defense into an outage.')),
-  d('inspection-policy-assurance', b('Assurance di firewall e ispezione', 'Firewall and inspection assurance'), ['prevent', 'detect', 'contain', 'recover', 'compensate'], ['data', 'control', 'application', 'management'], ['network-fundamentals', 'ip-connectivity', 'ip-services', 'security-fundamentals', 'automation-programmability'], ['firewall-policy-shadowing', 'inter-vlan-policy-bypass', 'asymmetric-state-evasion', 'session-hijack-reset', 'nat-state-exhaustion', 'ids-sensor-evasion', 'encrypted-traffic-blindness', 'tls-downgrade-cert-abuse', 'ip-fragmentation-evasion', 'ipv6-extension-header-evasion', 'inline-fail-open-abuse', 'security-log-suppression', 'syslog-manipulation'], b('Policy least privilege, stateful inspection, normalizzazione, sensori sani, decryption governata, HA e logging verificabile applicano l’intento lungo il percorso.', 'Least-privilege policy, stateful inspection, normalization, healthy sensors, governed decryption, HA, and verifiable logging enforce intent along the path.'), b('Inventario dei flussi, routing e NAT noti, capacity plan, PKI per decryption, source of truth e collector indipendenti.', 'Flow inventory, known routing and NAT, capacity planning, a decryption PKI, a source of truth, and independent collectors.'), b('Correla policy trace/hit, session/NAT, capture ingress-egress, sensor health, HA/bypass e log remoto con test allow/deny/threat.', 'Correlate policy traces/hits, session/NAT state, ingress-egress captures, sensor health, HA/bypass state, and remote logs with allow/deny/threat tests.'), b('Un allow, deny o alert nel log non prova da solo il percorso completo; cifratura, asimmetria, bypass e perdita di telemetria possono cambiare il risultato.', 'An allow, deny, or alert in a log alone does not prove the complete path; encryption, asymmetry, bypass, and telemetry loss can change the outcome.')),
-  d('management-telemetry-assurance', b('Assurance del management plane e della telemetria', 'Management-plane and telemetry assurance'), ['prevent', 'detect', 'contain', 'recover', 'compensate'], ['management', 'identity', 'control', 'application'], ['network-access', 'ip-services', 'security-fundamentals', 'automation-programmability'], ['management-plane-exposure', 'ssh-management-attacks', 'snmp-community-abuse', 'syslog-manipulation', 'ntp-manipulation', 'api-auth-token-abuse', 'management-api-schema-abuse', 'cdp-lldp-enumeration', 'configuration-backup-exposure', 'telemetry-collector-blindness', 'security-log-suppression'], b('Percorsi amministrativi minimi, protocolli autenticati, AAA/RBAC, time trust, collector verificabili e backup integri proteggono controllo e osservabilità.', 'Minimal administrative paths, authenticated protocols, AAA/RBAC, trusted time, verifiable collectors, and intact backups protect control and observability.'), b('Inventario di device, identità e source interface; OOB o management VRF; PKI/time source; capacity, retention e restore provati.', 'An inventory of devices, identities, and source interfaces; OOB or a management VRF; PKI/time sources; and proven capacity, retention, and restore.'), b('Test allow/deny di reachability, AAA/accounting, eventi sintetici end-to-end, gap/drop, read-back API e restore canary.', 'Allow/deny reachability tests, AAA/accounting, end-to-end synthetic events, gap/drop checks, API read-back, and canary restores.'), b('Nessun singolo protocollo prova l’intera catena: cifratura, evento ricevuto, job riuscito o backup presente richiedono sempre conferma indipendente.', 'No single protocol proves the whole chain: encryption, a received event, a successful job, or an available backup always requires independent confirmation.')),
-  d('endpoint-security-assurance', b('Assurance della sicurezza endpoint', 'Endpoint security assurance'), ['prevent', 'detect', 'contain', 'recover', 'compensate'], ['data', 'identity', 'application', 'management'], ['network-access', 'security-fundamentals', 'automation-programmability'], ['rogue-device', 'nac-posture-bypass', 'malware-ransomware', 'east-west-lateral-movement', 'credential-attacks', 'privileged-command-abuse', 'endpoint-configuration-drift', 'unpatched-endpoint-exploitation', 'endpoint-agent-tampering', 'application-control-bypass'], b('Inventory, baseline, patching, EDR, host firewall, application control, least privilege e postura continua riducono compromissione e propagazione.', 'Inventory, baselines, patching, EDR, host firewalls, application control, least privilege, and continuous posture reduce compromise and propagation.'), b('Ownership degli asset, MDM/NAC/EDR integrati, identità affidabili, policy versionate, canale di risposta e immagini pulite.', 'Asset ownership, integrated MDM/NAC/EDR, trusted identities, versioned policy, a response channel, and clean images.'), b('Riconcilia inventory e sensor health; prova baseline, patch, allow/deny, detection, isolamento e riammissione end-to-end.', 'Reconcile inventory and sensor health; test baselines, patches, allow/deny behavior, detection, isolation, and readmission end to end.'), b('Compliant, patched o healthy sono stati puntuali: nessuno dimostra da solo assenza di compromissione o copertura continua.', 'Compliant, patched, or healthy are point-in-time states: none alone proves absence of compromise or continuous coverage.')),
-  d('dns-application-assurance', b('Assurance DNS, web e applicativa', 'DNS, web, and application assurance'), ['prevent', 'detect', 'contain', 'recover', 'compensate'], ['data', 'application', 'identity', 'management'], ['ip-services', 'security-fundamentals', 'automation-programmability'], ['dns-poisoning', 'dns-tunneling', 'dns-resource-exhaustion', 'domain-registration-hijack', 'dns-rebinding', 'tls-downgrade-cert-abuse', 'http-request-smuggling', 'injection', 'xss-csrf', 'web-session-cookie-abuse', 'api-auth-token-abuse'], b('Resolver e domini governati, TLS validato, parsing coerente, confine dati–comandi, origin/session control e autorizzazione API proteggono la richiesta end-to-end.', 'Governed resolvers and domains, validated TLS, consistent parsing, data-command separation, origin/session controls, and API authorization protect requests end to end.'), b('Ownership di domini e servizi, inventory dei flussi, PKI, logging correlabile, secure SDLC e ruoli applicativi minimi.', 'Domain and service ownership, flow inventories, PKI, correlatable logging, a secure SDLC, and minimal application roles.'), b('Correla DNS, TLS, edge/proxy/origin, application/DB e identity audit; prova casi positivi, negativi e ambigui in ambiente controllato.', 'Correlate DNS, TLS, edge/proxy/origin, application/database, and identity auditing; test positive, negative, and ambiguous cases in a controlled environment.'), b('DNS corretto, TLS valido, WAF block o HTTP 200 dimostrano solo una parte della catena e non l’esito applicativo completo.', 'Correct DNS, valid TLS, a WAF block, or HTTP 200 proves only one part of the chain, not the complete application outcome.')),
-  d('email-human-assurance', b('Assurance email e human layer', 'Email and human-layer assurance'), ['prevent', 'detect', 'contain', 'recover', 'compensate'], ['application', 'identity', 'management'], ['ip-services', 'security-fundamentals', 'automation-programmability'], ['phishing-social-engineering', 'email-authentication-spoofing', 'adversary-in-the-middle-phishing', 'business-email-compromise', 'malicious-oauth-consent', 'credential-attacks', 'malware-ransomware', 'web-session-cookie-abuse'], b('Autenticazione del dominio, gateway, browser/endpoint, identity control e verifiche di processo riducono consegna, interazione e impatto.', 'Domain authentication, gateways, browser/endpoint controls, identity controls, and process verification reduce delivery, interaction, and impact.'), b('Inventory di domini/sender/app, IdP e mail audit, reporting semplice, ownership dei processi sensibili e risposta coordinata.', 'Domain/sender/application inventories, IdP and mail auditing, simple reporting, ownership of sensitive processes, and coordinated response.'), b('Testa sender e header, link/allegati benigni, session/token revocation, OAuth grant, reporting, purge e processi di callback.', 'Test senders and headers, benign links/attachments, session/token revocation, OAuth grants, reporting, purge, and callback processes.'), b('Nessun singolo filtro elimina il rischio: mail autenticata, sandbox clean, MFA o formazione non provano da soli legittimità e sicurezza.', 'No single filter eliminates risk: authenticated mail, a clean sandbox, MFA, or training alone does not prove legitimacy and safety.')),
-  d('layer2-first-hop-assurance', b('Assurance Layer 2 e first-hop', 'Layer 2 and first-hop assurance'), ['prevent', 'detect', 'contain', 'recover', 'compensate'], ['physical', 'data', 'control', 'identity', 'management'], ['network-fundamentals', 'network-access', 'ip-services', 'security-fundamentals'], ['physical-tapping', 'rogue-device', 'mac-flooding', 'vlan-switch-spoofing', 'vlan-double-tagging', 'voice-vlan-device-spoofing', 'dhcp-starvation', 'rogue-dhcp', 'dhcp-snooping-trust-abuse', 'arp-poisoning', 'stp-manipulation', 'etherchannel-member-mismatch', 'l2-broadcast-storm'], b('Ruoli porta espliciti, autenticazione, limiti MAC, trunk minimi, binding affidabili, STP deterministico e LACP proteggono accesso e forwarding locale.', 'Explicit port roles, authentication, MAC limits, minimal trunks, reliable bindings, deterministic STP, and LACP protect local access and forwarding.'), b('Mappa fisica/logica, inventory di endpoint/server/relay, root e peer previsti, OOB e procedure di change/recovery.', 'Physical/logical maps, endpoint/server/relay inventories, intended roots and peers, OOB access, and change/recovery procedures.'), b('Correla switchport, sessione, MAC, binding, ARP, trunk, STP ed EtherChannel; prova allow/deny e failover per ruolo.', 'Correlate switchports, sessions, MACs, bindings, ARP, trunks, STP, and EtherChannels; test allow/deny behavior and failover by role.'), b('Una porta up, un binding presente o un port-channel up provano solo stato locale: trust, peer, policy e forwarding devono essere verificati insieme.', 'A port, binding, or port channel being up proves only local state: trust, peers, policy, and forwarding must be verified together.'))
+  d(
+    'physical-media-hardening',
+    b('Hardening fisico e del mezzo', 'Physical and media hardening'),
+    ['prevent', 'detect', 'recover'],
+    ['physical'],
+    ['network-fundamentals'],
+    ['physical-tapping', 'rf-jamming', 'rogue-device'],
+    b(
+      'Armadi, porte, cablaggi, alimentazione, sensori e controllo dell’accesso fisico.',
+      'Racks, ports, cabling, power, sensors, and physical access control.'
+    ),
+    b(
+      'Inventario, ownership, percorsi ridondanti e procedure di ispezione.',
+      'Inventory, ownership, redundant paths, and inspection procedures.'
+    ),
+    b(
+      'Audit fisico, tamper evidence, DOM/transceiver e test del percorso alternativo.',
+      'Physical audit, tamper evidence, DOM/transceiver data, and alternate-path tests.'
+    ),
+    b(
+      'Non protegge il contenuto intercettato su infrastruttura autorizzata: serve cifratura end-to-end.',
+      'It does not protect content intercepted on authorized infrastructure: end-to-end encryption is required.'
+    )
+  ),
+  d(
+    'segmentation-least-reachability',
+    b('Segmentazione e least reachability', 'Segmentation and least reachability'),
+    ['prevent', 'detect', 'contain', 'compensate'],
+    ['data', 'control', 'management'],
+    ['network-fundamentals', 'network-access', 'ip-connectivity', 'security-fundamentals'],
+    [
+      'rogue-device',
+      'vlan-switch-spoofing',
+      'session-hijack-reset',
+      'malware-ransomware',
+      'inter-vlan-policy-bypass',
+      'vrf-route-leak',
+      'east-west-lateral-movement',
+      'overlay-tenant-escape'
+    ],
+    b(
+      'VLAN/VRF, ACL, firewall e policy dinamiche limitano chi può raggiungere cosa.',
+      'VLANs/VRFs, ACLs, firewalls, and dynamic policy limit who can reach what.'
+    ),
+    b(
+      'Inventario dei flussi, classificazione degli asset e routing simmetrico dove richiesto.',
+      'Flow inventory, asset classification, and symmetric routing where required.'
+    ),
+    b(
+      'Test di reachability consentita e negata, ACL counters, route lookup e flow logs.',
+      'Allowed and denied reachability tests, ACL counters, route lookups, and flow logs.'
+    ),
+    b(
+      'Una VLAN non è da sola un confine di sicurezza; regole errate possono creare isolamento apparente.',
+      'A VLAN alone is not a security boundary; incorrect rules may create only apparent isolation.'
+    )
+  ),
+  d(
+    'dot1x-nac',
+    b('802.1X, EAP-TLS e NAC', '802.1X, EAP-TLS, and NAC'),
+    ['prevent', 'detect', 'contain'],
+    ['data', 'identity'],
+    ['network-access', 'security-fundamentals'],
+    ['rogue-device', 'nac-posture-bypass', 'evil-twin-deauth'],
+    b(
+      'Autentica identità di utente/dispositivo e applica autorizzazione o quarantena per sessione.',
+      'Authenticates user/device identity and applies per-session authorization or quarantine.'
+    ),
+    b(
+      'PKI affidabile, RADIUS ridondante, supplicant gestiti e fallback MAB limitato.',
+      'Trusted PKI, redundant RADIUS, managed supplicants, and restricted MAB fallback.'
+    ),
+    b(
+      'show authentication sessions details · RADIUS live logs · test di failover.',
+      'show authentication sessions details · RADIUS live logs · failover tests.'
+    ),
+    b(
+      'Il profiling non equivale ad autenticazione e un fail-open permissivo può annullare il controllo.',
+      'Profiling is not authentication, and permissive fail-open behavior can nullify the control.'
+    )
+  ),
+  d(
+    'l2-first-hop-security',
+    b('First Hop Security Layer 2', 'Layer 2 First Hop Security'),
+    ['prevent', 'detect', 'contain'],
+    ['data', 'control'],
+    ['network-access', 'ip-services'],
+    [
+      'arp-poisoning',
+      'rogue-dhcp',
+      'dhcp-starvation',
+      'ipv6-ra-nd-spoofing',
+      'rogue-dhcpv6',
+      'ipv6-neighbor-cache-exhaustion'
+    ],
+    b(
+      'DHCP Snooping alimenta DAI/IP Source Guard; RA Guard, DHCPv6 Guard e IPv6 Source Guard proteggono IPv6.',
+      'DHCP Snooping feeds DAI/IP Source Guard; RA Guard, DHCPv6 Guard, and IPv6 Source Guard protect IPv6.'
+    ),
+    b(
+      'Trust boundary corretta, binding affidabili, rate coerenti e gestione degli host statici.',
+      'Correct trust boundaries, reliable bindings, appropriate rates, and handling of static hosts.'
+    ),
+    b(
+      'Binding, inspection statistics, violation log e test da porte trusted/untrusted.',
+      'Bindings, inspection statistics, violation logs, and tests from trusted/untrusted ports.'
+    ),
+    b(
+      'Trust configurato sulla porta sbagliata aggira la difesa; device intermedi possono richiedere policy specifiche.',
+      'Trust on the wrong port bypasses the defense; intermediate devices may require specific policy.'
+    )
+  ),
+  d(
+    'stp-edge-protection',
+    b('Protezioni STP deterministiche', 'Deterministic STP protections'),
+    ['prevent', 'detect', 'contain'],
+    ['control', 'data'],
+    ['network-access'],
+    ['stp-manipulation'],
+    b(
+      'Root Guard, BPDU Guard, Loop Guard e root priority proteggono ruoli e topologia.',
+      'Root Guard, BPDU Guard, Loop Guard, and root priority protect roles and topology.'
+    ),
+    b(
+      'Classificazione corretta di edge, uplink, link unidirezionali e root previsto.',
+      'Correct classification of edge ports, uplinks, unidirectional links, and expected root.'
+    ),
+    b(
+      'show spanning-tree detail · inconsistentports · test controllato della porta edge.',
+      'show spanning-tree detail · inconsistentports · controlled edge-port test.'
+    ),
+    b(
+      'Una protezione applicata al ruolo sbagliato può causare outage; non sostituisce il progetto senza loop.',
+      'A protection applied to the wrong role can cause an outage; it does not replace loop-free design.'
+    )
+  ),
+  d(
+    'source-validation-copp',
+    b('Validazione sorgente e CoPP', 'Source validation and CoPP'),
+    ['prevent', 'detect', 'contain', 'compensate'],
+    ['data', 'control'],
+    ['network-fundamentals', 'ip-connectivity'],
+    ['ip-spoofing', 'syn-flood', 'udp-amplification', 'ospf-injection'],
+    b(
+      'uRPF/ACL contrastano sorgenti impossibili; CoPP limita traffico destinato alla CPU.',
+      'uRPF/ACLs counter impossible sources; CoPP limits traffic destined to the CPU.'
+    ),
+    b(
+      'Conoscenza del routing asimmetrico, classificazione del control plane e baseline dei protocolli.',
+      'Knowledge of asymmetric routing, control-plane classification, and protocol baselines.'
+    ),
+    b(
+      'uRPF drop, ACL counters, CoPP class statistics, CPU e adiacenze.',
+      'uRPF drops, ACL counters, CoPP class statistics, CPU, and adjacencies.'
+    ),
+    b(
+      'Strict uRPF può scartare traffico legittimo asimmetrico; CoPP non protegge la banda del link.',
+      'Strict uRPF may drop legitimate asymmetric traffic; CoPP does not protect link bandwidth.'
+    )
+  ),
+  d(
+    'dual-stack-policy-parity',
+    b('Parità di sicurezza dual-stack', 'Dual-stack security parity'),
+    ['prevent', 'detect', 'contain', 'compensate'],
+    ['data', 'control', 'management', 'application'],
+    ['network-fundamentals', 'network-access', 'ip-connectivity', 'ip-services', 'security-fundamentals'],
+    [
+      'ipv6-ra-nd-spoofing',
+      'rogue-dhcpv6',
+      'icmpv6-filtering-abuse',
+      'ipv6-extension-header-evasion',
+      'ipv6-fragmentation-evasion',
+      'ipv6-transition-tunnel-bypass',
+      'dual-stack-policy-bypass'
+    ],
+    b(
+      'Applica inventario, routing, ACL, firewall, IDS/IPS, DNS e telemetria equivalenti a IPv4 e IPv6.',
+      'Applies equivalent inventory, routing, ACL, firewall, IDS/IPS, DNS, and telemetry controls to IPv4 and IPv6.'
+    ),
+    b(
+      'Ownership comune, IPAM/DNS aggiornati, policy versionate e piattaforme capaci di analizzare IPv6 nativo e incapsulato.',
+      'Shared ownership, current IPAM/DNS, versioned policy, and platforms able to parse native and encapsulated IPv6.'
+    ),
+    b(
+      'Matrice di reachability A/AAAA, diff delle policy, flow log per entrambe le famiglie e test di PMTUD/ND.',
+      'A/AAAA reachability matrix, policy diffs, flow logs for both families, and PMTUD/ND testing.'
+    ),
+    b(
+      'La mera presenza di regole IPv6 non prova equivalenza semantica; NAT non sostituisce firewalling o policy stateful.',
+      'The mere presence of IPv6 rules does not prove semantic equivalence; NAT does not replace firewalling or stateful policy.'
+    )
+  ),
+  d(
+    'routing-trust-policy',
+    b('Fiducia e policy del routing', 'Routing trust and policy'),
+    ['prevent', 'detect', 'contain'],
+    ['control', 'data'],
+    ['ip-connectivity'],
+    [
+      'ospf-injection',
+      'bgp-hijack',
+      'icmp-redirect-source-route',
+      'route-redistribution-abuse',
+      'fhrp-gateway-takeover'
+    ],
+    b(
+      'Autenticazione, passive-interface, prefix/max-prefix policy, RPKI e monitoring degli annunci.',
+      'Authentication, passive interfaces, prefix/max-prefix policy, RPKI, and announcement monitoring.'
+    ),
+    b(
+      'Inventario peer, ROA aggiornati, policy versionate e canale di coordinamento upstream.',
+      'Peer inventory, current ROAs, versioned policy, and an upstream coordination channel.'
+    ),
+    b(
+      'Neighbor/LSDB, received routes, RPKI state e confronto da collector indipendenti.',
+      'Neighbor/LSDB data, received routes, RPKI state, and comparison from independent collectors.'
+    ),
+    b(
+      'RPKI valida l’origine, non l’intero AS path; una policy troppo stretta può isolare prefissi legittimi.',
+      'RPKI validates origin, not the full AS path; overly strict policy can isolate legitimate prefixes.'
+    )
+  ),
+  d(
+    'routing-change-assurance',
+    b('Assurance delle modifiche di routing', 'Routing change assurance'),
+    ['prevent', 'detect', 'contain', 'recover'],
+    ['control', 'data', 'management'],
+    ['ip-connectivity', 'automation-programmability'],
+    [
+      'route-redistribution-abuse',
+      'bgp-hijack',
+      'vrf-route-leak',
+      'rib-fib-programming-abuse',
+      'automation-supply-chain-drift'
+    ],
+    b(
+      'Pre-check, diff, allowlist di prefissi, canary, pause di convergenza, stop condition e rollback limitano il blast radius.',
+      'Pre-checks, diffs, prefix allowlists, canaries, convergence pauses, stop conditions, and rollback limit blast radius.'
+    ),
+    b(
+      'Source of truth, snapshot RIB/FIB, OOB, baseline di neighbor/route count e rollback provato.',
+      'A source of truth, RIB/FIB snapshots, OOB access, neighbor/route-count baselines, and proven rollback.'
+    ),
+    b(
+      'Confronta intent, RIB, FIB, neighbor, route count, next hop e flussi sintetici prima/dopo il change.',
+      'Compare intent, RIB, FIB, neighbors, route counts, next hops, and synthetic flows before/after the change.'
+    ),
+    b(
+      'Un job SUCCESS non prova convergenza, simmetria del ritorno o correttezza del forwarding hardware.',
+      'A SUCCESS job does not prove convergence, return-path symmetry, or correct hardware forwarding.'
+    )
+  ),
+  d(
+    'aaa-privileged-access',
+    b('AAA, MFA e accesso privilegiato', 'AAA, MFA, and privileged access'),
+    ['prevent', 'detect', 'contain', 'recover'],
+    ['management', 'identity'],
+    ['ip-services', 'security-fundamentals'],
+    ['credential-attacks', 'ssh-management-attacks', 'aaa-protocol-abuse'],
+    b(
+      'Identità centralizzata, MFA, RBAC, command authorization/accounting e jump host limitano l’amministrazione.',
+      'Central identity, MFA, RBAC, command authorization/accounting, and jump hosts constrain administration.'
+    ),
+    b(
+      'Time sync, server AAA ridondanti, fallback locale testato e procedure break-glass.',
+      'Time synchronization, redundant AAA servers, tested local fallback, and break-glass procedures.'
+    ),
+    b(
+      'Test AAA, accounting completo, session recording, access review e prova di failover.',
+      'AAA testing, complete accounting, session recording, access review, and failover testing.'
+    ),
+    b(
+      'MFA non impedisce abuso di sessioni già autenticate; un fallback errato può creare lockout o bypass.',
+      'MFA does not prevent abuse of already authenticated sessions; incorrect fallback may cause lockout or bypass.'
+    )
+  ),
+  d(
+    'management-plane-isolation',
+    b('Isolamento del management plane', 'Management-plane isolation'),
+    ['prevent', 'detect', 'contain', 'recover'],
+    ['management', 'identity', 'control'],
+    ['ip-services', 'security-fundamentals'],
+    ['management-plane-exposure', 'ssh-management-attacks', 'snmp-community-abuse', 'aaa-protocol-abuse'],
+    b(
+      'OOB o management VRF, infrastructure ACL, jump host e CoPP limitano raggiungibilità e carico dei servizi amministrativi.',
+      'OOB or a management VRF, infrastructure ACLs, a jump host, and CoPP restrict reachability and load on administrative services.'
+    ),
+    b(
+      'Interfacce sorgente definite, AAA e collector ridondanti, time sync e fallback break-glass testato.',
+      'Defined source interfaces, redundant AAA and collectors, time synchronization, and tested break-glass fallback.'
+    ),
+    b(
+      'Test positivo dal jump host e negativo dalle zone utente, accounting comandi, service binding e CoPP counters.',
+      'Positive testing from the jump host and negative testing from user zones, command accounting, service bindings, and CoPP counters.'
+    ),
+    b(
+      'Una management VRF condivide ancora apparato e possibili failure domain; non equivale automaticamente a una rete OOB fisica.',
+      'A management VRF still shares the device and possible failure domains; it is not automatically equivalent to a physical OOB network.'
+    )
+  ),
+  d(
+    'cryptographic-trust',
+    b('Crittografia, PKI e VPN', 'Cryptography, PKI, and VPN'),
+    ['prevent', 'detect', 'recover'],
+    ['data', 'identity'],
+    ['security-fundamentals'],
+    ['physical-tapping', 'tls-downgrade-cert-abuse', 'vpn-weak-crypto', 'pki-trust-abuse'],
+    b(
+      'TLS/IPsec, certificati e lifecycle delle chiavi proteggono confidenzialità, integrità e identità dei peer.',
+      'TLS/IPsec, certificates, and key lifecycle protect confidentiality, integrity, and peer identity.'
+    ),
+    b(
+      'Trust store minimo, algoritmi moderni, HSM/TPM, revoca e inventario delle dipendenze.',
+      'Minimal trust stores, modern algorithms, HSM/TPM, revocation, and dependency inventory.'
+    ),
+    b(
+      'Handshake/suite effettivi, chain/nome, CRL/OCSP, CT e test di rekey.',
+      'Actual handshakes/suites, chain/name validation, CRL/OCSP, CT, and rekey tests.'
+    ),
+    b(
+      'La cifratura non rende affidabile un endpoint compromesso e può ridurre la visibilità dei sensori.',
+      'Encryption does not make a compromised endpoint trustworthy and may reduce sensor visibility.'
+    )
+  ),
+  d(
+    'identity-lifecycle-session-control',
+    b('Lifecycle di identità e sessioni', 'Identity and session lifecycle'),
+    ['prevent', 'detect', 'contain', 'recover'],
+    ['identity', 'management', 'application'],
+    ['security-fundamentals', 'automation-programmability'],
+    [
+      'credential-attacks',
+      'replay',
+      'mfa-fatigue-token-theft',
+      'certificate-enrollment-abuse',
+      'privileged-command-abuse',
+      'vpn-split-tunnel-pivot',
+      'api-auth-token-abuse'
+    ],
+    b(
+      'Owner, scadenza, scope, rotazione, reauthentication e revoca coordinano account, chiavi, certificati, token e sessioni.',
+      'Ownership, expiry, scope, rotation, reauthentication, and revocation coordinate accounts, keys, certificates, tokens, and sessions.'
+    ),
+    b(
+      'Inventory centrale, IdP/CA/secret manager integrati, time sync e processi joiner-mover-leaver affidabili.',
+      'A central inventory, integrated IdP/CA/secret manager, time synchronization, and reliable joiner-mover-leaver processes.'
+    ),
+    b(
+      'Riconcilia identità e credenziali, verifica last use/owner/expiry e testa revoca e deprovisioning end-to-end.',
+      'Reconcile identities and credentials, verify last use/owner/expiry, and test revocation and deprovisioning end to end.'
+    ),
+    b(
+      'Disabilitare un account non revoca automaticamente token, certificati, API key e sessioni già emessi.',
+      'Disabling an account does not automatically revoke already issued tokens, certificates, API keys, and sessions.'
+    )
+  ),
+  d(
+    'firewall-ids-ips',
+    b('Firewall stateful, IDS e IPS', 'Stateful firewall, IDS, and IPS'),
+    ['prevent', 'detect', 'contain', 'compensate'],
+    ['data', 'application'],
+    ['security-fundamentals'],
+    ['network-reconnaissance', 'injection', 'syn-flood', 'session-hijack-reset'],
+    b(
+      'Policy stateful riduce la superficie; IDS osserva, IPS può bloccare inline firme e anomalie.',
+      'Stateful policy reduces surface; IDS observes, while inline IPS can block signatures and anomalies.'
+    ),
+    b(
+      'Posizionamento, traffico decifrato dove autorizzato, tuning, capacity e change control.',
+      'Placement, authorized decrypted traffic, tuning, capacity, and change control.'
+    ),
+    b(
+      'Rule hit, session log, packet capture, signature event, bypass/fail mode e latency.',
+      'Rule hits, session logs, packet captures, signature events, bypass/fail modes, and latency.'
+    ),
+    b(
+      'Falsi positivi e tecniche sconosciute restano possibili; non ferma un DDoS che satura il link a monte.',
+      'False positives and unknown techniques remain possible; it cannot stop a DDoS saturating the upstream link.'
+    )
+  ),
+  d(
+    'telemetry-independent-evidence',
+    b('Telemetria e fonti indipendenti', 'Telemetry and independent sources'),
+    ['detect', 'contain', 'recover', 'compensate'],
+    ['management', 'application'],
+    ['ip-services', 'security-fundamentals'],
+    ['syslog-manipulation', 'snmp-community-abuse', 'ntp-manipulation', 'dns-tunneling'],
+    b(
+      'Syslog remoto, NetFlow, SNMPv3, NTP e audit immutabile permettono correlazione e ricostruzione.',
+      'Remote Syslog, NetFlow, SNMPv3, NTP, and immutable auditing enable correlation and reconstruction.'
+    ),
+    b(
+      'Timestamp coerenti, collector ridondanti, retention, normalizzazione e controllo degli accessi.',
+      'Consistent timestamps, redundant collectors, retention, normalization, and access control.'
+    ),
+    b(
+      'Evento campione end-to-end, gap/duplicate check, integrity e confronto con una fonte indipendente.',
+      'End-to-end sample event, gap/duplicate checks, integrity, and comparison with an independent source.'
+    ),
+    b(
+      'La telemetria può essere incompleta, ritardata o manipolata; assenza di evento non prova assenza di attività.',
+      'Telemetry may be incomplete, delayed, or manipulated; absence of an event does not prove absence of activity.'
+    )
+  ),
+  d(
+    'automation-guardrails',
+    b('Guardrail di automazione e recovery', 'Automation guardrails and recovery'),
+    ['prevent', 'detect', 'contain', 'recover'],
+    ['management', 'application'],
+    ['automation-programmability'],
+    ['api-auth-token-abuse', 'controller-compromise', 'automation-supply-chain-drift', 'ai-telemetry-poisoning'],
+    b(
+      'Scoped identity, signed artifact, schema validation, plan/dry-run, approval, canary e rollback limitano il blast radius.',
+      'Scoped identities, signed artifacts, schema validation, plans/dry runs, approvals, canaries, and rollback limit blast radius.'
+    ),
+    b(
+      'Source of truth, inventory affidabile, backup testato, separazione dei ruoli e audit immutabile.',
+      'A source of truth, reliable inventory, tested backups, separation of duties, and immutable auditing.'
+    ),
+    b(
+      'Firma/provenienza, diff previsto/reale, idempotenza, canary health e restore test.',
+      'Signatures/provenance, intended versus actual diffs, idempotency, canary health, and restore tests.'
+    ),
+    b(
+      'Un job SUCCESS non garantisce stato corretto; rollback non testato e scope dinamico restano rischi critici.',
+      'A SUCCESS job does not guarantee correct state; untested rollback and dynamic scope remain critical risks.'
+    )
+  ),
+  d(
+    'wireless-rf-trust-defense',
+    b('Difesa RF e catena di fiducia wireless', 'RF defense and wireless trust chain'),
+    ['prevent', 'detect', 'contain', 'compensate'],
+    ['physical', 'data', 'control', 'identity', 'management'],
+    ['network-fundamentals', 'network-access', 'security-fundamentals'],
+    [
+      'rf-jamming',
+      'rogue-device',
+      'evil-twin-deauth',
+      'wireless-rogue-bridge',
+      'wireless-management-frame-abuse',
+      'wireless-psk-compromise',
+      'wireless-transition-downgrade',
+      'eap-server-certificate-bypass',
+      'wireless-controller-capwap-abuse',
+      'wireless-client-isolation-bypass'
+    ],
+    b(
+      'Progettazione RF, WIDS/WIPS, PMF, WPA3/802.1X, trust AP–WLC, segmentazione e profili client gestiti proteggono mezzo, accesso e infrastruttura.',
+      'RF design, WIDS/WIPS, PMF, WPA3/802.1X, AP-to-WLC trust, segmentation, and managed client profiles protect the medium, access, and infrastructure.'
+    ),
+    b(
+      'Site survey e inventory di AP/BSSID/client, PKI/RADIUS affidabili, switchport protette, management isolato e capability note.',
+      'Site surveys and AP/BSSID/client inventory, trusted PKI/RADIUS, protected switchports, isolated management, and known capabilities.'
+    ),
+    b(
+      'Correla spectrum/WLC/WIDS, capture 802.11, RADIUS, NAC e dati cablati; prova cifratura, AKM, PMF, policy e reachability per client.',
+      'Correlate spectrum/WLC/WIDS, 802.11 captures, RADIUS, NAC, and wired data; prove per-client cipher, AKM, PMF, policy, and reachability.'
+    ),
+    b(
+      'Nessun singolo controllo risolve ogni rischio: PMF non ferma il jamming, WIDS non prova da solo un rogue on-wire e un captive portal non cifra il mezzo radio.',
+      'No single control addresses every risk: PMF does not stop jamming, WIDS alone does not prove an on-wire rogue, and a captive portal does not encrypt the radio medium.'
+    )
+  ),
+  d(
+    'vpn-pki-assurance',
+    b('Assurance VPN, IPsec e PKI', 'VPN, IPsec, and PKI assurance'),
+    ['prevent', 'detect', 'contain', 'recover'],
+    ['data', 'control', 'identity', 'management'],
+    ['ip-connectivity', 'ip-services', 'security-fundamentals', 'automation-programmability'],
+    [
+      'vpn-weak-crypto',
+      'pki-trust-abuse',
+      'ike-policy-downgrade',
+      'vpn-peer-impersonation',
+      'vpn-traffic-selector-bypass',
+      'vpn-route-policy-leak',
+      'vpn-failover-policy-drift',
+      'vpn-split-tunnel-pivot',
+      'vpn-dns-leak',
+      'ipsec-replay-rekey-abuse',
+      'certificate-enrollment-abuse'
+    ],
+    b(
+      'IKEv2, suite robuste, identità peer validate, selector minimi, policy post-decryption e routing controllato proteggono negoziazione e forwarding.',
+      'IKEv2, strong suites, validated peer identities, minimal selectors, post-decryption policy, and controlled routing protect negotiation and forwarding.'
+    ),
+    b(
+      'Inventory di peer/certificati, PKI e time sync affidabili, source of truth per route e flussi, failover e revoca testati.',
+      'Peer/certificate inventory, reliable PKI and time synchronization, a source of truth for routes and flows, and tested failover and revocation.'
+    ),
+    b(
+      'Correla IKE SA, CHILD_SA/SPI, suite, identità, selector, contatori, RIB/FIB, policy hit e flusso bidirezionale.',
+      'Correlate IKE SAs, CHILD SAs/SPIs, suites, identities, selectors, counters, the RIB/FIB, policy hits, and bidirectional flows.'
+    ),
+    b(
+      'Un tunnel UP non prova cifratura del flusso atteso, autorizzazione, simmetria del ritorno o validità corrente del certificato.',
+      'An UP tunnel does not prove encryption of the intended flow, authorization, return-path symmetry, or current certificate validity.'
+    )
+  ),
+  d(
+    'availability-capacity-protection',
+    b('Protezione della disponibilità e della capacità', 'Availability and capacity protection'),
+    ['prevent', 'detect', 'contain', 'recover', 'compensate'],
+    ['physical', 'data', 'control', 'application', 'management'],
+    ['network-fundamentals', 'network-access', 'ip-connectivity', 'ip-services', 'security-fundamentals'],
+    [
+      'link-saturation-ddos',
+      'syn-flood',
+      'udp-amplification',
+      'control-plane-protocol-flood',
+      'mac-flooding',
+      'dhcp-starvation',
+      'l2-broadcast-storm',
+      'ipv6-neighbor-cache-exhaustion',
+      'ipv6-fragmentation-evasion',
+      'dns-resource-exhaustion',
+      'nat-state-exhaustion',
+      'qos-starvation-abuse'
+    ],
+    b(
+      'Capacity planning, rate/policer per risorsa, protezioni di protocollo, ridondanza e mitigazione upstream preservano i servizi essenziali.',
+      'Capacity planning, per-resource rates/policers, protocol protections, redundancy, and upstream mitigation preserve essential services.'
+    ),
+    b(
+      'Baseline per bit/s, packet/s, CPU, queue, stato e latency; ownership provider; priorità dei servizi e procedure di escalation provate.',
+      'Baselines for bit/s, packet/s, CPU, queues, state, and latency; provider ownership; service priorities; and tested escalation procedures.'
+    ),
+    b(
+      'Identifica la risorsa esaurita correlando interface/queue, CPU/CoPP, tabelle/stato e test sintetici prima e durante la mitigazione.',
+      'Identify the exhausted resource by correlating interfaces/queues, CPU/CoPP, tables/state, and synthetic tests before and during mitigation.'
+    ),
+    b(
+      'Un controllo posto dopo il collo di bottiglia non recupera capacità già consumata; rate troppo stretti possono trasformare la difesa in outage.',
+      'A control placed after the bottleneck cannot recover already consumed capacity; overly tight rates can turn the defense into an outage.'
+    )
+  ),
+  d(
+    'inspection-policy-assurance',
+    b('Assurance di firewall e ispezione', 'Firewall and inspection assurance'),
+    ['prevent', 'detect', 'contain', 'recover', 'compensate'],
+    ['data', 'control', 'application', 'management'],
+    ['network-fundamentals', 'ip-connectivity', 'ip-services', 'security-fundamentals', 'automation-programmability'],
+    [
+      'firewall-policy-shadowing',
+      'inter-vlan-policy-bypass',
+      'asymmetric-state-evasion',
+      'session-hijack-reset',
+      'nat-state-exhaustion',
+      'ids-sensor-evasion',
+      'encrypted-traffic-blindness',
+      'tls-downgrade-cert-abuse',
+      'ip-fragmentation-evasion',
+      'ipv6-extension-header-evasion',
+      'inline-fail-open-abuse',
+      'security-log-suppression',
+      'syslog-manipulation'
+    ],
+    b(
+      'Policy least privilege, stateful inspection, normalizzazione, sensori sani, decryption governata, HA e logging verificabile applicano l’intento lungo il percorso.',
+      'Least-privilege policy, stateful inspection, normalization, healthy sensors, governed decryption, HA, and verifiable logging enforce intent along the path.'
+    ),
+    b(
+      'Inventario dei flussi, routing e NAT noti, capacity plan, PKI per decryption, source of truth e collector indipendenti.',
+      'Flow inventory, known routing and NAT, capacity planning, a decryption PKI, a source of truth, and independent collectors.'
+    ),
+    b(
+      'Correla policy trace/hit, session/NAT, capture ingress-egress, sensor health, HA/bypass e log remoto con test allow/deny/threat.',
+      'Correlate policy traces/hits, session/NAT state, ingress-egress captures, sensor health, HA/bypass state, and remote logs with allow/deny/threat tests.'
+    ),
+    b(
+      'Un allow, deny o alert nel log non prova da solo il percorso completo; cifratura, asimmetria, bypass e perdita di telemetria possono cambiare il risultato.',
+      'An allow, deny, or alert in a log alone does not prove the complete path; encryption, asymmetry, bypass, and telemetry loss can change the outcome.'
+    )
+  ),
+  d(
+    'management-telemetry-assurance',
+    b('Assurance del management plane e della telemetria', 'Management-plane and telemetry assurance'),
+    ['prevent', 'detect', 'contain', 'recover', 'compensate'],
+    ['management', 'identity', 'control', 'application'],
+    ['network-access', 'ip-services', 'security-fundamentals', 'automation-programmability'],
+    [
+      'management-plane-exposure',
+      'ssh-management-attacks',
+      'snmp-community-abuse',
+      'syslog-manipulation',
+      'ntp-manipulation',
+      'api-auth-token-abuse',
+      'management-api-schema-abuse',
+      'cdp-lldp-enumeration',
+      'configuration-backup-exposure',
+      'telemetry-collector-blindness',
+      'security-log-suppression'
+    ],
+    b(
+      'Percorsi amministrativi minimi, protocolli autenticati, AAA/RBAC, time trust, collector verificabili e backup integri proteggono controllo e osservabilità.',
+      'Minimal administrative paths, authenticated protocols, AAA/RBAC, trusted time, verifiable collectors, and intact backups protect control and observability.'
+    ),
+    b(
+      'Inventario di device, identità e source interface; OOB o management VRF; PKI/time source; capacity, retention e restore provati.',
+      'An inventory of devices, identities, and source interfaces; OOB or a management VRF; PKI/time sources; and proven capacity, retention, and restore.'
+    ),
+    b(
+      'Test allow/deny di reachability, AAA/accounting, eventi sintetici end-to-end, gap/drop, read-back API e restore canary.',
+      'Allow/deny reachability tests, AAA/accounting, end-to-end synthetic events, gap/drop checks, API read-back, and canary restores.'
+    ),
+    b(
+      'Nessun singolo protocollo prova l’intera catena: cifratura, evento ricevuto, job riuscito o backup presente richiedono sempre conferma indipendente.',
+      'No single protocol proves the whole chain: encryption, a received event, a successful job, or an available backup always requires independent confirmation.'
+    )
+  ),
+  d(
+    'endpoint-security-assurance',
+    b('Assurance della sicurezza endpoint', 'Endpoint security assurance'),
+    ['prevent', 'detect', 'contain', 'recover', 'compensate'],
+    ['data', 'identity', 'application', 'management'],
+    ['network-access', 'security-fundamentals', 'automation-programmability'],
+    [
+      'rogue-device',
+      'nac-posture-bypass',
+      'malware-ransomware',
+      'east-west-lateral-movement',
+      'credential-attacks',
+      'privileged-command-abuse',
+      'endpoint-configuration-drift',
+      'unpatched-endpoint-exploitation',
+      'endpoint-agent-tampering',
+      'application-control-bypass'
+    ],
+    b(
+      'Inventory, baseline, patching, EDR, host firewall, application control, least privilege e postura continua riducono compromissione e propagazione.',
+      'Inventory, baselines, patching, EDR, host firewalls, application control, least privilege, and continuous posture reduce compromise and propagation.'
+    ),
+    b(
+      'Ownership degli asset, MDM/NAC/EDR integrati, identità affidabili, policy versionate, canale di risposta e immagini pulite.',
+      'Asset ownership, integrated MDM/NAC/EDR, trusted identities, versioned policy, a response channel, and clean images.'
+    ),
+    b(
+      'Riconcilia inventory e sensor health; prova baseline, patch, allow/deny, detection, isolamento e riammissione end-to-end.',
+      'Reconcile inventory and sensor health; test baselines, patches, allow/deny behavior, detection, isolation, and readmission end to end.'
+    ),
+    b(
+      'Compliant, patched o healthy sono stati puntuali: nessuno dimostra da solo assenza di compromissione o copertura continua.',
+      'Compliant, patched, or healthy are point-in-time states: none alone proves absence of compromise or continuous coverage.'
+    )
+  ),
+  d(
+    'dns-application-assurance',
+    b('Assurance DNS, web e applicativa', 'DNS, web, and application assurance'),
+    ['prevent', 'detect', 'contain', 'recover', 'compensate'],
+    ['data', 'application', 'identity', 'management'],
+    ['ip-services', 'security-fundamentals', 'automation-programmability'],
+    [
+      'dns-poisoning',
+      'dns-tunneling',
+      'dns-resource-exhaustion',
+      'domain-registration-hijack',
+      'dns-rebinding',
+      'tls-downgrade-cert-abuse',
+      'http-request-smuggling',
+      'injection',
+      'xss-csrf',
+      'web-session-cookie-abuse',
+      'api-auth-token-abuse'
+    ],
+    b(
+      'Resolver e domini governati, TLS validato, parsing coerente, confine dati–comandi, origin/session control e autorizzazione API proteggono la richiesta end-to-end.',
+      'Governed resolvers and domains, validated TLS, consistent parsing, data-command separation, origin/session controls, and API authorization protect requests end to end.'
+    ),
+    b(
+      'Ownership di domini e servizi, inventory dei flussi, PKI, logging correlabile, secure SDLC e ruoli applicativi minimi.',
+      'Domain and service ownership, flow inventories, PKI, correlatable logging, a secure SDLC, and minimal application roles.'
+    ),
+    b(
+      'Correla DNS, TLS, edge/proxy/origin, application/DB e identity audit; prova casi positivi, negativi e ambigui in ambiente controllato.',
+      'Correlate DNS, TLS, edge/proxy/origin, application/database, and identity auditing; test positive, negative, and ambiguous cases in a controlled environment.'
+    ),
+    b(
+      'DNS corretto, TLS valido, WAF block o HTTP 200 dimostrano solo una parte della catena e non l’esito applicativo completo.',
+      'Correct DNS, valid TLS, a WAF block, or HTTP 200 proves only one part of the chain, not the complete application outcome.'
+    )
+  ),
+  d(
+    'email-human-assurance',
+    b('Assurance email e human layer', 'Email and human-layer assurance'),
+    ['prevent', 'detect', 'contain', 'recover', 'compensate'],
+    ['application', 'identity', 'management'],
+    ['ip-services', 'security-fundamentals', 'automation-programmability'],
+    [
+      'phishing-social-engineering',
+      'email-authentication-spoofing',
+      'adversary-in-the-middle-phishing',
+      'business-email-compromise',
+      'malicious-oauth-consent',
+      'credential-attacks',
+      'malware-ransomware',
+      'web-session-cookie-abuse'
+    ],
+    b(
+      'Autenticazione del dominio, gateway, browser/endpoint, identity control e verifiche di processo riducono consegna, interazione e impatto.',
+      'Domain authentication, gateways, browser/endpoint controls, identity controls, and process verification reduce delivery, interaction, and impact.'
+    ),
+    b(
+      'Inventory di domini/sender/app, IdP e mail audit, reporting semplice, ownership dei processi sensibili e risposta coordinata.',
+      'Domain/sender/application inventories, IdP and mail auditing, simple reporting, ownership of sensitive processes, and coordinated response.'
+    ),
+    b(
+      'Testa sender e header, link/allegati benigni, session/token revocation, OAuth grant, reporting, purge e processi di callback.',
+      'Test senders and headers, benign links/attachments, session/token revocation, OAuth grants, reporting, purge, and callback processes.'
+    ),
+    b(
+      'Nessun singolo filtro elimina il rischio: mail autenticata, sandbox clean, MFA o formazione non provano da soli legittimità e sicurezza.',
+      'No single filter eliminates risk: authenticated mail, a clean sandbox, MFA, or training alone does not prove legitimacy and safety.'
+    )
+  ),
+  d(
+    'layer2-first-hop-assurance',
+    b('Assurance Layer 2 e first-hop', 'Layer 2 and first-hop assurance'),
+    ['prevent', 'detect', 'contain', 'recover', 'compensate'],
+    ['physical', 'data', 'control', 'identity', 'management'],
+    ['network-fundamentals', 'network-access', 'ip-services', 'security-fundamentals'],
+    [
+      'physical-tapping',
+      'rogue-device',
+      'mac-flooding',
+      'vlan-switch-spoofing',
+      'vlan-double-tagging',
+      'voice-vlan-device-spoofing',
+      'dhcp-starvation',
+      'rogue-dhcp',
+      'dhcp-snooping-trust-abuse',
+      'arp-poisoning',
+      'stp-manipulation',
+      'etherchannel-member-mismatch',
+      'l2-broadcast-storm'
+    ],
+    b(
+      'Ruoli porta espliciti, autenticazione, limiti MAC, trunk minimi, binding affidabili, STP deterministico e LACP proteggono accesso e forwarding locale.',
+      'Explicit port roles, authentication, MAC limits, minimal trunks, reliable bindings, deterministic STP, and LACP protect local access and forwarding.'
+    ),
+    b(
+      'Mappa fisica/logica, inventory di endpoint/server/relay, root e peer previsti, OOB e procedure di change/recovery.',
+      'Physical/logical maps, endpoint/server/relay inventories, intended roots and peers, OOB access, and change/recovery procedures.'
+    ),
+    b(
+      'Correla switchport, sessione, MAC, binding, ARP, trunk, STP ed EtherChannel; prova allow/deny e failover per ruolo.',
+      'Correlate switchports, sessions, MACs, bindings, ARP, trunks, STP, and EtherChannels; test allow/deny behavior and failover by role.'
+    ),
+    b(
+      'Una porta up, un binding presente o un port-channel up provano solo stato locale: trust, peer, policy e forwarding devono essere verificati insieme.',
+      'A port, binding, or port channel being up proves only local state: trust, peers, policy, and forwarding must be verified together.'
+    )
+  )
 ];

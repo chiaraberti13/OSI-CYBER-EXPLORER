@@ -12,12 +12,12 @@ The gate measures **all production `src/lib/**/*.{ts,tsx}` modules, including fi
 
 Measured on 5 October 2026: 24 modules, Node 24.19.0, Vitest and `@vitest/coverage-v8` 5.0.1. The initial report exposed missing simulator protocol journeys and chunk retry timing. Added assertions cover all seven protocols in both languages, service ports and PDUs, defense outcomes, inactive phases, reset and backoff with fake timers.
 
-| Metric | Before | Final baseline | Aggregate minimum | Minimum for every module |
-|---|---:|---:|---:|---:|
-| Lines | 93.97% | 97.58% (1214/1244) | 95% | 80% |
-| Statements | 92.19% | 95.21% (1452/1525) | 92% | 80% |
-| Branches | 88.11% | 91.87% (1198/1304) | 90% | 70% |
-| Functions | 99.19% | 99.59% (248/249) | 98% | 90% |
+| Metric     | Before |     Final baseline | Aggregate minimum | Minimum for every module |
+| ---------- | -----: | -----------------: | ----------------: | -----------------------: |
+| Lines      | 93.97% | 97.58% (1214/1244) |               95% |                      80% |
+| Statements | 92.19% | 95.21% (1452/1525) |               92% |                      80% |
+| Branches   | 88.11% | 91.87% (1198/1304) |               90% |                      70% |
+| Functions  | 99.19% |   99.59% (248/249) |               98% |                      90% |
 
 Aggregate thresholds leave room below the measured baseline. Per-module minima prevent highly covered files from masking an untested function or module. Small modules are more sensitive to a single uncovered path: `navigation.ts` starts at 75% branches, `osi.ts` at 87.5% lines and `simulation.ts` at 90% functions. There are no per-file exceptions or automatic threshold updates.
 
@@ -49,12 +49,12 @@ La misura comprende **tutti i moduli di produzione `src/lib/**/*.{ts,tsx}`, anch
 
 Misura del 5 ottobre 2026: 24 moduli, Node 24.19.0, Vitest e `@vitest/coverage-v8` 5.0.1. Prima della configurazione delle soglie, il report ha individuato percorsi non coperti del simulatore e del retry dei chunk. Sono stati aggiunti test per i sette protocolli in IT/EN, porte e PDU, esito della difesa, fasi inattive, reset e backoff con timer simulati.
 
-| Metrica | Prima | Baseline finale | Minimo aggregato | Minimo per ogni modulo |
-|---|---:|---:|---:|---:|
-| Righe | 93,97% | 97,58% (1214/1244) | 95% | 80% |
-| Istruzioni | 92,19% | 95,21% (1452/1525) | 92% | 80% |
-| Rami | 88,11% | 91,87% (1198/1304) | 90% | 70% |
-| Funzioni | 99,19% | 99,59% (248/249) | 98% | 90% |
+| Metrica    |  Prima |    Baseline finale | Minimo aggregato | Minimo per ogni modulo |
+| ---------- | -----: | -----------------: | ---------------: | ---------------------: |
+| Righe      | 93,97% | 97,58% (1214/1244) |              95% |                    80% |
+| Istruzioni | 92,19% | 95,21% (1452/1525) |              92% |                    80% |
+| Rami       | 88,11% | 91,87% (1198/1304) |              90% |                    70% |
+| Funzioni   | 99,19% |   99,59% (248/249) |              98% |                    90% |
 
 Le soglie aggregate lasciano un margine rispetto alla baseline misurata. I minimi per modulo impediscono che file molto coperti nascondano una nuova funzione o un intero modulo senza test. I moduli piccoli hanno percentuali più sensibili al singolo ramo: `navigation.ts` parte dal 75% sui rami; `osi.ts` dall'87,5% sulle righe; `simulation.ts` dal 90% sulle funzioni. Non sono previste eccezioni per file né aggiornamenti automatici delle soglie.
 

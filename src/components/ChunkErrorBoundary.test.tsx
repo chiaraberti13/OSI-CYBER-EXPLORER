@@ -80,10 +80,7 @@ describe('ChunkErrorBoundary (ENG-09)', () => {
   it('renders and triggers the safe-return action', async () => {
     const onAction = vi.fn();
     render(
-      <ChunkErrorBoundary
-        language="it"
-        safeReturn={{ label: 'Torna alla panoramica OSI', onAction }}
-      >
+      <ChunkErrorBoundary language="it" safeReturn={{ label: 'Torna alla panoramica OSI', onAction }}>
         <Thrower shouldThrow={true} />
       </ChunkErrorBoundary>
     );

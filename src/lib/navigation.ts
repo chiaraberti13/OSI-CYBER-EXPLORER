@@ -41,40 +41,38 @@ export interface NavGroup {
  * {@link VIEW_GROUPS} order, and the entries inside each group keep the registry's
  * declaration order, so the menu is a direct, testable projection of the registry.
  */
-export const NAV_GROUPS: NavGroup[] = VIEW_GROUPS.map(group => ({
+export const NAV_GROUPS: NavGroup[] = VIEW_GROUPS.map((group) => ({
   id: group.id,
   it: group.it,
   en: group.en,
   itShort: group.itShort,
   enShort: group.enShort,
-  entries: VIEW_ORDER
-    .filter(view => VIEW_REGISTRY[view].group === group.id)
-    .map(view => {
-      const definition = VIEW_REGISTRY[view];
-      return {
-        view,
-        it: definition.it,
-        en: definition.en,
-        hintIt: definition.hintIt,
-        hintEn: definition.hintEn,
-        keywords: definition.keywords,
-        icon: definition.icon
-      };
-    })
+  entries: VIEW_ORDER.filter((view) => VIEW_REGISTRY[view].group === group.id).map((view) => {
+    const definition = VIEW_REGISTRY[view];
+    return {
+      view,
+      it: definition.it,
+      en: definition.en,
+      hintIt: definition.hintIt,
+      hintEn: definition.hintEn,
+      keywords: definition.keywords,
+      icon: definition.icon
+    };
+  })
 }));
 
 /** Every entry, flattened, in menu order. */
-export const NAV_ENTRIES: ReadonlyArray<{ group: NavGroup; entry: NavEntry }> = NAV_GROUPS.flatMap(group =>
-  group.entries.map(entry => ({ group, entry }))
+export const NAV_ENTRIES: ReadonlyArray<{ group: NavGroup; entry: NavEntry }> = NAV_GROUPS.flatMap((group) =>
+  group.entries.map((entry) => ({ group, entry }))
 );
 
 /** The group a view belongs to, used to highlight the menu and build the breadcrumb. */
 export function navGroupOf(view: AppView): NavGroup | undefined {
-  return NAV_GROUPS.find(group => group.entries.some(entry => entry.view === view));
+  return NAV_GROUPS.find((group) => group.entries.some((entry) => entry.view === view));
 }
 
 export function navEntryOf(view: AppView): NavEntry | undefined {
-  return NAV_ENTRIES.find(item => item.entry.view === view)?.entry;
+  return NAV_ENTRIES.find((item) => item.entry.view === view)?.entry;
 }
 
 /** Lowercases and strips accents so "identità" is found by typing "identita". */
@@ -92,15 +90,17 @@ export function searchNav(query: string, language: 'it' | 'en'): ReadonlyArray<{
   if (terms.length === 0) return NAV_ENTRIES;
 
   return NAV_ENTRIES.filter(({ group, entry }) => {
-    const haystack = normalize([
-      entry[language],
-      entry.it,
-      entry.en,
-      language === 'it' ? entry.hintIt : entry.hintEn,
-      entry.keywords,
-      group[language]
-    ].join(' '));
-    return terms.every(term => haystack.includes(term));
+    const haystack = normalize(
+      [
+        entry[language],
+        entry.it,
+        entry.en,
+        language === 'it' ? entry.hintIt : entry.hintEn,
+        entry.keywords,
+        group[language]
+      ].join(' ')
+    );
+    return terms.every((term) => haystack.includes(term));
   });
 }
 
@@ -118,7 +118,10 @@ export interface ScrollMetrics {
   clientWidth: number;
 }
 
-export function navOverflow(metrics: ScrollMetrics, tolerance = 2): { canScrollLeft: boolean; canScrollRight: boolean } {
+export function navOverflow(
+  metrics: ScrollMetrics,
+  tolerance = 2
+): { canScrollLeft: boolean; canScrollRight: boolean } {
   const maxScroll = metrics.scrollWidth - metrics.clientWidth;
   if (maxScroll <= tolerance) {
     return { canScrollLeft: false, canScrollRight: false };
@@ -127,7 +130,7 @@ export function navOverflow(metrics: ScrollMetrics, tolerance = 2): { canScrollL
   const scrollLeft = Math.max(0, Math.min(metrics.scrollLeft, maxScroll));
   return {
     canScrollLeft: scrollLeft > tolerance,
-    canScrollRight: scrollLeft < maxScroll - tolerance,
+    canScrollRight: scrollLeft < maxScroll - tolerance
   };
 }
 

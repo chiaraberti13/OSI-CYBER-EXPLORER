@@ -11,7 +11,9 @@ import {
 
 describe('PAT translations', () => {
   it('preserves a source port when the public tuple is available', () => {
-    expect(createPatTranslation('10.0.0.10', 49152, '198.51.100.10', new Set()).insideGlobal).toBe('198.51.100.10:49152');
+    expect(createPatTranslation('10.0.0.10', 49152, '198.51.100.10', new Set()).insideGlobal).toBe(
+      '198.51.100.10:49152'
+    );
   });
 
   it('allocates a different port after a collision', () => {

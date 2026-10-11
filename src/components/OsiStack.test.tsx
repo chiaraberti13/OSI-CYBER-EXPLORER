@@ -25,7 +25,7 @@ afterEach(() => {
     activeAttack: 'none',
     defenseEnabled: false,
     activeScenarioId: null,
-    currentStep: 7,
+    currentStep: 7
   });
 });
 
@@ -40,7 +40,7 @@ describe('UX-05 semantic OSI layer states', () => {
     expect(container.querySelectorAll('[aria-pressed="true"]')).toHaveLength(1);
 
     // Selecting another layer moves the pressed state and updates the store.
-    const other = buttons.find(b => b.getAttribute('aria-pressed') === 'false')!;
+    const other = buttons.find((b) => b.getAttribute('aria-pressed') === 'false')!;
     await user.click(other);
     expect(other.getAttribute('aria-pressed')).toBe('true');
     expect(container.querySelectorAll('[aria-pressed="true"]')).toHaveLength(1);

@@ -19,7 +19,7 @@ function resetStore() {
     audioEnabled: false,
     simSpeed: 1,
     logs: [],
-    packetHeaders: [],
+    packetHeaders: []
   });
 }
 

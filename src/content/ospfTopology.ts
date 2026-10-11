@@ -15,27 +15,49 @@ const b = (it: string, en: string): Bilingual => ({ it, en });
 
 export const OSPF_ROUTERS: OspfRouterNode[] = [
   {
-    id: 'R1', name: 'R1', routerId: '1.1.1.1',
+    id: 'R1',
+    name: 'R1',
+    routerId: '1.1.1.1',
     networks: [
       { address: '10.0.1.0', prefix: 24, cost: 1, label: b('LAN del core', 'Core LAN') },
-      { address: '1.1.1.1', prefix: 32, cost: 1, label: b('Loopback, origine del Router ID', 'Loopback, source of the Router ID') }
+      {
+        address: '1.1.1.1',
+        prefix: 32,
+        cost: 1,
+        label: b('Loopback, origine del Router ID', 'Loopback, source of the Router ID')
+      }
     ]
   },
   {
-    id: 'R2', name: 'R2', routerId: '2.2.2.2',
+    id: 'R2',
+    name: 'R2',
+    routerId: '2.2.2.2',
     networks: [{ address: '10.0.2.0', prefix: 24, cost: 1, label: b('LAN di distribuzione A', 'Distribution LAN A') }]
   },
   {
-    id: 'R3', name: 'R3', routerId: '3.3.3.3',
+    id: 'R3',
+    name: 'R3',
+    routerId: '3.3.3.3',
     networks: [{ address: '10.0.3.0', prefix: 24, cost: 1, label: b('LAN di distribuzione B', 'Distribution LAN B') }]
   },
   {
-    id: 'R4', name: 'R4', routerId: '4.4.4.4',
+    id: 'R4',
+    name: 'R4',
+    routerId: '4.4.4.4',
     networks: [{ address: '10.0.4.0', prefix: 24, cost: 1, label: b('LAN della filiale', 'Branch LAN') }]
   },
   {
-    id: 'R5', name: 'R5', routerId: '5.5.5.5',
-    networks: [{ address: '10.0.5.0', prefix: 24, cost: 1, label: b('LAN dietro il collegamento seriale', 'LAN behind the serial link') }]
+    id: 'R5',
+    name: 'R5',
+    routerId: '5.5.5.5',
+    networks: [
+      {
+        address: '10.0.5.0',
+        prefix: 24,
+        cost: 1,
+        label: b('LAN dietro il collegamento seriale', 'LAN behind the serial link')
+      }
+    ]
   }
 ];
 

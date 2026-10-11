@@ -2,10 +2,7 @@
   "ci": {
     "collect": {
       "staticDistDir": "./dist",
-      "url": [
-        "http://localhost/?audit=osi#/osi",
-        "http://localhost/?audit=ports#/ports"
-      ],
+      "url": ["http://localhost/?audit=osi#/osi", "http://localhost/?audit=ports#/ports"],
       "numberOfRuns": 3,
       "settings": {
         "preset": "desktop",

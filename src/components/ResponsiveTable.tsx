@@ -53,16 +53,20 @@ export default function ResponsiveTable<Row>({
   breakpoint = 'lg',
   minWidth
 }: ResponsiveTableProps<Row>) {
-  const headingColumn = columns.find(column => column.heading) ?? columns[0];
-  const fieldColumns = columns.filter(column => column !== headingColumn);
+  const headingColumn = columns.find((column) => column.heading) ?? columns[0];
+  const fieldColumns = columns.filter((column) => column !== headingColumn);
 
   return (
     <>
       <div className={`${TABLE_VISIBILITY[breakpoint]} overflow-x-auto`}>
-        <table className="w-full border-collapse text-left text-xs" style={minWidth ? { minWidth } : undefined} aria-label={label}>
+        <table
+          className="w-full border-collapse text-left text-xs"
+          style={minWidth ? { minWidth } : undefined}
+          aria-label={label}
+        >
           <thead>
             <tr className="border-b border-slate-200 text-slate-500">
-              {columns.map(column => (
+              {columns.map((column) => (
                 <th key={column.id} scope="col" className={`p-3 font-semibold ${column.headerClassName ?? ''}`}>
                   {column.header}
                 </th>
@@ -72,9 +76,13 @@ export default function ResponsiveTable<Row>({
           <tbody>
             {rows.map((row, index) => (
               <tr key={rowKey(row, index)} className="border-b border-slate-100 align-top">
-                {columns.map(column =>
+                {columns.map((column) =>
                   column === headingColumn ? (
-                    <th key={column.id} scope="row" className={`p-3 font-semibold text-slate-800 ${column.cellClassName ?? ''}`}>
+                    <th
+                      key={column.id}
+                      scope="row"
+                      className={`p-3 font-semibold text-slate-800 ${column.cellClassName ?? ''}`}
+                    >
                       {column.cell(row)}
                     </th>
                   ) : (
@@ -92,12 +100,16 @@ export default function ResponsiveTable<Row>({
       <ul className={`${CARDS_VISIBILITY[breakpoint]} space-y-3`} aria-label={label}>
         {rows.map((row, index) => (
           <li key={rowKey(row, index)} className="rounded-lg border border-slate-200 p-4">
-            <p className={`text-sm font-semibold text-slate-900 ${headingColumn.cellClassName ?? ''}`}>{headingColumn.cell(row)}</p>
+            <p className={`text-sm font-semibold text-slate-900 ${headingColumn.cellClassName ?? ''}`}>
+              {headingColumn.cell(row)}
+            </p>
             <dl className="mt-3 space-y-2.5">
-              {fieldColumns.map(column => (
+              {fieldColumns.map((column) => (
                 <div key={column.id}>
                   <dt className="eyebrow">{column.header}</dt>
-                  <dd className={`mt-1 text-xs leading-relaxed text-slate-600 ${column.cellClassName ?? ''}`}>{column.cell(row)}</dd>
+                  <dd className={`mt-1 text-xs leading-relaxed text-slate-600 ${column.cellClassName ?? ''}`}>
+                    {column.cell(row)}
+                  </dd>
                 </div>
               ))}
             </dl>

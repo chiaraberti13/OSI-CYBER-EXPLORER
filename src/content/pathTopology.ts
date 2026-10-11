@@ -37,10 +37,45 @@ export const TOPO_VLANS: TopoVlan[] = [
 ];
 
 export const TOPO_HOSTS: TopoHost[] = [
-  { id: 'pc-a', name: 'PC-A', ip: '10.10.10.42', vlan: 10, device: 'sw-access', port: 'Gi1/0/1', role: b('Workstation nella VLAN utenti', 'Workstation in the users VLAN') },
-  { id: 'pc-b', name: 'PC-B', ip: '10.10.10.43', vlan: 10, device: 'sw-access', port: 'Gi1/0/2', role: b('Seconda workstation, stessa VLAN e stessa subnet di PC-A', 'Second workstation, same VLAN and subnet as PC-A') },
-  { id: 'phone', name: 'PHONE', ip: '10.10.20.30', vlan: 20, device: 'sw-access', port: 'Gi1/0/5', role: b('Telefono IP nella VLAN voce', 'IP phone in the voice VLAN') },
-  { id: 'server', name: 'SERVER', ip: '10.20.50.5', vlan: 50, device: 'sw-core', port: 'Gi1/0/10', role: b('Server applicativo, collegato direttamente al core', 'Application server, attached directly to the core') }
+  {
+    id: 'pc-a',
+    name: 'PC-A',
+    ip: '10.10.10.42',
+    vlan: 10,
+    device: 'sw-access',
+    port: 'Gi1/0/1',
+    role: b('Workstation nella VLAN utenti', 'Workstation in the users VLAN')
+  },
+  {
+    id: 'pc-b',
+    name: 'PC-B',
+    ip: '10.10.10.43',
+    vlan: 10,
+    device: 'sw-access',
+    port: 'Gi1/0/2',
+    role: b(
+      'Seconda workstation, stessa VLAN e stessa subnet di PC-A',
+      'Second workstation, same VLAN and subnet as PC-A'
+    )
+  },
+  {
+    id: 'phone',
+    name: 'PHONE',
+    ip: '10.10.20.30',
+    vlan: 20,
+    device: 'sw-access',
+    port: 'Gi1/0/5',
+    role: b('Telefono IP nella VLAN voce', 'IP phone in the voice VLAN')
+  },
+  {
+    id: 'server',
+    name: 'SERVER',
+    ip: '10.20.50.5',
+    vlan: 50,
+    device: 'sw-core',
+    port: 'Gi1/0/10',
+    role: b('Server applicativo, collegato direttamente al core', 'Application server, attached directly to the core')
+  }
 ];
 
 /** The Internet destination, outside every local subnet. */
@@ -72,6 +107,14 @@ export const TOPO_ACL_TEXT = [
 export const TOPO_TRAFFIC = [
   { id: 'https', label: b('HTTPS — TCP 443', 'HTTPS — TCP 443'), protocol: 'tcp' as const, port: 443 },
   { id: 'telnet', label: b('Telnet — TCP 23', 'Telnet — TCP 23'), protocol: 'tcp' as const, port: 23 },
-  { id: 'dns', label: b('DNS su TCP (zone transfer, risposte grandi) — TCP 53', 'DNS over TCP (zone transfers, large responses) — TCP 53'), protocol: 'tcp' as const, port: 53 },
+  {
+    id: 'dns',
+    label: b(
+      'DNS su TCP (zone transfer, risposte grandi) — TCP 53',
+      'DNS over TCP (zone transfers, large responses) — TCP 53'
+    ),
+    protocol: 'tcp' as const,
+    port: 53
+  },
   { id: 'icmp', label: b('Ping — ICMP', 'Ping — ICMP'), protocol: 'icmp' as const, port: undefined }
 ];

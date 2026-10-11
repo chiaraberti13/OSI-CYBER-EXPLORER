@@ -4,14 +4,14 @@
 
 Performance is treated as a versioned constraint, not as a reason for speculative refactoring. The baseline was measured on 10 October 2026 from commit `1060a22` with Node 24, Vite 8.3.1, gzip level 9, and the production build:
 
-| Scope | Baseline | Blocking budget | Headroom |
-|---|---:|---:|---:|
-| Initial JavaScript entry | 116,060 B gzip | 125,000 B gzip | 7.7% |
-| Largest lazy route (`PortsExplorer`) | 51,325 B gzip | 55,000 B gzip | 7.2% |
-| Browser script transfer, OSI/Ports | measured by Lighthouse CI | 600 KiB | route-wide |
-| Browser total transfer, OSI/Ports | measured by Lighthouse CI | 750 KiB | route-wide |
-| Lighthouse Performance | OSI 0.78 · Ports 0.98 | ≥ 0.75 | no regression |
-| Lighthouse CLS | OSI 0.547 · Ports 0.082 | ≤ 0.60 | no regression |
+| Scope                                |                  Baseline | Blocking budget |      Headroom |
+| ------------------------------------ | ------------------------: | --------------: | ------------: |
+| Initial JavaScript entry             |            116,060 B gzip |  125,000 B gzip |          7.7% |
+| Largest lazy route (`PortsExplorer`) |             51,325 B gzip |   55,000 B gzip |          7.2% |
+| Browser script transfer, OSI/Ports   | measured by Lighthouse CI |         600 KiB |    route-wide |
+| Browser total transfer, OSI/Ports    | measured by Lighthouse CI |         750 KiB |    route-wide |
+| Lighthouse Performance               |     OSI 0.78 · Ports 0.98 |          ≥ 0.75 | no regression |
+| Lighthouse CLS                       |   OSI 0.547 · Ports 0.082 |          ≤ 0.60 | no regression |
 
 `npm run build` emits `dist/.vite/manifest.json`. `npm run verify:performance` then applies three independent checks:
 
@@ -29,14 +29,14 @@ Lighthouse CI stays outside the application lockfile: its current CLI dependency
 
 La performance è un vincolo versionato, non un pretesto per refactoring ipotetici. La baseline è stata misurata il 10 ottobre 2026 dal commit `1060a22` con Node 24, Vite 8.3.1, gzip livello 9 e build di produzione:
 
-| Ambito | Baseline | Budget bloccante | Margine |
-|---|---:|---:|---:|
-| Entry JavaScript iniziale | 116.060 B gzip | 125.000 B gzip | 7,7% |
-| Route lazy più grande (`PortsExplorer`) | 51.325 B gzip | 55.000 B gzip | 7,2% |
-| Trasferimento script browser, OSI/Porte | misurato da Lighthouse CI | 600 KiB | intera route |
-| Trasferimento totale browser, OSI/Porte | misurato da Lighthouse CI | 750 KiB | intera route |
-| Lighthouse Performance | OSI 0,78 · Porte 0,98 | ≥ 0,75 | nessuna regressione |
-| Lighthouse CLS | OSI 0,547 · Porte 0,082 | ≤ 0,60 | nessuna regressione |
+| Ambito                                  |                  Baseline | Budget bloccante |             Margine |
+| --------------------------------------- | ------------------------: | ---------------: | ------------------: |
+| Entry JavaScript iniziale               |            116.060 B gzip |   125.000 B gzip |                7,7% |
+| Route lazy più grande (`PortsExplorer`) |             51.325 B gzip |    55.000 B gzip |                7,2% |
+| Trasferimento script browser, OSI/Porte | misurato da Lighthouse CI |          600 KiB |        intera route |
+| Trasferimento totale browser, OSI/Porte | misurato da Lighthouse CI |          750 KiB |        intera route |
+| Lighthouse Performance                  |     OSI 0,78 · Porte 0,98 |           ≥ 0,75 | nessuna regressione |
+| Lighthouse CLS                          |   OSI 0,547 · Porte 0,082 |           ≤ 0,60 | nessuna regressione |
 
 `npm run build` produce `dist/.vite/manifest.json`. `npm run verify:performance` applica quindi tre controlli indipendenti:
 

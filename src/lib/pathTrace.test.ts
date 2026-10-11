@@ -13,7 +13,7 @@ const base: TraceOptions = {
   defaultRoutePresent: true
 };
 
-const kinds = (result: { steps: Array<{ kind: string }> }) => result.steps.map(step => step.kind);
+const kinds = (result: { steps: Array<{ kind: string }> }) => result.steps.map((step) => step.kind);
 
 describe('path trace — the local or remote decision', () => {
   it('stays at Layer 2 inside one VLAN and never consults the ACL', () => {
@@ -50,7 +50,7 @@ describe('path trace — the ACL', () => {
   it('drops a port no ACE permits through the implicit deny', () => {
     const result = tracePath({ ...base, port: 53 });
     expect(result.delivered).toBe(false);
-    const acl = result.steps.find(step => step.kind === 'acl');
+    const acl = result.steps.find((step) => step.kind === 'acl');
     expect(acl?.detail.en).toMatch(/implicit deny/);
   });
 
@@ -77,7 +77,14 @@ describe('path trace — the ACL', () => {
 
 describe('path trace — the trunk', () => {
   it('drops the frame when the VLAN is pruned from the allowed list', () => {
-    const result = tracePath({ ...base, sourceId: 'phone', destinationId: 'server', protocol: 'icmp', port: undefined, trunkAllowedVlans: [10, 99] });
+    const result = tracePath({
+      ...base,
+      sourceId: 'phone',
+      destinationId: 'server',
+      protocol: 'icmp',
+      port: undefined,
+      trunkAllowedVlans: [10, 99]
+    });
     expect(result.delivered).toBe(false);
     expect(result.dropReason?.en).toMatch(/pruned/);
     expect(kinds(result)).not.toContain('svi');
@@ -86,7 +93,7 @@ describe('path trace — the trunk', () => {
   it('reports a native VLAN mismatch without stopping tagged traffic', () => {
     const result = tracePath({ ...base, nativeVlanConsistent: false });
     expect(result.delivered).toBe(true);
-    const mismatch = result.steps.find(step => step.title.en.includes('Native VLAN mismatch'));
+    const mismatch = result.steps.find((step) => step.title.en.includes('Native VLAN mismatch'));
     expect(mismatch?.verdict).toBe('info');
   });
 });

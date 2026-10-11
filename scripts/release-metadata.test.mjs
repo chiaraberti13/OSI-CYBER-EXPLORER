@@ -12,14 +12,14 @@ test('accepts a tag, package version and non-empty changelog section that agree'
     parseReleaseMetadata({
       tag: 'v1.2.3',
       packageJson: manifest(),
-      changelog: changelog(),
+      changelog: changelog()
     }),
     {
       tag: 'v1.2.3',
       version: '1.2.3',
       releaseDate: '2026-09-27',
-      notes: '### Added\n\n- Release.',
-    },
+      notes: '### Added\n\n- Release.'
+    }
   );
 });
 
@@ -27,7 +27,7 @@ test('accepts a valid Semantic Versioning prerelease', () => {
   const result = parseReleaseMetadata({
     tag: 'v2.0.0-rc.1',
     packageJson: manifest('2.0.0-rc.1'),
-    changelog: changelog('## [2.0.0-rc.1] - 2026-09-27'),
+    changelog: changelog('## [2.0.0-rc.1] - 2026-09-27')
   });
 
   assert.equal(result.version, '2.0.0-rc.1');
@@ -37,7 +37,7 @@ test('rejects tags without the v prefix or strict Semantic Versioning', () => {
   for (const tag of ['1.2.3', 'v1.2', 'v01.2.3', 'vlatest']) {
     assert.throws(
       () => parseReleaseMetadata({ tag, packageJson: manifest(), changelog: changelog() }),
-      /Release tag|Semantic Versioning/,
+      /Release tag|Semantic Versioning/
     );
   }
 });
@@ -48,9 +48,9 @@ test('rejects a tag that differs from package.json', () => {
       parseReleaseMetadata({
         tag: 'v1.2.3',
         packageJson: manifest('1.2.4'),
-        changelog: changelog(),
+        changelog: changelog()
       }),
-    /does not match package.json/,
+    /does not match package.json/
   );
 });
 
@@ -60,9 +60,9 @@ test('requires one versioned changelog section', () => {
       parseReleaseMetadata({
         tag: 'v1.2.3',
         packageJson: manifest(),
-        changelog: '# Changelog\n\n## [Unreleased]\n',
+        changelog: '# Changelog\n\n## [Unreleased]\n'
       }),
-    /exactly one/,
+    /exactly one/
   );
 
   assert.throws(
@@ -70,9 +70,9 @@ test('requires one versioned changelog section', () => {
       parseReleaseMetadata({
         tag: 'v1.2.3',
         packageJson: manifest(),
-        changelog: `${changelog()}\n${changelog()}`,
+        changelog: `${changelog()}\n${changelog()}`
       }),
-    /exactly one/,
+    /exactly one/
   );
 });
 
@@ -82,9 +82,9 @@ test('rejects invalid release dates and empty notes', () => {
       parseReleaseMetadata({
         tag: 'v1.2.3',
         packageJson: manifest(),
-        changelog: changelog('## [1.2.3] - 2026-02-30'),
+        changelog: changelog('## [1.2.3] - 2026-02-30')
       }),
-    /invalid release date/,
+    /invalid release date/
   );
 
   assert.throws(
@@ -92,8 +92,8 @@ test('rejects invalid release dates and empty notes', () => {
       parseReleaseMetadata({
         tag: 'v1.2.3',
         packageJson: manifest(),
-        changelog: changelog('## [1.2.3] - 2026-09-27', ''),
+        changelog: changelog('## [1.2.3] - 2026-09-27', '')
       }),
-    /section 1.2.3 is empty/,
+    /section 1.2.3 is empty/
   );
 });

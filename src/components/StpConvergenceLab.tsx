@@ -1,6 +1,13 @@
 import { useMemo, useState } from 'react';
 import { Network, TriangleAlert } from 'lucide-react';
-import { convergeStp, stpModelFor, type StpPathCostMethod, type StpPort, type StpPortRole, type StpResult } from '../lib/stp';
+import {
+  convergeStp,
+  stpModelFor,
+  type StpPathCostMethod,
+  type StpPort,
+  type StpPortRole,
+  type StpResult
+} from '../lib/stp';
 import { STP_LINK_LABELS, STP_LINKS, STP_SWITCHES } from '../content/stpTopology';
 import { useStore } from '../store';
 import ResponsiveTable from './ResponsiveTable';
@@ -34,74 +41,142 @@ const ROLE_STYLES: Record<StpPortRole, { badge: string; dot: string }> = {
 const COPY = {
   it: {
     title: 'Convergenza STP sulla topologia',
-    intro: 'Quattro switch collegati a maglia: tre loop fisici contemporaneamente. Scegli VLAN, metodo di costo e priorità, e guarda quale porta finisce in discarding — è la domanda che l’esame pone davvero.',
-    vlan: 'VLAN', method: 'Metodo di costo', short: 'short (802.1D-1998)', long: 'long (802.1D-2004)',
-    priorities: 'Priorità per la VLAN selezionata', priorityFor: 'Priorità STP', reset: 'Ripristina il progetto',
-    configuredPriority: 'Priorità configurata', effectivePriority: 'Priorità effettiva',
-    modelTitle: 'Modello applicato a questo risultato', protocol: 'Protocollo e stati', instance: 'Ambito dell’albero', costModel: 'Tabella dei costi', bridgeModel: 'Bridge ID',
+    intro:
+      'Quattro switch collegati a maglia: tre loop fisici contemporaneamente. Scegli VLAN, metodo di costo e priorità, e guarda quale porta finisce in discarding — è la domanda che l’esame pone davvero.',
+    vlan: 'VLAN',
+    method: 'Metodo di costo',
+    short: 'short (802.1D-1998)',
+    long: 'long (802.1D-2004)',
+    priorities: 'Priorità per la VLAN selezionata',
+    priorityFor: 'Priorità STP',
+    reset: 'Ripristina il progetto',
+    configuredPriority: 'Priorità configurata',
+    effectivePriority: 'Priorità effettiva',
+    modelTitle: 'Modello applicato a questo risultato',
+    protocol: 'Protocollo e stati',
+    instance: 'Ambito dell’albero',
+    costModel: 'Tabella dei costi',
+    bridgeModel: 'Bridge ID',
     modelProtocol: 'Cisco Rapid PVST+ · convergenza IEEE 802.1w · stati RSTP',
     modelInstance: 'Una istanza STP per VLAN; qui è calcolata la VLAN selezionata',
     modelBridge: 'IEEE 802.1t: priorità configurata (multipli di 4096) + VLAN ID',
     tieVector: 'Vettore root-port completo: root path cost → sender Bridge ID → sender Port ID → porta locale.',
-    modes: 'PVST+, Rapid PVST+ e MST non sono sinonimi', currentModel: 'Modello attivo', notModelled: 'Non simulato',
-    pvstMode: 'PVST+', pvstModeBody: 'Estensione Cisco basata su IEEE 802.1D: un albero per VLAN e stati classici blocking/listening/learning/forwarding.',
-    rapidMode: 'Rapid PVST+', rapidModeBody: 'Estensione Cisco basata su IEEE 802.1w: un albero per VLAN e ruoli/stati RSTP. È il modello calcolato qui.',
-    mstMode: 'MST', mstModeBody: 'IEEE 802.1s, oggi in 802.1Q: più VLAN possono condividere una istanza MST. Il mapping regione/VLAN non è simulato qui.',
-    root: 'Root bridge', bridgeId: 'Bridge ID', cost: 'Costo verso la root',
-    diagram: 'Topologia e ruoli delle porte', blocked: 'Collegamenti interrotti dall’albero', none: 'Nessuno',
-    portsLabel: 'Ruolo di ogni porta', showAll: 'Tutte le porte', showBlocking: 'Solo quelle in discarding',
-    colPort: 'Porta', colNeighbor: 'Vicino', colRole: 'Ruolo', colState: 'Stato', colCost: 'Costo porta', colWhy: 'Perché',
+    modes: 'PVST+, Rapid PVST+ e MST non sono sinonimi',
+    currentModel: 'Modello attivo',
+    notModelled: 'Non simulato',
+    pvstMode: 'PVST+',
+    pvstModeBody:
+      'Estensione Cisco basata su IEEE 802.1D: un albero per VLAN e stati classici blocking/listening/learning/forwarding.',
+    rapidMode: 'Rapid PVST+',
+    rapidModeBody:
+      'Estensione Cisco basata su IEEE 802.1w: un albero per VLAN e ruoli/stati RSTP. È il modello calcolato qui.',
+    mstMode: 'MST',
+    mstModeBody:
+      'IEEE 802.1s, oggi in 802.1Q: più VLAN possono condividere una istanza MST. Il mapping regione/VLAN non è simulato qui.',
+    root: 'Root bridge',
+    bridgeId: 'Bridge ID',
+    cost: 'Costo verso la root',
+    diagram: 'Topologia e ruoli delle porte',
+    blocked: 'Collegamenti interrotti dall’albero',
+    none: 'Nessuno',
+    portsLabel: 'Ruolo di ogni porta',
+    showAll: 'Tutte le porte',
+    showBlocking: 'Solo quelle in discarding',
+    colPort: 'Porta',
+    colNeighbor: 'Vicino',
+    colRole: 'Ruolo',
+    colState: 'Stato',
+    colCost: 'Costo porta',
+    colWhy: 'Perché',
     roles: { root: 'Root port', designated: 'Designated', alternate: 'Alternate (blocking)' },
     states: { forwarding: 'Forwarding', discarding: 'Discarding' },
     invalid: 'Configurazione non valida per questa topologia.',
     order: 'L’ordine delle decisioni',
-    orderBody: '1) Root bridge: Bridge ID più basso, e nient’altro. 2) Root port: una sola per switch non root, quella con il costo cumulativo più basso verso la root. 3) Designated port: una per segmento, dal lato che annuncia il costo migliore. 4) Tutto il resto va in discarding. I pareggi si rompono sempre nello stesso ordine: costo, Bridge ID del vicino, Port ID del vicino, Port ID proprio.',
+    orderBody:
+      '1) Root bridge: Bridge ID più basso, e nient’altro. 2) Root port: una sola per switch non root, quella con il costo cumulativo più basso verso la root. 3) Designated port: una per segmento, dal lato che annuncia il costo migliore. 4) Tutto il resto va in discarding. I pareggi si rompono sempre nello stesso ordine: costo, Bridge ID del vicino, Port ID del vicino, Port ID proprio.',
     trap: 'Trappola d’esame',
-    trapBody: 'Il Bridge ID contiene la VLAN nell’extended system ID: priority 24576 sulla VLAN 10 si legge 24586. Per questo la priorità è configurabile solo a passi di 4096, e per questo due VLAN possono avere root diverse sugli stessi switch — è il load balancing di PVST+. Nota anche che una porta in discarding non è spenta: continua ad ascoltare le BPDU, ed è così che si accorge quando il percorso primario cade. Attenzione ai nomi degli stati: questa tabella usa il vocabolario RSTP, che ha tre stati — discarding, learning, forwarding — perché Rapid PVST+ è il default sugli switch Cisco attuali. Lo STP classico (802.1D) ne ha cinque — disabled, blocking, listening, learning, forwarding — e chiama blocking lo stato che qui si legge discarding.',
+    trapBody:
+      'Il Bridge ID contiene la VLAN nell’extended system ID: priority 24576 sulla VLAN 10 si legge 24586. Per questo la priorità è configurabile solo a passi di 4096, e per questo due VLAN possono avere root diverse sugli stessi switch — è il load balancing di PVST+. Nota anche che una porta in discarding non è spenta: continua ad ascoltare le BPDU, ed è così che si accorge quando il percorso primario cade. Attenzione ai nomi degli stati: questa tabella usa il vocabolario RSTP, che ha tre stati — discarding, learning, forwarding — perché Rapid PVST+ è il default sugli switch Cisco attuali. Lo STP classico (802.1D) ne ha cinque — disabled, blocking, listening, learning, forwarding — e chiama blocking lo stato che qui si legge discarding.',
     pvst: 'Cosa cambia tra le VLAN',
-    pvstBody: 'Passa dalla VLAN 10 alla 20 e osserva gli uplink degli access switch invertirsi: con DSW1 root per la 10 e DSW2 root per la 20, nessun uplink resta inutilizzato. Sulla VLAN 30 nessuno ha una priorità configurata, quindi decide il MAC più basso: è il comportamento che ottieni quando dimentichi di scegliere la root.'
+    pvstBody:
+      'Passa dalla VLAN 10 alla 20 e osserva gli uplink degli access switch invertirsi: con DSW1 root per la 10 e DSW2 root per la 20, nessun uplink resta inutilizzato. Sulla VLAN 30 nessuno ha una priorità configurata, quindi decide il MAC più basso: è il comportamento che ottieni quando dimentichi di scegliere la root.'
   },
   en: {
     title: 'STP convergence on the topology',
-    intro: 'Four switches in a mesh: three physical loops at once. Choose the VLAN, the cost method and the priorities, and watch which port ends up discarding — that is the question an exam actually asks.',
-    vlan: 'VLAN', method: 'Cost method', short: 'short (802.1D-1998)', long: 'long (802.1D-2004)',
-    priorities: 'Priorities for the selected VLAN', priorityFor: 'STP priority', reset: 'Restore the design',
-    configuredPriority: 'Configured priority', effectivePriority: 'Effective priority',
-    modelTitle: 'Model applied to this result', protocol: 'Protocol and states', instance: 'Tree scope', costModel: 'Cost table', bridgeModel: 'Bridge ID',
+    intro:
+      'Four switches in a mesh: three physical loops at once. Choose the VLAN, the cost method and the priorities, and watch which port ends up discarding — that is the question an exam actually asks.',
+    vlan: 'VLAN',
+    method: 'Cost method',
+    short: 'short (802.1D-1998)',
+    long: 'long (802.1D-2004)',
+    priorities: 'Priorities for the selected VLAN',
+    priorityFor: 'STP priority',
+    reset: 'Restore the design',
+    configuredPriority: 'Configured priority',
+    effectivePriority: 'Effective priority',
+    modelTitle: 'Model applied to this result',
+    protocol: 'Protocol and states',
+    instance: 'Tree scope',
+    costModel: 'Cost table',
+    bridgeModel: 'Bridge ID',
     modelProtocol: 'Cisco Rapid PVST+ · IEEE 802.1w convergence · RSTP states',
     modelInstance: 'One STP instance per VLAN; the selected VLAN is calculated here',
     modelBridge: 'IEEE 802.1t: configured priority (multiples of 4096) + VLAN ID',
     tieVector: 'Complete root-port vector: root path cost → sender Bridge ID → sender Port ID → local port.',
-    modes: 'PVST+, Rapid PVST+, and MST are not synonyms', currentModel: 'Current model', notModelled: 'Not simulated',
-    pvstMode: 'PVST+', pvstModeBody: 'Cisco extension based on IEEE 802.1D: one tree per VLAN and classic blocking/listening/learning/forwarding states.',
-    rapidMode: 'Rapid PVST+', rapidModeBody: 'Cisco extension based on IEEE 802.1w: one tree per VLAN with RSTP roles and states. This is the model calculated here.',
-    mstMode: 'MST', mstModeBody: 'IEEE 802.1s, now in 802.1Q: multiple VLANs can share one MST instance. Region/VLAN mapping is not simulated here.',
-    root: 'Root bridge', bridgeId: 'Bridge ID', cost: 'Cost to the root',
-    diagram: 'Topology and port roles', blocked: 'Links the tree has cut', none: 'None',
-    portsLabel: 'Role of every port', showAll: 'All ports', showBlocking: 'Only the discarding ones',
-    colPort: 'Port', colNeighbor: 'Neighbour', colRole: 'Role', colState: 'State', colCost: 'Port cost', colWhy: 'Why',
+    modes: 'PVST+, Rapid PVST+, and MST are not synonyms',
+    currentModel: 'Current model',
+    notModelled: 'Not simulated',
+    pvstMode: 'PVST+',
+    pvstModeBody:
+      'Cisco extension based on IEEE 802.1D: one tree per VLAN and classic blocking/listening/learning/forwarding states.',
+    rapidMode: 'Rapid PVST+',
+    rapidModeBody:
+      'Cisco extension based on IEEE 802.1w: one tree per VLAN with RSTP roles and states. This is the model calculated here.',
+    mstMode: 'MST',
+    mstModeBody:
+      'IEEE 802.1s, now in 802.1Q: multiple VLANs can share one MST instance. Region/VLAN mapping is not simulated here.',
+    root: 'Root bridge',
+    bridgeId: 'Bridge ID',
+    cost: 'Cost to the root',
+    diagram: 'Topology and port roles',
+    blocked: 'Links the tree has cut',
+    none: 'None',
+    portsLabel: 'Role of every port',
+    showAll: 'All ports',
+    showBlocking: 'Only the discarding ones',
+    colPort: 'Port',
+    colNeighbor: 'Neighbour',
+    colRole: 'Role',
+    colState: 'State',
+    colCost: 'Port cost',
+    colWhy: 'Why',
     roles: { root: 'Root port', designated: 'Designated', alternate: 'Alternate (blocking)' },
     states: { forwarding: 'Forwarding', discarding: 'Discarding' },
     invalid: 'Invalid configuration for this topology.',
     order: 'The order of the decisions',
-    orderBody: '1) Root bridge: lowest Bridge ID, and nothing else. 2) Root port: one per non-root switch, the one with the lowest cumulative cost to the root. 3) Designated port: one per segment, on the side advertising the better cost. 4) Everything left goes to discarding. Ties always break in the same order: cost, neighbour Bridge ID, neighbour Port ID, own Port ID.',
+    orderBody:
+      '1) Root bridge: lowest Bridge ID, and nothing else. 2) Root port: one per non-root switch, the one with the lowest cumulative cost to the root. 3) Designated port: one per segment, on the side advertising the better cost. 4) Everything left goes to discarding. Ties always break in the same order: cost, neighbour Bridge ID, neighbour Port ID, own Port ID.',
     trap: 'Exam trap',
-    trapBody: 'The Bridge ID carries the VLAN in its extended system ID: priority 24576 on VLAN 10 reads as 24586. That is why the priority is only settable in steps of 4096, and why two VLANs can have different roots on the same switches — PVST+ load balancing. Note too that a discarding port is not shut down: it keeps listening to BPDUs, which is how it notices when the primary path fails. Mind the state names: this table uses the RSTP vocabulary, which has three states — discarding, learning, forwarding — because Rapid PVST+ is the default on current Cisco switches. Classic STP (802.1D) has five — disabled, blocking, listening, learning, forwarding — and calls blocking the state shown here as discarding.',
+    trapBody:
+      'The Bridge ID carries the VLAN in its extended system ID: priority 24576 on VLAN 10 reads as 24586. That is why the priority is only settable in steps of 4096, and why two VLANs can have different roots on the same switches — PVST+ load balancing. Note too that a discarding port is not shut down: it keeps listening to BPDUs, which is how it notices when the primary path fails. Mind the state names: this table uses the RSTP vocabulary, which has three states — discarding, learning, forwarding — because Rapid PVST+ is the default on current Cisco switches. Classic STP (802.1D) has five — disabled, blocking, listening, learning, forwarding — and calls blocking the state shown here as discarding.',
     pvst: 'What changes between VLANs',
-    pvstBody: 'Switch from VLAN 10 to VLAN 20 and watch the access uplinks swap: with DSW1 root for 10 and DSW2 root for 20, no uplink sits idle. On VLAN 30 nobody has a configured priority, so the lowest MAC decides — the behaviour you get when you forget to choose the root.'
+    pvstBody:
+      'Switch from VLAN 10 to VLAN 20 and watch the access uplinks swap: with DSW1 root for 10 and DSW2 root for 20, no uplink sits idle. On VLAN 30 nobody has a configured priority, so the lowest MAC decides — the behaviour you get when you forget to choose the root.'
   }
 } as const;
 
 function TopologyDiagram({ result, label }: { result: StpResult; label: string }) {
-  const portByEnd = new Map(result.ports.map(port => [`${port.linkId}:${port.switchId}`, port]));
+  const portByEnd = new Map(result.ports.map((port) => [`${port.linkId}:${port.switchId}`, port]));
 
   return (
     <svg viewBox="0 0 340 210" className="h-auto w-full" role="img" aria-label={label}>
-      {STP_LINKS.map(link => {
+      {STP_LINKS.map((link) => {
         const from = NODE_POSITIONS[link.from.switchId];
         const to = NODE_POSITIONS[link.to.switchId];
         const blocked = result.blockedLinkIds.includes(link.id);
-        const blockingEnd = [link.from, link.to].find(end => portByEnd.get(`${link.id}:${end.switchId}`)?.role === 'alternate');
+        const blockingEnd = [link.from, link.to].find(
+          (end) => portByEnd.get(`${link.id}:${end.switchId}`)?.role === 'alternate'
+        );
         const blockingAt = blockingEnd ? NODE_POSITIONS[blockingEnd.switchId] : null;
         const other = blockingEnd
           ? NODE_POSITIONS[blockingEnd.switchId === link.from.switchId ? link.to.switchId : link.from.switchId]
@@ -118,18 +193,28 @@ function TopologyDiagram({ result, label }: { result: StpResult; label: string }
         return (
           <g key={link.id}>
             <line
-              x1={from.x} y1={from.y} x2={to.x} y2={to.y}
+              x1={from.x}
+              y1={from.y}
+              x2={to.x}
+              y2={to.y}
               stroke={blocked ? '#fb7185' : '#6366f1'}
               strokeWidth={blocked ? 1.5 : 2.5}
               strokeDasharray={blocked ? '5 4' : undefined}
             />
-            {blockingAt ? <circle cx={markerX} cy={markerY} r={5} fill="#fff" stroke="#e11d48" strokeWidth={2} /> : null}
+            {blockingAt ? (
+              <circle cx={markerX} cy={markerY} r={5} fill="#fff" stroke="#e11d48" strokeWidth={2} />
+            ) : null}
             <text
-              x={costX} y={costY - 4} textAnchor="middle" fontSize={8}
+              x={costX}
+              y={costY - 4}
+              textAnchor="middle"
+              fontSize={8}
               fontFamily="ui-monospace, monospace"
               fill="#64748b"
               /* A white outline keeps the number legible where it crosses a link. */
-              stroke="#ffffff" strokeWidth={2.5} paintOrder="stroke"
+              stroke="#ffffff"
+              strokeWidth={2.5}
+              paintOrder="stroke"
             >
               {cost.toLocaleString('en')}
             </text>
@@ -137,21 +222,39 @@ function TopologyDiagram({ result, label }: { result: StpResult; label: string }
         );
       })}
 
-      {STP_SWITCHES.map(item => {
+      {STP_SWITCHES.map((item) => {
         const position = NODE_POSITIONS[item.id];
         const isRoot = result.rootId === item.id;
         return (
           <g key={item.id}>
             <rect
-              x={position.x - 42} y={position.y - 17} width={84} height={34} rx={8}
+              x={position.x - 42}
+              y={position.y - 17}
+              width={84}
+              height={34}
+              rx={8}
               fill={isRoot ? '#4f46e5' : '#ffffff'}
               stroke={isRoot ? '#4338ca' : '#cbd5f5'}
               strokeWidth={1.5}
             />
-            <text x={position.x} y={position.y - 2} textAnchor="middle" fontSize={11} fontWeight={600} fill={isRoot ? '#ffffff' : '#0f172a'}>
+            <text
+              x={position.x}
+              y={position.y - 2}
+              textAnchor="middle"
+              fontSize={11}
+              fontWeight={600}
+              fill={isRoot ? '#ffffff' : '#0f172a'}
+            >
               {item.name}
             </text>
-            <text x={position.x} y={position.y + 10} textAnchor="middle" fontSize={8} fill={isRoot ? '#c7d2fe' : '#64748b'} fontFamily="ui-monospace, monospace">
+            <text
+              x={position.x}
+              y={position.y + 10}
+              textAnchor="middle"
+              fontSize={8}
+              fill={isRoot ? '#c7d2fe' : '#64748b'}
+              fontFamily="ui-monospace, monospace"
+            >
               {isRoot ? 'ROOT' : `cost ${result.rootPathCosts[item.id].toLocaleString('en')}`}
             </text>
           </g>
@@ -172,11 +275,11 @@ export default function StpConvergenceLab() {
 
   const result = useMemo<{ value: StpResult; error: false } | { value: null; error: true }>(() => {
     try {
-      const switches = STP_SWITCHES.map(item => (
+      const switches = STP_SWITCHES.map((item) =>
         overrides[item.id] === undefined
           ? item
           : { ...item, vlanPriority: { ...item.vlanPriority, [vlan]: overrides[item.id] } }
-      ));
+      );
       return { value: convergeStp({ switches, links: STP_LINKS, vlan, method }), error: false };
     } catch {
       return { value: null, error: true };
@@ -185,27 +288,44 @@ export default function StpConvergenceLab() {
 
   const converged = result.value;
   const model = converged?.model ?? stpModelFor(method);
-  const selectClass = 'block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 font-mono text-sm text-slate-900 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100';
-  const nameOf = (id: string) => STP_SWITCHES.find(item => item.id === id)?.name ?? id;
+  const selectClass =
+    'block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 font-mono text-sm text-slate-900 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100';
+  const nameOf = (id: string) => STP_SWITCHES.find((item) => item.id === id)?.name ?? id;
 
   return (
     <section className="rounded-xl border border-slate-200 bg-white p-5 md:p-6" aria-labelledby="stp-converge-title">
       <div className="flex items-center gap-3">
         <Network className="h-5 w-5 text-indigo-600" />
-        <h2 id="stp-converge-title" className="text-lg font-semibold text-slate-900">{copy.title}</h2>
+        <h2 id="stp-converge-title" className="text-lg font-semibold text-slate-900">
+          {copy.title}
+        </h2>
       </div>
       <p className="mt-2 text-sm leading-relaxed text-slate-600">{copy.intro}</p>
 
       <div className="mt-5 grid gap-4 sm:grid-cols-2">
         <label className="space-y-1.5 text-xs font-medium text-slate-600">
           {copy.vlan}
-          <select value={vlan} aria-label={copy.vlan} onChange={(event) => setVlan(Number(event.target.value))} className={selectClass}>
-            {VLAN_CHOICES.map(value => <option key={value} value={value}>VLAN {value}</option>)}
+          <select
+            value={vlan}
+            aria-label={copy.vlan}
+            onChange={(event) => setVlan(Number(event.target.value))}
+            className={selectClass}
+          >
+            {VLAN_CHOICES.map((value) => (
+              <option key={value} value={value}>
+                VLAN {value}
+              </option>
+            ))}
           </select>
         </label>
         <label className="space-y-1.5 text-xs font-medium text-slate-600">
           {copy.method}
-          <select value={method} aria-label={copy.method} onChange={(event) => setMethod(event.target.value as StpPathCostMethod)} className={selectClass}>
+          <select
+            value={method}
+            aria-label={copy.method}
+            onChange={(event) => setMethod(event.target.value as StpPathCostMethod)}
+            className={selectClass}
+          >
             <option value="short">{copy.short}</option>
             <option value="long">{copy.long}</option>
           </select>
@@ -226,7 +346,8 @@ export default function StpConvergenceLab() {
           <div>
             <dt className="font-semibold text-indigo-700">{copy.costModel}</dt>
             <dd className="mt-1 font-mono leading-relaxed text-indigo-950">
-              {model.cost.method} · {model.cost.standard} · {model.cost.bits} bit · 1–{model.cost.maximum.toLocaleString(language)}
+              {model.cost.method} · {model.cost.standard} · {model.cost.bits} bit · 1–
+              {model.cost.maximum.toLocaleString(language)}
             </dd>
           </div>
           <div>
@@ -234,39 +355,58 @@ export default function StpConvergenceLab() {
             <dd className="mt-1 leading-relaxed text-indigo-950">{copy.modelBridge}</dd>
           </div>
         </dl>
-        <p className="mt-3 border-t border-indigo-200 pt-3 font-mono text-[11px] leading-relaxed text-indigo-900">{copy.tieVector}</p>
+        <p className="mt-3 border-t border-indigo-200 pt-3 font-mono text-[11px] leading-relaxed text-indigo-900">
+          {copy.tieVector}
+        </p>
       </div>
 
       <div className="mt-5">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">{copy.priorities}</h3>
           {Object.keys(overrides).length > 0 ? (
-            <button type="button" onClick={() => setOverrides({})} className="rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-medium text-slate-600 transition hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700">
+            <button
+              type="button"
+              onClick={() => setOverrides({})}
+              className="rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-medium text-slate-600 transition hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700"
+            >
               {copy.reset}
             </button>
           ) : null}
         </div>
         <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          {STP_SWITCHES.map(item => {
+          {STP_SWITCHES.map((item) => {
             const value = overrides[item.id] ?? item.vlanPriority?.[vlan] ?? item.priority;
             const isRoot = converged?.rootId === item.id;
             return (
-              <article key={item.id} className={`rounded-lg border p-3 ${isRoot ? 'border-indigo-300 bg-indigo-50' : 'border-slate-200'}`}>
+              <article
+                key={item.id}
+                className={`rounded-lg border p-3 ${isRoot ? 'border-indigo-300 bg-indigo-50' : 'border-slate-200'}`}
+              >
                 <div className="flex items-center justify-between gap-2">
                   <h4 className="text-sm font-semibold text-slate-900">{item.name}</h4>
-                  {isRoot ? <span className="rounded-full bg-indigo-600 px-2 py-0.5 text-[10px] font-semibold text-white">ROOT</span> : null}
+                  {isRoot ? (
+                    <span className="rounded-full bg-indigo-600 px-2 py-0.5 text-[10px] font-semibold text-white">
+                      ROOT
+                    </span>
+                  ) : null}
                 </div>
                 <p className="mt-1 text-[11px] leading-snug text-slate-500">{item.role[language]}</p>
                 <label className="mt-2 block text-[10px] font-semibold uppercase tracking-wide text-slate-500">
                   {copy.configuredPriority}
-                <select
-                  value={value}
-                  aria-label={`${copy.priorityFor} ${item.name}`}
-                  onChange={(event) => setOverrides(current => ({ ...current, [item.id]: Number(event.target.value) }))}
-                  className="mt-1 block w-full rounded-lg border border-slate-200 bg-white px-2 py-1.5 font-mono text-xs"
-                >
-                  {PRIORITIES.map(option => <option key={option} value={option}>{option}</option>)}
-                </select>
+                  <select
+                    value={value}
+                    aria-label={`${copy.priorityFor} ${item.name}`}
+                    onChange={(event) =>
+                      setOverrides((current) => ({ ...current, [item.id]: Number(event.target.value) }))
+                    }
+                    className="mt-1 block w-full rounded-lg border border-slate-200 bg-white px-2 py-1.5 font-mono text-xs"
+                  >
+                    {PRIORITIES.map((option) => (
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
+                    ))}
+                  </select>
                 </label>
                 <p className="mt-2 text-[10px] text-slate-500">
                   <span className="font-semibold uppercase tracking-wide">{copy.effectivePriority}: </span>
@@ -279,7 +419,10 @@ export default function StpConvergenceLab() {
       </div>
 
       {!converged ? (
-        <p className="mt-5 flex items-center gap-2 rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700" role="alert">
+        <p
+          className="mt-5 flex items-center gap-2 rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700"
+          role="alert"
+        >
           <TriangleAlert className="h-4 w-4 shrink-0" /> {copy.invalid}
         </p>
       ) : (
@@ -291,7 +434,7 @@ export default function StpConvergenceLab() {
                 <TopologyDiagram result={converged} label={copy.diagram} />
               </div>
               <div className="mt-2 flex flex-wrap gap-3 text-[11px] text-slate-500">
-                {(['root', 'designated', 'alternate'] as StpPortRole[]).map(role => (
+                {(['root', 'designated', 'alternate'] as StpPortRole[]).map((role) => (
                   <span key={role} className="inline-flex items-center gap-1.5">
                     <span className={`inline-block h-2 w-2 rounded-full ${ROLE_STYLES[role].dot}`} />
                     {copy.roles[role]}
@@ -304,18 +447,26 @@ export default function StpConvergenceLab() {
               <div className="rounded-lg border border-indigo-200 bg-indigo-50 p-4">
                 <p className="text-[10px] font-semibold uppercase tracking-wide text-indigo-600">{copy.root}</p>
                 <p className="mt-1 text-sm font-semibold text-indigo-900">{nameOf(converged.rootId)}</p>
-                <p className="mt-2 text-[10px] font-semibold uppercase tracking-wide text-indigo-600">{copy.bridgeId}</p>
+                <p className="mt-2 text-[10px] font-semibold uppercase tracking-wide text-indigo-600">
+                  {copy.bridgeId}
+                </p>
                 <p className="font-mono text-xs text-indigo-900">{converged.bridgeIds[converged.rootId].text}</p>
               </div>
               <div className="rounded-lg border border-slate-200 p-4">
                 <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">{copy.blocked}</p>
                 <ul className="mt-2 space-y-1.5 text-xs text-slate-700">
-                  {converged.blockedLinkIds.length === 0 ? <li>{copy.none}</li> : converged.blockedLinkIds.map(id => (
-                    <li key={id}>
-                      <span className="font-mono text-[11px] text-rose-700">{id}</span>
-                      <span className="block text-[11px] leading-snug text-slate-500">{STP_LINK_LABELS[id]?.[language]}</span>
-                    </li>
-                  ))}
+                  {converged.blockedLinkIds.length === 0 ? (
+                    <li>{copy.none}</li>
+                  ) : (
+                    converged.blockedLinkIds.map((id) => (
+                      <li key={id}>
+                        <span className="font-mono text-[11px] text-rose-700">{id}</span>
+                        <span className="block text-[11px] leading-snug text-slate-500">
+                          {STP_LINK_LABELS[id]?.[language]}
+                        </span>
+                      </li>
+                    ))
+                  )}
                 </ul>
               </div>
             </div>
@@ -324,8 +475,15 @@ export default function StpConvergenceLab() {
           <div>
             <div className="flex flex-wrap items-center justify-between gap-2">
               <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">{copy.portsLabel}</h3>
-              <div className="inline-flex rounded-lg border border-slate-200 p-0.5" role="group" aria-label={copy.portsLabel}>
-                {[{ value: false, label: copy.showAll }, { value: true, label: copy.showBlocking }].map(option => (
+              <div
+                className="inline-flex rounded-lg border border-slate-200 p-0.5"
+                role="group"
+                aria-label={copy.portsLabel}
+              >
+                {[
+                  { value: false, label: copy.showAll },
+                  { value: true, label: copy.showBlocking }
+                ].map((option) => (
                   <button
                     key={String(option.value)}
                     type="button"
@@ -343,7 +501,7 @@ export default function StpConvergenceLab() {
             <div className="mt-3">
               <ResponsiveTable<StpPort>
                 label={copy.portsLabel}
-                rows={blockingOnly ? converged.ports.filter(port => port.state === 'discarding') : converged.ports}
+                rows={blockingOnly ? converged.ports.filter((port) => port.state === 'discarding') : converged.ports}
                 rowKey={(port) => `${port.switchId}-${port.port}`}
                 breakpoint="lg"
                 minWidth={900}
@@ -358,19 +516,49 @@ export default function StpConvergenceLab() {
                       </span>
                     )
                   },
-                  { id: 'neighbor', header: copy.colNeighbor, cell: (port) => <span className="font-mono text-xs">{nameOf(port.neighborId)} {port.neighborPort}</span> },
+                  {
+                    id: 'neighbor',
+                    header: copy.colNeighbor,
+                    cell: (port) => (
+                      <span className="font-mono text-xs">
+                        {nameOf(port.neighborId)} {port.neighborPort}
+                      </span>
+                    )
+                  },
                   {
                     id: 'role',
                     header: copy.colRole,
                     cell: (port) => (
-                      <span className={`inline-block rounded-full px-2 py-0.5 text-[10px] font-semibold ${ROLE_STYLES[port.role].badge}`}>
+                      <span
+                        className={`inline-block rounded-full px-2 py-0.5 text-[10px] font-semibold ${ROLE_STYLES[port.role].badge}`}
+                      >
                         {copy.roles[port.role]}
                       </span>
                     )
                   },
-                  { id: 'state', header: copy.colState, cell: (port) => <span className={`text-xs font-medium ${port.state === 'discarding' ? 'text-rose-700' : 'text-emerald-700'}`}>{copy.states[port.state]}</span> },
-                  { id: 'cost', header: copy.colCost, cell: (port) => <span className="font-mono text-xs">{port.cost.toLocaleString(language)}</span> },
-                  { id: 'why', header: copy.colWhy, cell: (port) => <span className="text-xs leading-relaxed text-slate-600">{port.reason[language]}</span> }
+                  {
+                    id: 'state',
+                    header: copy.colState,
+                    cell: (port) => (
+                      <span
+                        className={`text-xs font-medium ${port.state === 'discarding' ? 'text-rose-700' : 'text-emerald-700'}`}
+                      >
+                        {copy.states[port.state]}
+                      </span>
+                    )
+                  },
+                  {
+                    id: 'cost',
+                    header: copy.colCost,
+                    cell: (port) => <span className="font-mono text-xs">{port.cost.toLocaleString(language)}</span>
+                  },
+                  {
+                    id: 'why',
+                    header: copy.colWhy,
+                    cell: (port) => (
+                      <span className="text-xs leading-relaxed text-slate-600">{port.reason[language]}</span>
+                    )
+                  }
                 ]}
               />
             </div>
@@ -398,11 +586,16 @@ export default function StpConvergenceLab() {
                 { name: copy.pvstMode, body: copy.pvstModeBody, active: false },
                 { name: copy.rapidMode, body: copy.rapidModeBody, active: true },
                 { name: copy.mstMode, body: copy.mstModeBody, active: false }
-              ].map(modeOption => (
-                <article key={modeOption.name} className={`rounded-lg border p-4 ${modeOption.active ? 'border-indigo-300 bg-indigo-50' : 'border-slate-200 bg-white'}`}>
+              ].map((modeOption) => (
+                <article
+                  key={modeOption.name}
+                  className={`rounded-lg border p-4 ${modeOption.active ? 'border-indigo-300 bg-indigo-50' : 'border-slate-200 bg-white'}`}
+                >
                   <div className="flex items-center justify-between gap-2">
                     <h4 className="text-sm font-semibold text-slate-900">{modeOption.name}</h4>
-                    <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${modeOption.active ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600'}`}>
+                    <span
+                      className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${modeOption.active ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600'}`}
+                    >
                       {modeOption.active ? copy.currentModel : copy.notModelled}
                     </span>
                   </div>

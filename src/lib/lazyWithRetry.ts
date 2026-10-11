@@ -41,10 +41,7 @@ function wait(ms: number): Promise<void> {
  * after every attempt has failed. The factory is re-invoked on each attempt, so a fresh
  * `import()` is issued every time rather than reusing a rejected promise.
  */
-export async function importWithRetry<T>(
-  factory: () => Promise<T>,
-  options: ImportRetryOptions = {}
-): Promise<T> {
+export async function importWithRetry<T>(factory: () => Promise<T>, options: ImportRetryOptions = {}): Promise<T> {
   const retries = Math.max(0, options.retries ?? DEFAULT_RETRIES);
   const delayMs = Math.max(0, options.delayMs ?? DEFAULT_DELAY_MS);
 

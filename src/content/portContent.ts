@@ -27,7 +27,7 @@ export const PORT_CONTENT: PortContent[] = [
     range: 'well-known',
     description: {
       en: 'Used for sending commands and authentication details.',
-      it: 'Utilizzato per l\'invio di comandi e credenziali di autenticazione.'
+      it: "Utilizzato per l'invio di comandi e credenziali di autenticazione."
     },
     security: {
       en: 'Transmits passwords in plaintext. SFTP/FTPS is highly recommended.',
@@ -43,11 +43,11 @@ export const PORT_CONTENT: PortContent[] = [
     range: 'well-known',
     description: {
       en: 'Enables secure encrypted remote terminal access and file transfers (SFTP).',
-      it: 'Consente l\'accesso crittografato sicuro a terminali remoti e trasferimenti file (SFTP).'
+      it: "Consente l'accesso crittografato sicuro a terminali remoti e trasferimenti file (SFTP)."
     },
     security: {
       en: 'Highly secure replacement for Telnet. Ensure strong key auth and disable root login.',
-      it: 'Sostituto sicuro di Telnet. Assicurare l\'autenticazione a chiavi e disabilitare login root.'
+      it: "Sostituto sicuro di Telnet. Assicurare l'autenticazione a chiavi e disabilitare login root."
     },
     isSecure: true
   },
@@ -75,7 +75,7 @@ export const PORT_CONTENT: PortContent[] = [
     range: 'well-known',
     description: {
       en: 'Standard protocol for sending and routing email between mail servers.',
-      it: 'Protocollo standard per l\'invio e l\'instradamento delle email tra i server.'
+      it: "Protocollo standard per l'invio e l'instradamento delle email tra i server."
     },
     security: {
       en: 'Vulnerable to email spoofing and spam unless secured with STARTTLS and SPF/DKIM/DMARC.',
@@ -91,11 +91,11 @@ export const PORT_CONTENT: PortContent[] = [
     range: 'well-known',
     description: {
       en: 'Cisco proprietary AAA protocol used for authenticating administrators on routers, switches, and firewalls.',
-      it: 'Protocollo AAA proprietario Cisco utilizzato per l\'autenticazione degli amministratori su router, switch e firewall.'
+      it: "Protocollo AAA proprietario Cisco utilizzato per l'autenticazione degli amministratori su router, switch e firewall."
     },
     security: {
       en: 'Enforces TCP connectivity and encrypts the complete packet payload body (only the standard header remains plaintext), making it extremely secure.',
-      it: 'Forza la connettività TCP e cifra l\'intero corpo del payload dei pacchetti (solo l\'intestazione standard è in chiaro), rendendolo estremamente sicuro.'
+      it: "Forza la connettività TCP e cifra l'intero corpo del payload dei pacchetti (solo l'intestazione standard è in chiaro), rendendolo estremamente sicuro."
     },
     isSecure: true
   },
@@ -143,7 +143,7 @@ export const PORT_CONTENT: PortContent[] = [
     },
     security: {
       en: 'No encryption or authentication whatsoever. Transmits data in cleartext; restrict to local networks.',
-      it: 'Nessuna cifratura e nessuna autenticazione. Trasmette i dati in chiaro; limitare l\'uso a reti isolate.'
+      it: "Nessuna cifratura e nessuna autenticazione. Trasmette i dati in chiaro; limitare l'uso a reti isolate."
     },
     isSecure: false
   },
@@ -207,7 +207,7 @@ export const PORT_CONTENT: PortContent[] = [
     },
     security: {
       en: 'Plaintext by default, highly subject to snooping. NNTPS over SSL is the secure choice.',
-      it: 'In chiaro di default, esposto a intercettazione. NNTPS via SSL rappresenta l\'alternativa sicura.'
+      it: "In chiaro di default, esposto a intercettazione. NNTPS via SSL rappresenta l'alternativa sicura."
     },
     isSecure: false
   },
@@ -219,7 +219,7 @@ export const PORT_CONTENT: PortContent[] = [
     range: 'well-known',
     description: {
       en: 'Synchronizes clock settings across network devices and systems.',
-      it: 'Sincronizza gli orologi dei dispositivi e dei sistemi all\'interno della rete.'
+      it: "Sincronizza gli orologi dei dispositivi e dei sistemi all'interno della rete."
     },
     security: {
       en: 'Frequently abused in DRDoS (Distributed Reflective Denial of Service) amplification attacks.',
@@ -351,7 +351,7 @@ export const PORT_CONTENT: PortContent[] = [
     },
     security: {
       en: 'The TCP session is not encrypted: TCP-MD5 or TCP-AO only authenticate the peer. Vulnerable to hijacking and route leaks, mitigated by prefix filtering, max-prefix limits, RPKI origin validation, and GTSM/TTL security.',
-      it: 'La sessione TCP non è cifrata: TCP-MD5 o TCP-AO autenticano soltanto il peer. Vulnerabile a hijacking e route leak, mitigati con prefix filtering, limiti max-prefix, validazione dell\'origine RPKI e GTSM/TTL security.'
+      it: "La sessione TCP non è cifrata: TCP-MD5 o TCP-AO autenticano soltanto il peer. Vulnerabile a hijacking e route leak, mitigati con prefix filtering, limiti max-prefix, validazione dell'origine RPKI e GTSM/TTL security."
     },
     isSecure: false
   },
@@ -395,7 +395,7 @@ export const PORT_CONTENT: PortContent[] = [
     range: 'well-known',
     description: {
       en: 'Enables shared access to files, printers, and serial ports on local networks.',
-      it: 'Fornisce l\'accesso condiviso a file, stampanti e porte seriali all\'interno di reti locali.'
+      it: "Fornisce l'accesso condiviso a file, stampanti e porte seriali all'interno di reti locali."
     },
     security: {
       en: 'Often abused by historical exploits (EternalBlue, WannaCry). Enforce SMBv3 signature and encryption.',
@@ -415,7 +415,7 @@ export const PORT_CONTENT: PortContent[] = [
     },
     security: {
       en: 'Uses SSL/TLS to prevent message sniffing or credential theft during mail dispatch.',
-      it: 'Utilizza SSL/TLS per prevenire sniffing dei messaggi o furto credenziali all\'invio.'
+      it: "Utilizza SSL/TLS per prevenire sniffing dei messaggi o furto credenziali all'invio."
     },
     isSecure: true
   },
@@ -427,7 +427,7 @@ export const PORT_CONTENT: PortContent[] = [
     range: 'well-known',
     description: {
       en: 'Standard protocol for transmitting system information and event logs across nodes.',
-      it: 'Protocollo per la raccolta e l\'invio di log di sistema e messaggi di diagnostica.'
+      it: "Protocollo per la raccolta e l'invio di log di sistema e messaggi di diagnostica."
     },
     security: {
       en: 'Unencrypted UDP. Messages can be intercepted, read, or spoofed easily on transit.',
@@ -443,7 +443,7 @@ export const PORT_CONTENT: PortContent[] = [
     range: 'well-known',
     description: {
       en: 'Preferred modern port for routing user emails, requiring authentication and STARTTLS security.',
-      it: 'Canale preferito moderno per l\'invio di email da client, richiede autenticazione ed elezione a STARTTLS.'
+      it: "Canale preferito moderno per l'invio di email da client, richiede autenticazione ed elezione a STARTTLS."
     },
     security: {
       en: 'Safe when configured to enforce encryption. Replaces plaintext transit via legacy port 25.',
@@ -495,7 +495,7 @@ export const PORT_CONTENT: PortContent[] = [
     },
     security: {
       en: 'Prevents credential eavesdropping in transit during client extraction.',
-      it: 'Previene l\'intercettazione delle credenziali in transito durante il download.'
+      it: "Previene l'intercettazione delle credenziali in transito durante il download."
     },
     isSecure: true
   },
@@ -529,7 +529,7 @@ export const PORT_CONTENT: PortContent[] = [
     },
     security: {
       en: 'Vulnerable to database enumeration if listener endpoints are publicly exposed.',
-      it: 'Vulnerabile a enumerazione del database se l\'endpoint del listener è pubblico.'
+      it: "Vulnerabile a enumerazione del database se l'endpoint del listener è pubblico."
     },
     isSecure: false
   },
@@ -557,7 +557,7 @@ export const PORT_CONTENT: PortContent[] = [
     range: 'registered',
     description: {
       en: 'Legacy alternate port used for collecting system events and usage logs.',
-      it: 'Porta alternativa storica utilizzata per raccogliere i log correlati all\'account utente.'
+      it: "Porta alternativa storica utilizzata per raccogliere i log correlati all'account utente."
     },
     security: {
       en: 'Plaintext transit. Better to transition active servers to contemporary port 1813.',
@@ -573,7 +573,7 @@ export const PORT_CONTENT: PortContent[] = [
     range: 'registered',
     description: {
       en: 'Standard port for authenticating corporate and enterprise remote access connections (VPN/Wi-Fi).',
-      it: 'Porta standard per l\'autenticazione centralizzata aziendale di connessioni VPN e Wi-Fi Corporate.'
+      it: "Porta standard per l'autenticazione centralizzata aziendale di connessioni VPN e Wi-Fi Corporate."
     },
     security: {
       en: 'Relies on shared secrets. Should be coupled with secure IPSec tunnels or restricted network VLANs.',
@@ -609,7 +609,7 @@ export const PORT_CONTENT: PortContent[] = [
     },
     security: {
       en: 'Plain HTTP with no authentication by default, plus verbose errors and source maps. Bind it to localhost only and never expose a development server on a public interface.',
-      it: 'HTTP in chiaro e senza autenticazione per impostazione predefinita, con errori verbosi e source map. Va vincolata solo a localhost e un server di sviluppo non va mai esposto su un\'interfaccia pubblica.'
+      it: "HTTP in chiaro e senza autenticazione per impostazione predefinita, con errori verbosi e source map. Va vincolata solo a localhost e un server di sviluppo non va mai esposto su un'interfaccia pubblica."
     },
     isSecure: false
   },
@@ -685,11 +685,11 @@ export const PORT_CONTENT: PortContent[] = [
     range: 'registered',
     description: {
       en: 'Standardized encrypted transmission of syslog event messages using TLS protection.',
-      it: 'Protocollo ufficiale per l\'invio crittografato di log di eventi di sistema protetto da TLS.'
+      it: "Protocollo ufficiale per l'invio crittografato di log di eventi di sistema protetto da TLS."
     },
     security: {
       en: 'Ensures data confidentiality and authenticates sender and receiver nodes securely.',
-      it: 'Garantisce la riservatezza delle informazioni di audit e autentica l\'origine e i server log.'
+      it: "Garantisce la riservatezza delle informazioni di audit e autentica l'origine e i server log."
     },
     isSecure: true
   },

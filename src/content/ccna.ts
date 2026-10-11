@@ -55,8 +55,14 @@ export const CCNA_DOMAINS: CcnaDomain[] = [
       { it: 'Architetture wireless, AP e WLC', en: 'Wireless architectures, APs, and WLCs' }
     ],
     securityLinks: [
-      { it: 'VLAN hopping, MAC flooding, ARP poisoning e attacchi STP', en: 'VLAN hopping, MAC flooding, ARP poisoning, and STP attacks' },
-      { it: 'Port security, DHCP snooping, DAI, 802.1X e WPA2/WPA3', en: 'Port security, DHCP snooping, DAI, 802.1X, and WPA2/WPA3' }
+      {
+        it: 'VLAN hopping, MAC flooding, ARP poisoning e attacchi STP',
+        en: 'VLAN hopping, MAC flooding, ARP poisoning, and STP attacks'
+      },
+      {
+        it: 'Port security, DHCP snooping, DAI, 802.1X e WPA2/WPA3',
+        en: 'Port security, DHCP snooping, DAI, 802.1X, and WPA2/WPA3'
+      }
     ]
   },
   {
@@ -76,7 +82,10 @@ export const CCNA_DOMAINS: CcnaDomain[] = [
       { it: 'First-hop redundancy', en: 'First-hop redundancy' }
     ],
     securityLinks: [
-      { it: 'Route injection, OSPF spoofing, BGP hijacking e control-plane DoS', en: 'Route injection, OSPF spoofing, BGP hijacking, and control-plane DoS' },
+      {
+        it: 'Route injection, OSPF spoofing, BGP hijacking e control-plane DoS',
+        en: 'Route injection, OSPF spoofing, BGP hijacking, and control-plane DoS'
+      },
       { it: 'Prefix filtering, CoPP, autenticazione e RPKI', en: 'Prefix filtering, CoPP, authentication, and RPKI' }
     ]
   },
@@ -97,8 +106,14 @@ export const CCNA_DOMAINS: CcnaDomain[] = [
       { it: 'SSH, TFTP e FTP', en: 'SSH, TFTP, and FTP' }
     ],
     securityLinks: [
-      { it: 'DNS poisoning, DHCP starvation, amplification e credential sniffing', en: 'DNS poisoning, DHCP starvation, amplification, and credential sniffing' },
-      { it: 'DNSSEC, SNMPv3 authPriv, logging protetto e SSH hardening', en: 'DNSSEC, SNMPv3 authPriv, protected logging, and SSH hardening' }
+      {
+        it: 'DNS poisoning, DHCP starvation, amplification e credential sniffing',
+        en: 'DNS poisoning, DHCP starvation, amplification, and credential sniffing'
+      },
+      {
+        it: 'DNSSEC, SNMPv3 authPriv, logging protetto e SSH hardening',
+        en: 'DNSSEC, SNMPv3 authPriv, protected logging, and SSH hardening'
+      }
     ]
   },
   {
@@ -112,14 +127,23 @@ export const CCNA_DOMAINS: CcnaDomain[] = [
     },
     objectiveIds: ['5.1', '5.2', '5.3', '5.4', '5.5', '5.6', '5.7', '5.8', '5.9', '5.10'],
     topics: [
-      { it: 'Minacce, vulnerabilità, exploit e mitigazioni', en: 'Threats, vulnerabilities, exploits, and mitigations' },
+      {
+        it: 'Minacce, vulnerabilità, exploit e mitigazioni',
+        en: 'Threats, vulnerabilities, exploits, and mitigations'
+      },
       { it: 'Hardening, password, MFA e certificati', en: 'Hardening, passwords, MFA, and certificates' },
       { it: 'VPN IPsec e ACL', en: 'IPsec VPNs and ACLs' },
       { it: 'Sicurezza Layer 2, AAA e WLAN', en: 'Layer 2 security, AAA, and WLAN security' }
     ],
     securityLinks: [
-      { it: 'Attacchi al data, control e management plane', en: 'Data-plane, control-plane, and management-plane attacks' },
-      { it: 'Difese preventive, detective, correttive e compensative', en: 'Preventive, detective, corrective, and compensating controls' }
+      {
+        it: 'Attacchi al data, control e management plane',
+        en: 'Data-plane, control-plane, and management-plane attacks'
+      },
+      {
+        it: 'Difese preventive, detective, correttive e compensative',
+        en: 'Preventive, detective, corrective, and compensating controls'
+      }
     ]
   },
   {
@@ -139,8 +163,14 @@ export const CCNA_DOMAINS: CcnaDomain[] = [
       { it: 'Ansible, Terraform e AI/ML', en: 'Ansible, Terraform, and AI/ML' }
     ],
     securityLinks: [
-      { it: 'API abuse, token theft, secret exposure e configuration drift', en: 'API abuse, token theft, secret exposure, and configuration drift' },
-      { it: 'RBAC, secret management, audit trail e rollback', en: 'RBAC, secret management, audit trails, and rollback' }
+      {
+        it: 'API abuse, token theft, secret exposure e configuration drift',
+        en: 'API abuse, token theft, secret exposure, and configuration drift'
+      },
+      {
+        it: 'RBAC, secret management, audit trail e rollback',
+        en: 'RBAC, secret management, audit trails, and rollback'
+      }
     ]
   }
 ];
