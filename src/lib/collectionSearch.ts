@@ -11,7 +11,9 @@ interface GlossaryEntry {
 }
 
 export function normalizedQuery(query: string): string {
-  return query.trim().toLocaleLowerCase();
+  // Search keys must not vary with the host's locale (for example, Turkish
+  // lowercases ASCII "I" differently from English).
+  return query.trim().toLowerCase();
 }
 
 export function filterGlossaryTerms<T extends GlossaryEntry>(
@@ -24,8 +26,8 @@ export function filterGlossaryTerms<T extends GlossaryEntry>(
   if (!normalized) return [...terms];
 
   return terms.filter((item) => {
-    const termMatches = item.term.toLocaleLowerCase().includes(normalized);
-    const definitionMatches = item.definition[language].toLocaleLowerCase().includes(normalized);
+    const termMatches = item.term.toLowerCase().includes(normalized);
+    const definitionMatches = item.definition[language].toLowerCase().includes(normalized);
 
     if (scope === 'term') return termMatches;
     if (scope === 'definition') return definitionMatches;
@@ -37,7 +39,7 @@ export function highlightSegments(text: string, query: string): HighlightSegment
   const normalized = normalizedQuery(query);
   if (!normalized) return [{ text, match: false }];
 
-  const searchableText = text.toLocaleLowerCase();
+  const searchableText = text.toLowerCase();
   const segments: HighlightSegment[] = [];
   let cursor = 0;
   let matchIndex = searchableText.indexOf(normalized);

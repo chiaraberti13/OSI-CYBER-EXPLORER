@@ -9,6 +9,7 @@ const terms = [
 describe('collection search', () => {
   it('trims and normalizes a query', () => {
     expect(normalizedQuery('  DnS  ')).toBe('dns');
+    expect(normalizedQuery('IPsec')).toBe('ipsec');
   });
 
   it('filters glossary fields according to the selected scope', () => {
@@ -16,6 +17,9 @@ describe('collection search', () => {
     expect(filterGlossaryTerms(terms, 'dns', 'term', 'en')).toEqual([terms[0]]);
     expect(filterGlossaryTerms(terms, 'dns', 'definition', 'en')).toEqual([terms[1]]);
     expect(filterGlossaryTerms(terms, 'nomi', 'definition', 'it')).toEqual([terms[0]]);
+    expect(
+      filterGlossaryTerms([{ term: 'IPsec', definition: { en: 'Security', it: 'Sicurezza' } }], 'ipsec', 'term', 'en')
+    ).toHaveLength(1);
   });
 
   it('preserves text while identifying every case-insensitive match', () => {

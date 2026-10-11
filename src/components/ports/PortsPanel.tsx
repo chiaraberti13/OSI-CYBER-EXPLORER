@@ -59,9 +59,11 @@ export default function PortsPanel({
     <>
       {/* Registry Top Bar: Category cards explaining numbering */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3 p-6 bg-slate-50/70 border-b border-slate-100">
-        <div
+        <button
+          type="button"
+          aria-pressed={selectedRange === 'well-known'}
           onClick={() => setSelectedRange('well-known')}
-          className={`cursor-pointer p-4 rounded-lg border transition-all ${
+          className={`w-full cursor-pointer text-left p-4 rounded-lg border transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 ${
             selectedRange === 'well-known'
               ? 'bg-amber-50/50 border-amber-300'
               : 'bg-white border-slate-100 hover:border-slate-300'
@@ -79,11 +81,13 @@ export default function PortsPanel({
               ? 'Reserved for core system administration and essential transport daemons (HTTP, DNS, SSH, SMTP).'
               : 'Assegnate da IANA per sistemi e servizi fondamentali della suite TCP/IP.'}
           </p>
-        </div>
+        </button>
 
-        <div
+        <button
+          type="button"
+          aria-pressed={selectedRange === 'registered'}
           onClick={() => setSelectedRange('registered')}
-          className={`cursor-pointer p-4 rounded-lg border transition-all ${
+          className={`w-full cursor-pointer text-left p-4 rounded-lg border transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 ${
             selectedRange === 'registered'
               ? 'bg-blue-50/50 border-blue-300'
               : 'bg-white border-slate-100 hover:border-slate-300'
@@ -101,11 +105,13 @@ export default function PortsPanel({
               ? 'Assigned to user processes, databases (MySQL, Redis, PostgreSQL), third-party programs or local web servers.'
               : 'Assegnate a ditte, utenti o processi specifici approvati (database, app locali, microservizi).'}
           </p>
-        </div>
+        </button>
 
-        <div
+        <button
+          type="button"
+          aria-pressed={selectedRange === 'dynamic'}
           onClick={() => setSelectedRange('dynamic')}
-          className={`cursor-pointer p-4 rounded-lg border transition-all ${
+          className={`w-full cursor-pointer text-left p-4 rounded-lg border transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 ${
             selectedRange === 'dynamic'
               ? 'bg-emerald-50/50 border-emerald-300'
               : 'bg-white border-slate-100 hover:border-slate-300'
@@ -123,7 +129,7 @@ export default function PortsPanel({
               ? 'Ephemeral sockets dynamically chosen by the host OS during client connection initiation.'
               : "Porte temporanee assegnate dinamicamente dal sistema operativo client all'avvio di connessioni esterne."}
           </p>
-        </div>
+        </button>
       </div>
 
       {/* Filter / Search Bar */}

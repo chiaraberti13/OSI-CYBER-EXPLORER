@@ -58,4 +58,18 @@ describe('PortsExplorer IANA metadata', () => {
     expect((screen.getByRole('textbox', { name: 'Cerca porte e servizi di rete' }) as HTMLInputElement).value).toBe('');
     expect(status.textContent).toBe(`${total} di ${total} servizi`);
   });
+
+  it('exposes the port range cards as keyboard-operable toggle buttons', async () => {
+    const user = userEvent.setup();
+    useStore.setState({ language: 'en' });
+    render(<PortsExplorer inline />);
+
+    const rangeButton = screen.getByRole('button', { name: /dynamic \/ private.*49152 - 65535/i });
+    expect(rangeButton.getAttribute('aria-pressed')).toBe('false');
+    rangeButton.focus();
+    await user.keyboard('{Enter}');
+
+    expect(rangeButton.getAttribute('aria-pressed')).toBe('true');
+    expect(screen.getByRole('heading', { name: 'Understanding Dynamic Range' })).toBeTruthy();
+  });
 });
