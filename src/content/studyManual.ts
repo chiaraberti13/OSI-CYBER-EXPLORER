@@ -1723,5 +1723,268 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
         ]
       }
     ]
+  },
+  {
+    id: 'security-fundamentals',
+    cert: 'securityplus',
+    order: 7,
+    title: { it: 'Fondamenti di sicurezza', en: 'Security fundamentals' },
+    summary: {
+      it: 'La terminologia di base della sicurezza: la triade CIA, la differenza tra minaccia, vulnerabilità e rischio, la superficie d’attacco e la difesa in profondità, con i controlli letti per funzione e per piano.',
+      en: 'The base terminology of security: the CIA triad, the difference between threat, vulnerability and risk, the attack surface and defense in depth, with controls read by function and by plane.'
+    },
+    topics: [
+      {
+        id: 'cia-triad',
+        title: { it: 'La triade CIA', en: 'The CIA triad' },
+        objectives: [
+          {
+            it: 'Definire riservatezza, integrità e disponibilità e riconoscere quale proprietà protegge un dato controllo.',
+            en: 'Define confidentiality, integrity and availability and recognise which property a given control protects.'
+          },
+          {
+            it: 'Spiegare come autenticità e non ripudio estendono la triade CIA.',
+            en: 'Explain how authenticity and non-repudiation extend the CIA triad.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Avere un’idea di base di cosa sono dati, sistemi e utenti in una rete.',
+            en: 'Have a basic idea of what data, systems and users are on a network.'
+          }
+        ],
+        theory: [
+          {
+            it: 'La sicurezza delle informazioni poggia su tre obiettivi, riassunti nell’acronimo CIA: riservatezza (confidentiality), integrità (integrity) e disponibilità (availability). La riservatezza impedisce la divulgazione non autorizzata; l’integrità garantisce che i dati non siano alterati in modo non autorizzato; la disponibilità assicura che sistemi e dati siano accessibili a chi ne ha diritto quando servono.',
+            en: 'Information security rests on three goals, summed up by the acronym CIA: confidentiality, integrity and availability. Confidentiality prevents unauthorised disclosure; integrity ensures data is not altered in an unauthorised way; availability ensures that systems and data are reachable by authorised users when needed.'
+          },
+          {
+            it: 'Le tre proprietà sono spesso in tensione: cifrare tutto rafforza la riservatezza ma può ridurre la disponibilità se si perde una chiave; replicare i dati aumenta la disponibilità ma allarga la superficie da proteggere per la riservatezza. La sicurezza è quindi un bilanciamento guidato dal valore del bene e dal rischio, non la massimizzazione di una sola proprietà.',
+            en: 'The three properties are often in tension: encrypting everything strengthens confidentiality but can reduce availability if a key is lost; replicating data increases availability but widens the surface to protect for confidentiality. Security is therefore a balance driven by the value of the asset and by risk, not the maximisation of a single property.'
+          },
+          {
+            it: 'Alla triade si affiancano spesso autenticità (la garanzia che un’identità sia quella dichiarata) e non ripudio (l’impossibilità di negare un’azione compiuta). Un controllo va sempre letto chiedendosi quale proprietà protegge: così si evita di accumulare misure ridondanti sulla stessa proprietà lasciandone un’altra scoperta.',
+            en: 'The triad is often complemented by authenticity (the assurance that an identity is what it claims to be) and non-repudiation (the inability to deny an action taken). A control should always be read by asking which property it protects: this avoids piling up redundant measures on one property while leaving another exposed.'
+          }
+        ],
+        example: {
+          it: 'Un backup cifrato e firmato protegge tutte e tre le proprietà: la cifratura la riservatezza, la firma l’integrità e l’autenticità, la copia ulteriore la disponibilità in caso di ransomware.',
+          en: 'An encrypted, signed backup protects all three properties: encryption for confidentiality, the signature for integrity and authenticity, the extra copy for availability in case of ransomware.'
+        },
+        commonMistakes: [
+          {
+            it: 'Ridurre la sicurezza alla sola riservatezza: un sistema cifrato ma irraggiungibile ha comunque fallito sulla disponibilità.',
+            en: 'Reducing security to confidentiality alone: an encrypted but unreachable system has still failed on availability.'
+          },
+          {
+            it: 'Trattare integrità e autenticità come sinonimi: l’integrità dice che il dato non è cambiato, l’autenticità dice chi lo ha prodotto.',
+            en: 'Treating integrity and authenticity as synonyms: integrity says the data has not changed, authenticity says who produced it.'
+          }
+        ],
+        lab: 'defense',
+        references: [{ kind: 'nist', id: 'SP 800-53 Rev. 5' }]
+      },
+      {
+        id: 'threat-vuln-risk',
+        title: { it: 'Minaccia, vulnerabilità e rischio', en: 'Threat, vulnerability and risk' },
+        objectives: [
+          {
+            it: 'Distinguere minaccia, vulnerabilità e rischio e combinarli in una valutazione del rischio.',
+            en: 'Distinguish threat, vulnerability and risk and combine them into a risk assessment.'
+          },
+          {
+            it: 'Descrivere la superficie d’attacco e come ridurla.',
+            en: 'Describe the attack surface and how to reduce it.'
+          }
+        ],
+        prerequisites: [{ it: 'Conoscere la triade CIA.', en: 'Know the CIA triad.' }],
+        theory: [
+          {
+            it: 'Una minaccia è un evento o un attore che può causare un danno; una vulnerabilità è una debolezza che la minaccia può sfruttare; il rischio è la combinazione della probabilità che ciò accada e dell’impatto se accade. In forma sintetica: rischio ≈ minaccia × vulnerabilità × impatto. Senza una vulnerabilità sfruttabile una minaccia resta potenziale; senza una minaccia credibile una vulnerabilità ha rischio basso.',
+            en: 'A threat is an event or actor that can cause harm; a vulnerability is a weakness the threat can exploit; risk is the combination of the likelihood that this happens and the impact if it does. In short: risk ≈ threat × vulnerability × impact. Without an exploitable vulnerability a threat stays potential; without a credible threat a vulnerability carries low risk.'
+          },
+          {
+            it: 'La superficie d’attacco è l’insieme dei punti in cui un attaccante può tentare di entrare o estrarre dati: porte aperte, servizi esposti, interfacce di gestione, credenziali, dipendenze software. Ridurla — chiudendo ciò che non serve, segmentando e applicando il minimo privilegio — abbassa il rischio prima ancora di aggiungere difese attive.',
+            en: 'The attack surface is the set of points where an attacker can try to get in or pull data out: open ports, exposed services, management interfaces, credentials, software dependencies. Reducing it — closing what is not needed, segmenting and applying least privilege — lowers risk before any active defence is even added.'
+          },
+          {
+            it: 'Il rischio si tratta in quattro modi: mitigare (ridurlo con controlli), trasferire (per esempio assicurarlo), accettare (consapevolmente, se basso) o evitare (rinunciando all’attività). La scelta dipende dal rischio residuo tollerabile: nessun sistema reale ha rischio zero, quindi l’obiettivo è portarlo a un livello accettabile e documentato.',
+            en: 'Risk is treated in four ways: mitigate (reduce it with controls), transfer (for example insure it), accept (knowingly, if low) or avoid (by dropping the activity). The choice depends on the tolerable residual risk: no real system has zero risk, so the goal is to bring it to an accepted, documented level.'
+          }
+        ],
+        example: {
+          it: 'Un servizio di gestione raggiungibile da Internet (vulnerabilità) con attaccanti che scansionano di continuo (minaccia) dà un rischio alto; spostarlo su una rete di gestione isolata riduce la superficie e quindi il rischio, senza eliminare la vulnerabilità del servizio in sé.',
+          en: 'A management service reachable from the Internet (vulnerability) with attackers constantly scanning (threat) gives a high risk; moving it onto an isolated management network reduces the surface and therefore the risk, without removing the vulnerability of the service itself.'
+        },
+        commonMistakes: [
+          {
+            it: 'Confondere vulnerabilità e rischio: una vulnerabilità senza minaccia credibile o impatto rilevante può avere rischio basso, e va prioritizzata di conseguenza.',
+            en: 'Confusing vulnerability and risk: a vulnerability with no credible threat or meaningful impact can carry low risk, and should be prioritised accordingly.'
+          },
+          {
+            it: 'Cercare il rischio zero: è irraggiungibile e costoso; l’obiettivo è il rischio residuo accettabile.',
+            en: 'Chasing zero risk: it is unreachable and costly; the goal is an acceptable residual risk.'
+          }
+        ],
+        lab: 'defense',
+        references: [{ kind: 'nist', id: 'SP 800-30 Rev. 1' }]
+      },
+      {
+        id: 'defense-in-depth',
+        title: { it: 'Difesa in profondità e funzioni dei controlli', en: 'Defense in depth and control functions' },
+        objectives: [
+          {
+            it: 'Spiegare la difesa in profondità e perché nessun singolo controllo è sufficiente.',
+            en: 'Explain defense in depth and why no single control is sufficient.'
+          },
+          {
+            it: 'Classificare i controlli per funzione (preventiva, detective, contenimento, ripristino, compensativa) e per piano.',
+            en: 'Classify controls by function (preventive, detective, containment, recovery, compensating) and by plane.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere la triade CIA e la terminologia di minaccia, vulnerabilità e rischio.',
+            en: 'Know the CIA triad and the threat, vulnerability and risk terminology.'
+          }
+        ],
+        theory: [
+          {
+            it: 'La difesa in profondità dispone più controlli indipendenti su livelli diversi, così che il fallimento di uno non comprometta l’intero sistema. L’idea complementare è il minimo privilegio: ogni utente, servizio o dispositivo riceve solo gli accessi necessari. Insieme riducono sia la probabilità sia l’impatto di un attacco.',
+            en: 'Defense in depth places several independent controls at different layers, so that the failure of one does not compromise the whole system. The complementary idea is least privilege: every user, service or device gets only the access it needs. Together they reduce both the likelihood and the impact of an attack.'
+          },
+          {
+            it: 'I controlli si classificano per funzione: preventiva (impedisce l’evento, come un’ACL), detective (lo rileva, come un IDS o la telemetria), di contenimento (ne limita la propagazione, come la segmentazione), di ripristino (riporta il servizio, come un backup) e compensativa (surroga un controllo mancante). Una buona architettura copre tutte le funzioni, non solo la prevenzione.',
+            en: 'Controls are classified by function: preventive (stops the event, like an ACL), detective (detects it, like an IDS or telemetry), containment (limits its spread, like segmentation), recovery (restores the service, like a backup) and compensating (stands in for a missing control). A good architecture covers every function, not only prevention.'
+          },
+          {
+            it: 'Ogni controllo va valutato come un sistema: punto di enforcement, prerequisiti, come si verifica che funzioni e qual è il suo limite operativo. Un controllo configurato ma non verificato dà una falsa sicurezza; e nessun controllo, da solo, protegge tutte le proprietà CIA su tutti i piani.',
+            en: 'Every control should be assessed as a system: its enforcement point, prerequisites, how you verify it works and what its operational limit is. A control that is configured but not verified gives false assurance; and no control, on its own, protects every CIA property across every plane.'
+          }
+        ],
+        example: {
+          it: 'Contro il furto di credenziali si combinano più funzioni: MFA (preventiva), log di accesso anomalo (detective), blocco della sessione (contenimento) e reset delle credenziali (ripristino); nessuna delle quattro, da sola, chiude il problema.',
+          en: 'Against credential theft several functions are combined: MFA (preventive), anomalous-login logs (detective), session lockout (containment) and credential reset (recovery); none of the four, on its own, closes the problem.'
+        },
+        commonMistakes: [
+          {
+            it: 'Accumulare controlli solo preventivi: senza funzioni detective e di ripristino, un attacco che supera la prevenzione resta invisibile e irreversibile.',
+            en: 'Piling up only preventive controls: without detective and recovery functions, an attack that gets past prevention stays invisible and irreversible.'
+          },
+          {
+            it: 'Considerare un controllo efficace perché configurato: senza verifica e senza conoscerne il limite operativo, può non proteggere nulla.',
+            en: 'Considering a control effective because it is configured: without verification and without knowing its operational limit, it may protect nothing.'
+          }
+        ],
+        lab: 'defense',
+        references: [{ kind: 'nist', id: 'SP 800-53 Rev. 5' }],
+        guidedLabs: [
+          {
+            id: 'gl-defense-functions',
+            title: { it: 'Classifica i controlli per funzione', en: 'Classify controls by function' },
+            difficulty: 'core',
+            lab: 'defense',
+            scenario: {
+              it: 'Il laboratorio «Controlli difensivi» elenca i controlli con funzione, punto di enforcement, dipendenze, verifica e limite operativo, e permette di filtrarli per funzione e per piano.',
+              en: 'The “Defensive controls” lab lists controls with their function, enforcement point, dependencies, verification and operational limit, and lets you filter them by function and by plane.'
+            },
+            task: {
+              it: 'Usando il filtro per funzione, trova almeno un controllo per ciascuna delle cinque funzioni (preventiva, detective, contenimento, ripristino, compensativa) e annota per ognuno il punto di enforcement.',
+              en: 'Using the function filter, find at least one control for each of the five functions (preventive, detective, containment, recovery, compensating) and note each one’s enforcement point.'
+            },
+            steps: [
+              {
+                it: 'Apri «Controlli difensivi» e imposta il filtro «Funzione» su una funzione per volta.',
+                en: 'Open “Defensive controls” and set the “Function” filter to one function at a time.'
+              },
+              {
+                it: 'Per ogni funzione scegli un controllo e leggi enforcement, dipendenze, verifica e limite operativo.',
+                en: 'For each function pick a control and read its enforcement, dependencies, verification and operational limit.'
+              },
+              {
+                it: 'Nota come lo stesso controllo spesso copre più funzioni: la classificazione non è esclusiva.',
+                en: 'Notice how the same control often covers several functions: the classification is not exclusive.'
+              }
+            ],
+            challenge: {
+              it: 'Trova un controllo che sia al tempo stesso preventivo e di ripristino e spiega perché compare sotto entrambe le funzioni.',
+              en: 'Find a control that is both preventive and recovery and explain why it appears under both functions.'
+            },
+            solution: [
+              {
+                it: 'Filtrando per funzione si trovano, ad esempio: preventiva → segmentazione o AAA/MFA; detective → telemetria e fonti indipendenti; contenimento → first hop security di livello 2; ripristino → guardrail di automazione e recovery; compensativa → un controllo che surroga una misura mancante. Il punto di enforcement è dove il controllo agisce (porta, interfaccia, identità, piano di gestione).',
+                en: 'Filtering by function yields, for example: preventive → segmentation or AAA/MFA; detective → telemetry and independent sources; containment → first hop security at Layer 2; recovery → automation and recovery guardrails; compensating → a control that stands in for a missing measure. The enforcement point is where the control acts (port, interface, identity, management plane).'
+              },
+              {
+                it: 'Sfida: un controllo come la crittografia con PKI e VPN può essere preventivo (riservatezza in transito) e insieme contribuire al ripristino di una comunicazione fidata dopo un incidente; compare sotto più funzioni perché protegge proprietà diverse in momenti diversi.',
+                en: 'Challenge: a control such as cryptography with PKI and VPN can be preventive (confidentiality in transit) and at the same time help restore trusted communication after an incident; it appears under several functions because it protects different properties at different times.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So assegnare a ciascuna delle cinque funzioni almeno un controllo con il suo punto di enforcement.',
+                en: 'I can assign at least one control, with its enforcement point, to each of the five functions.'
+              },
+              {
+                it: 'So spiegare perché un controllo può coprire più funzioni insieme.',
+                en: 'I can explain why one control can cover several functions at once.'
+              }
+            ]
+          },
+          {
+            id: 'gl-defense-cia-plane',
+            title: { it: 'Mappa un controllo a CIA e al piano', en: 'Map a control to CIA and to the plane' },
+            difficulty: 'core',
+            lab: 'defense',
+            scenario: {
+              it: 'Nel laboratorio «Controlli difensivi» ogni controllo indica i piani che tocca (fisico, dati, controllo, gestione, applicazione, identità) e ciò che contrasta, oltre al suo limite operativo.',
+              en: 'In the “Defensive controls” lab each control shows the planes it touches (physical, data, control, management, application, identity) and what it counters, along with its operational limit.'
+            },
+            task: {
+              it: 'Scegli due controlli, determina quale proprietà della triade CIA protegge principalmente ciascuno e su quale piano agisce, e individua il suo limite operativo.',
+              en: 'Pick two controls, determine which CIA property each one mainly protects and on which plane it acts, and identify its operational limit.'
+            },
+            steps: [
+              {
+                it: 'Apri «Controlli difensivi» e usa il filtro «Piano» per isolare i controlli di un piano.',
+                en: 'Open “Defensive controls” and use the “Plane” filter to isolate the controls of one plane.'
+              },
+              {
+                it: 'Per ogni controllo scelto leggi cosa contrasta e deduci quale proprietà CIA protegge in primo luogo.',
+                en: 'For each chosen control read what it counters and deduce which CIA property it primarily protects.'
+              },
+              {
+                it: 'Annota il limite operativo: cosa il controllo non copre, così da capire quale altro controllo serve accanto.',
+                en: 'Note the operational limit: what the control does not cover, so you understand which other control is needed alongside it.'
+              }
+            ],
+            challenge: {
+              it: 'Trova un controllo che protegge soprattutto la disponibilità e spiega perché non basta da solo per riservatezza e integrità.',
+              en: 'Find a control that mainly protects availability and explain why it is not enough on its own for confidentiality and integrity.'
+            },
+            solution: [
+              {
+                it: 'Esempi: la crittografia con VPN protegge soprattutto la riservatezza (e l’integrità in transito) sul piano dei dati; la segmentazione protegge integrità e disponibilità limitando la portata di un attacco sui piani di controllo e dati; la protezione della disponibilità e della capacità agisce sulla disponibilità. Il limite operativo indica cosa resta scoperto — per esempio la cifratura non impedisce un attacco di esaurimento delle risorse.',
+                en: 'Examples: cryptography with VPN mainly protects confidentiality (and integrity in transit) on the data plane; segmentation protects integrity and availability by limiting the reach of an attack on the control and data planes; availability and capacity protection acts on availability. The operational limit shows what stays exposed — for example encryption does not stop a resource-exhaustion attack.'
+              },
+              {
+                it: 'Sfida: un controllo di disponibilità (per esempio la protezione da esaurimento delle risorse) mantiene il servizio raggiungibile ma non cifra né autentica nulla: servono controlli distinti per riservatezza e integrità, perché nessuna singola misura copre tutta la triade CIA.',
+                en: 'Challenge: an availability control (for example resource-exhaustion protection) keeps the service reachable but encrypts and authenticates nothing: separate controls are needed for confidentiality and integrity, because no single measure covers the whole CIA triad.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So collegare un controllo alla proprietà CIA che protegge e al piano su cui agisce.',
+                en: 'I can link a control to the CIA property it protects and to the plane it acts on.'
+              },
+              {
+                it: 'So leggere il limite operativo di un controllo e dedurre quale controllo complementare serve.',
+                en: 'I can read a control’s operational limit and infer which complementary control is needed.'
+              }
+            ]
+          }
+        ]
+      }
+    ]
   }
 ];
