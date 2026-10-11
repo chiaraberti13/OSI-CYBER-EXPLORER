@@ -1,3 +1,4 @@
+import { useEffect, useId, useRef, useState } from 'react';
 import { useStore } from '../store';
 import { useShallow } from 'zustand/react/shallow';
 import { motion, AnimatePresence } from 'motion/react';
@@ -9,7 +10,10 @@ import { SIMULATION_SPEEDS } from '../lib/preferences';
 import { usePacketSimulation } from './usePacketSimulation';
 import HeaderSpecificationSummary from './HeaderSpecificationSummary';
 
+type FeedbackKind = 'ready' | 'started' | 'paused' | 'resumed' | 'reset' | 'speed' | 'completed' | 'interrupted';
+
 export default function PacketSimulator() {
+  const feedbackId = useId();
   const {
     language,
     simulationState,
@@ -89,6 +93,67 @@ export default function PacketSimulator() {
     }
   }[language];
 
+  const feedbackCopy =
+    language === 'en'
+      ? {
+          ready: 'Simulation ready.',
+          started: 'Simulation started.',
+          paused: 'Simulation paused.',
+          resumed: 'Simulation resumed.',
+          reset: 'Simulation reset.',
+          speed: (speed: number) => `Simulation speed set to ${speed}x.`,
+          completed: 'Simulation completed successfully.',
+          interrupted: 'Simulation interrupted: the flow was compromised.'
+        }
+      : {
+          ready: 'Simulazione pronta.',
+          started: 'Simulazione avviata.',
+          paused: 'Simulazione in pausa.',
+          resumed: 'Simulazione ripresa.',
+          reset: 'Simulazione reimpostata.',
+          speed: (speed: number) => `Velocità della simulazione impostata su ${speed}x.`,
+          completed: 'Simulazione completata correttamente.',
+          interrupted: 'Simulazione interrotta: il flusso è stato compromesso.'
+        };
+  const [feedbackKind, setFeedbackKind] = useState<FeedbackKind>('ready');
+  const [feedbackSpeed, setFeedbackSpeed] = useState(simSpeed);
+  const previousPhase = useRef(simulationState);
+  const resetRequested = useRef(false);
+  const feedback = feedbackKind === 'speed' ? feedbackCopy.speed(feedbackSpeed) : feedbackCopy[feedbackKind];
+
+  useEffect(() => {
+    const previous = previousPhase.current;
+    if (simulationState === 'interrupted' && previous !== 'interrupted') {
+      setFeedbackKind('interrupted');
+    } else if (simulationState === 'idle' && previous === 'decapsulating' && !resetRequested.current) {
+      setFeedbackKind('completed');
+    }
+    resetRequested.current = false;
+    previousPhase.current = simulationState;
+  }, [simulationState]);
+
+  const handleStart = () => {
+    start();
+    setFeedbackKind('started');
+  };
+
+  const handlePause = () => {
+    togglePause();
+    setFeedbackKind(isPaused ? 'resumed' : 'paused');
+  };
+
+  const handleReset = () => {
+    resetRequested.current = true;
+    reset();
+    setFeedbackKind('reset');
+  };
+
+  const handleSpeedChange = (speed: (typeof SIMULATION_SPEEDS)[number]) => {
+    setSimSpeed(speed);
+    setFeedbackSpeed(speed);
+    setFeedbackKind('speed');
+  };
+
   const threatLevel = activeAttack === 'none' ? 0 : defenseEnabled ? 40 : 100;
   const threatBg = activeAttack === 'none' ? 'bg-emerald-500' : defenseEnabled ? 'bg-orange-500' : 'bg-red-500';
 
@@ -130,6 +195,7 @@ export default function PacketSimulator() {
             className="flex items-center gap-1.5"
             role="group"
             aria-label={language === 'en' ? 'Simulation speed' : 'Velocità simulazione'}
+            aria-describedby={feedbackId}
           >
             <span className="hidden sm:inline text-[10px] font-medium text-slate-400">
               {language === 'en' ? 'Speed' : 'Velocità'}
@@ -138,7 +204,7 @@ export default function PacketSimulator() {
               {SIMULATION_SPEEDS.map((s) => (
                 <button
                   key={s}
-                  onClick={() => setSimSpeed(s)}
+                  onClick={() => handleSpeedChange(s)}
                   aria-pressed={simSpeed === s}
                   aria-label={language === 'en' ? `Speed ${s}x` : `Velocità ${s}x`}
                   className={`px-2 py-1 text-[10px] font-medium rounded-md font-mono transition-all ${
@@ -190,7 +256,8 @@ export default function PacketSimulator() {
         <div className="flex items-center gap-2.5">
           {simulationState === 'idle' ? (
             <button
-              onClick={start}
+              onClick={handleStart}
+              aria-describedby={feedbackId}
               className="flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-3.5 py-2 rounded-md font-medium text-xs transition-all active:scale-95"
             >
               <Play className="w-3.5 h-3.5 fill-white" />
@@ -198,7 +265,8 @@ export default function PacketSimulator() {
             </button>
           ) : (
             <button
-              onClick={togglePause}
+              onClick={handlePause}
+              aria-describedby={feedbackId}
               disabled={simulationState === 'interrupted'}
               className="flex items-center gap-2 bg-white hover:bg-slate-50 disabled:opacity-30 text-slate-700 px-3.5 py-2 rounded-md font-medium text-xs transition-all border border-slate-200"
             >
@@ -212,7 +280,8 @@ export default function PacketSimulator() {
           )}
 
           <button
-            onClick={reset}
+            onClick={handleReset}
+            aria-describedby={feedbackId}
             aria-label={labels.reset}
             title={labels.reset}
             className="flex items-center justify-center w-9 h-9 bg-white hover:bg-slate-50 text-slate-400 hover:text-slate-700 rounded-md transition-all border border-slate-200 group"
@@ -262,6 +331,17 @@ export default function PacketSimulator() {
           </button>
         </div>
       </div>
+
+      <p
+        id={feedbackId}
+        className="flex items-center gap-2 border-b border-slate-100 bg-indigo-50 px-4 py-2.5 text-xs font-medium text-indigo-900"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+      >
+        <Info className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+        {feedback}
+      </p>
 
       <div className="border-b border-slate-100 bg-slate-50/30 px-4 py-3 relative z-10">
         <HeaderSpecificationSummary language={language} testId="packet-simulator-header-specifications" />

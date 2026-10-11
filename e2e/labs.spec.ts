@@ -11,20 +11,31 @@ test.describe('interactive labs', () => {
   test('runs, pauses, resumes and resets the OSI packet simulation', async ({ page }) => {
     await page.goto('/#/osi');
 
+    const feedback = page.locator('p[role="status"][aria-live="polite"]');
+    await expect(feedback).toContainText('Simulazione pronta.');
+
+    await page.getByRole('button', { name: 'Velocità 2x' }).click();
+    await expect(feedback).toContainText('Velocità della simulazione impostata su 2x.');
+
     const start = page.getByRole('button', { name: 'Avvia Simulazione' });
     await expect(start).toBeVisible();
     await start.click();
+    await expect(feedback).toContainText('Simulazione avviata.');
 
     // Starting swaps the control to Pause; pausing freezes the run (timer-independent).
     const pause = page.getByRole('button', { name: 'Pausa' });
     await expect(pause).toBeVisible();
     await pause.click();
+    await expect(feedback).toContainText('Simulazione in pausa.');
 
     const resume = page.getByRole('button', { name: 'Riprendi' });
     await expect(resume).toBeVisible();
+    await resume.click();
+    await expect(feedback).toContainText('Simulazione ripresa.');
 
     // Reset returns the simulator to its idle state.
     await page.getByRole('button', { name: 'Reset' }).click();
+    await expect(feedback).toContainText('Simulazione reimpostata.');
     await expect(start).toBeVisible();
   });
 

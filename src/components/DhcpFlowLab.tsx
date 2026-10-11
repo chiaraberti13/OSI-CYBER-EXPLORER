@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useId, useMemo, useState } from 'react';
 import { Radio, TriangleAlert } from 'lucide-react';
 import { simulateDhcp, type DhcpMessage, type DhcpResult, type ServerLocation } from '../lib/dhcpFlow';
 import { useStore } from '../store';
@@ -100,6 +100,7 @@ const COPY = {
 } as const;
 
 export default function DhcpFlowLab() {
+  const errorId = useId();
   const language = useStore((state) => state.language);
   const copy = COPY[language];
 
@@ -203,6 +204,8 @@ export default function DhcpFlowLab() {
             step={60}
             value={leaseSeconds}
             onChange={(event) => setLeaseSeconds(Number(event.target.value))}
+            aria-invalid={flow === null}
+            aria-describedby={!flow ? errorId : undefined}
             className={inputClass}
           />
         </label>
@@ -229,6 +232,7 @@ export default function DhcpFlowLab() {
 
       {!flow ? (
         <p
+          id={errorId}
           className="mt-5 flex items-center gap-2 rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700"
           role="alert"
         >

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useId, useMemo, useState } from 'react';
 import { GitBranch, TriangleAlert } from 'lucide-react';
 import { computeSpf, type OspfRouteEntry, type OspfSpfResult } from '../lib/ospfTopology';
 import { OSPF_LINK_LABELS, OSPF_LINKS, OSPF_REFERENCES, OSPF_ROUTERS } from '../content/ospfTopology';
@@ -203,6 +203,7 @@ function TopologyDiagram({ result, downLinks, label }: { result: OspfSpfResult; 
 }
 
 export default function OspfSpfLab() {
+  const errorId = useId();
   const language = useStore((state) => state.language);
   const copy = COPY[language];
 
@@ -311,6 +312,8 @@ export default function OspfSpfLab() {
                   onChange={() => toggleLink(link.id)}
                   className="mt-0.5 shrink-0"
                   aria-label={`${link.id} ${isDown ? copy.linkDown : copy.linkUp}`}
+                  aria-invalid={computed === null}
+                  aria-describedby={!computed ? errorId : undefined}
                 />
                 <span className="min-w-0">
                   <span className="font-mono text-[11px] font-semibold">{link.id}</span>
@@ -329,6 +332,7 @@ export default function OspfSpfLab() {
 
       {!computed ? (
         <p
+          id={errorId}
           className="mt-5 flex items-center gap-2 rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700"
           role="alert"
         >

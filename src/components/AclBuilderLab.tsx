@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useId, useMemo, useState } from 'react';
 import { ArrowDown, ArrowUp, ListOrdered, TriangleAlert, Wand2 } from 'lucide-react';
 import { buildAcl, portToken, type AceStatus, type BuiltAcl } from '../lib/aclBuilder';
 import { evaluateIpv4Acl, type PacketDescriptor } from '../lib/securityFundamentals';
@@ -103,6 +103,7 @@ const COPY = {
 } as const;
 
 export default function AclBuilderLab() {
+  const packetErrorId = useId();
   const language = useStore((state) => state.language);
   const copy = COPY[language];
 
@@ -361,6 +362,8 @@ export default function AclBuilderLab() {
               <input
                 value={packet.sourceIp}
                 onChange={(event) => setPacket({ ...packet, sourceIp: event.target.value })}
+                aria-invalid={decision === null}
+                aria-describedby={!decision ? packetErrorId : undefined}
                 className={inputClass}
               />
             </label>
@@ -369,6 +372,8 @@ export default function AclBuilderLab() {
               <input
                 value={packet.destinationIp}
                 onChange={(event) => setPacket({ ...packet, destinationIp: event.target.value })}
+                aria-invalid={decision === null}
+                aria-describedby={!decision ? packetErrorId : undefined}
                 className={inputClass}
               />
             </label>
@@ -381,13 +386,15 @@ export default function AclBuilderLab() {
                 value={packet.destinationPort ?? ''}
                 disabled={packet.protocol === 'icmp'}
                 onChange={(event) => setPacket({ ...packet, destinationPort: Number(event.target.value) })}
+                aria-invalid={decision === null}
+                aria-describedby={!decision ? packetErrorId : undefined}
                 className={`${inputClass} disabled:bg-slate-100`}
               />
             </label>
           </div>
 
           {!decision ? (
-            <p className="mt-3 flex items-center gap-2 text-xs text-rose-700" role="alert">
+            <p id={packetErrorId} className="mt-3 flex items-center gap-2 text-xs text-rose-700" role="alert">
               <TriangleAlert className="h-3.5 w-3.5" /> {copy.invalid}
             </p>
           ) : (

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useId, useMemo, useState } from 'react';
 import { Clock3, Database, Gauge, Network, ShieldCheck, Terminal, TriangleAlert } from 'lucide-react';
 import {
   calculateNtpMetrics,
@@ -34,6 +34,8 @@ function SectionTitle({ icon: Icon, title, id }: { icon: typeof Network; title: 
 }
 
 export default function IpServicesLab() {
+  const natErrorId = useId();
+  const ntpErrorId = useId();
   const language = useStore((state) => state.language);
   const [insideIp, setInsideIp] = useState('10.10.10.42');
   const [sourcePort, setSourcePort] = useState(49152);
@@ -243,6 +245,8 @@ export default function IpServicesLab() {
               value={insideIp}
               onChange={(event) => setInsideIp(event.target.value)}
               inputMode="decimal"
+              aria-invalid={pat.error !== null}
+              aria-describedby={pat.error ? natErrorId : undefined}
               className="block w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-sm"
             />
           </label>
@@ -254,6 +258,8 @@ export default function IpServicesLab() {
               max={65535}
               value={sourcePort}
               onChange={(event) => setSourcePort(Number(event.target.value))}
+              aria-invalid={pat.error !== null}
+              aria-describedby={pat.error ? natErrorId : undefined}
               className="block w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-sm"
             />
           </label>
@@ -269,6 +275,7 @@ export default function IpServicesLab() {
         </label>
         {pat.error ? (
           <p
+            id={natErrorId}
             className="mt-4 flex items-center gap-2 rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700"
             role="alert"
           >
@@ -311,6 +318,8 @@ export default function IpServicesLab() {
                   type="number"
                   value={ntpTimes[key]}
                   onChange={(event) => setNtpTimes((current) => ({ ...current, [key]: Number(event.target.value) }))}
+                  aria-invalid={ntp === null}
+                  aria-describedby={ntp === null ? ntpErrorId : undefined}
                   className="block w-full rounded-lg border border-slate-200 px-2 py-2 font-mono text-xs"
                 />
               </label>
@@ -326,7 +335,7 @@ export default function IpServicesLab() {
               </span>
             </div>
           ) : (
-            <p className="mt-4 text-xs text-rose-700" role="alert">
+            <p id={ntpErrorId} className="mt-4 text-xs text-rose-700" role="alert">
               {t.invalidTime}
             </p>
           )}

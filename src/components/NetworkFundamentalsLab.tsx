@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useId, useMemo, useState } from 'react';
 import {
   AlertTriangle,
   Binary,
@@ -57,6 +57,9 @@ function BinaryStrip({ octets, prefix }: { octets: string[]; prefix: number }) {
 }
 
 export default function NetworkFundamentalsLab() {
+  const subnetErrorId = useId();
+  const ipv6ErrorId = useId();
+  const macErrorId = useId();
   const language = useStore((state) => state.language);
   const [address, setAddress] = useState('192.168.10.42');
   const [prefix, setPrefix] = useState('24');
@@ -345,6 +348,7 @@ export default function NetworkFundamentalsLab() {
               onChange={(event) => setAddress(event.target.value)}
               inputMode="decimal"
               aria-invalid={calculation.error !== null}
+              aria-describedby={calculation.error ? subnetErrorId : undefined}
               className="block w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-sm text-slate-900 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
             />
           </label>
@@ -356,6 +360,7 @@ export default function NetworkFundamentalsLab() {
               maxLength={2}
               onChange={(event) => setPrefix(event.target.value)}
               aria-invalid={calculation.error !== null}
+              aria-describedby={calculation.error ? subnetErrorId : undefined}
               className="block w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-sm text-slate-900 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
             />
           </label>
@@ -363,6 +368,7 @@ export default function NetworkFundamentalsLab() {
 
         {calculation.error ? (
           <div
+            id={subnetErrorId}
             className="mt-5 flex items-center gap-2 rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700"
             role="alert"
           >
@@ -425,12 +431,15 @@ export default function NetworkFundamentalsLab() {
             value={ipv6Address}
             onChange={(event) => setIpv6Address(event.target.value)}
             spellCheck={false}
+            aria-invalid={ipv6Calculation.error !== null}
+            aria-describedby={ipv6Calculation.error ? ipv6ErrorId : undefined}
             className="block w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-sm text-slate-900 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100"
           />
         </label>
 
         {ipv6Calculation.error ? (
           <div
+            id={ipv6ErrorId}
             className="mt-4 flex items-center gap-2 rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700"
             role="alert"
           >
@@ -471,11 +480,13 @@ export default function NetworkFundamentalsLab() {
                 value={macAddress}
                 onChange={(event) => setMacAddress(event.target.value)}
                 spellCheck={false}
+                aria-invalid={eui64Calculation.error !== null}
+                aria-describedby={eui64Calculation.error ? macErrorId : undefined}
                 className="block w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-sm text-slate-900 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100"
               />
             </label>
             {eui64Calculation.error ? (
-              <p className="mt-3 text-xs text-rose-700" role="alert">
+              <p id={macErrorId} className="mt-3 text-xs text-rose-700" role="alert">
                 {labels.macInvalid}
               </p>
             ) : (

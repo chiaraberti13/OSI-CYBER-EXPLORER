@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useId, useMemo, useState } from 'react';
 import { AlertTriangle, LayoutGrid, Plus, Trash2 } from 'lucide-react';
 import { planVlsm, prefixToMask, uintToIpv4, type VlsmAllocation, type VlsmPlan } from '../lib/ipv4';
 import {
@@ -133,6 +133,7 @@ function vlsmErrorMessage(error: unknown, language: InputLanguage): string {
 }
 
 export default function VlsmPlanner() {
+  const errorId = useId();
   const language = useStore((state) => state.language);
   const copy = COPY[language];
 
@@ -196,6 +197,7 @@ export default function VlsmPlanner() {
             onChange={(event) => setBase(event.target.value)}
             inputMode="decimal"
             aria-invalid={result.error !== null}
+            aria-describedby={result.error ? errorId : undefined}
             className={inputClass}
           />
         </label>
@@ -207,6 +209,7 @@ export default function VlsmPlanner() {
             maxLength={2}
             onChange={(event) => setBasePrefix(event.target.value)}
             aria-invalid={result.error !== null}
+            aria-describedby={result.error ? errorId : undefined}
             className={inputClass}
           />
         </label>
@@ -235,6 +238,8 @@ export default function VlsmPlanner() {
                 onChange={(event) => updateRow(row.id, { name: event.target.value })}
                 aria-label={copy.name}
                 placeholder={copy.name}
+                aria-invalid={result.error !== null}
+                aria-describedby={result.error ? errorId : undefined}
                 className="col-span-2 block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 sm:col-span-1"
               />
               <input
@@ -244,6 +249,8 @@ export default function VlsmPlanner() {
                 aria-label={copy.hosts}
                 placeholder={copy.hosts}
                 inputMode="numeric"
+                aria-invalid={result.error !== null}
+                aria-describedby={result.error ? errorId : undefined}
                 className={inputClass}
               />
               <button
@@ -262,6 +269,7 @@ export default function VlsmPlanner() {
 
       {result.error ? (
         <div
+          id={errorId}
           className="mt-5 flex items-start gap-2 rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700"
           role="alert"
         >

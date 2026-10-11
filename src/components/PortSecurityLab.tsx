@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useId, useMemo, useState } from 'react';
 import { Lock, TriangleAlert } from 'lucide-react';
 import {
   simulatePortSecurity,
@@ -106,6 +106,7 @@ const COPY = {
 } as const;
 
 export default function PortSecurityLab() {
+  const errorId = useId();
   const language = useStore((state) => state.language);
   const copy = COPY[language];
 
@@ -171,6 +172,8 @@ export default function PortSecurityLab() {
             max={132}
             value={maximum}
             onChange={(event) => setMaximum(Number(event.target.value))}
+            aria-invalid={analysis === null}
+            aria-describedby={!analysis ? errorId : undefined}
             className={inputClass}
           />
         </label>
@@ -195,6 +198,8 @@ export default function PortSecurityLab() {
             max={1440}
             value={agingMinutes}
             onChange={(event) => setAgingMinutes(Number(event.target.value))}
+            aria-invalid={analysis === null}
+            aria-describedby={!analysis ? errorId : undefined}
             className={inputClass}
           />
         </label>
@@ -219,6 +224,7 @@ export default function PortSecurityLab() {
 
       {!analysis ? (
         <p
+          id={errorId}
           className="mt-5 flex items-start gap-2 rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700"
           role="alert"
         >

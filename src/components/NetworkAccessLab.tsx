@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useId, useMemo, useState } from 'react';
 import { Cable, Radio, ShieldCheck, TriangleAlert, Waypoints } from 'lucide-react';
 import {
   electRootBridge,
@@ -40,6 +40,7 @@ function SectionTitle({ icon: Icon, title, id }: { icon: typeof Cable; title: st
 }
 
 export default function NetworkAccessLab() {
+  const trunkErrorId = useId();
   const language = useStore((state) => state.language);
   const [allowedInput, setAllowedInput] = useState('10,20,30-32,99');
   const [frameVlan, setFrameVlan] = useState('20');
@@ -202,6 +203,7 @@ export default function NetworkAccessLab() {
               onChange={(event) => setAllowedInput(event.target.value)}
               spellCheck={false}
               aria-invalid={trunk.error !== null}
+              aria-describedby={trunk.error ? trunkErrorId : undefined}
               className="block w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-sm outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
             />
           </label>
@@ -213,6 +215,7 @@ export default function NetworkAccessLab() {
               maxLength={4}
               onChange={(event) => setFrameVlan(event.target.value)}
               aria-invalid={trunk.error !== null}
+              aria-describedby={trunk.error ? trunkErrorId : undefined}
               className="block w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-sm outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
             />
           </label>
@@ -224,12 +227,14 @@ export default function NetworkAccessLab() {
               maxLength={4}
               onChange={(event) => setNativeVlan(event.target.value)}
               aria-invalid={trunk.error !== null}
+              aria-describedby={trunk.error ? trunkErrorId : undefined}
               className="block w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-sm outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
             />
           </label>
         </div>
         {trunk.error ? (
           <p
+            id={trunkErrorId}
             className="mt-4 flex items-center gap-2 rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700"
             role="alert"
           >

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useId, useMemo, useState } from 'react';
 import { Fingerprint, KeyRound, LockKeyhole, ShieldCheck, Siren, TriangleAlert, Wifi } from 'lucide-react';
 import { evaluateIpv4Acl, type PacketDescriptor } from '../lib/securityFundamentals';
 import { useStore } from '../store';
@@ -31,6 +31,7 @@ function SectionTitle({ icon: Icon, title, id }: { icon: typeof ShieldCheck; tit
 }
 
 export default function SecurityFundamentalsLab() {
+  const aclErrorId = useId();
   const language = useStore((state) => state.language);
   const [packet, setPacket] = useState<PacketDescriptor>({
     protocol: 'tcp',
@@ -178,6 +179,8 @@ export default function SecurityFundamentalsLab() {
             <input
               value={packet.sourceIp}
               onChange={(event) => setPacketField('sourceIp', event.target.value)}
+              aria-invalid={decision.error !== null}
+              aria-describedby={decision.error ? aclErrorId : undefined}
               className="block w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-sm"
             />
           </label>
@@ -186,6 +189,8 @@ export default function SecurityFundamentalsLab() {
             <input
               value={packet.destinationIp}
               onChange={(event) => setPacketField('destinationIp', event.target.value)}
+              aria-invalid={decision.error !== null}
+              aria-describedby={decision.error ? aclErrorId : undefined}
               className="block w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-sm"
             />
           </label>
@@ -198,6 +203,8 @@ export default function SecurityFundamentalsLab() {
               value={packet.destinationPort ?? ''}
               onChange={(event) => setPacketField('destinationPort', Number(event.target.value))}
               disabled={packet.protocol === 'icmp'}
+              aria-invalid={decision.error !== null}
+              aria-describedby={decision.error ? aclErrorId : undefined}
               className="block w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-sm disabled:bg-slate-100"
             />
           </label>
@@ -222,7 +229,7 @@ export default function SecurityFundamentalsLab() {
           ))}
         </div>
         {decision.error ? (
-          <p className="mt-4 flex items-center gap-2 text-sm text-rose-700" role="alert">
+          <p id={aclErrorId} className="mt-4 flex items-center gap-2 text-sm text-rose-700" role="alert">
             <TriangleAlert className="h-4 w-4" />
             {t.invalid}
           </p>

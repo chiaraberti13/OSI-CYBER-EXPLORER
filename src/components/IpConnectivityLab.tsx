@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useId, useMemo, useState } from 'react';
 import { Gauge, Route, Router, ShieldCheck, TriangleAlert } from 'lucide-react';
 import {
   calculateOspfCost,
@@ -35,6 +35,7 @@ function SectionTitle({ icon: Icon, title, id }: { icon: typeof Route; title: st
 }
 
 export default function IpConnectivityLab() {
+  const lookupErrorId = useId();
   const language = useStore((state) => state.language);
   const [destination, setDestination] = useState('10.10.10.42');
   const [referenceBandwidth, setReferenceBandwidth] = useState(100000);
@@ -235,11 +236,14 @@ export default function IpConnectivityLab() {
             value={destination}
             onChange={(event) => setDestination(event.target.value)}
             inputMode="decimal"
+            aria-invalid={lookup.error !== null}
+            aria-describedby={lookup.error ? lookupErrorId : undefined}
             className="block w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-sm outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
           />
         </label>
         {lookup.error ? (
           <p
+            id={lookupErrorId}
             className="mt-4 flex items-center gap-2 rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700"
             role="alert"
           >

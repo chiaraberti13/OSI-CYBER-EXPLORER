@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useId, useMemo, useState } from 'react';
 import { Crosshair, TriangleAlert } from 'lucide-react';
 import type { WildcardMatch } from '../lib/ipv4';
 import { INTERACTIVE_INPUT_LIMITS, inputErrorMessage, parseWildcardRange } from '../lib/inputValidation';
@@ -89,6 +89,7 @@ const COPY = {
 } as const;
 
 export default function WildcardBuilder() {
+  const errorId = useId();
   const language = useStore((state) => state.language);
   const copy = COPY[language];
 
@@ -126,6 +127,7 @@ export default function WildcardBuilder() {
             onChange={(event) => setFirst(event.target.value)}
             inputMode="decimal"
             aria-invalid={result.error !== null}
+            aria-describedby={result.error ? errorId : undefined}
             className={inputClass}
           />
         </label>
@@ -137,6 +139,7 @@ export default function WildcardBuilder() {
             onChange={(event) => setLast(event.target.value)}
             inputMode="decimal"
             aria-invalid={result.error !== null}
+            aria-describedby={result.error ? errorId : undefined}
             className={inputClass}
           />
         </label>
@@ -167,6 +170,7 @@ export default function WildcardBuilder() {
 
       {result.error || !match ? (
         <p
+          id={errorId}
           className="mt-5 flex items-center gap-2 rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700"
           role="alert"
         >

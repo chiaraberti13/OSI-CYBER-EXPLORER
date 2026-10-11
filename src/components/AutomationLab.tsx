@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useId, useMemo, useState } from 'react';
 import { Bot, Braces, GitBranch, Network, ShieldCheck, TriangleAlert } from 'lucide-react';
 import { inspectJsonDocument, httpMethodProfile, httpStatusFamily, type HttpMethod } from '../lib/automation';
 import {
@@ -321,6 +321,8 @@ function SectionTitle({ icon: Icon, title, id }: { icon: typeof Network; title: 
 }
 
 export default function AutomationLab() {
+  const restErrorId = useId();
+  const jsonErrorId = useId();
   const language = useStore((state) => state.language);
   const [method, setMethod] = useState<HttpMethod>('GET');
   const [resource, setResource] = useState('/api/v1/devices/R1');
@@ -481,6 +483,7 @@ export default function AutomationLab() {
               maxLength={INTERACTIVE_INPUT_LIMITS.resourcePathCharacters + 1}
               onChange={(event) => setResource(event.target.value)}
               aria-invalid={validatedResource.error !== null}
+              aria-describedby={validatedResource.error ? restErrorId : undefined}
               className="block w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-sm"
             />
           </label>
@@ -492,12 +495,13 @@ export default function AutomationLab() {
               maxLength={3}
               onChange={(event) => setStatus(event.target.value)}
               aria-invalid={validatedStatus.error !== null}
+              aria-describedby={validatedStatus.error ? restErrorId : undefined}
               className="block w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-sm"
             />
           </label>
         </div>
         {validatedResource.error || validatedStatus.error ? (
-          <p className="mt-3 flex items-center gap-2 text-sm text-rose-700" role="alert">
+          <p id={restErrorId} className="mt-3 flex items-center gap-2 text-sm text-rose-700" role="alert">
             <TriangleAlert className="h-4 w-4" />
             {inputErrorMessage(validatedResource.error ?? validatedStatus.error, language)}
           </p>
@@ -541,10 +545,12 @@ export default function AutomationLab() {
           onChange={(event) => setJsonInput(event.target.value)}
           spellCheck={false}
           aria-label={t.json}
+          aria-invalid={jsonInspection.error !== null}
+          aria-describedby={jsonInspection.error ? jsonErrorId : undefined}
           className="mt-4 h-52 w-full rounded-lg border border-slate-200 p-3 font-mono text-xs leading-relaxed outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
         />
         {jsonInspection.error ? (
-          <p className="mt-3 flex items-center gap-2 text-sm text-rose-700" role="alert">
+          <p id={jsonErrorId} className="mt-3 flex items-center gap-2 text-sm text-rose-700" role="alert">
             <TriangleAlert className="h-4 w-4" />
             {inputErrorMessage(jsonInspection.error, language)}
           </p>
