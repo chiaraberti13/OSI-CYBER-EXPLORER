@@ -58,6 +58,8 @@ export interface PreferencesSlice {
   setSimSpeed: (speed: SimulationSpeed) => void;
   hasSeenGuide: boolean;
   setHasSeenGuide: (seen: boolean) => void;
+  hasDismissedManualHelp: boolean;
+  setHasDismissedManualHelp: (dismissed: boolean) => void;
 }
 
 export interface ProgressSlice {
@@ -121,7 +123,9 @@ const createPreferencesSlice: Slice<PreferencesSlice> = (set) => ({
       simSpeed: isSimulationSpeed(simSpeed) ? simSpeed : DEFAULT_PREFERENCES.simSpeed
     }),
   hasSeenGuide: DEFAULT_PREFERENCES.hasSeenGuide,
-  setHasSeenGuide: (hasSeenGuide) => set({ hasSeenGuide })
+  setHasSeenGuide: (hasSeenGuide) => set({ hasSeenGuide }),
+  hasDismissedManualHelp: DEFAULT_PREFERENCES.hasDismissedManualHelp,
+  setHasDismissedManualHelp: (hasDismissedManualHelp) => set({ hasDismissedManualHelp })
 });
 
 const createNavigationSlice: Slice<NavigationSlice> = (set) => ({
@@ -243,6 +247,7 @@ export const useStore = create<AppState>()(
         audioEnabled: state.audioEnabled,
         simSpeed: state.simSpeed,
         hasSeenGuide: state.hasSeenGuide,
+        hasDismissedManualHelp: state.hasDismissedManualHelp,
         completedChapterIds: state.completedChapterIds
       })
     }

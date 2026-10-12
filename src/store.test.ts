@@ -35,7 +35,7 @@ describe('persisted preference rehydration', () => {
 
     expect(store.getState()).toMatchObject(previousPreferences);
     expect(JSON.parse(localStorage.getItem(PREFERENCES_STORAGE_KEY) ?? '{}')).toEqual({
-      state: { ...previousPreferences, completedChapterIds: [] },
+      state: { ...previousPreferences, hasDismissedManualHelp: false, completedChapterIds: [] },
       version: PREFERENCES_STORAGE_VERSION
     });
   });
@@ -47,6 +47,7 @@ describe('persisted preference rehydration', () => {
         audioEnabled: 'false',
         simSpeed: Number.POSITIVE_INFINITY,
         hasSeenGuide: { value: true },
+        hasDismissedManualHelp: 'true',
         completedChapterIds: ['osi-model', 'unknown', 'osi-model'],
         logs: [{ message: 'injected session state' }],
         activeAttack: 'spoofing'
@@ -83,6 +84,30 @@ describe('persisted preference rehydration', () => {
       simSpeed: 0.5,
       hasSeenGuide: false,
       completedChapterIds: ['ethernet-switching']
+    });
+  });
+
+  it('migrates existing progress from version 2 and offers manual help', async () => {
+    writeStoredState({ ...DEFAULT_PREFERENCES, language: 'en', completedChapterIds: ['osi-model'] }, 2);
+    const store = await loadFreshStore();
+
+    expect(store.getState()).toMatchObject({
+      language: 'en',
+      completedChapterIds: ['osi-model'],
+      hasDismissedManualHelp: false
+    });
+    expect(JSON.parse(localStorage.getItem(PREFERENCES_STORAGE_KEY) ?? '{}').version).toBe(PREFERENCES_STORAGE_VERSION);
+  });
+
+  it('remembers manual-help dismissal after rehydration without clearing progress', async () => {
+    const store = await loadFreshStore();
+    store.getState().toggleChapterCompleted('osi-model');
+    store.getState().setHasDismissedManualHelp(true);
+
+    const restoredStore = await loadFreshStore();
+    expect(restoredStore.getState()).toMatchObject({
+      hasDismissedManualHelp: true,
+      completedChapterIds: ['osi-model']
     });
   });
 
@@ -134,6 +159,8 @@ describe('persisted preference rehydration', () => {
 
     const store = await loadFreshStore();
     expect(() => store.getState().toggleChapterCompleted('osi-model')).not.toThrow();
+    expect(() => store.getState().setHasDismissedManualHelp(true)).not.toThrow();
     expect(store.getState().completedChapterIds).toEqual(['osi-model']);
+    expect(store.getState().hasDismissedManualHelp).toBe(true);
   });
 });

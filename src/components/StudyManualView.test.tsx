@@ -5,14 +5,80 @@
  */
 
 import { afterEach, describe, expect, it } from 'vitest';
-import { cleanup, render, screen, within } from '@testing-library/react';
+import { act, cleanup, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import StudyManualView from './StudyManualView';
 import { useStore } from '../store';
 
 afterEach(() => {
   cleanup();
-  useStore.setState({ language: 'it', completedChapterIds: [] });
+  useStore.setState({ language: 'it', completedChapterIds: [], hasDismissedManualHelp: false });
+});
+
+describe('manual first-visit help (UX-22)', () => {
+  it('shows navigation, practice and chapter guidance on the first visit', () => {
+    render(<StudyManualView />);
+    const help = screen.getByRole('region', { name: 'Come usare questa guida' });
+    expect(within(help).getAllByRole('listitem')).toHaveLength(3);
+    expect(within(help).getByText(/Contenuti del capitolo/)).toBeTruthy();
+    expect(within(help).getByText(/soluzione commentata e l’autoverifica/)).toBeTruthy();
+    expect(within(help).getByText(/Capitolo precedente/)).toBeTruthy();
+    const trigger = screen.getByRole('button', { name: 'Come usare questa guida' });
+    expect(trigger.getAttribute('aria-expanded')).toBe('true');
+    expect(trigger.getAttribute('aria-controls')).toBe(help.id);
+  });
+
+  it('remembers dismissal, returns focus to the trigger, and can reopen the help', async () => {
+    const user = userEvent.setup();
+    render(<StudyManualView />);
+    const trigger = screen.getByRole('button', { name: 'Come usare questa guida' });
+
+    await user.click(screen.getByRole('button', { name: 'Chiudi le istruzioni' }));
+    expect(screen.queryByRole('region', { name: 'Come usare questa guida' })).toBeNull();
+    expect(trigger.getAttribute('aria-expanded')).toBe('false');
+    expect(document.activeElement).toBe(trigger);
+    expect(useStore.getState().hasDismissedManualHelp).toBe(true);
+
+    await user.click(trigger);
+    expect(screen.getByRole('region', { name: 'Come usare questa guida' })).toBeTruthy();
+    expect(useStore.getState().hasDismissedManualHelp).toBe(true);
+  });
+
+  it('keeps dismissed help closed when the manual is revisited and progress is reset', async () => {
+    const user = userEvent.setup();
+    useStore.setState({ hasDismissedManualHelp: true, completedChapterIds: ['osi-model'] });
+    const { unmount } = render(<StudyManualView />);
+    expect(screen.queryByRole('region', { name: 'Come usare questa guida' })).toBeNull();
+    await user.click(screen.getByRole('button', { name: 'Azzera progresso' }));
+    expect(useStore.getState().hasDismissedManualHelp).toBe(true);
+    unmount();
+
+    render(<StudyManualView />);
+    expect(screen.queryByRole('region', { name: 'Come usare questa guida' })).toBeNull();
+    expect(screen.getByRole('button', { name: 'Come usare questa guida' })).toBeTruthy();
+  });
+
+  it('toggles the disclosure from the keyboard without trapping focus', async () => {
+    const user = userEvent.setup();
+    render(<StudyManualView />);
+    const trigger = screen.getByRole('button', { name: 'Come usare questa guida' });
+    trigger.focus();
+    await user.keyboard('{Enter}');
+    expect(trigger.getAttribute('aria-expanded')).toBe('false');
+    await user.keyboard(' ');
+    expect(trigger.getAttribute('aria-expanded')).toBe('true');
+    expect(document.activeElement).toBe(trigger);
+  });
+
+  it('updates the open instructions when the language changes', () => {
+    render(<StudyManualView />);
+    act(() => useStore.getState().setLanguage('en'));
+    const help = screen.getByRole('region', { name: 'How to use this guide' });
+    expect(within(help).getByText(/On this page/)).toBeTruthy();
+    expect(within(help).getByText(/commented solution and self-check/)).toBeTruthy();
+    expect(within(help).getByText(/Previous chapter/)).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Close the instructions' })).toBeTruthy();
+  });
 });
 
 describe('StudyManualView (EDU-01)', () => {

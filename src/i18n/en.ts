@@ -32,6 +32,17 @@ export const en = {
   manual: {
     heading: 'Study manual',
     intro: 'The topics to study, explained step by step and linked to the interactive labs.',
+    helpTitle: 'How to use this guide',
+    helpNavigationTitle: 'Choose and navigate',
+    helpNavigationBody:
+      'Choose a chapter from the index grouped by CCNA domain. Use “On this page” on desktop or “In this chapter” on mobile to jump to a topic.',
+    helpLabsTitle: 'Put it into practice',
+    helpLabsBody:
+      'Read the explanation, then attempt the guided lab’s task and challenge. Open the interactive lab and compare your result with the commented solution and self-check.',
+    helpChaptersTitle: 'Continue studying',
+    helpChaptersBody:
+      'At the end of a chapter, use “Previous chapter” and “Next chapter”. Mark completed chapters: progress stays in this browser.',
+    dismissHelp: 'Close the instructions',
     chapters: 'chapters',
     topics: 'topics',
     guidedLabs: 'guided labs',

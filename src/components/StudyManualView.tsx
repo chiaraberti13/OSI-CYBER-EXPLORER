@@ -3,13 +3,14 @@
  * SPDX-License-Identifier: GPL-3.0-only
  */
 
-import { useEffect, useId, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import {
   AlertTriangle,
   ArrowLeft,
   ArrowRight,
   BookOpen,
   CircleCheck,
+  CircleHelp,
   ExternalLink,
   FlaskConical,
   ListChecks,
@@ -35,6 +36,12 @@ export default function StudyManualView() {
   const completedChapterIds = useStore((state) => state.completedChapterIds);
   const toggleChapterCompleted = useStore((state) => state.toggleChapterCompleted);
   const resetChapterProgress = useStore((state) => state.resetChapterProgress);
+  const hasDismissedManualHelp = useStore((state) => state.hasDismissedManualHelp);
+  const setHasDismissedManualHelp = useStore((state) => state.setHasDismissedManualHelp);
+  const [isHelpOpen, setIsHelpOpen] = useState(!hasDismissedManualHelp);
+  const helpTriggerRef = useRef<HTMLButtonElement>(null);
+  const helpPanelId = useId();
+  const helpTitleId = useId();
   const t = uiMessages(language).manual;
   const chapters = orderedChapters();
   const [activeId, setActiveId] = useState(chapters[0]?.id);
@@ -43,6 +50,13 @@ export default function StudyManualView() {
   const overallCompletion = chapterCompletion(chapters, completedChapterIds);
   const headingId = useId();
   const chapterTitleId = useId();
+
+  const dismissHelp = () => {
+    setHasDismissedManualHelp(true);
+    setIsHelpOpen(false);
+    // Closing removes the focused control from view; return to the disclosure.
+    helpTriggerRef.current?.focus();
+  };
 
   const difficultyLabel: Record<ManualDifficulty, string> = {
     intro: t.difficultyIntro,
@@ -180,9 +194,22 @@ export default function StudyManualView() {
   return (
     <div className="mx-auto max-w-5xl">
       <header className="mb-6">
-        <h1 id={headingId} className="text-xl font-semibold tracking-tight text-slate-900">
-          {t.heading}
-        </h1>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h1 id={headingId} className="text-xl font-semibold tracking-tight text-slate-900">
+            {t.heading}
+          </h1>
+          <button
+            ref={helpTriggerRef}
+            type="button"
+            aria-expanded={isHelpOpen}
+            aria-controls={helpPanelId}
+            onClick={() => (isHelpOpen ? dismissHelp() : setIsHelpOpen(true))}
+            className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
+          >
+            <CircleHelp aria-hidden="true" className="h-4 w-4 shrink-0" />
+            {t.helpTitle}
+          </button>
+        </div>
         <p className="mt-1 text-sm text-slate-500">{t.intro}</p>
         <p className="mt-2 text-[12px] font-mono text-slate-400">
           {stats.chapters} {t.chapters} · {stats.topics} {t.topics} · {stats.guidedLabs} {t.guidedLabs}
@@ -204,6 +231,39 @@ export default function StudyManualView() {
           <span className="basis-full text-[11px] text-slate-500">{t.progressStoredLocally}</span>
         </div>
       </header>
+
+      <section
+        id={helpPanelId}
+        aria-labelledby={helpTitleId}
+        hidden={!isHelpOpen}
+        className="mb-6 rounded-xl border border-indigo-200 bg-indigo-50/50 p-4 md:p-5"
+      >
+        <h2 id={helpTitleId} className="text-base font-semibold text-indigo-900">
+          {t.helpTitle}
+        </h2>
+        <ol className="mt-3 grid gap-4 md:grid-cols-3">
+          {[
+            { icon: ListChecks, title: t.helpNavigationTitle, body: t.helpNavigationBody },
+            { icon: FlaskConical, title: t.helpLabsTitle, body: t.helpLabsBody },
+            { icon: ArrowRight, title: t.helpChaptersTitle, body: t.helpChaptersBody }
+          ].map(({ icon: Icon, title, body }) => (
+            <li key={title} className="min-w-0 text-sm leading-relaxed text-slate-700">
+              <p className="mb-1 flex items-center gap-2 font-semibold text-indigo-900">
+                <Icon aria-hidden="true" className="h-4 w-4 shrink-0" />
+                {title}
+              </p>
+              <p>{body}</p>
+            </li>
+          ))}
+        </ol>
+        <button
+          type="button"
+          onClick={dismissHelp}
+          className="mt-4 inline-flex min-h-11 items-center rounded-lg bg-indigo-700 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2"
+        >
+          {t.dismissHelp}
+        </button>
+      </section>
 
       {chapters.length > 1 ? (
         <nav aria-label={t.chapterNav} className="mb-6 space-y-3">

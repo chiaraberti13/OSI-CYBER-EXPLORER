@@ -2,7 +2,7 @@ import type { Language } from '../types';
 import { STUDY_MANUAL } from '../content/studyManual';
 
 export const PREFERENCES_STORAGE_KEY = 'osi-lab-preferences';
-export const PREFERENCES_STORAGE_VERSION = 2;
+export const PREFERENCES_STORAGE_VERSION = 3;
 export const SIMULATION_SPEEDS = [0.5, 1, 2] as const;
 
 export type SimulationSpeed = (typeof SIMULATION_SPEEDS)[number];
@@ -12,6 +12,7 @@ export interface PersistedPreferences {
   audioEnabled: boolean;
   simSpeed: SimulationSpeed;
   hasSeenGuide: boolean;
+  hasDismissedManualHelp: boolean;
   completedChapterIds: string[];
 }
 
@@ -20,6 +21,7 @@ export const DEFAULT_PREFERENCES: Readonly<PersistedPreferences> = Object.freeze
   audioEnabled: true,
   simSpeed: 1,
   hasSeenGuide: false,
+  hasDismissedManualHelp: false,
   completedChapterIds: []
 });
 
@@ -52,14 +54,19 @@ export function sanitizePreferences(value: unknown): PersistedPreferences {
     audioEnabled: typeof value.audioEnabled === 'boolean' ? value.audioEnabled : DEFAULT_PREFERENCES.audioEnabled,
     simSpeed: isSimulationSpeed(value.simSpeed) ? value.simSpeed : DEFAULT_PREFERENCES.simSpeed,
     hasSeenGuide: typeof value.hasSeenGuide === 'boolean' ? value.hasSeenGuide : DEFAULT_PREFERENCES.hasSeenGuide,
+    hasDismissedManualHelp:
+      typeof value.hasDismissedManualHelp === 'boolean'
+        ? value.hasDismissedManualHelp
+        : DEFAULT_PREFERENCES.hasDismissedManualHelp,
     completedChapterIds: sanitizeCompletedChapterIds(value.completedChapterIds)
   };
 }
 
 /**
- * Versions 0 and 1 predate chapter progress. They retain valid preferences and
- * start with an empty completion list. Unknown schemas are not guessed.
+ * Versions 0 and 1 predate chapter progress; version 2 predates manual help.
+ * Retain valid preferences and progress, with safe defaults for missing fields.
+ * Unknown schemas are not guessed.
  */
 export function migratePreferences(value: unknown, version: number): PersistedPreferences {
-  return version === 0 || version === 1 ? sanitizePreferences(value) : { ...DEFAULT_PREFERENCES };
+  return version === 0 || version === 1 || version === 2 ? sanitizePreferences(value) : { ...DEFAULT_PREFERENCES };
 }

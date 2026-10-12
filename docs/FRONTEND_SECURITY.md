@@ -11,7 +11,7 @@ ESLint blocca nel codice TypeScript/React di produzione:
 - accesso di rete non autorizzato tramite `fetch`, `XMLHttpRequest`, `WebSocket`, `EventSource` e `sendBeacon`;
 - persistenza non approvata tramite `sessionStorage`, `indexedDB` e cookie gestiti dal client.
 
-`localStorage` è consentito esclusivamente in `src/store.ts`, dove SEC-08 applica versione, migrazione, validazione in rehydration e una `partialize` allowlist limitata a `language`, `audioEnabled`, `simSpeed` e `hasSeenGuide`.
+`localStorage` è consentito esclusivamente in `src/store.ts`, dove SEC-08 applica versione, migrazione, validazione in rehydration e una `partialize` allowlist limitata a `language`, `audioEnabled`, `simSpeed`, `hasSeenGuide`, `hasDismissedManualHelp` e `completedChapterIds`. Lo schema corrente è alla versione 3: conserva le preferenze e il progresso valido dalle versioni 0–2, ripristina i default per campi assenti o non validi e non interpreta versioni sconosciute. Gli id completati sono limitati ai capitoli esistenti e il flag delle istruzioni accetta soltanto booleani. Quando Web Storage è bloccato, l'adapter mantiene queste preferenze in memoria per la sessione.
 
 ## Test e CI
 

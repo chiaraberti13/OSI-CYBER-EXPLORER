@@ -33,6 +33,17 @@ export const it = {
   manual: {
     heading: 'Manuale di studio',
     intro: 'Gli argomenti da studiare, spiegati in modo progressivo e collegati ai laboratori interattivi.',
+    helpTitle: 'Come usare questa guida',
+    helpNavigationTitle: 'Scegli e orientati',
+    helpNavigationBody:
+      'Scegli un capitolo dall’indice per dominio CCNA. Usa «In questa pagina» su desktop o «Contenuti del capitolo» su mobile per raggiungere un argomento.',
+    helpLabsTitle: 'Metti in pratica',
+    helpLabsBody:
+      'Leggi la spiegazione, poi prova la consegna e la sfida del laboratorio guidato. Apri il laboratorio interattivo e confronta il risultato con la soluzione commentata e l’autoverifica.',
+    helpChaptersTitle: 'Prosegui nello studio',
+    helpChaptersBody:
+      'A fine capitolo usa «Capitolo precedente» e «Capitolo successivo». Segna i capitoli completati: il progresso rimane in questo browser.',
+    dismissHelp: 'Chiudi le istruzioni',
     chapters: 'capitoli',
     topics: 'argomenti',
     guidedLabs: 'laboratori guidati',

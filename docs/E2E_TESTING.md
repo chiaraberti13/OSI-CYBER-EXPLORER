@@ -17,6 +17,10 @@ CSP-compatible assets that ship to users.
 
 Covered flows (`e2e/`):
 
+`manual-help.spec.ts` covers first-visit instructions, dismissal and reopening by
+keyboard, reload and lab round trips, migration of previous chapter progress,
+blocked Web Storage, and IT/EN Axe/reflow/touch-target checks at 320 px (UX-22).
+
 | File                    | Flow                                                                                                                                                                                                                                                                                                                                                |
 | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `accessibility.spec.ts` | Axe WCAG 2.0/2.1/2.2 A/AA scans on representative IT/EN routes and the open Guide; real-browser modal focus entry, `Tab`/`Shift+Tab` loop, `Escape` close, and focus restoration. Violations include actionable node details and fail the PR workflow.                                                                                              |
@@ -82,6 +86,11 @@ produzione** servita da `vite preview`, così da esercitare gli stessi lazy chun
 hash routing e asset compatibili con la CSP che arrivano all'utente.
 
 Flussi coperti (`e2e/`):
+
+`manual-help.spec.ts` copre istruzioni al primo accesso, chiusura e riapertura da
+tastiera, reload e andata/ritorno dai laboratori, migrazione del progresso
+precedente, Web Storage bloccato e controlli Axe/reflow/target touch IT/EN a 320 px
+(UX-22).
 
 | File                    | Flusso                                                                                                                                                                                                                                                                                                                                                                          |
 | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

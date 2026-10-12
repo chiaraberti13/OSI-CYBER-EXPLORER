@@ -16,6 +16,7 @@ describe('preference schema', () => {
         audioEnabled: false,
         simSpeed: 2,
         hasSeenGuide: true,
+        hasDismissedManualHelp: true,
         completedChapterIds: ['osi-model', 'osi-model', 'not-a-chapter']
       })
     ).toEqual({
@@ -23,6 +24,7 @@ describe('preference schema', () => {
       audioEnabled: false,
       simSpeed: 2,
       hasSeenGuide: true,
+      hasDismissedManualHelp: true,
       completedChapterIds: ['osi-model']
     });
   });
@@ -33,7 +35,8 @@ describe('preference schema', () => {
         language: 'fr',
         audioEnabled: 'false',
         simSpeed: 99,
-        hasSeenGuide: 1
+        hasSeenGuide: 1,
+        hasDismissedManualHelp: 'true'
       })
     ).toEqual(DEFAULT_PREFERENCES);
   });
@@ -59,6 +62,7 @@ describe('preference schema', () => {
       audioEnabled: true,
       simSpeed: 0.5,
       hasSeenGuide: false,
+      hasDismissedManualHelp: false,
       completedChapterIds: ['ethernet-switching']
     });
   });
@@ -90,6 +94,7 @@ describe('preference schema', () => {
       audioEnabled: false,
       simSpeed: 2,
       hasSeenGuide: true,
+      hasDismissedManualHelp: false,
       completedChapterIds: []
     });
   });
@@ -110,8 +115,35 @@ describe('preference schema', () => {
       audioEnabled: false,
       simSpeed: 1,
       hasSeenGuide: false,
+      hasDismissedManualHelp: false,
       completedChapterIds: []
     });
+  });
+
+  it('migrates version 2 without losing chapter progress and enables first-visit manual help', () => {
+    expect(
+      migratePreferences(
+        {
+          language: 'en',
+          audioEnabled: false,
+          simSpeed: 2,
+          hasSeenGuide: true,
+          completedChapterIds: ['osi-model', 'unknown', 'osi-model']
+        },
+        2
+      )
+    ).toEqual({
+      language: 'en',
+      audioEnabled: false,
+      simSpeed: 2,
+      hasSeenGuide: true,
+      hasDismissedManualHelp: false,
+      completedChapterIds: ['osi-model']
+    });
+  });
+
+  it.each([null, 'false', 1, [], { dismissed: true }])('rejects malformed manual-help flags: %j', (value) => {
+    expect(sanitizePreferences({ hasDismissedManualHelp: value }).hasDismissedManualHelp).toBe(false);
   });
 
   it.each([-1, PREFERENCES_STORAGE_VERSION + 1, 999])(
