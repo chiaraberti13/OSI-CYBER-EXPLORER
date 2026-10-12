@@ -327,17 +327,41 @@ export default function StudyManualView() {
       </section>
 
       {chapters.length > 1 ? (
-        <nav aria-label={t.chapterNav} className="mb-6 hidden space-y-3 lg:block">
+        <nav aria-label={t.chapterNav} className="mb-6 hidden space-y-4 lg:block">
           {chapterGroups.map((group) => {
             const groupLabel = group.domain
               ? `CCNA ${group.domain.number}.0 · ${group.domain.title[language]}`
               : t.trackExtension;
             const groupCompletion = chapterCompletion(group.chapters, completedChapterIds);
             return (
-              <div key={group.key} role="group" aria-label={groupLabel}>
-                <p className="eyebrow mb-1.5">
-                  {groupLabel} · {groupCompletion.completed}/{groupCompletion.total}
-                </p>
+              <div key={group.key} role="group" aria-label={groupLabel} className="border-l-2 border-slate-200 pl-3">
+                {/* Domain header: a weight badge and bold title give each CCNA domain a clear
+                    rank, with its chapter progress on the right — the hierarchy the flat
+                    eyebrow label lacked (IA track). */}
+                <div className="mb-2 flex items-center justify-between gap-3">
+                  <div className="flex min-w-0 items-center gap-2">
+                    {group.domain ? (
+                      <span className="shrink-0 rounded-md bg-slate-900 px-1.5 py-0.5 text-[11px] font-semibold text-white">
+                        {group.domain.weight}%
+                      </span>
+                    ) : (
+                      <span className="shrink-0 rounded-md bg-amber-100 px-1.5 py-0.5 text-[11px] font-semibold text-amber-800">
+                        {t.trackExtension}
+                      </span>
+                    )}
+                    <span className="truncate text-[13px] font-semibold text-slate-800">
+                      {group.domain
+                        ? `CCNA ${group.domain.number}.0 · ${group.domain.title[language]}`
+                        : t.trackExtension}
+                    </span>
+                  </div>
+                  <span
+                    className="shrink-0 font-mono text-[11px] text-slate-500"
+                    aria-label={`${groupLabel} · ${t.chapterProgress}: ${groupCompletion.completed}/${groupCompletion.total}`}
+                  >
+                    {groupCompletion.completed}/{groupCompletion.total}
+                  </span>
+                </div>
                 <div className="flex flex-wrap gap-1.5">
                   {group.chapters.map((entry) => {
                     const isActive = entry.id === chapter.id;

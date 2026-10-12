@@ -149,7 +149,8 @@ body {
 :root[data-theme='dark'] [data-manual-root] [data-manual-tile='example'] .text-emerald-950 {
   color: var(--color-dark-tile-example-body);
 }
-:root[data-theme='dark'] [data-manual-root] [data-manual-tile='common-mistakes'] {
+:root[data-theme='dark'] [data-manual-root] [data-manual-tile='common-mistakes'],
+:root[data-theme='dark'] [data-manual-root] .bg-amber-100 {
   background-color: var(--color-dark-tile-mistakes-bg);
   border-color: var(--color-dark-tile-mistakes-border);
 }
