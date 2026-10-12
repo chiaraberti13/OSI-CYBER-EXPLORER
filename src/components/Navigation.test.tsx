@@ -102,11 +102,14 @@ describe('Navigation', () => {
     expect(within(screen.getByRole('dialog')).getByRole('status').textContent).toMatch(/Nessun laboratorio/);
   });
 
-  it('marks the group that holds the active view', () => {
+  it('marks the group that holds the active view with aria-current (IA-02)', () => {
     useStore.setState({ activeView: 'emailsecurity' });
     render(<Navigation />);
-    // The breadcrumb names the current entry, so the learner is never lost.
-    expect(screen.getByText('Email e phishing')).toBeTruthy();
+    // Wayfinding without a redundant breadcrumb: the group holding the active view is the
+    // only group button marked aria-current, so assistive tech still reports where you are.
+    const current = screen.getAllByRole('button').filter((button) => button.getAttribute('aria-current') === 'true');
+    expect(current).toHaveLength(1);
+    expect(current[0].textContent).toMatch(/Sicurezza per area/);
   });
 
   it('renders every label in English when the language changes', () => {

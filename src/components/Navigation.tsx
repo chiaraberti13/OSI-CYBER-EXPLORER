@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { Check, ChevronDown, ChevronLeft, ChevronRight, Link2, Search, X } from 'lucide-react';
-import { NAV_GROUPS, navEntryOf, navGroupOf, navOverflow, searchNav } from '../lib/navigation';
+import { NAV_GROUPS, navGroupOf, navOverflow, searchNav } from '../lib/navigation';
 import { useStore } from '../store';
 import { useShallow } from 'zustand/react/shallow';
 import ViewLink from './ViewLink';
@@ -29,7 +29,6 @@ export default function Navigation() {
   const [tabOverflow, setTabOverflow] = useState({ canScrollLeft: false, canScrollRight: false });
 
   const activeGroup = navGroupOf(activeView);
-  const activeEntry = navEntryOf(activeView);
   const results = useMemo(() => searchNav(query, language), [query, language]);
 
   const labels = uiMessages(language).navigation;
@@ -227,6 +226,7 @@ export default function Navigation() {
                     aria-expanded={isOpen}
                     aria-haspopup="true"
                     aria-controls={`nav-panel-${group.id}`}
+                    aria-current={holdsActiveView ? 'true' : undefined}
                     className={`flex min-h-11 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-md border px-3 text-[13px] font-medium transition-colors ${
                       isOpen
                         ? 'border-slate-300 bg-white text-slate-900'
@@ -253,28 +253,22 @@ export default function Navigation() {
             </div>
           </div>
 
-          {activeEntry ? (
-            <p
-              className="hidden shrink-0 items-center gap-1.5 truncate pl-2 text-[11px] text-slate-400 lg:flex"
-              aria-live="polite"
-            >
-              <span className="eyebrow">{labels.current}</span>
-              <span className="font-medium text-slate-600">{activeEntry[language]}</span>
-            </p>
-          ) : null}
-
+          {/* IA-02: the active group already carries aria-current and a visible dot, and the
+              view's own heading names where you are, so the old "Sei qui · <vista>" breadcrumb
+              was redundant chrome; removed to declutter the bar. The copy-link is icon-only
+              with an accessible label and tooltip to reclaim the horizontal space. */}
           <button
             type="button"
             onClick={copyCurrentLink}
             aria-label={labels.copyLink}
-            className="flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-1.5 rounded-md border border-slate-200/70 bg-white px-2.5 text-[13px] font-medium text-slate-500 transition-colors hover:text-slate-800"
+            title={labels.copyLink}
+            className="flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-md border border-slate-200/70 bg-white text-slate-500 transition-colors hover:text-slate-800"
           >
             {linkCopied ? (
-              <Check className="h-3.5 w-3.5 text-emerald-600" aria-hidden="true" />
+              <Check className="h-4 w-4 text-emerald-600" aria-hidden="true" />
             ) : (
-              <Link2 className="h-3.5 w-3.5" aria-hidden="true" />
+              <Link2 className="h-4 w-4" aria-hidden="true" />
             )}
-            <span className="hidden xl:inline">{linkCopied ? labels.linkCopied : labels.copyLink}</span>
           </button>
 
           <button
