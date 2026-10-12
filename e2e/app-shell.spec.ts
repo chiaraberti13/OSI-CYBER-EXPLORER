@@ -257,8 +257,11 @@ test.describe('WCAG reflow and touch targets', () => {
       await expect(control).toBeVisible();
       const box = await control.boundingBox();
       expect(box, 'control must have a measurable box').not.toBeNull();
-      expect(box!.width).toBeGreaterThanOrEqual(44);
-      expect(box!.height).toBeGreaterThanOrEqual(44);
+      // Chromium can expose a declared 44 px box as 43.99994 because of
+      // device-scale floating-point conversion. Normalising to 0.01 CSS px
+      // avoids that transport noise without accepting a genuine 43.99 px target.
+      expect(Math.round(box!.width * 100) / 100).toBeGreaterThanOrEqual(44);
+      expect(Math.round(box!.height * 100) / 100).toBeGreaterThanOrEqual(44);
     }
 
     const undersizedControls = await page
@@ -266,9 +269,11 @@ test.describe('WCAG reflow and touch targets', () => {
       .evaluateAll((controls) =>
         controls.flatMap((control) => {
           const rect = control.getBoundingClientRect();
-          return rect.width < 44 || rect.height < 44
+          const width = Math.round(rect.width * 100) / 100;
+          const height = Math.round(rect.height * 100) / 100;
+          return width < 44 || height < 44
             ? [
-                `${control.tagName.toLowerCase()}[${control.getAttribute('aria-label') ?? control.textContent?.trim() ?? ''}]: ${rect.width}×${rect.height}`
+                `${control.tagName.toLowerCase()}[${control.getAttribute('aria-label') ?? control.textContent?.trim() ?? ''}]: ${width}×${height}`
               ]
             : [];
         })

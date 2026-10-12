@@ -53,6 +53,30 @@ jobs:
       - name: Verify source and build
         run: npm run verify
 
+      - name: Install Playwright Chromium for the accessibility checklist
+        run: npx playwright install --with-deps chromium
+
+      - name: Run browser accessibility release checklist
+        run: npm run test:e2e
+
+      - name: Retain Playwright accessibility evidence
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: accessibility-${{ github.ref_name }}
+          path: playwright-report/
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Audit release accessibility with Lighthouse CI
+        if: ${{ !cancelled() }}
+        uses: treosh/lighthouse-ci-action@3e7e23fb74242897f95c0ba9cabad3d0227b9b18 # v12.6.1
+        with:
+          configPath: ./lighthouserc.json
+          budgetPath: ./lighthouse-budget.json
+          uploadArtifacts: true
+          temporaryPublicStorage: false
+
       - name: Audit runtime and complete dependency graph
         run: |
           npm run audit:runtime

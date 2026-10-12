@@ -53,6 +53,11 @@ installs with `npm ci --ignore-scripts`, enforces the lockfile policy, installs
 only the pinned Chromium with its OS dependencies, runs the suite and uploads the
 HTML report as an artifact.
 
+The tagged-release workflow runs the same complete suite before publication and
+retains its HTML report for 90 days. It then runs the blocking Lighthouse
+Accessibility threshold documented in the
+[accessibility release checklist](ACCESSIBILITY_RELEASE_CHECKLIST.md#english).
+
 ### Conventions
 
 - Specs use the `.spec.ts` extension under `e2e/`, outside `src/`, so **Vitest
@@ -112,6 +117,11 @@ browser e non rallentare il job di build. Fissa le action a SHA, installa con
 `npm ci --ignore-scripts`, applica la policy del lockfile, installa solo il
 Chromium fissato con le relative dipendenze di sistema, esegue la suite e carica
 il report HTML come artifact.
+
+Il workflow delle release taggate esegue la stessa suite completa prima della
+pubblicazione e conserva il report HTML per 90 giorni. Esegue poi la soglia
+bloccante Lighthouse Accessibility documentata nella
+[checklist di accessibilità](ACCESSIBILITY_RELEASE_CHECKLIST.md#italiano).
 
 ### Convenzioni
 

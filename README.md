@@ -127,6 +127,7 @@ Run `npx playwright install chromium` once before `npm run test:e2e`.
 Dependency and audit policy: [docs/DEPENDENCIES.md](docs/DEPENDENCIES.md).
 Coverage scope, thresholds and CI reports: [docs/TEST_COVERAGE.md](docs/TEST_COVERAGE.md#english).
 End-to-end smoke tests: [docs/E2E_TESTING.md](docs/E2E_TESTING.md#english).
+Accessibility release targets: [docs/ACCESSIBILITY_RELEASE_CHECKLIST.md](docs/ACCESSIBILITY_RELEASE_CHECKLIST.md#english).
 Typed Italian/English UI catalogs: [docs/INTERNATIONALIZATION.md](docs/INTERNATIONALIZATION.md#english).
 Shared color, contrast, typography, spacing, radius and elevation tokens: [docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md).
 Contribution setup, bilingual conventions and PR checklist: [CONTRIBUTING.md](CONTRIBUTING.md#english).

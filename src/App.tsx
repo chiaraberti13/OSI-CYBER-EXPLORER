@@ -102,7 +102,7 @@ export default function App() {
       <Header />
       <Navigation />
 
-      <main id="main-content" tabIndex={-1} className="max-w-7xl mx-auto p-4 md:p-6 min-h-[75vh]">
+      <main id="main-content" tabIndex={-1} className="max-w-7xl mx-auto min-h-[calc(100dvh-6.625rem)] p-4 md:p-6">
         {/*
           ENG-09: a lazy chunk that fails to download throws during render. The boundary
           wraps Suspense so it catches that rejection (and any render error in the view)

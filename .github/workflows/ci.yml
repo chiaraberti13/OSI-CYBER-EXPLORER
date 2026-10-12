@@ -43,6 +43,8 @@ jobs:
         run: npm run verify:offensive-content && npm run verify:technical-content && npm run verify:documentation-targets
       - name: Verify design-token contrast
         run: npm run verify:design-system
+      - name: Verify accessibility release policy
+        run: npm run verify:accessibility-release
       - name: Check formatting
         run: npm run format:check
       - name: Type-check
