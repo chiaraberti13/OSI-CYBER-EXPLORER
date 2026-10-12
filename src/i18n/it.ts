@@ -74,7 +74,7 @@ export const it = {
     showSolution: 'Mostra la soluzione commentata',
     solution: 'Soluzione commentata',
     selfCheck: 'Autoverifica',
-    openLab: 'Apri il laboratorio',
+    doGuidedExercise: 'Fai l’esercizio guidato',
     chapterNav: 'Capitoli del manuale',
     chapterSelector: 'Vai a un capitolo',
     mobileChapterNav: 'Navigazione mobile del manuale',

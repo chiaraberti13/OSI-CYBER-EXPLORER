@@ -25,7 +25,7 @@ test.describe('manual onboarding (UX-22)', () => {
     await page.keyboard.press('Space');
     await expect(help).toBeHidden();
 
-    await page.getByRole('link', { name: 'Apri il laboratorio', exact: true }).first().click();
+    await page.getByRole('link', { name: 'Fai l’esercizio guidato', exact: true }).first().click();
     await expect(page).toHaveURL(/#\/(osi|ports)$/);
     await page.goBack();
     await expect(trigger).toHaveAttribute('aria-expanded', 'false');
@@ -71,7 +71,7 @@ test.describe('manual onboarding (UX-22)', () => {
     page.on('pageerror', (error) => pageErrors.push(error.message));
     await page.goto('/#/manual');
     await page.getByRole('button', { name: 'Chiudi le istruzioni' }).click();
-    await page.getByRole('link', { name: 'Apri il laboratorio', exact: true }).first().click();
+    await page.getByRole('link', { name: 'Fai l’esercizio guidato', exact: true }).first().click();
     await page.goBack();
     const trigger = page.getByRole('button', { name: 'Come usare questa guida' });
     await expect(trigger).toHaveAttribute('aria-expanded', 'false');

@@ -237,9 +237,11 @@ export default function StudyManualView() {
 
       <ViewLink
         view={lab.lab}
-        className="mt-4 inline-flex items-center gap-1.5 rounded-lg bg-indigo-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-500"
+        data-manual-action="guided-exercise"
+        className="mt-4 inline-flex min-h-11 items-center gap-1.5 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-indigo-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2"
       >
-        {t.openLab}
+        <FlaskConical aria-hidden="true" className="h-4 w-4 shrink-0" />
+        {t.doGuidedExercise}
         <ArrowRight aria-hidden="true" className="h-3.5 w-3.5" />
       </ViewLink>
     </div>
@@ -643,17 +645,21 @@ export default function StudyManualView() {
                 </p>
               ) : null}
 
+              {/* Practical path first: the guided exercise is the primary call to
+                  action (solid, labelled «Fai l'esercizio guidato»), with the lighter
+                  «Studia nel laboratorio» offered afterwards as optional free exploration. */}
+              {topic.guidedLabs?.map(renderGuidedLab)}
+
               {topic.lab ? (
                 <ViewLink
                   view={topic.lab}
-                  className="mt-4 inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-600 transition-colors hover:text-slate-900"
+                  data-manual-action="study-lab"
+                  className="mt-4 inline-flex min-h-11 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-600 transition-colors hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
                 >
                   {t.studyInLab}
                   <ArrowRight aria-hidden="true" className="h-3.5 w-3.5" />
                 </ViewLink>
               ) : null}
-
-              {topic.guidedLabs?.map(renderGuidedLab)}
             </section>
           ))}
 

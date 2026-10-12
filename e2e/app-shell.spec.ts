@@ -131,7 +131,7 @@ test.describe('application shell', () => {
 
     // A guided lab links into the OSI stack lab.
     await page
-      .getByRole('link', { name: /Apri il laboratorio/ })
+      .getByRole('link', { name: /Fai l’esercizio guidato/ })
       .first()
       .click();
     await expect(page).toHaveURL(/#\/(osi|ports)$/);

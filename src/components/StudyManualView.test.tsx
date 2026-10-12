@@ -235,9 +235,39 @@ describe('StudyManualView (EDU-01)', () => {
 
     // At least one guided lab opens the OSI stack lab via a real, copyable link.
     const osiLinks = screen
-      .getAllByRole('link', { name: /Apri il laboratorio/ })
+      .getAllByRole('link', { name: /Fai l’esercizio guidato/ })
       .filter((a) => a.getAttribute('href') === '#/osi');
     expect(osiLinks.length).toBeGreaterThan(0);
+  });
+
+  it('makes the guided exercise the primary practical action in each topic (UX-26)', () => {
+    const { container } = render(<StudyManualView />);
+
+    const topics = [...container.querySelectorAll<HTMLElement>('[data-manual-topic]')];
+    expect(topics.length).toBeGreaterThan(0);
+
+    for (const topic of topics) {
+      const guidedTiles = topic.querySelectorAll('[data-manual-tile="guided-lab"]');
+      // Every guided lab exposes a clearly primary call to action with the explicit label.
+      for (const tile of guidedTiles) {
+        const primary = tile.querySelector<HTMLAnchorElement>('[data-manual-action="guided-exercise"]');
+        expect(primary).not.toBeNull();
+        expect(primary!.textContent).toContain('Fai l’esercizio guidato');
+        // Primary styling: a solid accent surface, not a ghost/outline control.
+        expect(primary!.className).toContain('bg-indigo-600');
+        expect(primary!.className).toContain('text-white');
+      }
+
+      // Where a topic also offers free lab exploration, it is a clearly secondary
+      // action that comes after the primary guided exercise in reading order.
+      const study = topic.querySelector<HTMLElement>('[data-manual-action="study-lab"]');
+      if (study && guidedTiles.length > 0) {
+        expect(study.className).not.toContain('bg-indigo-600');
+        const primary = topic.querySelector<HTMLElement>('[data-manual-action="guided-exercise"]');
+        expect(primary).not.toBeNull();
+        expect(primary!.compareDocumentPosition(study) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+      }
+    }
   });
 
   it('localises the manual to English', () => {

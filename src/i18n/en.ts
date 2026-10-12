@@ -73,7 +73,7 @@ export const en = {
     showSolution: 'Show the commented solution',
     solution: 'Commented solution',
     selfCheck: 'Self-check',
-    openLab: 'Open the lab',
+    doGuidedExercise: 'Do the guided exercise',
     chapterNav: 'Manual chapters',
     chapterSelector: 'Jump to a chapter',
     mobileChapterNav: 'Mobile manual navigation',
