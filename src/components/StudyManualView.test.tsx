@@ -170,7 +170,7 @@ describe('StudyManualView (EDU-01)', () => {
     const user = userEvent.setup();
     render(<StudyManualView />);
     const rail = screen.getByRole('navigation', { name: 'In questa pagina' });
-    const mobileContents = screen.getByRole('navigation', { name: 'Contenuti del capitolo' });
+    const mobileContents = screen.getByRole('navigation', { name: 'Navigazione mobile del manuale' });
     const railButtons = within(rail).getAllByRole('button');
     const mobileButtons = within(mobileContents).getAllByRole('button');
 
@@ -180,6 +180,25 @@ describe('StudyManualView (EDU-01)', () => {
     expect(railButtons[0].hasAttribute('aria-current')).toBe(false);
     expect(railButtons[1].getAttribute('aria-current')).toBe('location');
     expect(mobileButtons[1].getAttribute('aria-current')).toBe('location');
+  });
+
+  it('offers a compact domain-grouped chapter selector and persistent topic index on mobile', async () => {
+    const user = userEvent.setup();
+    vi.spyOn(window, 'scrollTo').mockImplementation(() => undefined);
+    render(<StudyManualView />);
+
+    const mobileNav = screen.getByRole('navigation', { name: 'Navigazione mobile del manuale' });
+    const chapterSelect = within(mobileNav).getByRole('combobox', { name: 'Vai a un capitolo' });
+    expect(within(chapterSelect).getAllByRole('option')).toHaveLength(9);
+    expect(chapterSelect.querySelector('optgroup[label="CCNA 1.0 · Fondamenti di rete · 0/3"]')).not.toBeNull();
+    expect(chapterSelect.querySelector('optgroup[label="Estensione · 0/1"]')).not.toBeNull();
+    expect(within(mobileNav).getAllByRole('button')).toHaveLength(4);
+
+    await user.selectOptions(chapterSelect, 'ethernet-switching');
+    const chapterHeading = screen.getByRole('heading', { level: 2, name: /Ethernet/ });
+    expect((chapterSelect as HTMLSelectElement).value).toBe('ethernet-switching');
+    expect(document.activeElement).toBe(chapterHeading);
+    expect(within(mobileNav).getAllByRole('button')).toHaveLength(3);
   });
 
   it('respects the reduced-motion preference for manual scrolling', () => {
@@ -256,7 +275,7 @@ describe('StudyManualView (EDU-01)', () => {
 
     // The selector lives inside the single chapter navigation and is grouped by
     // CCNA domain, so the per-domain layout stays compact on mobile.
-    const chapterNav = screen.getByRole('navigation', { name: 'Capitoli del manuale' });
+    const chapterNav = screen.getByRole('navigation', { name: 'Navigazione mobile del manuale' });
     const selector = within(chapterNav).getByRole('combobox', { name: 'Vai a un capitolo' });
     expect((selector as HTMLSelectElement).value).toBe('osi-model');
     expect(within(selector).getAllByRole('group').length).toBeGreaterThan(1);

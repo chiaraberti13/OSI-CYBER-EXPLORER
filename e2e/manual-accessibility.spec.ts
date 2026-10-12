@@ -68,7 +68,7 @@ test.describe('manual accessibility on mobile (UX-24)', () => {
 
   test('keeps current location, touch targets and colored tiles accessible', async ({ page }) => {
     await page.goto('/#/manual');
-    const contents = page.getByRole('navigation', { name: 'Contenuti del capitolo' });
+    const contents = page.getByRole('navigation', { name: 'Navigazione mobile del manuale' });
     const buttons = contents.getByRole('button');
     await expect(buttons.first()).toHaveAttribute('aria-current', 'location');
     await buttons.nth(1).click();

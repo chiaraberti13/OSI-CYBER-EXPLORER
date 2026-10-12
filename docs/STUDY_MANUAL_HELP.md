@@ -2,6 +2,14 @@
 
 ## English
 
+On screens below the desktop breakpoint, a compact sticky toolbar replaces the
+full chapter index. Its native chapter selector groups chapters by CCNA domain
+and declared extensions, displays completion marks, and stays available alongside
+the overall progress count. A horizontally scrollable topic index keeps every
+topic reachable while reading. Previous/next actions remain at the chapter end.
+The toolbar and labels are localised; chapter changes preserve the heading focus
+behaviour and topic jumps account for the toolbar height.
+
 The first manual visit shows an inline **How to use this guide** panel. Its three
 steps explain the CCNA chapter index and topic navigation, how to attempt a guided
 lab before checking its solution, and previous/next chapter navigation with local
@@ -31,6 +39,15 @@ at 320 px and checks page overflow and control dimensions. Automated accessibili
 checks cover detectable issues; the wider manual refinements remain in UX-23–UX-29.
 
 ## Italiano
+
+Sotto il breakpoint desktop una toolbar sticky compatta sostituisce l'indice
+esteso dei capitoli. Il selettore nativo raggruppa i capitoli per dominio CCNA ed
+estensioni dichiarate, mostra le spunte di completamento e resta disponibile
+insieme al conteggio del progresso complessivo. L'indice degli argomenti scorre
+orizzontalmente e rimane raggiungibile durante la lettura. Le azioni
+Precedente/Successivo restano a fine capitolo. Toolbar ed etichette sono
+localizzate; il cambio capitolo mantiene il focus sul titolo e i salti agli
+argomenti tengono conto dell'altezza della toolbar.
 
 Al primo accesso al manuale compare il pannello inline **Come usare questa guida**.
 I tre passi spiegano indice dei capitoli CCNA e navigazione agli argomenti, come

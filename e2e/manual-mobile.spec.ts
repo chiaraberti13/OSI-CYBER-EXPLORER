@@ -17,12 +17,12 @@ test.describe('manual mobile navigation (UX-25)', () => {
   test('collapses the chapter navigation into a compact selector without overflow', async ({ page }) => {
     await page.goto('/#/manual');
 
-    const chapterNav = page.getByRole('navigation', { name: 'Capitoli del manuale' });
+    const chapterNav = page.getByRole('navigation', { name: 'Navigazione mobile del manuale' });
     const selector = chapterNav.getByRole('combobox', { name: 'Vai a un capitolo' });
     await expect(selector).toBeVisible();
 
     // The wide-viewport chip buttons are hidden on mobile, so the navigation stays compact.
-    await expect(chapterNav.getByRole('button')).toHaveCount(0);
+    await expect(page.getByRole('navigation', { name: 'Capitoli del manuale' })).toBeHidden();
 
     // Compactness: the whole chapter navigation stays well under half the viewport height.
     const navBox = await chapterNav.boundingBox();
@@ -46,11 +46,11 @@ test.describe('manual mobile navigation (UX-25)', () => {
     await page.goto('/#/manual');
 
     const selector = page
-      .getByRole('navigation', { name: 'Capitoli del manuale' })
+      .getByRole('navigation', { name: 'Navigazione mobile del manuale' })
       .getByRole('combobox', { name: 'Vai a un capitolo' });
 
     // The chapter index (contents) remains available on mobile.
-    const contents = page.getByRole('navigation', { name: 'Contenuti del capitolo' });
+    const contents = page.getByRole('navigation', { name: 'Navigazione mobile del manuale' });
     await expect(contents).toBeVisible();
 
     // Choosing a chapter from the selector navigates and moves focus to the new title.

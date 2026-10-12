@@ -76,6 +76,7 @@ export const en = {
     openLab: 'Open the lab',
     chapterNav: 'Manual chapters',
     chapterSelector: 'Jump to a chapter',
+    mobileChapterNav: 'Mobile manual navigation',
     difficultyIntro: 'Intro',
     difficultyCore: 'Core',
     difficultyAdvanced: 'Advanced',

@@ -77,6 +77,7 @@ export const it = {
     openLab: 'Apri il laboratorio',
     chapterNav: 'Capitoli del manuale',
     chapterSelector: 'Vai a un capitolo',
+    mobileChapterNav: 'Navigazione mobile del manuale',
     difficultyIntro: 'Introduttivo',
     difficultyCore: 'Fondamentale',
     difficultyAdvanced: 'Avanzato',

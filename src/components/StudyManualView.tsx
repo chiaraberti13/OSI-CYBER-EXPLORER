@@ -45,15 +45,17 @@ export default function StudyManualView() {
   const helpTitleId = useId();
   const t = uiMessages(language).manual;
   const chapters = orderedChapters();
+  const chapterGroups = chaptersByDomain();
   const [activeId, setActiveId] = useState(chapters[0]?.id);
   const chapter = findChapter(activeId) ?? chapters[0];
   const stats = manualStats();
   const overallCompletion = chapterCompletion(chapters, completedChapterIds);
   const headingId = useId();
-  const chapterSelectId = useId();
   const chapterTitleId = useId();
   const chapterTitleRef = useRef<HTMLHeadingElement>(null);
+  const chapterContextRef = useRef<HTMLDivElement>(null);
   const focusChapterTitleAfterChange = useRef(false);
+  const mobileChapterSelectId = useId();
 
   const dismissHelp = () => {
     setHasDismissedManualHelp(true);
@@ -98,8 +100,11 @@ export default function StudyManualView() {
     // The sections are stacked and tall, so intersection order is unreliable. On any
     // intersection change, recompute the active topic as the last one whose top has
     // scrolled above the sticky-header line — a robust scroll-spy independent of height.
-    const headerOffset = 160;
     const recompute = () => {
+      const context = chapterContextRef.current;
+      const contextHeight = context?.getBoundingClientRect().height ?? 0;
+      const stickyTop = context ? Number.parseFloat(window.getComputedStyle(context).top) : Number.NaN;
+      const headerOffset = contextHeight > 0 && Number.isFinite(stickyTop) ? stickyTop + contextHeight + 8 : 160;
       const pendingId = pendingTopicScroll.current;
       if (pendingId) {
         const pendingElement = document.getElementById(`topic-${pendingId}`);
@@ -315,83 +320,44 @@ export default function StudyManualView() {
       </section>
 
       {chapters.length > 1 ? (
-        <nav aria-label={t.chapterNav} className="mb-6">
-          {/* Compact chapter selector for narrow viewports (UX-25): a single
-              full-width control keeps the per-domain navigation from taking over
-              the screen, stays within 320px without horizontal overflow, groups
-              chapters by CCNA domain and surfaces per-domain progress. */}
-          <div className="sm:hidden">
-            <label htmlFor={chapterSelectId} className="eyebrow mb-1.5 block text-slate-500">
-              {t.chapterSelector}
-            </label>
-            <select
-              id={chapterSelectId}
-              value={chapter.id}
-              onChange={(event) => selectChapter(event.target.value)}
-              className="min-h-11 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
-            >
-              {chaptersByDomain().map((group) => {
-                const groupLabel = group.domain
-                  ? `CCNA ${group.domain.number}.0 · ${group.domain.title[language]}`
-                  : t.trackExtension;
-                const groupCompletion = chapterCompletion(group.chapters, completedChapterIds);
-                return (
-                  <optgroup
-                    key={group.key}
-                    label={`${groupLabel} · ${groupCompletion.completed}/${groupCompletion.total}`}
-                  >
-                    {group.chapters.map((entry) => (
-                      <option key={entry.id} value={entry.id}>
-                        {completedChapterIds.includes(entry.id) ? '✓ ' : ''}
+        <nav aria-label={t.chapterNav} className="mb-6 hidden space-y-3 lg:block">
+          {chapterGroups.map((group) => {
+            const groupLabel = group.domain
+              ? `CCNA ${group.domain.number}.0 · ${group.domain.title[language]}`
+              : t.trackExtension;
+            const groupCompletion = chapterCompletion(group.chapters, completedChapterIds);
+            return (
+              <div key={group.key} role="group" aria-label={groupLabel}>
+                <p className="eyebrow mb-1.5">
+                  {groupLabel} · {groupCompletion.completed}/{groupCompletion.total}
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {group.chapters.map((entry) => {
+                    const isActive = entry.id === chapter.id;
+                    const isCompleted = completedChapterIds.includes(entry.id);
+                    return (
+                      <button
+                        key={entry.id}
+                        type="button"
+                        onClick={() => selectChapter(entry.id)}
+                        aria-current={isActive ? 'page' : undefined}
+                        className={`inline-flex min-h-11 items-center gap-1.5 rounded-md border px-3 py-1.5 text-[13px] font-medium transition-colors ${
+                          isActive
+                            ? 'border-slate-300 bg-white text-slate-900'
+                            : 'border-transparent text-slate-500 hover:bg-white/70 hover:text-slate-800'
+                        }`}
+                      >
+                        {isCompleted ? (
+                          <CircleCheck aria-hidden="true" className="h-3.5 w-3.5 text-emerald-700" />
+                        ) : null}
                         {entry.order}. {entry.title[language]}
-                      </option>
-                    ))}
-                  </optgroup>
-                );
-              })}
-            </select>
-          </div>
-
-          {/* Grouped chip navigation for wider viewports. */}
-          <div className="hidden space-y-3 sm:block">
-            {chaptersByDomain().map((group) => {
-              const groupLabel = group.domain
-                ? `CCNA ${group.domain.number}.0 · ${group.domain.title[language]}`
-                : t.trackExtension;
-              const groupCompletion = chapterCompletion(group.chapters, completedChapterIds);
-              return (
-                <div key={group.key} role="group" aria-label={groupLabel}>
-                  <p className="eyebrow mb-1.5">
-                    {groupLabel} · {groupCompletion.completed}/{groupCompletion.total}
-                  </p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {group.chapters.map((entry) => {
-                      const isActive = entry.id === chapter.id;
-                      const isCompleted = completedChapterIds.includes(entry.id);
-                      return (
-                        <button
-                          key={entry.id}
-                          type="button"
-                          onClick={() => selectChapter(entry.id)}
-                          aria-current={isActive ? 'page' : undefined}
-                          className={`inline-flex min-h-11 items-center gap-1.5 rounded-md border px-3 py-1.5 text-[13px] font-medium transition-colors ${
-                            isActive
-                              ? 'border-slate-300 bg-white text-slate-900'
-                              : 'border-transparent text-slate-500 hover:bg-white/70 hover:text-slate-800'
-                          }`}
-                        >
-                          {isCompleted ? (
-                            <CircleCheck aria-hidden="true" className="h-3.5 w-3.5 text-emerald-700" />
-                          ) : null}
-                          {entry.order}. {entry.title[language]}
-                        </button>
-                      );
-                    })}
-                  </div>
+                      </button>
+                    );
+                  })}
                 </div>
-              );
-            })}
-          </div>
+              </div>
+            );
+          })}
         </nav>
       ) : null}
 
@@ -400,22 +366,94 @@ export default function StudyManualView() {
           chapter h2 and topic h3 elements. 6.5rem equals the fixed 3.5rem app
           header plus the 3rem lab navigation immediately above it. */}
       <div
+        ref={chapterContextRef}
         role="region"
         aria-label={t.chapterContext}
         data-testid="chapter-context"
         className="sticky top-[6.5rem] z-30 -mx-4 mb-5 border-y border-slate-200/80 bg-canvas/95 px-4 py-2 shadow-sm backdrop-blur-md md:-mx-6 md:px-6 lg:mx-0 lg:rounded-lg lg:border"
       >
-        <div className="flex min-w-0 flex-col gap-0.5 sm:flex-row sm:items-baseline sm:gap-2">
+        <div className="hidden min-w-0 lg:flex lg:items-baseline lg:gap-2">
           <span className="shrink-0 text-[10px] font-semibold uppercase tracking-wider text-indigo-700">
             {chapterAlignment}
           </span>
-          <span aria-hidden="true" className="hidden text-slate-300 sm:inline">
+          <span aria-hidden="true" className="text-slate-300">
             /
           </span>
           <span className="truncate text-[13px] font-semibold text-slate-800" title={chapter.title[language]}>
             {chapter.title[language]}
           </span>
         </div>
+
+        <nav aria-label={t.mobileChapterNav} data-testid="mobile-manual-toolbar" className="space-y-2 lg:hidden">
+          <div className="flex min-w-0 items-center gap-2">
+            <label htmlFor={mobileChapterSelectId} className="sr-only">
+              {t.chapterSelector}
+            </label>
+            <select
+              id={mobileChapterSelectId}
+              value={chapter.id}
+              onChange={(event) => selectChapter(event.target.value)}
+              className="min-h-11 min-w-0 flex-1 truncate rounded-lg border border-slate-300 bg-white px-3 pr-8 text-[13px] font-semibold text-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
+            >
+              {chapterGroups.map((group) => {
+                const groupLabel = group.domain
+                  ? `CCNA ${group.domain.number}.0 · ${group.domain.title[language]}`
+                  : t.trackExtension;
+                const groupCompletion = chapterCompletion(group.chapters, completedChapterIds);
+                return (
+                  <optgroup
+                    key={`mobile-${group.key}`}
+                    label={`${groupLabel} · ${groupCompletion.completed}/${groupCompletion.total}`}
+                  >
+                    {group.chapters.map((entry) => (
+                      <option key={`mobile-${entry.id}`} value={entry.id}>
+                        {completedChapterIds.includes(entry.id) ? '✓ ' : ''}
+                        {entry.order}. {entry.title[language]}
+                      </option>
+                    ))}
+                  </optgroup>
+                );
+              })}
+            </select>
+            <span
+              aria-label={`${t.chapterProgress}: ${overallCompletion.completed}/${overallCompletion.total} (${overallCompletion.percent}%)`}
+              className="inline-flex h-11 shrink-0 items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 text-xs font-semibold text-slate-700"
+            >
+              <CircleCheck aria-hidden="true" className="h-3.5 w-3.5 text-emerald-700" />
+              {overallCompletion.completed}/{overallCompletion.total}
+            </span>
+          </div>
+
+          {chapter.topics.length > 1 ? (
+            <div>
+              <p className="sr-only">{t.tableOfContents}</p>
+              <ol
+                data-testid="mobile-topic-index"
+                className="-mx-1 flex snap-x gap-1.5 overflow-x-auto px-1 pb-1 [scrollbar-width:thin]"
+              >
+                {chapter.topics.map((topic, i) => {
+                  const isActive = activeTopic === topic.id;
+                  return (
+                    <li key={`mobile-topic-${topic.id}`} className="shrink-0 snap-start">
+                      <button
+                        type="button"
+                        onClick={() => jumpToTopic(topic.id)}
+                        aria-current={isActive ? 'location' : undefined}
+                        className={`inline-flex min-h-11 items-center rounded-full border px-3 text-[13px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 ${
+                          isActive
+                            ? 'border-indigo-300 bg-indigo-50 font-semibold text-indigo-800'
+                            : 'border-slate-200 bg-white font-medium text-slate-600 hover:text-slate-900'
+                        }`}
+                      >
+                        {i + 1}. {topic.title[language]}
+                      </button>
+                    </li>
+                  );
+                })}
+              </ol>
+            </div>
+          ) : null}
+        </nav>
       </div>
 
       <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_13rem] lg:gap-8">
@@ -460,8 +498,8 @@ export default function StudyManualView() {
         >
           {/* Chapter overview card: alignment, title, summary and an in-chapter table of contents. */}
           <div className="rounded-xl border border-slate-200 bg-white p-5 md:p-6">
-            <div className="flex items-start justify-between gap-4">
-              <div>
+            <div className="flex flex-col items-start justify-between gap-4 sm:flex-row">
+              <div className="min-w-0">
                 <span className="eyebrow text-indigo-700">{chapterAlignment}</span>
                 <h2
                   ref={chapterTitleRef}
@@ -506,36 +544,6 @@ export default function StudyManualView() {
               <CircleCheck aria-hidden="true" className="h-4 w-4" />
               {currentChapterCompleted ? t.markChapterIncomplete : t.markChapterComplete}
             </button>
-
-            {chapter.topics.length > 1 ? (
-              <nav aria-label={t.tableOfContents} className="mt-4 border-t border-slate-100 pt-4 lg:hidden">
-                <p className="flex items-center gap-1.5 eyebrow text-slate-400">
-                  <ListChecks aria-hidden="true" className="h-3.5 w-3.5" />
-                  {t.tableOfContents}
-                </p>
-                <ol className="mt-2 grid gap-1 sm:grid-cols-2">
-                  {chapter.topics.map((topic, i) => {
-                    const isActive = activeTopic === topic.id;
-                    return (
-                      <li key={`toc-${topic.id}`}>
-                        <button
-                          type="button"
-                          onClick={() => jumpToTopic(topic.id)}
-                          aria-current={isActive ? 'location' : undefined}
-                          className={`text-left text-[13px] text-indigo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 ${
-                            isActive
-                              ? 'font-semibold underline decoration-2 underline-offset-4'
-                              : 'font-medium hover:underline'
-                          }`}
-                        >
-                          {i + 1}. {topic.title[language]}
-                        </button>
-                      </li>
-                    );
-                  })}
-                </ol>
-              </nav>
-            ) : null}
           </div>
 
           {/* One card per topic so each is a bounded, scannable chunk. */}
@@ -545,7 +553,7 @@ export default function StudyManualView() {
               id={`topic-${topic.id}`}
               aria-labelledby={`topic-h-${topic.id}`}
               data-manual-topic={topic.id}
-              className="scroll-mt-40 rounded-xl border border-slate-200 bg-white p-5 md:p-6"
+              className="scroll-mt-[13.5rem] rounded-xl border border-slate-200 bg-white p-5 md:p-6 lg:scroll-mt-40"
             >
               <h3 id={`topic-h-${topic.id}`} className="text-lg font-semibold leading-7 text-slate-900">
                 {idx + 1}. {topic.title[language]}
@@ -681,7 +689,7 @@ export default function StudyManualView() {
                 <button
                   type="button"
                   onClick={() => selectChapter(nextChapter.id)}
-                  className="group inline-flex min-h-11 items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-right text-[13px] text-slate-600 transition-colors hover:text-slate-900 sm:text-right"
+                  className="group inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-right text-[13px] text-slate-600 transition-colors hover:text-slate-900 sm:text-right"
                 >
                   <span className="sm:text-right">
                     <span className="block text-[10px] font-semibold uppercase tracking-wider text-slate-400">
