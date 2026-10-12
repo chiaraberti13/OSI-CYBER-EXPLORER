@@ -12,6 +12,7 @@ import {
   allGuidedLabs,
   byChapterOrder,
   ccnaDomainForChapter,
+  chapterCompletion,
   chaptersByDomain,
   findChapter,
   manualStats,
@@ -161,6 +162,16 @@ describe('study manual selectors', () => {
       const orders = group.chapters.map((c) => c.order);
       expect(orders).toEqual([...orders].sort((a, b) => a - b));
     }
+  });
+
+  it('aggregates chapter completion without counting duplicates or unknown ids', () => {
+    const chapters = orderedChapters().slice(0, 2);
+    expect(chapterCompletion(chapters, [chapters[0].id, chapters[0].id, 'unknown'])).toEqual({
+      completed: 1,
+      total: 2,
+      percent: 50
+    });
+    expect(chapterCompletion([], ['unknown'])).toEqual({ completed: 0, total: 0, percent: 0 });
   });
 
   it('reports counts consistent with the dataset', () => {

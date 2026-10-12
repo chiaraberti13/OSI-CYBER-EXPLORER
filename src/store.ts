@@ -1,5 +1,5 @@
 import { create, type StateCreator } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
+import { persist, createJSONStorage, type StateStorage } from 'zustand/middleware';
 import type { AttackType, Language, LogEntry, OsiLayerId, PacketHeader, SimulationState } from './types';
 import type { SimProtocol } from './lib/osi';
 import {
@@ -11,6 +11,7 @@ import {
   sanitizePreferences
 } from './lib/preferences';
 import type { SimulationSpeed } from './lib/preferences';
+import { findChapter } from './lib/studyManual';
 
 export type AppView =
   | 'manual'
@@ -59,6 +60,12 @@ export interface PreferencesSlice {
   setHasSeenGuide: (seen: boolean) => void;
 }
 
+export interface ProgressSlice {
+  completedChapterIds: string[];
+  toggleChapterCompleted: (id: string) => void;
+  resetChapterProgress: () => void;
+}
+
 export interface NavigationSlice {
   selectedLayerId: OsiLayerId;
   setSelectedLayerId: (id: OsiLayerId) => void;
@@ -100,7 +107,7 @@ export interface UiSlice {
   setIsGuideOpen: (open: boolean) => void;
 }
 
-export type AppState = PreferencesSlice & NavigationSlice & SimulationSlice & UiSlice;
+export type AppState = PreferencesSlice & ProgressSlice & NavigationSlice & SimulationSlice & UiSlice;
 type Slice<T> = StateCreator<AppState, [], [], T>;
 
 const createPreferencesSlice: Slice<PreferencesSlice> = (set) => ({
@@ -126,6 +133,19 @@ const createNavigationSlice: Slice<NavigationSlice> = (set) => ({
   setDetailTab: (detailTab) => set({ detailTab }),
   activeView: 'curriculum',
   setActiveView: (activeView) => set({ activeView })
+});
+
+const createProgressSlice: Slice<ProgressSlice> = (set) => ({
+  completedChapterIds: DEFAULT_PREFERENCES.completedChapterIds,
+  toggleChapterCompleted: (id) => {
+    if (!findChapter(id)) return;
+    set((state) => ({
+      completedChapterIds: state.completedChapterIds.includes(id)
+        ? state.completedChapterIds.filter((chapterId) => chapterId !== id)
+        : [...state.completedChapterIds, id]
+    }));
+  },
+  resetChapterProgress: () => set({ completedChapterIds: [] })
 });
 
 const createSimulationSlice: Slice<SimulationSlice> = (set) => ({
@@ -168,17 +188,47 @@ const createUiSlice: Slice<UiSlice> = (set) => ({
   setIsGuideOpen: (isGuideOpen) => set({ isGuideOpen })
 });
 
+// Some privacy modes, embedded browsers and test environments expose Storage but
+// throw on access. Keep preferences usable for the current session in that case.
+const memoryStorage = new Map<string, string>();
+const safePreferenceStorage: StateStorage = {
+  getItem: (name) => {
+    try {
+      return localStorage.getItem(name) ?? memoryStorage.get(name) ?? null;
+    } catch {
+      return memoryStorage.get(name) ?? null;
+    }
+  },
+  setItem: (name, value) => {
+    memoryStorage.set(name, value);
+    try {
+      localStorage.setItem(name, value);
+    } catch {
+      // The in-memory copy remains available for this session.
+    }
+  },
+  removeItem: (name) => {
+    memoryStorage.delete(name);
+    try {
+      localStorage.removeItem(name);
+    } catch {
+      // Storage is unavailable; the in-memory copy was still removed.
+    }
+  }
+};
+
 export const useStore = create<AppState>()(
   persist(
     (...args) => ({
       ...createPreferencesSlice(...args),
+      ...createProgressSlice(...args),
       ...createNavigationSlice(...args),
       ...createSimulationSlice(...args),
       ...createUiSlice(...args)
     }),
     {
       name: PREFERENCES_STORAGE_KEY,
-      storage: createJSONStorage(() => localStorage),
+      storage: createJSONStorage(() => safePreferenceStorage),
       version: PREFERENCES_STORAGE_VERSION,
       migrate: migratePreferences,
       merge: (persistedState, currentState) => ({
@@ -192,7 +242,8 @@ export const useStore = create<AppState>()(
         language: state.language,
         audioEnabled: state.audioEnabled,
         simSpeed: state.simSpeed,
-        hasSeenGuide: state.hasSeenGuide
+        hasSeenGuide: state.hasSeenGuide,
+        completedChapterIds: state.completedChapterIds
       })
     }
   )

@@ -11,7 +11,7 @@ import { useStore } from '../store';
 
 afterEach(() => {
   cleanup();
-  useStore.setState({ language: 'it' });
+  useStore.setState({ language: 'it', completedChapterIds: [] });
 });
 
 describe('CurriculumView — theory defers to the study manual (EDU-STRUCT-03)', () => {
@@ -37,5 +37,12 @@ describe('CurriculumView — theory defers to the study manual (EDU-STRUCT-03)',
     render(<CurriculumView />);
     // Automation & Programmability (6.0) has no dedicated chapter yet.
     expect(screen.getByText(/In arrivo: questo dominio/)).toBeTruthy();
+  });
+
+  it('shows locally completed chapter progress for each covered domain', () => {
+    useStore.setState({ language: 'it', completedChapterIds: ['osi-model'] });
+    render(<CurriculumView />);
+
+    expect(screen.getByLabelText('Progresso capitoli: 1/3').textContent).toContain('Progresso: 1/3 (33%)');
   });
 });

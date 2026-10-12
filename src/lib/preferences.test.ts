@@ -15,13 +15,15 @@ describe('preference schema', () => {
         language: 'en',
         audioEnabled: false,
         simSpeed: 2,
-        hasSeenGuide: true
+        hasSeenGuide: true,
+        completedChapterIds: ['osi-model', 'osi-model', 'not-a-chapter']
       })
     ).toEqual({
       language: 'en',
       audioEnabled: false,
       simSpeed: 2,
-      hasSeenGuide: true
+      hasSeenGuide: true,
+      completedChapterIds: ['osi-model']
     });
   });
 
@@ -49,13 +51,15 @@ describe('preference schema', () => {
         language: 'en',
         audioEnabled: 'yes',
         simSpeed: 0.5,
-        hasSeenGuide: false
+        hasSeenGuide: false,
+        completedChapterIds: ['ethernet-switching']
       })
     ).toEqual({
       language: 'en',
       audioEnabled: true,
       simSpeed: 0.5,
-      hasSeenGuide: false
+      hasSeenGuide: false,
+      completedChapterIds: ['ethernet-switching']
     });
   });
 
@@ -85,7 +89,8 @@ describe('preference schema', () => {
       language: 'en',
       audioEnabled: false,
       simSpeed: 2,
-      hasSeenGuide: true
+      hasSeenGuide: true,
+      completedChapterIds: []
     });
   });
 
@@ -104,7 +109,8 @@ describe('preference schema', () => {
       language: 'en',
       audioEnabled: false,
       simSpeed: 1,
-      hasSeenGuide: false
+      hasSeenGuide: false,
+      completedChapterIds: []
     });
   });
 

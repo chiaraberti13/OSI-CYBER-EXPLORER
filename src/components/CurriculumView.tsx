@@ -4,7 +4,7 @@ import { CCNA_BLUEPRINT, CCNA_BLUEPRINT_DOMAINS, CCNA_BLUEPRINT_TOPICS } from '.
 import { DOMAIN_CHECKLISTS } from '../content/domainChecklists';
 import { ATTACK_FAMILIES } from '../content/securityTaxonomy';
 import { VIEW_REGISTRY } from '../content/viewRegistry';
-import { chaptersByDomain } from '../lib/studyManual';
+import { chapterCompletion, chaptersByDomain } from '../lib/studyManual';
 import { useStore } from '../store';
 import ViewLink from './ViewLink';
 
@@ -21,6 +21,13 @@ const MANUAL_CHAPTERS_BY_DOMAIN = new Map(
 
 export default function CurriculumView() {
   const language = useStore((state) => state.language);
+  const completedChapterIds = useStore((state) => state.completedChapterIds);
+  const manualProgressByDomain = new Map(
+    CCNA_DOMAINS.map((domain) => {
+      const chapters = MANUAL_CHAPTERS_BY_DOMAIN.get(domain.id) ?? [];
+      return [domain.id, { chapters, ...chapterCompletion(chapters, completedChapterIds) }] as const;
+    })
+  );
   const checklistLabels =
     language === 'it'
       ? {
@@ -138,8 +145,8 @@ export default function CurriculumView() {
         </ol>
         <p className="mt-4 text-xs leading-relaxed text-slate-600">
           {language === 'it'
-            ? 'Il percorso non salva progressi: puoi usare “Continua” per riprendere dal manuale oppure scegliere liberamente un laboratorio dal menu o dalla ricerca.'
-            : 'Progress is not saved: use “Continue” to open the manual, or choose any lab from the menu or search.'}
+            ? 'Il completamento dei capitoli viene salvato solo in questo browser; puoi azzerarlo dal Manuale. Usa “Continua” per aprire il manuale oppure scegli liberamente un laboratorio.'
+            : 'Chapter completion is stored only in this browser and can be reset from the Manual. Use “Continue” to open the manual, or choose any lab freely.'}
         </p>
       </section>
 
@@ -239,19 +246,29 @@ export default function CurriculumView() {
                   <BookOpen className="h-3.5 w-3.5" aria-hidden="true" />
                   {language === 'it' ? 'Teoria nel manuale' : 'Theory in the study manual'}
                 </h4>
-                {(MANUAL_CHAPTERS_BY_DOMAIN.get(domain.id) ?? []).length > 0 ? (
-                  <ul className="mt-2 space-y-1 text-xs leading-relaxed text-slate-700">
-                    {MANUAL_CHAPTERS_BY_DOMAIN.get(domain.id)!.map((entry) => (
-                      <li key={entry.id}>
-                        <ViewLink
-                          view="manual"
-                          className="inline-flex min-h-11 items-center font-medium text-indigo-700 underline decoration-indigo-300 underline-offset-2 hover:text-indigo-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
-                        >
-                          {language === 'it' ? `Cap. ${entry.order}` : `Ch. ${entry.order}`}: {entry.title[language]}
-                        </ViewLink>
-                      </li>
-                    ))}
-                  </ul>
+                {manualProgressByDomain.get(domain.id)!.total > 0 ? (
+                  <>
+                    <p
+                      className="mt-2 text-xs font-semibold text-slate-700"
+                      aria-label={`${language === 'it' ? 'Progresso capitoli' : 'Chapter progress'}: ${manualProgressByDomain.get(domain.id)!.completed}/${manualProgressByDomain.get(domain.id)!.total}`}
+                    >
+                      {language === 'it' ? 'Progresso' : 'Progress'}: {manualProgressByDomain.get(domain.id)!.completed}
+                      /{manualProgressByDomain.get(domain.id)!.total} ({manualProgressByDomain.get(domain.id)!.percent}
+                      %)
+                    </p>
+                    <ul className="mt-2 space-y-1 text-xs leading-relaxed text-slate-700">
+                      {manualProgressByDomain.get(domain.id)!.chapters.map((entry) => (
+                        <li key={entry.id}>
+                          <ViewLink
+                            view="manual"
+                            className="inline-flex min-h-11 items-center font-medium text-indigo-700 underline decoration-indigo-300 underline-offset-2 hover:text-indigo-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
+                          >
+                            {language === 'it' ? `Cap. ${entry.order}` : `Ch. ${entry.order}`}: {entry.title[language]}
+                          </ViewLink>
+                        </li>
+                      ))}
+                    </ul>
+                  </>
                 ) : (
                   <p className="mt-2 text-xs leading-relaxed text-slate-500">
                     {language === 'it'

@@ -18,6 +18,7 @@ describe('persisted preference rehydration', () => {
   });
 
   afterEach(() => {
+    vi.restoreAllMocks();
     localStorage.clear();
   });
 
@@ -34,7 +35,7 @@ describe('persisted preference rehydration', () => {
 
     expect(store.getState()).toMatchObject(previousPreferences);
     expect(JSON.parse(localStorage.getItem(PREFERENCES_STORAGE_KEY) ?? '{}')).toEqual({
-      state: previousPreferences,
+      state: { ...previousPreferences, completedChapterIds: [] },
       version: PREFERENCES_STORAGE_VERSION
     });
   });
@@ -46,6 +47,7 @@ describe('persisted preference rehydration', () => {
         audioEnabled: 'false',
         simSpeed: Number.POSITIVE_INFINITY,
         hasSeenGuide: { value: true },
+        completedChapterIds: ['osi-model', 'unknown', 'osi-model'],
         logs: [{ message: 'injected session state' }],
         activeAttack: 'spoofing'
       },
@@ -55,9 +57,10 @@ describe('persisted preference rehydration', () => {
     const store = await loadFreshStore();
     const state = store.getState();
 
-    expect(state).toMatchObject(DEFAULT_PREFERENCES);
+    expect(state).toMatchObject({ ...DEFAULT_PREFERENCES, completedChapterIds: ['osi-model'] });
     expect(state.logs).toEqual([]);
     expect(state.activeAttack).toBe('none');
+    expect(state.completedChapterIds).toEqual(['osi-model']);
   });
 
   it('keeps valid fields and restores invalid fields independently', async () => {
@@ -66,7 +69,8 @@ describe('persisted preference rehydration', () => {
         language: 'en',
         audioEnabled: null,
         simSpeed: 0.5,
-        hasSeenGuide: false
+        hasSeenGuide: false,
+        completedChapterIds: ['ethernet-switching']
       },
       PREFERENCES_STORAGE_VERSION
     );
@@ -77,7 +81,8 @@ describe('persisted preference rehydration', () => {
       language: 'en',
       audioEnabled: true,
       simSpeed: 0.5,
-      hasSeenGuide: false
+      hasSeenGuide: false,
+      completedChapterIds: ['ethernet-switching']
     });
   });
 
@@ -103,5 +108,32 @@ describe('persisted preference rehydration', () => {
     const store = await loadFreshStore();
 
     expect(store.getState()).toMatchObject(DEFAULT_PREFERENCES);
+  });
+
+  it('persists completion toggles and can reset all chapter progress', async () => {
+    const store = await loadFreshStore();
+
+    store.getState().toggleChapterCompleted('osi-model');
+    store.getState().toggleChapterCompleted('unknown');
+    expect(store.getState().completedChapterIds).toEqual(['osi-model']);
+    expect(JSON.parse(localStorage.getItem(PREFERENCES_STORAGE_KEY) ?? '{}').state.completedChapterIds).toEqual([
+      'osi-model'
+    ]);
+
+    store.getState().resetChapterProgress();
+    expect(store.getState().completedChapterIds).toEqual([]);
+  });
+
+  it('keeps progress usable in memory when browser storage throws', async () => {
+    vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
+      throw new DOMException('blocked', 'SecurityError');
+    });
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new DOMException('blocked', 'SecurityError');
+    });
+
+    const store = await loadFreshStore();
+    expect(() => store.getState().toggleChapterCompleted('osi-model')).not.toThrow();
+    expect(store.getState().completedChapterIds).toEqual(['osi-model']);
   });
 });

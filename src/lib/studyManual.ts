@@ -46,6 +46,23 @@ export interface ManualDomainGroup {
   chapters: ManualChapter[];
 }
 
+export interface ChapterCompletion {
+  completed: number;
+  total: number;
+  percent: number;
+}
+
+/** Safe aggregate for a chapter collection. Unknown stored ids never count. */
+export function chapterCompletion(
+  chapters: readonly ManualChapter[],
+  completedChapterIds: readonly string[]
+): ChapterCompletion {
+  const completedIds = new Set(completedChapterIds);
+  const completed = chapters.filter((chapter) => completedIds.has(chapter.id)).length;
+  const total = chapters.length;
+  return { completed, total, percent: total === 0 ? 0 : Math.round((completed / total) * 100) };
+}
+
 /**
  * Chapters grouped by CCNA domain for the manual's domain → chapter navigation. CCNA
  * domains come first in official number order, each with its chapters in study order;

@@ -71,7 +71,7 @@ describe('ViewLink', () => {
     );
     expect(screen.getByRole('link', { name: 'Esplora la pila OSI' }).getAttribute('href')).toBe('#/osi');
     expect(screen.getByRole('link', { name: 'Prova il laboratorio IPv4' }).getAttribute('href')).toBe('#/fundamentals');
-    expect(screen.getByText(/non salva progressi/i)).toBeTruthy();
+    expect(screen.getByText(/completamento dei capitoli viene salvato solo in questo browser/i)).toBeTruthy();
   });
 
   it('localizes the starting path and keeps destinations available in English', () => {
@@ -81,7 +81,7 @@ describe('ViewLink', () => {
     expect(screen.getByRole('link', { name: 'Continue with the Study Manual' }).getAttribute('href')).toBe('#/manual');
     expect(screen.getByRole('link', { name: 'Explore the OSI stack' }).getAttribute('href')).toBe('#/osi');
     expect(screen.getByRole('link', { name: 'Try the IPv4 lab' }).getAttribute('href')).toBe('#/fundamentals');
-    expect(screen.getByText(/Progress is not saved/i)).toBeTruthy();
+    expect(screen.getByText(/Chapter completion is stored only in this browser/i)).toBeTruthy();
   });
 
   it('makes every curriculum and blueprint destination a real link', () => {

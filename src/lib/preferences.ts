@@ -1,7 +1,8 @@
 import type { Language } from '../types';
+import { STUDY_MANUAL } from '../content/studyManual';
 
 export const PREFERENCES_STORAGE_KEY = 'osi-lab-preferences';
-export const PREFERENCES_STORAGE_VERSION = 1;
+export const PREFERENCES_STORAGE_VERSION = 2;
 export const SIMULATION_SPEEDS = [0.5, 1, 2] as const;
 
 export type SimulationSpeed = (typeof SIMULATION_SPEEDS)[number];
@@ -11,14 +12,18 @@ export interface PersistedPreferences {
   audioEnabled: boolean;
   simSpeed: SimulationSpeed;
   hasSeenGuide: boolean;
+  completedChapterIds: string[];
 }
 
 export const DEFAULT_PREFERENCES: Readonly<PersistedPreferences> = Object.freeze({
   language: 'it',
   audioEnabled: true,
   simSpeed: 1,
-  hasSeenGuide: false
+  hasSeenGuide: false,
+  completedChapterIds: []
 });
+
+const MANUAL_CHAPTER_IDS = new Set(STUDY_MANUAL.map((chapter) => chapter.id));
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -26,6 +31,11 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 export function isSimulationSpeed(value: unknown): value is SimulationSpeed {
   return typeof value === 'number' && SIMULATION_SPEEDS.some((speed) => speed === value);
+}
+
+function sanitizeCompletedChapterIds(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  return [...new Set(value.filter((id): id is string => typeof id === 'string' && MANUAL_CHAPTER_IDS.has(id)))];
 }
 
 /**
@@ -41,14 +51,15 @@ export function sanitizePreferences(value: unknown): PersistedPreferences {
     language: value.language === 'it' || value.language === 'en' ? value.language : DEFAULT_PREFERENCES.language,
     audioEnabled: typeof value.audioEnabled === 'boolean' ? value.audioEnabled : DEFAULT_PREFERENCES.audioEnabled,
     simSpeed: isSimulationSpeed(value.simSpeed) ? value.simSpeed : DEFAULT_PREFERENCES.simSpeed,
-    hasSeenGuide: typeof value.hasSeenGuide === 'boolean' ? value.hasSeenGuide : DEFAULT_PREFERENCES.hasSeenGuide
+    hasSeenGuide: typeof value.hasSeenGuide === 'boolean' ? value.hasSeenGuide : DEFAULT_PREFERENCES.hasSeenGuide,
+    completedChapterIds: sanitizeCompletedChapterIds(value.completedChapterIds)
   };
 }
 
 /**
- * Version 0 is Zustand's former unversioned flat state. Unknown old or future
- * schemas are not guessed: they are replaced with safe defaults.
+ * Versions 0 and 1 predate chapter progress. They retain valid preferences and
+ * start with an empty completion list. Unknown schemas are not guessed.
  */
 export function migratePreferences(value: unknown, version: number): PersistedPreferences {
-  return version === 0 ? sanitizePreferences(value) : { ...DEFAULT_PREFERENCES };
+  return version === 0 || version === 1 ? sanitizePreferences(value) : { ...DEFAULT_PREFERENCES };
 }

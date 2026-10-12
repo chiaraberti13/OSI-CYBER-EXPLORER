@@ -9,25 +9,38 @@ import {
   ArrowLeft,
   ArrowRight,
   BookOpen,
+  CircleCheck,
   ExternalLink,
   FlaskConical,
   ListChecks,
+  RotateCcw,
   Target
 } from 'lucide-react';
 import { useStore } from '../store';
 import { uiMessages } from '../i18n';
-import { ccnaDomainForChapter, chaptersByDomain, findChapter, manualStats, orderedChapters } from '../lib/studyManual';
+import {
+  ccnaDomainForChapter,
+  chapterCompletion,
+  chaptersByDomain,
+  findChapter,
+  manualStats,
+  orderedChapters
+} from '../lib/studyManual';
 import type { GuidedLab, ManualCert, ManualDifficulty } from '../content/studyManual';
 import { securityReferenceUrl } from '../content/securityReferences';
 import ViewLink from './ViewLink';
 
 export default function StudyManualView() {
   const language = useStore((state) => state.language);
+  const completedChapterIds = useStore((state) => state.completedChapterIds);
+  const toggleChapterCompleted = useStore((state) => state.toggleChapterCompleted);
+  const resetChapterProgress = useStore((state) => state.resetChapterProgress);
   const t = uiMessages(language).manual;
   const chapters = orderedChapters();
   const [activeId, setActiveId] = useState(chapters[0]?.id);
   const chapter = findChapter(activeId) ?? chapters[0];
   const stats = manualStats();
+  const overallCompletion = chapterCompletion(chapters, completedChapterIds);
   const headingId = useId();
   const chapterTitleId = useId();
 
@@ -46,6 +59,7 @@ export default function StudyManualView() {
     chapter.track === 'ccna' && chapterDomain
       ? `CCNA ${chapterDomain.number}.0 · ${chapterDomain.title[language]}`
       : `${t.trackExtension} · ${certLabel[chapter.cert]}`;
+  const currentChapterCompleted = completedChapterIds.includes(chapter.id);
 
   // Linear study flow: the chapters immediately before and after the active one.
   const chapterIndex = chapters.findIndex((entry) => entry.id === chapter.id);
@@ -173,6 +187,22 @@ export default function StudyManualView() {
         <p className="mt-2 text-[12px] font-mono text-slate-400">
           {stats.chapters} {t.chapters} · {stats.topics} {t.topics} · {stats.guidedLabs} {t.guidedLabs}
         </p>
+        <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2 text-xs text-slate-600">
+          <span aria-label={`${t.chapterProgress}: ${overallCompletion.completed}/${overallCompletion.total}`}>
+            {t.chapterProgress}: {overallCompletion.completed}/{overallCompletion.total} ({overallCompletion.percent}%)
+          </span>
+          {overallCompletion.completed > 0 ? (
+            <button
+              type="button"
+              onClick={resetChapterProgress}
+              className="inline-flex min-h-11 items-center gap-1.5 rounded-md px-2 font-semibold text-indigo-700 hover:bg-indigo-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
+            >
+              <RotateCcw aria-hidden="true" className="h-3.5 w-3.5" />
+              {t.resetProgress}
+            </button>
+          ) : null}
+          <span className="basis-full text-[11px] text-slate-500">{t.progressStoredLocally}</span>
+        </div>
       </header>
 
       {chapters.length > 1 ? (
@@ -181,24 +211,31 @@ export default function StudyManualView() {
             const groupLabel = group.domain
               ? `CCNA ${group.domain.number}.0 · ${group.domain.title[language]}`
               : t.trackExtension;
+            const groupCompletion = chapterCompletion(group.chapters, completedChapterIds);
             return (
               <div key={group.key} role="group" aria-label={groupLabel}>
-                <p className="eyebrow mb-1.5">{groupLabel}</p>
+                <p className="eyebrow mb-1.5">
+                  {groupLabel} · {groupCompletion.completed}/{groupCompletion.total}
+                </p>
                 <div className="flex flex-wrap gap-1.5">
                   {group.chapters.map((entry) => {
                     const isActive = entry.id === chapter.id;
+                    const isCompleted = completedChapterIds.includes(entry.id);
                     return (
                       <button
                         key={entry.id}
                         type="button"
                         onClick={() => selectChapter(entry.id)}
                         aria-current={isActive ? 'true' : undefined}
-                        className={`rounded-md border px-3 py-1.5 text-[13px] font-medium transition-colors ${
+                        className={`inline-flex min-h-11 items-center gap-1.5 rounded-md border px-3 py-1.5 text-[13px] font-medium transition-colors ${
                           isActive
                             ? 'border-slate-300 bg-white text-slate-900'
                             : 'border-transparent text-slate-500 hover:bg-white/70 hover:text-slate-800'
                         }`}
                       >
+                        {isCompleted ? (
+                          <CircleCheck aria-hidden="true" className="h-3.5 w-3.5 text-emerald-700" />
+                        ) : null}
                         {entry.order}. {entry.title[language]}
                       </button>
                     );
@@ -264,6 +301,20 @@ export default function StudyManualView() {
               })()}
             </div>
             <p className="mt-2 text-sm leading-relaxed text-slate-600">{chapter.summary[language]}</p>
+
+            <button
+              type="button"
+              aria-pressed={currentChapterCompleted}
+              onClick={() => toggleChapterCompleted(chapter.id)}
+              className={`mt-4 inline-flex min-h-11 items-center gap-2 rounded-lg border px-3 py-2 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 ${
+                currentChapterCompleted
+                  ? 'border-emerald-200 bg-emerald-50 text-emerald-800 hover:bg-emerald-100'
+                  : 'border-indigo-200 bg-indigo-50 text-indigo-800 hover:bg-indigo-100'
+              }`}
+            >
+              <CircleCheck aria-hidden="true" className="h-4 w-4" />
+              {currentChapterCompleted ? t.markChapterIncomplete : t.markChapterComplete}
+            </button>
 
             {chapter.topics.length > 1 ? (
               <nav aria-label={t.tableOfContents} className="mt-4 border-t border-slate-100 pt-4 lg:hidden">

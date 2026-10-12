@@ -12,7 +12,7 @@ import { useStore } from '../store';
 
 afterEach(() => {
   cleanup();
-  useStore.setState({ language: 'it' });
+  useStore.setState({ language: 'it', completedChapterIds: [] });
 });
 
 describe('StudyManualView (EDU-01)', () => {
@@ -41,6 +41,22 @@ describe('StudyManualView (EDU-01)', () => {
     const chapterNav = screen.getByRole('navigation', { name: 'Capitoli del manuale' });
     await user.click(within(chapterNav).getByRole('button', { name: /Ethernet/ }));
     expect(within(context).getByText('Ethernet, switching e tabella CAM')).toBeTruthy();
+  });
+
+  it('marks the active chapter complete and resets all progress', async () => {
+    const user = userEvent.setup();
+    render(<StudyManualView />);
+
+    const markComplete = screen.getByRole('button', { name: 'Segna come completato' });
+    expect(markComplete.getAttribute('aria-pressed')).toBe('false');
+    await user.click(markComplete);
+
+    expect(screen.getByRole('button', { name: 'Segna come da completare' }).getAttribute('aria-pressed')).toBe('true');
+    expect(screen.getByLabelText('Progresso capitoli: 1/9')).toBeTruthy();
+
+    await user.click(screen.getByRole('button', { name: 'Azzera progresso' }));
+    expect(screen.getByRole('button', { name: 'Segna come completato' }).getAttribute('aria-pressed')).toBe('false');
+    expect(screen.queryByRole('button', { name: 'Azzera progresso' })).toBeNull();
   });
 
   it('offers an "on this page" rail listing the chapter topics', () => {
