@@ -9,6 +9,7 @@ import {
   ArrowLeft,
   ArrowRight,
   BookOpen,
+  Check,
   CircleCheck,
   CircleHelp,
   ExternalLink,
@@ -364,7 +365,10 @@ export default function StudyManualView() {
                     {groupCompletion.completed}/{groupCompletion.total}
                   </span>
                 </div>
-                <div className="flex flex-wrap gap-1.5">
+                {/* Each chapter is a distinct, interactive chip with a numbered badge and
+                    clear active/completed/default states, so chapters no longer read as
+                    interchangeable plain-text links (IA-04). */}
+                <div className="flex flex-wrap gap-2">
                   {group.chapters.map((entry) => {
                     const isActive = entry.id === chapter.id;
                     const isCompleted = completedChapterIds.includes(entry.id);
@@ -374,16 +378,26 @@ export default function StudyManualView() {
                         type="button"
                         onClick={() => selectChapter(entry.id)}
                         aria-current={isActive ? 'page' : undefined}
-                        className={`inline-flex min-h-11 items-center gap-1.5 rounded-md border px-3 py-1.5 text-[13px] font-medium transition-colors ${
+                        className={`group inline-flex min-h-11 items-center gap-2 rounded-lg border px-2.5 py-1.5 text-[13px] font-medium shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 ${
                           isActive
-                            ? 'border-slate-300 bg-white text-slate-900'
-                            : 'border-transparent text-slate-500 hover:bg-white/70 hover:text-slate-800'
+                            ? 'border-indigo-500 bg-indigo-50 text-slate-900'
+                            : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:text-slate-900'
                         }`}
                       >
-                        {isCompleted ? (
-                          <CircleCheck aria-hidden="true" className="h-3.5 w-3.5 text-emerald-700" />
-                        ) : null}
-                        {entry.order}. {entry.title[language]}
+                        <span
+                          aria-hidden="true"
+                          className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold ${
+                            isCompleted
+                              ? 'bg-emerald-600 text-white'
+                              : isActive
+                                ? 'bg-indigo-600 text-white'
+                                : 'border border-slate-300 text-slate-500 group-hover:border-slate-400'
+                          }`}
+                        >
+                          {isCompleted ? <Check className="h-3 w-3" /> : entry.order}
+                        </span>
+                        {entry.title[language]}
+                        {isCompleted ? <span className="sr-only"> — {t.completedChapter}</span> : null}
                       </button>
                     );
                   })}
