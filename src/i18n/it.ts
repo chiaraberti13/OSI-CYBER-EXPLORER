@@ -43,6 +43,7 @@ export const it = {
     explanation: 'Spiegazione',
     tableOfContents: 'Contenuti del capitolo',
     onThisPage: 'In questa pagina',
+    chapterContext: 'Contesto del capitolo',
     chapterStepNav: 'Capitolo precedente e successivo',
     previousChapter: 'Capitolo precedente',
     nextChapter: 'Capitolo successivo',

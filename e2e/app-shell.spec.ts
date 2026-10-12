@@ -145,6 +145,39 @@ test.describe('application shell', () => {
     await expect(nav.getByRole('group', { name: 'Estensione' })).toBeVisible();
   });
 
+  test('the manual keeps domain and chapter context below the sticky navigation (UX-20)', async ({ page }) => {
+    await page.goto('/#/manual');
+    const context = page.getByRole('region', { name: 'Contesto del capitolo' });
+
+    await expect(context).toContainText('CCNA 1.0 · Fondamenti di rete');
+    await expect(context).toContainText('Il modello OSI e l’incapsulamento');
+    await expect(context.locator('h1, h2, h3, h4, h5, h6')).toHaveCount(0);
+
+    // Scroll within a long chapter: the context bar stays immediately below the
+    // 56 px app header and 48 px lab navigation instead of leaving the viewport.
+    await page.getByRole('heading', { level: 3 }).nth(2).scrollIntoViewIfNeeded();
+    await expect.poll(async () => Math.round((await context.boundingBox())?.y ?? -1)).toBe(104);
+
+    await page
+      .getByRole('navigation', { name: 'In questa pagina' })
+      .getByRole('button', { name: /Incapsulamento e decapsulamento/ })
+      .click();
+    const topicHeading = page.getByRole('heading', { level: 3, name: /Incapsulamento e decapsulamento/ });
+    await expect
+      .poll(async () => {
+        const contextBox = await context.boundingBox();
+        const headingBox = await topicHeading.boundingBox();
+        return contextBox && headingBox ? Math.round(headingBox.y - (contextBox.y + contextBox.height)) : -1;
+      })
+      .toBeGreaterThanOrEqual(8);
+
+    await page
+      .getByRole('navigation', { name: 'Capitoli del manuale' })
+      .getByRole('button', { name: /Ethernet/ })
+      .click();
+    await expect(context).toContainText('Ethernet, switching e tabella CAM');
+  });
+
   test('deep links, reload and invalid routes behave predictably', async ({ page }) => {
     // A deep link opens its destination directly.
     await page.goto('/#/ports');

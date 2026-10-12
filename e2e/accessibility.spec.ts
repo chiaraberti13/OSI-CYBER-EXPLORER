@@ -13,6 +13,9 @@ const representativeViews = [
 ] as const;
 
 async function expectNoWcagViolations(page: Page, context: string) {
+  // Route headings become visible before Motion has necessarily completed the
+  // active view's opacity transition. Axe must inspect the settled colours.
+  await expect(page.locator('main > div').last()).toHaveCSS('opacity', '1');
   const results = await new AxeBuilder({ page }).withTags(WCAG_TAGS).analyze();
   const violations = results.violations.map(({ id, impact, help, nodes }) => ({
     id,

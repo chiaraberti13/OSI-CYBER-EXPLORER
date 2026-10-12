@@ -41,6 +41,11 @@ export default function StudyManualView() {
     securityplus: t.certSecurityPlus,
     both: t.certBoth
   };
+  const chapterDomain = ccnaDomainForChapter(chapter);
+  const chapterAlignment =
+    chapter.track === 'ccna' && chapterDomain
+      ? `CCNA ${chapterDomain.number}.0 · ${chapterDomain.title[language]}`
+      : `${t.trackExtension} · ${certLabel[chapter.cert]}`;
 
   // Linear study flow: the chapters immediately before and after the active one.
   const chapterIndex = chapters.findIndex((entry) => entry.id === chapter.id);
@@ -205,20 +210,36 @@ export default function StudyManualView() {
         </nav>
       ) : null}
 
+      {/* Persistent context for long chapters. It deliberately uses plain text,
+          not headings, so the document outline remains one h1 followed by the
+          chapter h2 and topic h3 elements. 6.5rem equals the fixed 3.5rem app
+          header plus the 3rem lab navigation immediately above it. */}
+      <div
+        role="region"
+        aria-label={t.chapterContext}
+        data-testid="chapter-context"
+        className="sticky top-[6.5rem] z-30 -mx-4 mb-5 border-y border-slate-200/80 bg-canvas/95 px-4 py-2 shadow-sm backdrop-blur-md md:-mx-6 md:px-6 lg:mx-0 lg:rounded-lg lg:border"
+      >
+        <div className="flex min-w-0 flex-col gap-0.5 sm:flex-row sm:items-baseline sm:gap-2">
+          <span className="shrink-0 text-[10px] font-semibold uppercase tracking-wider text-indigo-700">
+            {chapterAlignment}
+          </span>
+          <span aria-hidden="true" className="hidden text-slate-300 sm:inline">
+            /
+          </span>
+          <span className="truncate text-[13px] font-semibold text-slate-800" title={chapter.title[language]}>
+            {chapter.title[language]}
+          </span>
+        </div>
+      </div>
+
       <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_13rem] lg:gap-8">
         <article aria-labelledby={chapterTitleId} className="min-w-0 space-y-5 lg:col-start-1">
           {/* Chapter overview card: alignment, title, summary and an in-chapter table of contents. */}
           <div className="rounded-xl border border-slate-200 bg-white p-5 md:p-6">
             <div className="flex items-start justify-between gap-4">
               <div>
-                {(() => {
-                  const domain = ccnaDomainForChapter(chapter);
-                  const alignment =
-                    chapter.track === 'ccna' && domain
-                      ? `CCNA ${domain.number}.0 · ${domain.title[language]}`
-                      : `${t.trackExtension} · ${certLabel[chapter.cert]}`;
-                  return <span className="eyebrow text-indigo-700">{alignment}</span>;
-                })()}
+                <span className="eyebrow text-indigo-700">{chapterAlignment}</span>
                 <h2 id={chapterTitleId} className="mt-1 text-xl font-semibold text-slate-900">
                   {chapter.title[language]}
                 </h2>
@@ -231,10 +252,9 @@ export default function StudyManualView() {
                 ) : null}
               </div>
               {(() => {
-                const domain = ccnaDomainForChapter(chapter);
-                return domain ? (
+                return chapterDomain ? (
                   <span className="shrink-0 rounded-full bg-slate-900 px-3 py-1 text-xs font-semibold text-white">
-                    {domain.weight}%
+                    {chapterDomain.weight}%
                   </span>
                 ) : (
                   <span className="shrink-0 rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-800">
@@ -274,7 +294,7 @@ export default function StudyManualView() {
               key={topic.id}
               id={`topic-${topic.id}`}
               aria-labelledby={`topic-h-${topic.id}`}
-              className="scroll-mt-28 rounded-xl border border-slate-200 bg-white p-5 md:p-6"
+              className="scroll-mt-40 rounded-xl border border-slate-200 bg-white p-5 md:p-6"
             >
               <h3 id={`topic-h-${topic.id}`} className="text-base font-semibold text-slate-900">
                 {idx + 1}. {topic.title[language]}

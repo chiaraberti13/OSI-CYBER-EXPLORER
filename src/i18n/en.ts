@@ -42,6 +42,7 @@ export const en = {
     explanation: 'Explanation',
     tableOfContents: 'In this chapter',
     onThisPage: 'On this page',
+    chapterContext: 'Chapter context',
     chapterStepNav: 'Previous and next chapter',
     previousChapter: 'Previous chapter',
     nextChapter: 'Next chapter',

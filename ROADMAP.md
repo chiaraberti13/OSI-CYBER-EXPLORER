@@ -1,7 +1,7 @@
 # 🚀 Roadmap di Sviluppo: OSI-CYBER-EXPLORER
 
-> **Baseline analizzata:** branch `main`, commit `db4ea22` dell’11 ottobre 2026
-> **Ultima revisione della roadmap:** 12 ottobre 2026 (rev. 20 — obiettivi accessibilità di release)
+> **Baseline analizzata:** branch `main`, commit `0ebd452` del 12 ottobre 2026
+> **Ultima revisione della roadmap:** 12 ottobre 2026 (rev. 21 — contesto sticky del manuale)
 > **Metodo di revisione:** baseline rieseguita localmente con Node 22.22.2 (`npm ci`, `vitest run`, `npm audit`, `vite build`) e ispezione mirata del codice; i task già presenti sono stati conservati con la stessa numerazione e arricchiti solo dove la verifica ha fatto emergere dettagli mancanti.
 
 ## Legenda
@@ -258,7 +258,7 @@ La mappatura serve a spiegare _perché_ esiste un controllo, non a dichiarare co
 
 Backlog di rifinitura del Manuale di studio dopo UX-18/UX-19, in ordine di priorità. Ogni voce è solo presentazione/interazione salvo dove indicato; nessun contenuto didattico va alterato. UX-29 dipende da EDU-STRUCT-04 (capitoli indirizzabili via URL).
 
-- [ ] **UX-20 — Header di contesto sticky del capitolo.** Una barra sottile sticky (sotto la navigazione) con dominio CCNA + titolo del capitolo, visibile mentre si scorre un capitolo lungo. **Completato quando:** scorrendo, dominio e titolo restano sempre visibili, senza duplicare `h1`/`h2`, con regressione E2E.
+- [x] **UX-20 — Header di contesto sticky del capitolo.** Una barra sottile sticky (sotto la navigazione) con dominio CCNA + titolo del capitolo, visibile mentre si scorre un capitolo lungo. **Completato quando:** scorrendo, dominio e titolo restano sempre visibili, senza duplicare `h1`/`h2`, con regressione E2E. **Esito (12/10/2026):** aggiunta una barra bilingue compatta che si ferma a 6,5 rem dall'alto, esattamente sotto header applicativo e navigazione, e mostra allineamento CCNA/estensione e titolo del capitolo attivo. La barra usa una regione accessibile con testo semplice, quindi non altera l'outline `h1` → `h2` → `h3`; su mobile dispone i due dati su due righe e mantiene il titolo entro la viewport. Il contesto si aggiorna senza ritardo al cambio capitolo e il nuovo margine di scorrimento mantiene scoperti i titoli raggiunti dal rail. Test di componente verificano contenuti, assenza di heading e aggiornamento; una regressione Chromium scorre un capitolo lungo, misura la posizione sticky a 104 px e verifica che i salti agli argomenti non siano coperti.
 - [ ] **UX-21 — Stato di completamento per capitolo (locale).** Controllo «Segna come completato» per capitolo, persistito in `localStorage` (try/catch, fallback sicuro), con progresso aggregato per dominio nell'indice `curriculum` e nella navigazione del manuale. **Completato quando:** lo stato persiste tra sessioni, è resettabile, non richiede backend ed è coperto da test; nessun crash se lo storage è assente.
 - [ ] **UX-22 — Onboarding del manuale al primo accesso.** Hint bilingue dismissibile «Come usare questa guida» (indice, laboratori guidati, navigazione Precedente/Successivo), mostrato una volta e richiamabile, memorizzato in `localStorage`. **Completato quando:** appare al primo accesso, è chiudibile e riapribile, bilingue, con test.
 - [ ] **UX-23 — Leggibilità e ritmo tipografico.** Misura di lettura ottimale (~65–75 caratteri per riga), dimensione/interlinea del corpo della teoria, spaziature e densità coerenti delle tile, gerarchia tipografica uniforme. **Completato quando:** la lettura è confortevole e coerente su desktop e mobile, verificata su più capitoli.

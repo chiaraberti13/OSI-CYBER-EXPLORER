@@ -29,6 +29,20 @@ describe('StudyManualView (EDU-01)', () => {
     expect(screen.getAllByText('CCNA 1.0 · Fondamenti di rete').length).toBeGreaterThan(0);
   });
 
+  it('keeps chapter context outside the document heading outline', async () => {
+    const user = userEvent.setup();
+    render(<StudyManualView />);
+
+    const context = screen.getByRole('region', { name: 'Contesto del capitolo' });
+    expect(within(context).getByText('CCNA 1.0 · Fondamenti di rete')).toBeTruthy();
+    expect(within(context).getByText('Il modello OSI e l’incapsulamento')).toBeTruthy();
+    expect(context.querySelector('h1, h2, h3, h4, h5, h6')).toBeNull();
+
+    const chapterNav = screen.getByRole('navigation', { name: 'Capitoli del manuale' });
+    await user.click(within(chapterNav).getByRole('button', { name: /Ethernet/ }));
+    expect(within(context).getByText('Ethernet, switching e tabella CAM')).toBeTruthy();
+  });
+
   it('offers an "on this page" rail listing the chapter topics', () => {
     render(<StudyManualView />);
     const rail = screen.getByRole('navigation', { name: 'In questa pagina' });
