@@ -5,6 +5,7 @@
 export const it = {
   app: {
     loadingModule: 'Caricamento del modulo…',
+    loadingManual: 'Caricamento del manuale di studio…',
     skipToContent: 'Vai al contenuto',
     backToOsi: 'Torna alla panoramica OSI',
     footer: 'App didattica · © 2026 Chiara Berti'

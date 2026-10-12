@@ -4,6 +4,7 @@ import type { UiMessages } from './it';
 export const en = {
   app: {
     loadingModule: 'Loading module…',
+    loadingManual: 'Loading the study manual…',
     skipToContent: 'Skip to content',
     backToOsi: 'Back to the OSI overview',
     footer: 'Educational app · © 2026 Chiara Berti'

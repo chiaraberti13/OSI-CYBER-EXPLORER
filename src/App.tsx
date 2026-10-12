@@ -8,6 +8,7 @@ import Navigation from './components/Navigation';
 import { motion, AnimatePresence } from 'motion/react';
 import GuideModal from './components/GuideModal';
 import ChunkErrorBoundary from './components/ChunkErrorBoundary';
+import ManualViewSkeleton from './components/ManualViewSkeleton';
 import { Suspense, useEffect } from 'react';
 import { useStore } from './store';
 import { useShallow } from 'zustand/react/shallow';
@@ -73,6 +74,11 @@ export default function App() {
   const preset = MOTION_PRESETS[activeDefinition.motion ?? 'subtle'];
   const copy = uiMessages(language).app;
 
+  // A layout-matched skeleton for the tall manual chunk avoids the jump the generic
+  // fallback caused (UX-27); other, lighter views keep the compact placeholder.
+  const suspenseFallback =
+    activeView === 'manual' ? <ManualViewSkeleton language={language} /> : <ViewFallback language={language} />;
+
   return (
     <div className="min-h-screen bg-[#fafafa] text-slate-700 selection:bg-indigo-500/10">
       {/*
@@ -118,7 +124,7 @@ export default function App() {
             onAction: () => setActiveView('osi')
           }}
         >
-          <Suspense fallback={<ViewFallback language={language} />}>
+          <Suspense fallback={suspenseFallback}>
             <AnimatePresence mode="wait">
               {/*
                 A single registry-driven switch replaces the former per-view blocks:
