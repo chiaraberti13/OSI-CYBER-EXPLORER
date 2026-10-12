@@ -118,6 +118,11 @@ describe('StudyManualView (EDU-01)', () => {
     assertChapterRhythm();
   });
 
+  it('exposes the manual root hook for theme scoping (UX-28)', () => {
+    const { container } = render(<StudyManualView />);
+    expect(container.querySelector('[data-manual-root]')).not.toBeNull();
+  });
+
   it('shows the CCNA domain alignment badge for the active chapter', () => {
     render(<StudyManualView />);
     // The OSI chapter maps to CCNA domain 1.0 Network Fundamentals.

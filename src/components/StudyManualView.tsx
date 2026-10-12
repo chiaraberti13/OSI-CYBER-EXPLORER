@@ -248,7 +248,7 @@ export default function StudyManualView() {
   );
 
   return (
-    <div className="mx-auto max-w-5xl">
+    <div data-manual-root className="mx-auto max-w-5xl">
       <header className="mb-6">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h1 id={headingId} className="text-xl font-semibold tracking-tight text-slate-900">

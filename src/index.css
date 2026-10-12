@@ -52,6 +52,140 @@ body {
   margin: 0;
 }
 
+/* UX-28: dark-theme palette for the study manual's new cards.
+   The app ships light by default; dark styling is opt-in via `data-theme="dark"`
+   on the document root, so the current light experience and the rest of the shell
+   are unchanged (a global, user-facing theme toggle across every view is tracked
+   separately). These tokens are AA-verified in both themes by the design-system
+   gate (scripts/design-system.test.mjs) and by a dark-mode Axe end-to-end run. */
+:root[data-theme='dark'] {
+  --color-dark-canvas: #0b1120;
+  --color-dark-surface: #111827;
+  --color-dark-surface-subtle: #0f172a;
+  --color-dark-stroke: #334155;
+  --color-dark-ink-primary: #f1f5f9;
+  --color-dark-ink-secondary: #e2e8f0;
+  --color-dark-ink-soft: #cbd5e1;
+  --color-dark-ink-muted: #94a3b8;
+  --color-dark-accent: #a5b4fc;
+
+  --color-dark-tile-objectives-bg: #1e1b4b;
+  --color-dark-tile-objectives-border: #3730a3;
+  --color-dark-tile-example-bg: #052e2b;
+  --color-dark-tile-example-border: #065f46;
+  --color-dark-tile-example-ink: #6ee7b7;
+  --color-dark-tile-example-body: #d1fae5;
+  --color-dark-tile-mistakes-bg: #3f2d11;
+  --color-dark-tile-mistakes-border: #92400e;
+  --color-dark-tile-mistakes-ink: #fcd34d;
+  --color-dark-tile-mistakes-body: #fde68a;
+}
+
+/* Scope every dark override to the manual region so nothing else is affected even
+   when the attribute is set globally. Unlayered rules win over Tailwind's layered
+   utilities, so these remap the raw utility colors to the dark tokens above. */
+:root[data-theme='dark'] [data-manual-root] {
+  background-color: var(--color-dark-canvas);
+  color: var(--color-dark-ink-secondary);
+}
+/* Give the text-bearing regions that sit directly on the canvas their own opaque
+   dark background. Visually identical to the canvas, it lets contrast tooling sample
+   the real dark surface instead of blending the centred panel with the light shell. */
+:root[data-theme='dark'] [data-manual-root] > header,
+:root[data-theme='dark'] [data-manual-root] > nav,
+:root[data-theme='dark'] [data-manual-root] [role='group'],
+:root[data-theme='dark'] [data-manual-root] [role='group'] .border-transparent {
+  background-color: var(--color-dark-canvas);
+}
+:root[data-theme='dark'] [data-manual-root] .bg-white,
+:root[data-theme='dark'] [data-manual-root] .bg-indigo-50 {
+  background-color: var(--color-dark-surface);
+}
+:root[data-theme='dark'] [data-manual-root] [data-testid='chapter-context'] {
+  background-color: var(--color-dark-surface);
+}
+:root[data-theme='dark'] [data-manual-root] .border-slate-100,
+:root[data-theme='dark'] [data-manual-root] .border-slate-200,
+:root[data-theme='dark'] [data-manual-root] .border-slate-200\/70,
+:root[data-theme='dark'] [data-manual-root] .border-slate-200\/80,
+:root[data-theme='dark'] [data-manual-root] .border-slate-300 {
+  border-color: var(--color-dark-stroke);
+}
+:root[data-theme='dark'] [data-manual-root] .text-slate-900,
+:root[data-theme='dark'] [data-manual-root] .text-slate-800 {
+  color: var(--color-dark-ink-primary);
+}
+:root[data-theme='dark'] [data-manual-root] .text-slate-700 {
+  color: var(--color-dark-ink-secondary);
+}
+:root[data-theme='dark'] [data-manual-root] .text-slate-600 {
+  color: var(--color-dark-ink-soft);
+}
+:root[data-theme='dark'] [data-manual-root] .text-slate-500,
+:root[data-theme='dark'] [data-manual-root] .text-slate-400,
+:root[data-theme='dark'] [data-manual-root] .text-slate-300,
+:root[data-theme='dark'] [data-manual-root] .eyebrow {
+  color: var(--color-dark-ink-muted);
+}
+:root[data-theme='dark'] [data-manual-root] .text-indigo-700,
+:root[data-theme='dark'] [data-manual-root] .text-indigo-600,
+:root[data-theme='dark'] [data-manual-root] .text-indigo-800 {
+  color: var(--color-dark-accent);
+}
+
+/* Colored learning tiles: objectives (indigo), example (success), mistakes (warning). */
+:root[data-theme='dark'] [data-manual-root] [data-manual-tile='objectives'],
+:root[data-theme='dark'] [data-manual-root] [data-manual-tile='guided-lab'] {
+  background-color: var(--color-dark-tile-objectives-bg);
+  border-color: var(--color-dark-tile-objectives-border);
+}
+:root[data-theme='dark'] [data-manual-root] [data-manual-tile='example'] {
+  background-color: var(--color-dark-tile-example-bg);
+  border-color: var(--color-dark-tile-example-border);
+}
+:root[data-theme='dark'] [data-manual-root] [data-manual-tile='example'] .text-emerald-700 {
+  color: var(--color-dark-tile-example-ink);
+}
+:root[data-theme='dark'] [data-manual-root] [data-manual-tile='example'] .text-emerald-950 {
+  color: var(--color-dark-tile-example-body);
+}
+:root[data-theme='dark'] [data-manual-root] [data-manual-tile='common-mistakes'] {
+  background-color: var(--color-dark-tile-mistakes-bg);
+  border-color: var(--color-dark-tile-mistakes-border);
+}
+:root[data-theme='dark'] [data-manual-root] [data-manual-tile='common-mistakes'] .text-amber-700 {
+  color: var(--color-dark-tile-mistakes-ink);
+}
+:root[data-theme='dark'] [data-manual-root] [data-manual-tile='common-mistakes'] .text-amber-950 {
+  color: var(--color-dark-tile-mistakes-body);
+}
+/* On-page rail: active topic uses the dark accent; its guide rule keeps the border. */
+:root[data-theme='dark'] [data-manual-root] .border-indigo-500 {
+  border-color: var(--color-dark-accent);
+}
+:root[data-theme='dark'] [data-manual-root] .border-indigo-100 {
+  border-color: var(--color-dark-tile-objectives-border);
+}
+:root[data-theme='dark'] [data-manual-root] .border-emerald-100,
+:root[data-theme='dark'] [data-manual-root] .border-emerald-200 {
+  border-color: var(--color-dark-tile-example-border);
+}
+:root[data-theme='dark'] [data-manual-root] .border-amber-100 {
+  border-color: var(--color-dark-tile-mistakes-border);
+}
+:root[data-theme='dark'] [data-manual-root] .text-emerald-700,
+:root[data-theme='dark'] [data-manual-root] .text-emerald-800 {
+  color: var(--color-dark-tile-example-ink);
+}
+:root[data-theme='dark'] [data-manual-root] .text-amber-700,
+:root[data-theme='dark'] [data-manual-root] .text-amber-800 {
+  color: var(--color-dark-tile-mistakes-ink);
+}
+/* The domain-weight badge inverts to a legible chip on the dark surface. */
+:root[data-theme='dark'] [data-manual-root] .bg-slate-900 {
+  background-color: var(--color-dark-stroke);
+}
+
 /* Minimal, technological section labels: quiet, monospaced, wide-tracked. */
 .eyebrow {
   font-family: var(--font-mono);

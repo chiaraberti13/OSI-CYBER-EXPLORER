@@ -73,6 +73,59 @@ test('common low-contrast Tailwind text utilities resolve to AA-safe semantic to
   }
 });
 
+// UX-28: the manual's new cards ship a dark palette (opt-in via data-theme="dark").
+// Verify its text/background pairings meet WCAG AA, matching the light-theme gate.
+const darkBlock = css.match(/:root\[data-theme='dark'\]\s*\{([\s\S]*?)\n\}/)?.[1];
+const darkTokens = Object.fromEntries(
+  [...(darkBlock ?? '').matchAll(/(--[\w-]+):\s*(#[\da-fA-F]{6})\s*;/g)].map(([, name, value]) => [
+    name,
+    value.slice(1)
+  ])
+);
+
+function luminanceHex(hex) {
+  const channels = hex.match(/.{2}/g).map((part) => parseInt(part, 16) / 255);
+  const linear = channels.map((channel) => (channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4));
+  return linear.reduce((sum, channel, index) => sum + channel * [0.2126, 0.7152, 0.0722][index], 0);
+}
+
+function contrastHex(foreground, background) {
+  const values = [luminanceHex(darkTokens[foreground]), luminanceHex(darkTokens[background])].sort((a, b) => b - a);
+  return (values[0] + 0.05) / (values[1] + 0.05);
+}
+
+test('dark manual theme text meets WCAG AA on its surfaces and colored tiles (UX-28)', () => {
+  assert.ok(darkBlock, "src/index.css must declare the dark theme tokens under :root[data-theme='dark']");
+
+  const pairs = [
+    ['--color-dark-ink-primary', '--color-dark-surface'],
+    ['--color-dark-ink-secondary', '--color-dark-surface'],
+    ['--color-dark-ink-soft', '--color-dark-surface'],
+    ['--color-dark-ink-muted', '--color-dark-surface'],
+    ['--color-dark-accent', '--color-dark-surface'],
+    ['--color-dark-ink-primary', '--color-dark-canvas'],
+    ['--color-dark-ink-secondary', '--color-dark-canvas'],
+    // Objectives / guided-lab tile (indigo).
+    ['--color-dark-accent', '--color-dark-tile-objectives-bg'],
+    ['--color-dark-ink-secondary', '--color-dark-tile-objectives-bg'],
+    // Example tile (success).
+    ['--color-dark-tile-example-ink', '--color-dark-tile-example-bg'],
+    ['--color-dark-tile-example-body', '--color-dark-tile-example-bg'],
+    ['--color-dark-ink-secondary', '--color-dark-tile-example-bg'],
+    // Common-mistakes tile (warning).
+    ['--color-dark-tile-mistakes-ink', '--color-dark-tile-mistakes-bg'],
+    ['--color-dark-tile-mistakes-body', '--color-dark-tile-mistakes-bg'],
+    ['--color-dark-ink-secondary', '--color-dark-tile-mistakes-bg']
+  ];
+
+  for (const [foreground, background] of pairs) {
+    assert.ok(darkTokens[foreground], `Missing dark token ${foreground}`);
+    assert.ok(darkTokens[background], `Missing dark token ${background}`);
+    const ratio = contrastHex(foreground, background);
+    assert.ok(ratio >= 4.5, `${foreground} on ${background} has contrast ${ratio.toFixed(2)}:1 (needs 4.5:1)`);
+  }
+});
+
 test('global layout and interaction styles consume the shared design tokens', () => {
   assert.match(css, /background-color:\s*var\(--color-canvas\)/);
   assert.match(css, /color:\s*var\(--color-ink-secondary\)/);
