@@ -261,6 +261,7 @@ export default function CurriculumView() {
                         <li key={entry.id}>
                           <ViewLink
                             view="manual"
+                            chapterId={entry.id}
                             className="inline-flex min-h-11 items-center font-medium text-indigo-700 underline decoration-indigo-300 underline-offset-2 hover:text-indigo-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
                           >
                             {language === 'it' ? `Cap. ${entry.order}` : `Ch. ${entry.order}`}: {entry.title[language]}

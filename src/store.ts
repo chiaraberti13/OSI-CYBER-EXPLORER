@@ -77,6 +77,9 @@ export interface NavigationSlice {
   setDetailTab: (tab: 'overview' | 'attacks' | 'defenses' | 'security') => void;
   activeView: AppView;
   setActiveView: (view: AppView) => void;
+  /** The manual chapter addressed by the URL (`#/manual/<id>`); null at the manual root. */
+  activeChapterId: string | null;
+  setActiveChapter: (id: string | null) => void;
 }
 
 export interface SimulationSlice {
@@ -136,7 +139,10 @@ const createNavigationSlice: Slice<NavigationSlice> = (set) => ({
   detailTab: 'overview',
   setDetailTab: (detailTab) => set({ detailTab }),
   activeView: 'curriculum',
-  setActiveView: (activeView) => set({ activeView })
+  setActiveView: (activeView) => set({ activeView }),
+  activeChapterId: null,
+  // Unknown ids collapse to null so a tampered URL can never select a missing chapter.
+  setActiveChapter: (id) => set({ activeChapterId: id && findChapter(id) ? id : null })
 });
 
 const createProgressSlice: Slice<ProgressSlice> = (set) => ({

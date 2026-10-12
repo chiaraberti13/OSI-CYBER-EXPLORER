@@ -25,10 +25,11 @@ describe('CurriculumView — theory defers to the study manual (EDU-STRUCT-03)',
   it('links a covered domain to the manual chapters that teach it', () => {
     useStore.setState({ language: 'it' });
     render(<CurriculumView />);
-    // Network Fundamentals is taught by Chapter 1 (OSI), linked into the manual.
+    // Network Fundamentals is taught by Chapter 1 (OSI), deep-linked to that exact
+    // manual chapter (EDU-STRUCT-04) rather than the manual root.
     const chapterLinks = screen
       .getAllByRole('link', { name: /Cap\. 1:/ })
-      .filter((a) => a.getAttribute('href') === '#/manual');
+      .filter((a) => a.getAttribute('href') === '#/manual/osi-model');
     expect(chapterLinks.length).toBeGreaterThan(0);
   });
 

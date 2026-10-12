@@ -11,7 +11,7 @@ import { CCNA_BLUEPRINT, CCNA_BLUEPRINT_TOPICS } from '../content/ccnaBlueprint'
 
 afterEach(() => {
   cleanup();
-  useStore.setState({ activeView: 'osi', language: 'it' });
+  useStore.setState({ activeView: 'osi', language: 'it', activeChapterId: null });
 });
 
 describe('ViewLink', () => {
@@ -26,6 +26,20 @@ describe('ViewLink', () => {
     link.focus();
     await user.keyboard('{Enter}');
     expect(useStore.getState().activeView).toBe('routing');
+  });
+
+  it('deep-links a manual chapter and selects it on click (EDU-STRUCT-04)', async () => {
+    const user = userEvent.setup();
+    render(
+      <ViewLink view="manual" chapterId="ethernet-switching">
+        Ethernet chapter
+      </ViewLink>
+    );
+    const link = screen.getByRole('link', { name: 'Ethernet chapter' });
+    expect(link.getAttribute('href')).toBe('#/manual/ethernet-switching');
+    await user.click(link);
+    expect(useStore.getState().activeView).toBe('manual');
+    expect(useStore.getState().activeChapterId).toBe('ethernet-switching');
   });
 
   it('leaves modified clicks and secondary buttons to the browser', () => {
@@ -95,10 +109,11 @@ describe('ViewLink', () => {
         '#/manual',
         '#/osi',
         '#/fundamentals',
-        // One "theory in the manual" link per chapter that teaches a CCNA domain (EDU-STRUCT-03).
+        // One "theory in the manual" link per chapter that teaches a CCNA domain, now a
+        // deep link to that exact chapter (EDU-STRUCT-03 index → EDU-STRUCT-04 routing).
         ...chaptersByDomain()
           .filter((group) => group.domain)
-          .flatMap((group) => group.chapters.map(() => '#/manual')),
+          .flatMap((group) => group.chapters.map((entry) => `#/manual/${entry.id}`)),
         ...CCNA_BLUEPRINT_TOPICS.flatMap((entry) => entry.destinations.map((view) => `#/${view}`)),
         CCNA_BLUEPRINT.source.url
       ].sort()

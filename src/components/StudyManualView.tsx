@@ -46,8 +46,12 @@ export default function StudyManualView() {
   const t = uiMessages(language).manual;
   const chapters = orderedChapters();
   const chapterGroups = chaptersByDomain();
-  const [activeId, setActiveId] = useState(chapters[0]?.id);
-  const chapter = findChapter(activeId) ?? chapters[0];
+  // The active chapter is addressable via the URL (`#/manual/<id>`, EDU-STRUCT-04): it
+  // lives in the store so deep links, Back/Forward and in-page selection stay in sync.
+  // A null id (the bare `#/manual` route) opens the first chapter.
+  const activeChapterId = useStore((state) => state.activeChapterId);
+  const setActiveChapter = useStore((state) => state.setActiveChapter);
+  const chapter = (activeChapterId ? findChapter(activeChapterId) : undefined) ?? chapters[0];
   const stats = manualStats();
   const overallCompletion = chapterCompletion(chapters, completedChapterIds);
   const headingId = useId();
@@ -167,7 +171,8 @@ export default function StudyManualView() {
     window.clearTimeout(pendingTopicScrollRelease.current);
     pendingTopicScroll.current = undefined;
     focusChapterTitleAfterChange.current = true;
-    setActiveId(id);
+    // Update the URL-backed store; the router reflects it to `#/manual/<id>`.
+    setActiveChapter(id);
     try {
       window.scrollTo({ top: 0, behavior: preferredScrollBehavior() });
     } catch {

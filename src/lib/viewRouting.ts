@@ -1,5 +1,6 @@
 import type { StoreApi } from 'zustand';
 import { VIEW_ORDER, VIEW_REGISTRY } from '../content/viewRegistry';
+import { findChapter } from './studyManual';
 import type { AppState, AppView } from '../store';
 import type { Language } from '../types';
 
@@ -17,6 +18,31 @@ export function resolveViewHash(hash: string): AppView {
   return VIEW_BY_HASH.get(hash) ?? DEFAULT_VIEW;
 }
 
+/** Canonical deep link to a single manual chapter (EDU-STRUCT-04). */
+export function manualChapterHash(chapterId: string): string {
+  return `#/manual/${chapterId}`;
+}
+
+/**
+ * The manual is the only view with an addressable sub-route: `#/manual/<chapterId>`.
+ * Parsing validates the chapter id against the real chapter list, so a tampered or
+ * stale id collapses to the manual root (`#/manual`) rather than selecting anything
+ * unexpected. Every other hash resolves through the strict, exact-match view table.
+ */
+export function parseRoute(hash: string): { view: AppView; chapterId: string | null } {
+  const manual = /^#\/manual(?:\/(.*))?$/.exec(hash);
+  if (manual) {
+    const candidate = (manual[1] ?? '').split('/')[0];
+    return { view: 'manual', chapterId: candidate && findChapter(candidate) ? candidate : null };
+  }
+  return { view: resolveViewHash(hash), chapterId: null };
+}
+
+/** The canonical hash for a (view, chapter) pair; the chapter only applies to the manual. */
+function routeHash(view: AppView, chapterId: string | null): string {
+  return view === 'manual' && chapterId ? manualChapterHash(chapterId) : viewHash(view);
+}
+
 export function viewTitle(view: AppView, language: Language): string {
   return `${VIEW_REGISTRY[view][language]} — OSI Cyber Explorer`;
 }
@@ -32,25 +58,27 @@ export function connectViewRouting(
   browser: Window
 ): () => void {
   const readLocation = () => {
-    const view = resolveViewHash(browser.location.hash);
-    const hash = viewHash(view);
+    const { view, chapterId } = parseRoute(browser.location.hash);
+    const hash = routeHash(view, chapterId);
     if (browser.location.hash !== hash) {
-      // Canonicalize empty/unknown routes in place: Back must not revisit a bad URL.
-      // A fragment-only update preserves the host, base path and query string.
+      // Canonicalize empty/unknown routes (and broken chapter ids) in place: Back must
+      // not revisit a bad URL. A fragment-only update preserves host, base path and query.
       browser.history.replaceState(browser.history.state, '', hash);
     }
-    if (store.getState().activeView !== view) {
-      store.getState().setActiveView(view);
-    }
+    const state = store.getState();
+    if (state.activeView !== view) state.setActiveView(view);
+    if (state.activeChapterId !== chapterId) state.setActiveChapter(chapterId);
   };
 
   readLocation();
 
   const unsubscribe = store.subscribe((state, previousState) => {
-    if (state.activeView === previousState.activeView) return;
-    const hash = viewHash(state.activeView);
+    if (state.activeView === previousState.activeView && state.activeChapterId === previousState.activeChapterId) {
+      return;
+    }
+    const hash = routeHash(state.activeView, state.activeView === 'manual' ? state.activeChapterId : null);
     if (browser.location.hash !== hash) {
-      // No session data is stored in history. Re-selecting a view adds no entry.
+      // No session data is stored in history. Re-selecting the same route adds no entry.
       browser.history.pushState(null, '', hash);
     }
   });
