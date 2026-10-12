@@ -15,7 +15,13 @@ afterEach(() => {
   cleanup();
   vi.unstubAllGlobals();
   vi.restoreAllMocks();
-  useStore.setState({ language: 'it', completedChapterIds: [], hasDismissedManualHelp: false, activeChapterId: null });
+  useStore.setState({
+    language: 'it',
+    completedChapterIds: [],
+    hasDismissedManualHelp: false,
+    activeChapterId: null,
+    activeTopicId: null
+  });
 });
 
 describe('manual first-visit help (UX-22)', () => {

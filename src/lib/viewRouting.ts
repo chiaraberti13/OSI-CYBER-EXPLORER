@@ -23,24 +23,35 @@ export function manualChapterHash(chapterId: string): string {
   return `#/manual/${chapterId}`;
 }
 
-/**
- * The manual is the only view with an addressable sub-route: `#/manual/<chapterId>`.
- * Parsing validates the chapter id against the real chapter list, so a tampered or
- * stale id collapses to the manual root (`#/manual`) rather than selecting anything
- * unexpected. Every other hash resolves through the strict, exact-match view table.
- */
-export function parseRoute(hash: string): { view: AppView; chapterId: string | null } {
-  const manual = /^#\/manual(?:\/(.*))?$/.exec(hash);
-  if (manual) {
-    const candidate = (manual[1] ?? '').split('/')[0];
-    return { view: 'manual', chapterId: candidate && findChapter(candidate) ? candidate : null };
-  }
-  return { view: resolveViewHash(hash), chapterId: null };
+/** Canonical deep link to a single topic within a manual chapter (UX-29). */
+export function manualTopicHash(chapterId: string, topicId: string): string {
+  return `#/manual/${chapterId}/${topicId}`;
 }
 
-/** The canonical hash for a (view, chapter) pair; the chapter only applies to the manual. */
-function routeHash(view: AppView, chapterId: string | null): string {
-  return view === 'manual' && chapterId ? manualChapterHash(chapterId) : viewHash(view);
+/**
+ * The manual is the only view with addressable sub-routes: `#/manual/<chapterId>` and
+ * `#/manual/<chapterId>/<topicId>`. Parsing validates the chapter id against the real
+ * chapter list and the topic id against that chapter's topics, so a tampered or stale id
+ * collapses to the nearest valid level (the chapter, or the manual root) rather than
+ * selecting anything unexpected. Every other hash resolves through the strict view table.
+ */
+export function parseRoute(hash: string): { view: AppView; chapterId: string | null; topicId: string | null } {
+  const manual = /^#\/manual(?:\/(.*))?$/.exec(hash);
+  if (manual) {
+    const [chapterCandidate, topicCandidate] = (manual[1] ?? '').split('/');
+    const chapter = chapterCandidate ? findChapter(chapterCandidate) : undefined;
+    if (!chapter) return { view: 'manual', chapterId: null, topicId: null };
+    const topicId =
+      topicCandidate && chapter.topics.some((topic) => topic.id === topicCandidate) ? topicCandidate : null;
+    return { view: 'manual', chapterId: chapter.id, topicId };
+  }
+  return { view: resolveViewHash(hash), chapterId: null, topicId: null };
+}
+
+/** The canonical hash for a (view, chapter, topic); chapter/topic only apply to the manual. */
+function routeHash(view: AppView, chapterId: string | null, topicId: string | null): string {
+  if (view !== 'manual' || !chapterId) return viewHash(view);
+  return topicId ? manualTopicHash(chapterId, topicId) : manualChapterHash(chapterId);
 }
 
 export function viewTitle(view: AppView, language: Language): string {
@@ -58,28 +69,41 @@ export function connectViewRouting(
   browser: Window
 ): () => void {
   const readLocation = () => {
-    const { view, chapterId } = parseRoute(browser.location.hash);
-    const hash = routeHash(view, chapterId);
+    const { view, chapterId, topicId } = parseRoute(browser.location.hash);
+    const hash = routeHash(view, chapterId, topicId);
     if (browser.location.hash !== hash) {
-      // Canonicalize empty/unknown routes (and broken chapter ids) in place: Back must
-      // not revisit a bad URL. A fragment-only update preserves host, base path and query.
+      // Canonicalize empty/unknown routes (and broken chapter/topic ids) in place: Back
+      // must not revisit a bad URL. A fragment-only update preserves host, base path and query.
       browser.history.replaceState(browser.history.state, '', hash);
     }
     const state = store.getState();
-    if (state.activeView !== view) state.setActiveView(view);
-    if (state.activeChapterId !== chapterId) state.setActiveChapter(chapterId);
+    // Apply view, chapter and topic in one update so the subscriber never observes an
+    // inconsistent intermediate state (which would push a wrong URL during traversal).
+    if (state.activeView !== view || state.activeChapterId !== chapterId || state.activeTopicId !== topicId) {
+      state.applyRoute(view, chapterId, topicId);
+    }
   };
 
   readLocation();
 
   const unsubscribe = store.subscribe((state, previousState) => {
-    if (state.activeView === previousState.activeView && state.activeChapterId === previousState.activeChapterId) {
-      return;
-    }
-    const hash = routeHash(state.activeView, state.activeView === 'manual' ? state.activeChapterId : null);
-    if (browser.location.hash !== hash) {
-      // No session data is stored in history. Re-selecting the same route adds no entry.
+    const viewChanged = state.activeView !== previousState.activeView;
+    const chapterChanged = state.activeChapterId !== previousState.activeChapterId;
+    const topicChanged = state.activeTopicId !== previousState.activeTopicId;
+    if (!viewChanged && !chapterChanged && !topicChanged) return;
+    const onManual = state.activeView === 'manual';
+    const hash = routeHash(
+      state.activeView,
+      onManual ? state.activeChapterId : null,
+      onManual ? state.activeTopicId : null
+    );
+    if (browser.location.hash === hash) return;
+    // Changing view or chapter adds a history entry; moving to a topic within the same
+    // chapter replaces it, so Back does not step through every anchor (UX-29).
+    if (viewChanged || chapterChanged) {
       browser.history.pushState(null, '', hash);
+    } else {
+      browser.history.replaceState(browser.history.state, '', hash);
     }
   });
 

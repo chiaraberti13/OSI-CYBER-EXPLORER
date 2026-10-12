@@ -6,6 +6,7 @@ import {
   DEFAULT_VIEW,
   connectViewRouting,
   manualChapterHash,
+  manualTopicHash,
   parseRoute,
   resolveViewHash,
   viewHash,
@@ -16,14 +17,14 @@ let disconnect: (() => void) | undefined;
 
 beforeEach(() => {
   window.history.replaceState({ external: true }, '', '/study/?mode=demo');
-  useStore.setState({ activeView: 'osi', language: 'it', activeChapterId: null });
+  useStore.setState({ activeView: 'osi', language: 'it', activeChapterId: null, activeTopicId: null });
 });
 
 afterEach(() => {
   disconnect?.();
   disconnect = undefined;
   window.history.replaceState(null, '', '/');
-  useStore.setState({ activeView: 'osi', language: 'it', activeChapterId: null });
+  useStore.setState({ activeView: 'osi', language: 'it', activeChapterId: null, activeTopicId: null });
 });
 
 describe('registry-derived routes', () => {
@@ -61,17 +62,39 @@ describe('registry-derived routes', () => {
 
   it('parses manual chapter deep links and falls back safely (EDU-STRUCT-04)', () => {
     expect(manualChapterHash('osi-model')).toBe('#/manual/osi-model');
-    expect(parseRoute('#/manual/osi-model')).toEqual({ view: 'manual', chapterId: 'osi-model' });
+    expect(parseRoute('#/manual/osi-model')).toEqual({ view: 'manual', chapterId: 'osi-model', topicId: null });
     // Round-trip through the canonical hash.
     expect(parseRoute(manualChapterHash('ethernet-switching')).chapterId).toBe('ethernet-switching');
     // Bare, trailing-slash, unknown and over-long forms never select a missing chapter.
-    expect(parseRoute('#/manual')).toEqual({ view: 'manual', chapterId: null });
-    expect(parseRoute('#/manual/')).toEqual({ view: 'manual', chapterId: null });
-    expect(parseRoute('#/manual/not-a-chapter')).toEqual({ view: 'manual', chapterId: null });
-    expect(parseRoute('#/manual/osi-model/extra')).toEqual({ view: 'manual', chapterId: 'osi-model' });
-    // Non-manual routes carry no chapter.
-    expect(parseRoute('#/osi')).toEqual({ view: 'osi', chapterId: null });
-    expect(parseRoute('#/missing')).toEqual({ view: DEFAULT_VIEW, chapterId: null });
+    expect(parseRoute('#/manual')).toEqual({ view: 'manual', chapterId: null, topicId: null });
+    expect(parseRoute('#/manual/')).toEqual({ view: 'manual', chapterId: null, topicId: null });
+    expect(parseRoute('#/manual/not-a-chapter')).toEqual({ view: 'manual', chapterId: null, topicId: null });
+    // A non-topic trailing segment is ignored rather than selecting a missing topic.
+    expect(parseRoute('#/manual/osi-model/extra')).toEqual({ view: 'manual', chapterId: 'osi-model', topicId: null });
+    // Non-manual routes carry no chapter or topic.
+    expect(parseRoute('#/osi')).toEqual({ view: 'osi', chapterId: null, topicId: null });
+    expect(parseRoute('#/missing')).toEqual({ view: DEFAULT_VIEW, chapterId: null, topicId: null });
+  });
+
+  it('parses manual topic deep links and validates the topic against the chapter (UX-29)', () => {
+    expect(manualTopicHash('osi-model', 'osi-seven-layers')).toBe('#/manual/osi-model/osi-seven-layers');
+    expect(parseRoute('#/manual/osi-model/osi-seven-layers')).toEqual({
+      view: 'manual',
+      chapterId: 'osi-model',
+      topicId: 'osi-seven-layers'
+    });
+    // A topic that does not belong to the chapter collapses to the chapter (not the topic).
+    expect(parseRoute('#/manual/osi-model/not-a-topic')).toEqual({
+      view: 'manual',
+      chapterId: 'osi-model',
+      topicId: null
+    });
+    // A topic id under the wrong chapter is rejected too.
+    expect(parseRoute('#/manual/ethernet-switching/osi-seven-layers')).toEqual({
+      view: 'manual',
+      chapterId: 'ethernet-switching',
+      topicId: null
+    });
   });
 
   it('uses each registry label as the title in both languages', () => {
@@ -216,6 +239,47 @@ describe('browser/store connection', () => {
     expect(window.location.hash).toBe('#/manual/ethernet-switching');
     useStore.getState().setActiveView('osi');
     expect(window.location.hash).toBe('#/osi');
+  });
+
+  it('opens the addressed topic from a deep link without adding history (UX-29)', () => {
+    window.history.replaceState(null, '', manualTopicHash('osi-model', 'osi-seven-layers'));
+    useStore.setState({ activeView: 'osi', activeChapterId: null, activeTopicId: null });
+    const length = window.history.length;
+    disconnect = connectViewRouting(useStore, window);
+    expect(useStore.getState().activeChapterId).toBe('osi-model');
+    expect(useStore.getState().activeTopicId).toBe('osi-seven-layers');
+    expect(window.location.hash).toBe('#/manual/osi-model/osi-seven-layers');
+    expect(window.history.length).toBe(length);
+  });
+
+  it('canonicalizes a broken topic id to the chapter, falling back safely (UX-29)', () => {
+    window.history.replaceState(null, '', '#/manual/osi-model/not-a-topic');
+    useStore.setState({ activeView: 'osi', activeChapterId: null, activeTopicId: null });
+    disconnect = connectViewRouting(useStore, window);
+    expect(useStore.getState().activeChapterId).toBe('osi-model');
+    expect(useStore.getState().activeTopicId).toBeNull();
+    expect(window.location.hash).toBe('#/manual/osi-model');
+  });
+
+  it('replaces (not pushes) history when moving to a topic within the chapter (UX-29)', () => {
+    window.history.replaceState(null, '', manualChapterHash('osi-model'));
+    useStore.setState({ activeView: 'osi', activeChapterId: null, activeTopicId: null });
+    disconnect = connectViewRouting(useStore, window);
+    const length = window.history.length;
+    useStore.getState().setActiveTopic('osi-seven-layers');
+    expect(window.location.hash).toBe('#/manual/osi-model/osi-seven-layers');
+    // A topic anchor replaces the current entry rather than stacking one per topic.
+    expect(window.history.length).toBe(length);
+  });
+
+  it('clears the topic anchor when the chapter changes (UX-29)', () => {
+    window.history.replaceState(null, '', manualTopicHash('osi-model', 'osi-seven-layers'));
+    useStore.setState({ activeView: 'osi', activeChapterId: null, activeTopicId: null });
+    disconnect = connectViewRouting(useStore, window);
+    expect(window.location.hash).toBe('#/manual/osi-model/osi-seven-layers');
+    useStore.getState().setActiveChapter('ethernet-switching');
+    expect(useStore.getState().activeTopicId).toBeNull();
+    expect(window.location.hash).toBe('#/manual/ethernet-switching');
   });
 
   it('cleans up both event listeners and the store subscription, then reconnects safely', () => {

@@ -80,6 +80,11 @@ export interface NavigationSlice {
   /** The manual chapter addressed by the URL (`#/manual/<id>`); null at the manual root. */
   activeChapterId: string | null;
   setActiveChapter: (id: string | null) => void;
+  /** The chapter topic addressed by the URL (`#/manual/<id>/<topic>`); null when none (UX-29). */
+  activeTopicId: string | null;
+  setActiveTopic: (id: string | null) => void;
+  /** Apply a full manual route (view + chapter + topic) in one update, for the router. */
+  applyRoute: (view: AppView, chapterId: string | null, topicId: string | null) => void;
 }
 
 export interface SimulationSlice {
@@ -142,7 +147,24 @@ const createNavigationSlice: Slice<NavigationSlice> = (set) => ({
   setActiveView: (activeView) => set({ activeView }),
   activeChapterId: null,
   // Unknown ids collapse to null so a tampered URL can never select a missing chapter.
-  setActiveChapter: (id) => set({ activeChapterId: id && findChapter(id) ? id : null })
+  // Changing chapter clears the topic anchor — the new chapter has its own topics.
+  setActiveChapter: (id) => set({ activeChapterId: id && findChapter(id) ? id : null, activeTopicId: null }),
+  activeTopicId: null,
+  setActiveTopic: (id) =>
+    set((state) => {
+      const chapter = state.activeChapterId ? findChapter(state.activeChapterId) : undefined;
+      return { activeTopicId: id && chapter?.topics.some((topic) => topic.id === id) ? id : null };
+    }),
+  // Set view, chapter and topic in a single update so the router never observes an
+  // inconsistent intermediate state (which would push a wrong URL during traversal).
+  applyRoute: (view, chapterId, topicId) => {
+    const chapter = chapterId ? findChapter(chapterId) : undefined;
+    set({
+      activeView: view,
+      activeChapterId: chapter ? chapter.id : null,
+      activeTopicId: chapter && topicId && chapter.topics.some((topic) => topic.id === topicId) ? topicId : null
+    });
+  }
 });
 
 const createProgressSlice: Slice<ProgressSlice> = (set) => ({

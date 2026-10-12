@@ -53,6 +53,9 @@ export default function StudyManualView() {
   // A null id (the bare `#/manual` route) opens the first chapter.
   const activeChapterId = useStore((state) => state.activeChapterId);
   const setActiveChapter = useStore((state) => state.setActiveChapter);
+  // The URL-addressed topic anchor (`#/manual/<id>/<topic>`, UX-29); null at chapter root.
+  const urlTopicId = useStore((state) => state.activeTopicId);
+  const setActiveTopic = useStore((state) => state.setActiveTopic);
   const chapter = (activeChapterId ? findChapter(activeChapterId) : undefined) ?? chapters[0];
   const stats = manualStats();
   const overallCompletion = chapterCompletion(chapters, completedChapterIds);
@@ -96,6 +99,9 @@ export default function StudyManualView() {
   const [activeTopicId, setActiveTopicId] = useState<string | undefined>(chapter.topics[0]?.id);
   const pendingTopicScroll = useRef<string | undefined>(undefined);
   const pendingTopicScrollRelease = useRef<number | undefined>(undefined);
+  // The topic the view last scrolled to for the URL anchor, so a deep link scrolls once
+  // while an in-page jump (which already scrolled) does not scroll a second time (UX-29).
+  const lastAnchoredTopic = useRef<string | undefined>(undefined);
   // Derive the highlighted topic so a stale id from a previous chapter falls back to the
   // first topic without a synchronous setState on chapter change.
   const activeTopic = chapter.topics.some((topic) => topic.id === activeTopicId)
@@ -149,7 +155,7 @@ export default function StudyManualView() {
     chapterTitleRef.current?.focus({ preventScroll: true });
   }, [chapter.id]);
 
-  const jumpToTopic = (topicId: string) => {
+  const scrollToTopic = (topicId: string) => {
     window.clearTimeout(pendingTopicScrollRelease.current);
     pendingTopicScroll.current = topicId;
     // IntersectionObserver can fire before a smooth scroll reaches its target.
@@ -159,6 +165,7 @@ export default function StudyManualView() {
       pendingTopicScroll.current = undefined;
     }, 1200);
     setActiveTopicId(topicId);
+    lastAnchoredTopic.current = topicId;
     try {
       document
         .getElementById(`topic-${topicId}`)
@@ -167,6 +174,24 @@ export default function StudyManualView() {
       // scrollIntoView is a no-op or unimplemented in some environments (e.g. jsdom); ignore.
     }
   };
+
+  const jumpToTopic = (topicId: string) => {
+    scrollToTopic(topicId);
+    // Reflect the topic in the URL so the argument has a shareable anchor (UX-29).
+    setActiveTopic(topicId);
+  };
+
+  // A deep link (or Back/Forward) that carries a topic scrolls to it once the chapter is
+  // rendered; an in-page jump already scrolled, so `lastAnchoredTopic` suppresses a repeat.
+  // The scroll runs on the next frame so the state update stays out of the effect body.
+  useEffect(() => {
+    if (!urlTopicId || urlTopicId === lastAnchoredTopic.current) return;
+    if (!chapter.topics.some((topic) => topic.id === urlTopicId)) return;
+    const topicId = urlTopicId;
+    lastAnchoredTopic.current = topicId;
+    const frame = requestAnimationFrame(() => scrollToTopic(topicId));
+    return () => cancelAnimationFrame(frame);
+  }, [urlTopicId, chapter.id, chapter.topics]);
 
   const selectChapter = (id: string) => {
     if (id === chapter.id) return;
