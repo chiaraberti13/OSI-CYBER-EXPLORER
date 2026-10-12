@@ -83,10 +83,36 @@ describe('manual first-visit help (UX-22)', () => {
 
 describe('StudyManualView (EDU-01)', () => {
   it('renders the manual heading, the OSI chapter and a topic', () => {
-    render(<StudyManualView />);
+    const { container } = render(<StudyManualView />);
     expect(screen.getByRole('heading', { level: 1, name: 'Manuale di studio' })).toBeTruthy();
     expect(screen.getByRole('heading', { level: 2, name: /Il modello OSI/ })).toBeTruthy();
     expect(screen.getByRole('heading', { level: 3, name: /sette livelli/ })).toBeTruthy();
+    expect(screen.getByTestId('manual-reading-column').classList.contains('manual-reading-column')).toBe(true);
+    expect(container.querySelectorAll('[data-manual-copy="theory"]')).toHaveLength(4);
+    expect(container.querySelectorAll('[data-manual-topic]')).toHaveLength(4);
+  });
+
+  it('uses the same reading hierarchy and tile rhythm across chapters', async () => {
+    const user = userEvent.setup();
+    const { container } = render(<StudyManualView />);
+
+    const assertChapterRhythm = () => {
+      const topicCards = [...container.querySelectorAll<HTMLElement>('[data-manual-topic]')];
+      expect(topicCards.length).toBeGreaterThan(1);
+      for (const card of topicCards) {
+        expect(card.querySelector('[data-manual-copy="theory"]')?.classList.contains('manual-reading-copy')).toBe(true);
+        expect(card.querySelector('[data-manual-tile="objectives"]')).not.toBeNull();
+        expect(card.querySelector('[data-manual-tile="common-mistakes"]')).not.toBeNull();
+      }
+    };
+
+    assertChapterRhythm();
+    await user.click(
+      within(screen.getByRole('navigation', { name: 'Capitoli del manuale' })).getByRole('button', {
+        name: /Ethernet/
+      })
+    );
+    assertChapterRhythm();
   });
 
   it('shows the CCNA domain alignment badge for the active chapter', () => {

@@ -128,7 +128,11 @@ export default function StudyManualView() {
   };
 
   const renderGuidedLab = (lab: GuidedLab) => (
-    <div key={lab.id} className="mt-4 rounded-xl border border-indigo-100 bg-indigo-50/40 p-4">
+    <div
+      key={lab.id}
+      data-manual-tile="guided-lab"
+      className="mt-4 rounded-xl border border-indigo-100 bg-indigo-50/40 p-4"
+    >
       <div className="flex flex-wrap items-center gap-2">
         <FlaskConical aria-hidden="true" className="h-4 w-4 text-indigo-600" />
         <span className="eyebrow text-indigo-700">{t.guidedLab}</span>
@@ -136,33 +140,33 @@ export default function StudyManualView() {
           {difficultyLabel[lab.difficulty]}
         </span>
       </div>
-      <h4 className="mt-2 text-[14px] font-semibold text-slate-900">{lab.title[language]}</h4>
+      <h4 className="mt-3 text-base font-semibold leading-6 text-slate-900">{lab.title[language]}</h4>
 
-      <p className="mt-2 text-[13px] text-slate-600">
+      <p className="manual-support-copy mt-2 text-slate-600">
         <span className="font-semibold text-slate-700">{t.scenario}: </span>
         {lab.scenario[language]}
       </p>
-      <p className="mt-1 text-[13px] text-slate-700">
+      <p className="manual-support-copy mt-2 text-slate-700">
         <span className="font-semibold">{t.task}: </span>
         {lab.task[language]}
       </p>
 
       <p className="mt-3 eyebrow">{t.steps}</p>
-      <ol className="mt-1 list-decimal space-y-1 pl-5 text-[13px] text-slate-600">
+      <ol className="manual-support-copy mt-2 list-decimal space-y-1.5 pl-5 text-slate-600">
         {lab.steps.map((step, i) => (
           <li key={`${lab.id}-step-${i}`}>{step[language]}</li>
         ))}
       </ol>
 
-      <p className="mt-3 text-[13px] text-slate-700">
+      <p className="manual-support-copy mt-3 text-slate-700">
         <span className="font-semibold">{t.challenge}: </span>
         {lab.challenge[language]}
       </p>
 
       <details className="mt-3 rounded-lg border border-slate-200 bg-white p-3">
-        <summary className="cursor-pointer text-[13px] font-medium text-indigo-700">{t.showSolution}</summary>
+        <summary className="cursor-pointer text-sm font-medium leading-6 text-indigo-700">{t.showSolution}</summary>
         <p className="mt-2 eyebrow">{t.solution}</p>
-        <ol className="mt-1 list-decimal space-y-1 pl-5 text-[13px] text-slate-600">
+        <ol className="manual-support-copy mt-2 list-decimal space-y-1.5 pl-5 text-slate-600">
           {lab.solution.map((line, i) => (
             <li key={`${lab.id}-sol-${i}`}>{line[language]}</li>
           ))}
@@ -173,7 +177,7 @@ export default function StudyManualView() {
         <ListChecks aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
         <div>
           <span className="eyebrow">{t.selfCheck}</span>
-          <ul className="mt-1 list-disc space-y-1 pl-5 text-[13px] text-slate-600">
+          <ul className="manual-support-copy mt-2 list-disc space-y-1.5 pl-5 text-slate-600">
             {lab.selfCheck.map((check, i) => (
               <li key={`${lab.id}-check-${i}`}>{check[language]}</li>
             ))}
@@ -183,7 +187,7 @@ export default function StudyManualView() {
 
       <ViewLink
         view={lab.lab}
-        className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-indigo-600 px-3 py-1.5 text-[13px] font-medium text-white transition-colors hover:bg-indigo-500"
+        className="mt-4 inline-flex items-center gap-1.5 rounded-lg bg-indigo-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-500"
       >
         {t.openLab}
         <ArrowRight aria-hidden="true" className="h-3.5 w-3.5" />
@@ -331,7 +335,11 @@ export default function StudyManualView() {
       </div>
 
       <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_13rem] lg:gap-8">
-        <article aria-labelledby={chapterTitleId} className="min-w-0 space-y-5 lg:col-start-1">
+        <article
+          aria-labelledby={chapterTitleId}
+          data-testid="manual-reading-column"
+          className="manual-reading-column min-w-0 space-y-6 lg:col-start-1"
+        >
           {/* Chapter overview card: alignment, title, summary and an in-chapter table of contents. */}
           <div className="rounded-xl border border-slate-200 bg-white p-5 md:p-6">
             <div className="flex items-start justify-between gap-4">
@@ -360,7 +368,7 @@ export default function StudyManualView() {
                 );
               })()}
             </div>
-            <p className="mt-2 text-sm leading-relaxed text-slate-600">{chapter.summary[language]}</p>
+            <p className="manual-reading-copy mt-3 text-slate-600">{chapter.summary[language]}</p>
 
             <button
               type="button"
@@ -405,63 +413,71 @@ export default function StudyManualView() {
               key={topic.id}
               id={`topic-${topic.id}`}
               aria-labelledby={`topic-h-${topic.id}`}
+              data-manual-topic={topic.id}
               className="scroll-mt-40 rounded-xl border border-slate-200 bg-white p-5 md:p-6"
             >
-              <h3 id={`topic-h-${topic.id}`} className="text-base font-semibold text-slate-900">
+              <h3 id={`topic-h-${topic.id}`} className="text-lg font-semibold leading-7 text-slate-900">
                 {idx + 1}. {topic.title[language]}
               </h3>
 
-              <div className="mt-3 rounded-lg border border-indigo-100 bg-indigo-50/50 p-3">
+              <div
+                data-manual-tile="objectives"
+                className="mt-4 rounded-lg border border-indigo-100 bg-indigo-50/50 p-4"
+              >
                 <h4 className="flex items-center gap-1.5 eyebrow text-indigo-700">
                   <Target aria-hidden="true" className="h-3.5 w-3.5" />
                   {t.objectives}
                 </h4>
-                <ul className="mt-1 list-disc space-y-1 pl-5 text-[13px] text-slate-700">
+                <ul className="manual-support-copy mt-2 list-disc space-y-1.5 pl-5 text-slate-700">
                   {topic.objectives.map((o, i) => (
                     <li key={`${topic.id}-obj-${i}`}>{o[language]}</li>
                   ))}
                 </ul>
               </div>
 
-              <div className="mt-3">
+              <div className="mt-4">
                 <h4 className="eyebrow text-slate-400">{t.prerequisites}</h4>
-                <ul className="mt-1 list-disc space-y-1 pl-5 text-[13px] text-slate-500">
+                <ul className="manual-support-copy mt-2 list-disc space-y-1.5 pl-5 text-slate-500">
                   {topic.prerequisites.map((p, i) => (
                     <li key={`${topic.id}-pre-${i}`}>{p[language]}</li>
                   ))}
                 </ul>
               </div>
 
-              <div className="mt-4">
+              <div className="mt-5">
                 <h4 className="flex items-center gap-1.5 eyebrow text-slate-500">
                   <BookOpen aria-hidden="true" className="h-3.5 w-3.5" />
                   {t.explanation}
                 </h4>
-                <div className="mt-1 space-y-2">
+                <div data-manual-copy="theory" className="manual-reading-copy mt-2 space-y-4 text-slate-700">
                   {topic.theory.map((para, i) => (
-                    <p key={`${topic.id}-th-${i}`} className="text-[13.5px] leading-relaxed text-slate-700">
-                      {para[language]}
-                    </p>
+                    <p key={`${topic.id}-th-${i}`}>{para[language]}</p>
                   ))}
                 </div>
               </div>
 
               {topic.example ? (
-                <div className="mt-3 rounded-lg border border-emerald-100 bg-emerald-50/50 p-3">
+                <div
+                  data-manual-tile="example"
+                  className="mt-4 rounded-lg border border-emerald-100 bg-emerald-50/50 p-4"
+                >
                   <h4 className="flex items-center gap-1.5 eyebrow text-emerald-700">
                     <FlaskConical aria-hidden="true" className="h-3.5 w-3.5" />
                     {t.example}
                   </h4>
-                  <p className="mt-1 text-[13px] leading-relaxed text-emerald-950">{topic.example[language]}</p>
+                  <p className="manual-support-copy mt-2 text-emerald-950">{topic.example[language]}</p>
                 </div>
               ) : null}
 
-              <div className="mt-3 rounded-lg border border-amber-100 bg-amber-50/50 p-3">
+              <div
+                data-manual-tile="common-mistakes"
+                className="mt-4 rounded-lg border border-amber-100 bg-amber-50/50 p-4"
+              >
                 <h4 className="flex items-center gap-1.5 eyebrow text-amber-700">
                   <AlertTriangle aria-hidden="true" className="h-3.5 w-3.5" />
                   {t.commonMistakes}
                 </h4>
-                <ul className="mt-1 list-disc space-y-1 pl-5 text-[13px] text-amber-950">
+                <ul className="manual-support-copy mt-2 list-disc space-y-1.5 pl-5 text-amber-950">
                   {topic.commonMistakes.map((m, i) => (
                     <li key={`${topic.id}-mis-${i}`}>{m[language]}</li>
                   ))}
@@ -469,7 +485,7 @@ export default function StudyManualView() {
               </div>
 
               {topic.references && topic.references.length > 0 ? (
-                <p className="mt-3 text-[12px] text-slate-500">
+                <p className="manual-support-copy mt-4 text-slate-500">
                   <span className="eyebrow">{t.references}: </span>
                   {topic.references.map((ref, i) => (
                     <span key={`${topic.id}-ref-${i}`}>
@@ -491,7 +507,7 @@ export default function StudyManualView() {
               {topic.lab ? (
                 <ViewLink
                   view={topic.lab}
-                  className="mt-4 inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-[13px] font-medium text-slate-600 transition-colors hover:text-slate-900"
+                  className="mt-4 inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-600 transition-colors hover:text-slate-900"
                 >
                   {t.studyInLab}
                   <ArrowRight aria-hidden="true" className="h-3.5 w-3.5" />

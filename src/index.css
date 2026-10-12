@@ -35,6 +35,10 @@
   --color-zinc-700: #cbd5e1;
 
   --font-mono: 'JetBrains Mono', 'SF Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --manual-reading-measure: 72ch;
+  --manual-column-measure: 75ch;
+  --manual-body-size: 1rem;
+  --manual-body-leading: 1.75;
   --radius-xl: 0.75rem;
   --shadow-sm: 0 1px 2px 0 rgb(15 23 42 / 0.05);
 }
@@ -56,6 +60,26 @@ body {
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--color-ink-secondary);
+}
+
+/* UX-23: long-form manual copy follows a deliberate reading rhythm rather than
+   inheriting the denser UI typography. The column leaves room for card padding,
+   while running text is capped at 72 characters and keeps a 28 px baseline. */
+.manual-reading-column {
+  max-inline-size: var(--manual-column-measure);
+}
+
+.manual-reading-copy {
+  max-inline-size: var(--manual-reading-measure);
+  font-size: var(--manual-body-size);
+  line-height: var(--manual-body-leading);
+  text-wrap: pretty;
+}
+
+.manual-support-copy {
+  max-inline-size: var(--manual-reading-measure);
+  font-size: 0.875rem;
+  line-height: 1.5rem;
 }
 
 /* UX-08: WCAG 2.2 target-size and readability floor. Native controls are the

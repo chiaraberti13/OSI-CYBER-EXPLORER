@@ -39,6 +39,11 @@ feedback should use `text-success`, `text-warning`, `text-danger`, or `text-info
 
 - Sans-serif UI text uses the shared `--font-sans` stack; code and network
   values use `--font-mono`.
+- Long-form manual theory uses `--manual-body-size` (16 px),
+  `--manual-body-leading` (1.75 / 28 px) and a `--manual-reading-measure` cap of
+  72 characters. Its card column is capped at 75 characters so 24 px desktop
+  padding does not stretch running text; supporting lists and examples use a
+  consistent 14/24 px rhythm.
 - Tailwind's 4 px spacing scale remains the spacing grid. Use its existing
   utilities consistently rather than adding arbitrary pixel spacing.
 - `--radius-xl` is the shared 12 px card/panel radius. `--shadow-sm` is the
@@ -68,6 +73,11 @@ dell'applicazione.
 
 - Il testo dell'interfaccia sans-serif usa lo stack condiviso `--font-sans`; il
   codice e i valori di rete usano `--font-mono`.
+- La teoria estesa del Manuale usa `--manual-body-size` (16 px),
+  `--manual-body-leading` (1,75 / 28 px) e una misura massima di 72 caratteri
+  (`--manual-reading-measure`). La colonna delle card è limitata a 75 caratteri,
+  così il padding desktop da 24 px non allarga il testo corrente; liste ed esempi
+  di supporto condividono il ritmo 14/24 px.
 - La scala Tailwind da 4 px resta la griglia delle spaziature. Riusa le utility
   esistenti anziché introdurre spaziature arbitrarie in pixel.
 - `--radius-xl` è il raggio condiviso di 12 px per schede e pannelli. `--shadow-sm`
