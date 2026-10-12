@@ -190,10 +190,10 @@ test.describe('application shell', () => {
       'true'
     );
 
-    await page.goto('/#/curriculum');
-    await expect(page.getByLabel('Progresso capitoli: 1/3')).toContainText('33%');
+    // Per-domain aggregation lives in the manual's own chapter navigation (IA-01a); the
+    // overview no longer duplicates the chapter index (IA-01b).
+    await expect(page.getByLabel('CCNA 1.0 · Fondamenti di rete · Progresso capitoli: 1/3')).toBeVisible();
 
-    await page.goto('/#/manual');
     await page.getByRole('button', { name: 'Azzera progresso' }).click();
     await page.reload();
     await expect(page.getByLabel('Progresso capitoli: 0/9', { exact: true })).toBeVisible();

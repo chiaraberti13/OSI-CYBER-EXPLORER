@@ -22,15 +22,25 @@ describe('CurriculumView — theory defers to the study manual (EDU-STRUCT-03)',
     expect(screen.getAllByText('Teoria nel manuale').length).toBe(6);
   });
 
-  it('links a covered domain to the manual chapters that teach it', () => {
+  it('points a covered domain to its chapters with a single deep link (IA-01b)', () => {
     useStore.setState({ language: 'it' });
     render(<CurriculumView />);
-    // Network Fundamentals is taught by Chapter 1 (OSI), deep-linked to that exact
-    // manual chapter (EDU-STRUCT-04) rather than the manual root.
-    const chapterLinks = screen
-      .getAllByRole('link', { name: /Cap\. 1:/ })
+    // Network Fundamentals deep-links to its first chapter (OSI), opening the Capitoli tab
+    // there — a single pointer rather than a duplicated chapter list.
+    const ctas = screen
+      .getAllByRole('link', { name: 'Apri i capitoli nel Manuale' })
       .filter((a) => a.getAttribute('href') === '#/manual/osi-model');
-    expect(chapterLinks.length).toBeGreaterThan(0);
+    expect(ctas.length).toBe(1);
+  });
+
+  it('does not re-list the individual chapters: the index lives in the Capitoli tab (IA-01b)', () => {
+    useStore.setState({ language: 'it' });
+    render(<CurriculumView />);
+    // The per-chapter "Cap. N:" index was removed from the overview to avoid duplicating
+    // the manual's domain navigation.
+    expect(screen.queryAllByRole('link', { name: /Cap\. \d+:/ })).toHaveLength(0);
+    // Five of the six domains are covered by chapters, each with one pointer.
+    expect(screen.getAllByRole('link', { name: 'Apri i capitoli nel Manuale' })).toHaveLength(5);
   });
 
   it('marks a domain with no manual chapter yet as coming soon', () => {
@@ -38,12 +48,5 @@ describe('CurriculumView — theory defers to the study manual (EDU-STRUCT-03)',
     render(<CurriculumView />);
     // Automation & Programmability (6.0) has no dedicated chapter yet.
     expect(screen.getByText(/In arrivo: questo dominio/)).toBeTruthy();
-  });
-
-  it('shows locally completed chapter progress for each covered domain', () => {
-    useStore.setState({ language: 'it', completedChapterIds: ['osi-model'] });
-    render(<CurriculumView />);
-
-    expect(screen.getByLabelText('Progresso capitoli: 1/3').textContent).toContain('Progresso: 1/3 (33%)');
   });
 });

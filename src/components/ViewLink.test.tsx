@@ -112,11 +112,11 @@ describe('ViewLink', () => {
         '#/manual',
         '#/osi',
         '#/fundamentals',
-        // One "theory in the manual" link per chapter that teaches a CCNA domain, now a
-        // deep link to that exact chapter (EDU-STRUCT-03 index → EDU-STRUCT-04 routing).
+        // One "open the chapters in the Manual" deep link per covered domain, pointing to
+        // its first chapter (IA-01b: a single pointer, not a duplicated chapter list).
         ...chaptersByDomain()
-          .filter((group) => group.domain)
-          .flatMap((group) => group.chapters.map((entry) => `#/manual/${entry.id}`)),
+          .filter((group) => group.domain && group.chapters.length > 0)
+          .map((group) => `#/manual/${group.chapters[0].id}`),
         ...CCNA_BLUEPRINT_TOPICS.flatMap((entry) => entry.destinations.map((view) => `#/${view}`)),
         CCNA_BLUEPRINT.source.url
       ].sort()

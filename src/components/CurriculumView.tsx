@@ -4,7 +4,7 @@ import { CCNA_BLUEPRINT, CCNA_BLUEPRINT_DOMAINS, CCNA_BLUEPRINT_TOPICS } from '.
 import { DOMAIN_CHECKLISTS } from '../content/domainChecklists';
 import { ATTACK_FAMILIES } from '../content/securityTaxonomy';
 import { VIEW_REGISTRY } from '../content/viewRegistry';
-import { chapterCompletion, chaptersByDomain } from '../lib/studyManual';
+import { chaptersByDomain } from '../lib/studyManual';
 import { useStore } from '../store';
 import CcnaHubTabs from './CcnaHubTabs';
 import ViewLink from './ViewLink';
@@ -22,13 +22,6 @@ const MANUAL_CHAPTERS_BY_DOMAIN = new Map(
 
 export default function CurriculumView() {
   const language = useStore((state) => state.language);
-  const completedChapterIds = useStore((state) => state.completedChapterIds);
-  const manualProgressByDomain = new Map(
-    CCNA_DOMAINS.map((domain) => {
-      const chapters = MANUAL_CHAPTERS_BY_DOMAIN.get(domain.id) ?? [];
-      return [domain.id, { chapters, ...chapterCompletion(chapters, completedChapterIds) }] as const;
-    })
-  );
   const checklistLabels =
     language === 'it'
       ? {
@@ -243,43 +236,42 @@ export default function CurriculumView() {
 
               <p className="mt-4 text-sm leading-relaxed text-slate-600">{domain.purpose[language]}</p>
 
-              <div className="mt-4 rounded-lg border border-indigo-100 bg-indigo-50/40 p-3">
-                <h4 className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-indigo-700">
-                  <BookOpen className="h-3.5 w-3.5" aria-hidden="true" />
-                  {language === 'it' ? 'Teoria nel manuale' : 'Theory in the study manual'}
-                </h4>
-                {manualProgressByDomain.get(domain.id)!.total > 0 ? (
-                  <>
-                    <p
-                      className="mt-2 text-xs font-semibold text-slate-700"
-                      aria-label={`${language === 'it' ? 'Progresso capitoli' : 'Chapter progress'}: ${manualProgressByDomain.get(domain.id)!.completed}/${manualProgressByDomain.get(domain.id)!.total}`}
-                    >
-                      {language === 'it' ? 'Progresso' : 'Progress'}: {manualProgressByDomain.get(domain.id)!.completed}
-                      /{manualProgressByDomain.get(domain.id)!.total} ({manualProgressByDomain.get(domain.id)!.percent}
-                      %)
-                    </p>
-                    <ul className="mt-2 space-y-1 text-xs leading-relaxed text-slate-700">
-                      {manualProgressByDomain.get(domain.id)!.chapters.map((entry) => (
-                        <li key={entry.id}>
-                          <ViewLink
-                            view="manual"
-                            chapterId={entry.id}
-                            className="inline-flex min-h-11 items-center font-medium text-indigo-700 underline decoration-indigo-300 underline-offset-2 hover:text-indigo-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
-                          >
-                            {language === 'it' ? `Cap. ${entry.order}` : `Ch. ${entry.order}`}: {entry.title[language]}
-                          </ViewLink>
-                        </li>
-                      ))}
-                    </ul>
-                  </>
-                ) : (
-                  <p className="mt-2 text-xs leading-relaxed text-slate-500">
-                    {language === 'it'
-                      ? 'In arrivo: questo dominio non ha ancora un capitolo dedicato nel manuale.'
-                      : 'Coming soon: this domain does not yet have a dedicated manual chapter.'}
-                  </p>
-                )}
-              </div>
+              {/* IA-01b: the per-chapter index lives in the Capitoli tab (the manual's
+                  domain navigation); here the overview keeps only a single pointer into it,
+                  so the two hub sections no longer duplicate the chapter list. */}
+              {(() => {
+                const chapters = MANUAL_CHAPTERS_BY_DOMAIN.get(domain.id) ?? [];
+                return (
+                  <div className="mt-4 rounded-lg border border-indigo-100 bg-indigo-50/40 p-3">
+                    <h4 className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-indigo-700">
+                      <BookOpen className="h-3.5 w-3.5" aria-hidden="true" />
+                      {language === 'it' ? 'Teoria nel manuale' : 'Theory in the study manual'}
+                    </h4>
+                    {chapters.length > 0 ? (
+                      <>
+                        <p className="mt-2 text-xs leading-relaxed text-slate-600">
+                          {language === 'it'
+                            ? `${chapters.length} ${chapters.length === 1 ? 'capitolo copre' : 'capitoli coprono'} questo dominio.`
+                            : `${chapters.length} ${chapters.length === 1 ? 'chapter covers' : 'chapters cover'} this domain.`}
+                        </p>
+                        <ViewLink
+                          view="manual"
+                          chapterId={chapters[0].id}
+                          className="mt-2 inline-flex min-h-11 items-center gap-1 font-medium text-indigo-700 underline decoration-indigo-300 underline-offset-2 hover:text-indigo-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
+                        >
+                          {language === 'it' ? 'Apri i capitoli nel Manuale' : 'Open the chapters in the Manual'}
+                        </ViewLink>
+                      </>
+                    ) : (
+                      <p className="mt-2 text-xs leading-relaxed text-slate-500">
+                        {language === 'it'
+                          ? 'In arrivo: questo dominio non ha ancora un capitolo dedicato nel manuale.'
+                          : 'Coming soon: this domain does not yet have a dedicated manual chapter.'}
+                      </p>
+                    )}
+                  </div>
+                );
+              })()}
 
               <div className="mt-4 grid gap-4 sm:grid-cols-2">
                 <div>
