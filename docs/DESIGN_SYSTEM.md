@@ -52,6 +52,11 @@ feedback should use `text-success`, `text-warning`, `text-danger`, or `text-info
 - Keyboard focus uses the 2 px `--color-accent` outline with an offset. Reduced
   motion, the 44 px interactive target floor, and inline-link exceptions are
   documented beside their global rules in `src/index.css`.
+- Manual navigation exposes the active chapter as `aria-current="page"` and the
+  active topic as `aria-current="location"`. A chapter change moves focus to
+  its level-two heading; programmatic scrolling must use the shared motion
+  helper so `prefers-reduced-motion` replaces smooth animation with instant
+  scrolling.
 
 ## Verification
 
@@ -86,6 +91,12 @@ dell'applicazione.
 - Il focus da tastiera usa il contorno da 2 px `--color-accent` con offset. Le
   regole globali in `src/index.css` documentano anche movimento ridotto, target
   interattivi da 44 px ed eccezione per i link nel testo.
+- La navigazione del Manuale espone il capitolo attivo con
+  `aria-current="page"` e l'argomento attivo con `aria-current="location"`. Il
+  cambio di capitolo porta il focus sul relativo titolo di livello due; lo
+  scorrimento programmato deve usare l'helper condiviso per sostituire
+  l'animazione fluida con uno spostamento immediato quando è attivo
+  `prefers-reduced-motion`.
 
 ### Verifica
 

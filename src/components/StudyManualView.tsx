@@ -29,6 +29,7 @@ import {
 } from '../lib/studyManual';
 import type { GuidedLab, ManualCert, ManualDifficulty } from '../content/studyManual';
 import { securityReferenceUrl } from '../content/securityReferences';
+import { preferredScrollBehavior } from '../lib/motion';
 import ViewLink from './ViewLink';
 
 export default function StudyManualView() {
@@ -50,6 +51,8 @@ export default function StudyManualView() {
   const overallCompletion = chapterCompletion(chapters, completedChapterIds);
   const headingId = useId();
   const chapterTitleId = useId();
+  const chapterTitleRef = useRef<HTMLHeadingElement>(null);
+  const focusChapterTitleAfterChange = useRef(false);
 
   const dismissHelp = () => {
     setHasDismissedManualHelp(true);
@@ -82,6 +85,8 @@ export default function StudyManualView() {
 
   // Scroll-spy for the "On this page" rail: highlight the topic currently in view.
   const [activeTopicId, setActiveTopicId] = useState<string | undefined>(chapter.topics[0]?.id);
+  const pendingTopicScroll = useRef<string | undefined>(undefined);
+  const pendingTopicScrollRelease = useRef<number | undefined>(undefined);
   // Derive the highlighted topic so a stale id from a previous chapter falls back to the
   // first topic without a synchronous setState on chapter change.
   const activeTopic = chapter.topics.some((topic) => topic.id === activeTopicId)
@@ -94,6 +99,16 @@ export default function StudyManualView() {
     // scrolled above the sticky-header line — a robust scroll-spy independent of height.
     const headerOffset = 160;
     const recompute = () => {
+      const pendingId = pendingTopicScroll.current;
+      if (pendingId) {
+        const pendingElement = document.getElementById(`topic-${pendingId}`);
+        if (pendingElement && Math.abs(pendingElement.getBoundingClientRect().top - headerOffset) > 2) {
+          setActiveTopicId(pendingId);
+          return;
+        }
+        pendingTopicScroll.current = undefined;
+        window.clearTimeout(pendingTopicScrollRelease.current);
+      }
       let current = chapter.topics[0]?.id;
       for (const topic of chapter.topics) {
         const element = document.getElementById(`topic-${topic.id}`);
@@ -109,19 +124,46 @@ export default function StudyManualView() {
     return () => observer.disconnect();
   }, [chapter.id, chapter.topics]);
 
+  useEffect(
+    () => () => {
+      window.clearTimeout(pendingTopicScrollRelease.current);
+    },
+    []
+  );
+
+  useEffect(() => {
+    if (!focusChapterTitleAfterChange.current) return;
+    focusChapterTitleAfterChange.current = false;
+    chapterTitleRef.current?.focus({ preventScroll: true });
+  }, [chapter.id]);
+
   const jumpToTopic = (topicId: string) => {
+    window.clearTimeout(pendingTopicScrollRelease.current);
+    pendingTopicScroll.current = topicId;
+    // IntersectionObserver can fire before a smooth scroll reaches its target.
+    // Keep the selected location stable during that transition, then hand control
+    // back to the scroll-spy for subsequent manual scrolling.
+    pendingTopicScrollRelease.current = window.setTimeout(() => {
+      pendingTopicScroll.current = undefined;
+    }, 1200);
     setActiveTopicId(topicId);
     try {
-      document.getElementById(`topic-${topicId}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      document
+        .getElementById(`topic-${topicId}`)
+        ?.scrollIntoView({ behavior: preferredScrollBehavior(), block: 'start' });
     } catch {
       // scrollIntoView is a no-op or unimplemented in some environments (e.g. jsdom); ignore.
     }
   };
 
   const selectChapter = (id: string) => {
+    if (id === chapter.id) return;
+    window.clearTimeout(pendingTopicScrollRelease.current);
+    pendingTopicScroll.current = undefined;
+    focusChapterTitleAfterChange.current = true;
     setActiveId(id);
     try {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: preferredScrollBehavior() });
     } catch {
       // window.scrollTo is unimplemented in some environments (e.g. jsdom); ignore.
     }
@@ -164,7 +206,9 @@ export default function StudyManualView() {
       </p>
 
       <details className="mt-3 rounded-lg border border-slate-200 bg-white p-3">
-        <summary className="cursor-pointer text-sm font-medium leading-6 text-indigo-700">{t.showSolution}</summary>
+        <summary className="flex min-h-11 cursor-pointer items-center text-sm font-medium leading-6 text-indigo-700">
+          {t.showSolution}
+        </summary>
         <p className="mt-2 eyebrow">{t.solution}</p>
         <ol className="manual-support-copy mt-2 list-decimal space-y-1.5 pl-5 text-slate-600">
           {lab.solution.map((line, i) => (
@@ -290,7 +334,7 @@ export default function StudyManualView() {
                         key={entry.id}
                         type="button"
                         onClick={() => selectChapter(entry.id)}
-                        aria-current={isActive ? 'true' : undefined}
+                        aria-current={isActive ? 'page' : undefined}
                         className={`inline-flex min-h-11 items-center gap-1.5 rounded-md border px-3 py-1.5 text-[13px] font-medium transition-colors ${
                           isActive
                             ? 'border-slate-300 bg-white text-slate-900'
@@ -335,17 +379,56 @@ export default function StudyManualView() {
       </div>
 
       <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_13rem] lg:gap-8">
+        {/* Keep the desktop topic navigation before the article in DOM/focus order.
+            Explicit grid coordinates retain the visual content-left/rail-right layout. */}
+        {chapter.topics.length > 1 ? (
+          <aside className="hidden lg:col-start-2 lg:row-start-1 lg:block">
+            <nav aria-label={t.onThisPage} className="sticky top-32">
+              <p className="flex items-center gap-1.5 eyebrow text-slate-400">
+                <ListChecks aria-hidden="true" className="h-3.5 w-3.5" />
+                {t.onThisPage}
+              </p>
+              <ol className="mt-2 space-y-1 border-l border-slate-200">
+                {chapter.topics.map((topic, i) => {
+                  const isActive = activeTopic === topic.id;
+                  return (
+                    <li key={`rail-${topic.id}`}>
+                      <button
+                        type="button"
+                        onClick={() => jumpToTopic(topic.id)}
+                        aria-current={isActive ? 'location' : undefined}
+                        className={`-ml-px block border-l-2 py-1 pl-3 text-left text-[12.5px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 ${
+                          isActive
+                            ? 'border-indigo-500 font-semibold text-indigo-700'
+                            : 'border-transparent text-slate-500 hover:text-slate-800'
+                        }`}
+                      >
+                        {i + 1}. {topic.title[language]}
+                      </button>
+                    </li>
+                  );
+                })}
+              </ol>
+            </nav>
+          </aside>
+        ) : null}
+
         <article
           aria-labelledby={chapterTitleId}
           data-testid="manual-reading-column"
-          className="manual-reading-column min-w-0 space-y-6 lg:col-start-1"
+          className="manual-reading-column min-w-0 space-y-6 lg:col-start-1 lg:row-start-1"
         >
           {/* Chapter overview card: alignment, title, summary and an in-chapter table of contents. */}
           <div className="rounded-xl border border-slate-200 bg-white p-5 md:p-6">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <span className="eyebrow text-indigo-700">{chapterAlignment}</span>
-                <h2 id={chapterTitleId} className="mt-1 text-xl font-semibold text-slate-900">
+                <h2
+                  ref={chapterTitleRef}
+                  id={chapterTitleId}
+                  tabIndex={-1}
+                  className="mt-1 text-xl font-semibold text-slate-900"
+                >
                   {chapter.title[language]}
                 </h2>
                 {chapterIndex >= 0 ? (
@@ -391,17 +474,25 @@ export default function StudyManualView() {
                   {t.tableOfContents}
                 </p>
                 <ol className="mt-2 grid gap-1 sm:grid-cols-2">
-                  {chapter.topics.map((topic, i) => (
-                    <li key={`toc-${topic.id}`}>
-                      <button
-                        type="button"
-                        onClick={() => jumpToTopic(topic.id)}
-                        className="text-left text-[13px] font-medium text-indigo-700 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
-                      >
-                        {i + 1}. {topic.title[language]}
-                      </button>
-                    </li>
-                  ))}
+                  {chapter.topics.map((topic, i) => {
+                    const isActive = activeTopic === topic.id;
+                    return (
+                      <li key={`toc-${topic.id}`}>
+                        <button
+                          type="button"
+                          onClick={() => jumpToTopic(topic.id)}
+                          aria-current={isActive ? 'location' : undefined}
+                          className={`text-left text-[13px] text-indigo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 ${
+                            isActive
+                              ? 'font-semibold underline decoration-2 underline-offset-4'
+                              : 'font-medium hover:underline'
+                          }`}
+                        >
+                          {i + 1}. {topic.title[language]}
+                        </button>
+                      </li>
+                    );
+                  })}
                 </ol>
               </nav>
             ) : null}
@@ -571,39 +662,6 @@ export default function StudyManualView() {
             </nav>
           ) : null}
         </article>
-
-        {/* "On this page" rail (desktop): orientation via scroll-spy, content stays visible. */}
-        {chapter.topics.length > 1 ? (
-          <aside className="hidden lg:col-start-2 lg:block">
-            <nav aria-label={t.onThisPage} className="sticky top-32">
-              <p className="flex items-center gap-1.5 eyebrow text-slate-400">
-                <ListChecks aria-hidden="true" className="h-3.5 w-3.5" />
-                {t.onThisPage}
-              </p>
-              <ol className="mt-2 space-y-1 border-l border-slate-200">
-                {chapter.topics.map((topic, i) => {
-                  const isActive = activeTopic === topic.id;
-                  return (
-                    <li key={`rail-${topic.id}`}>
-                      <button
-                        type="button"
-                        onClick={() => jumpToTopic(topic.id)}
-                        aria-current={isActive ? 'true' : undefined}
-                        className={`-ml-px block border-l-2 py-1 pl-3 text-left text-[12.5px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 ${
-                          isActive
-                            ? 'border-indigo-500 font-semibold text-indigo-700'
-                            : 'border-transparent text-slate-500 hover:text-slate-800'
-                        }`}
-                      >
-                        {i + 1}. {topic.title[language]}
-                      </button>
-                    </li>
-                  );
-                })}
-              </ol>
-            </nav>
-          </aside>
-        ) : null}
       </div>
     </div>
   );

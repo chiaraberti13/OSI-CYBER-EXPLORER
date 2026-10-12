@@ -4,14 +4,17 @@
  * SPDX-License-Identifier: GPL-3.0-only
  */
 
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { act, cleanup, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import StudyManualView from './StudyManualView';
+import { scrollBehaviorForReducedMotion } from '../lib/motion';
 import { useStore } from '../store';
 
 afterEach(() => {
   cleanup();
+  vi.unstubAllGlobals();
+  vi.restoreAllMocks();
   useStore.setState({ language: 'it', completedChapterIds: [], hasDismissedManualHelp: false });
 });
 
@@ -153,10 +156,35 @@ describe('StudyManualView (EDU-01)', () => {
 
   it('offers an "on this page" rail listing the chapter topics', () => {
     render(<StudyManualView />);
+    const chapterNav = screen.getByRole('navigation', { name: 'Capitoli del manuale' });
     const rail = screen.getByRole('navigation', { name: 'In questa pagina' });
+    const article = screen.getByRole('article');
     // The OSI chapter has four topics; each is a jump target in the rail.
     expect(within(rail).getAllByRole('button').length).toBe(4);
     expect(within(rail).getByRole('button', { name: /sette livelli/ })).toBeTruthy();
+    expect(chapterNav.compareDocumentPosition(rail) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(rail.compareDocumentPosition(article) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
+  it('uses coherent current states in both topic navigations', async () => {
+    const user = userEvent.setup();
+    render(<StudyManualView />);
+    const rail = screen.getByRole('navigation', { name: 'In questa pagina' });
+    const mobileContents = screen.getByRole('navigation', { name: 'Contenuti del capitolo' });
+    const railButtons = within(rail).getAllByRole('button');
+    const mobileButtons = within(mobileContents).getAllByRole('button');
+
+    expect(railButtons[0].getAttribute('aria-current')).toBe('location');
+    expect(mobileButtons[0].getAttribute('aria-current')).toBe('location');
+    await user.click(railButtons[1]);
+    expect(railButtons[0].hasAttribute('aria-current')).toBe(false);
+    expect(railButtons[1].getAttribute('aria-current')).toBe('location');
+    expect(mobileButtons[1].getAttribute('aria-current')).toBe('location');
+  });
+
+  it('respects the reduced-motion preference for manual scrolling', () => {
+    expect(scrollBehaviorForReducedMotion(true)).toBe('auto');
+    expect(scrollBehaviorForReducedMotion(false)).toBe('smooth');
   });
 
   it('moves to the next chapter through the chapter step navigation', async () => {
@@ -204,14 +232,21 @@ describe('StudyManualView (EDU-01)', () => {
 
   it('navigates between chapters through the chapter navigation', async () => {
     const user = userEvent.setup();
+    vi.spyOn(window, 'scrollTo').mockImplementation(() => undefined);
     render(<StudyManualView />);
 
     const chapterNav = screen.getByRole('navigation', { name: 'Capitoli del manuale' });
+    const firstChapter = within(chapterNav).getByRole('button', { name: /modello OSI/ });
     const secondChapter = within(chapterNav).getByRole('button', { name: /Ethernet/ });
+    expect(firstChapter.getAttribute('aria-current')).toBe('page');
     await user.click(secondChapter);
 
-    expect(screen.getByRole('heading', { level: 2, name: /Ethernet/ })).toBeTruthy();
-    expect(secondChapter.getAttribute('aria-current')).toBe('true');
+    const chapterHeading = screen.getByRole('heading', { level: 2, name: /Ethernet/ });
+    expect(chapterHeading).toBeTruthy();
+    expect(document.activeElement).toBe(chapterHeading);
+    expect(chapterHeading.getAttribute('tabindex')).toBe('-1');
+    expect(firstChapter.hasAttribute('aria-current')).toBe(false);
+    expect(secondChapter.getAttribute('aria-current')).toBe('page');
   });
 
   it('reveals the commented solution when the disclosure is opened', () => {
