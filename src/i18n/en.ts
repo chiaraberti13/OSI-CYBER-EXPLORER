@@ -75,6 +75,7 @@ export const en = {
     selfCheck: 'Self-check',
     openLab: 'Open the lab',
     chapterNav: 'Manual chapters',
+    chapterSelector: 'Jump to a chapter',
     difficultyIntro: 'Intro',
     difficultyCore: 'Core',
     difficultyAdvanced: 'Advanced',

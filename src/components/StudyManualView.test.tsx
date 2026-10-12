@@ -249,6 +249,24 @@ describe('StudyManualView (EDU-01)', () => {
     expect(secondChapter.getAttribute('aria-current')).toBe('page');
   });
 
+  it('offers a compact chapter selector for narrow viewports (UX-25)', async () => {
+    const user = userEvent.setup();
+    vi.spyOn(window, 'scrollTo').mockImplementation(() => undefined);
+    render(<StudyManualView />);
+
+    // The selector lives inside the single chapter navigation and is grouped by
+    // CCNA domain, so the per-domain layout stays compact on mobile.
+    const chapterNav = screen.getByRole('navigation', { name: 'Capitoli del manuale' });
+    const selector = within(chapterNav).getByRole('combobox', { name: 'Vai a un capitolo' });
+    expect((selector as HTMLSelectElement).value).toBe('osi-model');
+    expect(within(selector).getAllByRole('group').length).toBeGreaterThan(1);
+
+    // Choosing another chapter navigates there, keeping the flow in sync with the chips.
+    await user.selectOptions(selector, 'ethernet-switching');
+    expect(screen.getByRole('heading', { level: 2, name: /Ethernet/ })).toBeTruthy();
+    expect((selector as HTMLSelectElement).value).toBe('ethernet-switching');
+  });
+
   it('reveals the commented solution when the disclosure is opened', () => {
     const { container } = render(<StudyManualView />);
     const details = container.querySelector('details');

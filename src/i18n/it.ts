@@ -76,6 +76,7 @@ export const it = {
     selfCheck: 'Autoverifica',
     openLab: 'Apri il laboratorio',
     chapterNav: 'Capitoli del manuale',
+    chapterSelector: 'Vai a un capitolo',
     difficultyIntro: 'Introduttivo',
     difficultyCore: 'Fondamentale',
     difficultyAdvanced: 'Avanzato',

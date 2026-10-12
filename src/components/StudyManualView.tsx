@@ -50,6 +50,7 @@ export default function StudyManualView() {
   const stats = manualStats();
   const overallCompletion = chapterCompletion(chapters, completedChapterIds);
   const headingId = useId();
+  const chapterSelectId = useId();
   const chapterTitleId = useId();
   const chapterTitleRef = useRef<HTMLHeadingElement>(null);
   const focusChapterTitleAfterChange = useRef(false);
@@ -314,44 +315,83 @@ export default function StudyManualView() {
       </section>
 
       {chapters.length > 1 ? (
-        <nav aria-label={t.chapterNav} className="mb-6 space-y-3">
-          {chaptersByDomain().map((group) => {
-            const groupLabel = group.domain
-              ? `CCNA ${group.domain.number}.0 · ${group.domain.title[language]}`
-              : t.trackExtension;
-            const groupCompletion = chapterCompletion(group.chapters, completedChapterIds);
-            return (
-              <div key={group.key} role="group" aria-label={groupLabel}>
-                <p className="eyebrow mb-1.5">
-                  {groupLabel} · {groupCompletion.completed}/{groupCompletion.total}
-                </p>
-                <div className="flex flex-wrap gap-1.5">
-                  {group.chapters.map((entry) => {
-                    const isActive = entry.id === chapter.id;
-                    const isCompleted = completedChapterIds.includes(entry.id);
-                    return (
-                      <button
-                        key={entry.id}
-                        type="button"
-                        onClick={() => selectChapter(entry.id)}
-                        aria-current={isActive ? 'page' : undefined}
-                        className={`inline-flex min-h-11 items-center gap-1.5 rounded-md border px-3 py-1.5 text-[13px] font-medium transition-colors ${
-                          isActive
-                            ? 'border-slate-300 bg-white text-slate-900'
-                            : 'border-transparent text-slate-500 hover:bg-white/70 hover:text-slate-800'
-                        }`}
-                      >
-                        {isCompleted ? (
-                          <CircleCheck aria-hidden="true" className="h-3.5 w-3.5 text-emerald-700" />
-                        ) : null}
+        <nav aria-label={t.chapterNav} className="mb-6">
+          {/* Compact chapter selector for narrow viewports (UX-25): a single
+              full-width control keeps the per-domain navigation from taking over
+              the screen, stays within 320px without horizontal overflow, groups
+              chapters by CCNA domain and surfaces per-domain progress. */}
+          <div className="sm:hidden">
+            <label htmlFor={chapterSelectId} className="eyebrow mb-1.5 block text-slate-500">
+              {t.chapterSelector}
+            </label>
+            <select
+              id={chapterSelectId}
+              value={chapter.id}
+              onChange={(event) => selectChapter(event.target.value)}
+              className="min-h-11 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
+            >
+              {chaptersByDomain().map((group) => {
+                const groupLabel = group.domain
+                  ? `CCNA ${group.domain.number}.0 · ${group.domain.title[language]}`
+                  : t.trackExtension;
+                const groupCompletion = chapterCompletion(group.chapters, completedChapterIds);
+                return (
+                  <optgroup
+                    key={group.key}
+                    label={`${groupLabel} · ${groupCompletion.completed}/${groupCompletion.total}`}
+                  >
+                    {group.chapters.map((entry) => (
+                      <option key={entry.id} value={entry.id}>
+                        {completedChapterIds.includes(entry.id) ? '✓ ' : ''}
                         {entry.order}. {entry.title[language]}
-                      </button>
-                    );
-                  })}
+                      </option>
+                    ))}
+                  </optgroup>
+                );
+              })}
+            </select>
+          </div>
+
+          {/* Grouped chip navigation for wider viewports. */}
+          <div className="hidden space-y-3 sm:block">
+            {chaptersByDomain().map((group) => {
+              const groupLabel = group.domain
+                ? `CCNA ${group.domain.number}.0 · ${group.domain.title[language]}`
+                : t.trackExtension;
+              const groupCompletion = chapterCompletion(group.chapters, completedChapterIds);
+              return (
+                <div key={group.key} role="group" aria-label={groupLabel}>
+                  <p className="eyebrow mb-1.5">
+                    {groupLabel} · {groupCompletion.completed}/{groupCompletion.total}
+                  </p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {group.chapters.map((entry) => {
+                      const isActive = entry.id === chapter.id;
+                      const isCompleted = completedChapterIds.includes(entry.id);
+                      return (
+                        <button
+                          key={entry.id}
+                          type="button"
+                          onClick={() => selectChapter(entry.id)}
+                          aria-current={isActive ? 'page' : undefined}
+                          className={`inline-flex min-h-11 items-center gap-1.5 rounded-md border px-3 py-1.5 text-[13px] font-medium transition-colors ${
+                            isActive
+                              ? 'border-slate-300 bg-white text-slate-900'
+                              : 'border-transparent text-slate-500 hover:bg-white/70 hover:text-slate-800'
+                          }`}
+                        >
+                          {isCompleted ? (
+                            <CircleCheck aria-hidden="true" className="h-3.5 w-3.5 text-emerald-700" />
+                          ) : null}
+                          {entry.order}. {entry.title[language]}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </nav>
       ) : null}
 
@@ -619,7 +659,7 @@ export default function StudyManualView() {
                 <button
                   type="button"
                   onClick={() => selectChapter(previousChapter.id)}
-                  className="group inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-left text-[13px] text-slate-600 transition-colors hover:text-slate-900"
+                  className="group inline-flex min-h-11 items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-left text-[13px] text-slate-600 transition-colors hover:text-slate-900"
                 >
                   <ArrowLeft
                     aria-hidden="true"
@@ -641,7 +681,7 @@ export default function StudyManualView() {
                 <button
                   type="button"
                   onClick={() => selectChapter(nextChapter.id)}
-                  className="group inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-right text-[13px] text-slate-600 transition-colors hover:text-slate-900 sm:text-right"
+                  className="group inline-flex min-h-11 items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-right text-[13px] text-slate-600 transition-colors hover:text-slate-900 sm:text-right"
                 >
                   <span className="sm:text-right">
                     <span className="block text-[10px] font-semibold uppercase tracking-wider text-slate-400">
