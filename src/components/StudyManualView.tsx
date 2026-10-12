@@ -30,6 +30,7 @@ import {
 import type { GuidedLab, ManualCert, ManualDifficulty } from '../content/studyManual';
 import { securityReferenceUrl } from '../content/securityReferences';
 import { preferredScrollBehavior } from '../lib/motion';
+import CcnaHubTabs from './CcnaHubTabs';
 import ViewLink from './ViewLink';
 
 export default function StudyManualView() {
@@ -254,6 +255,7 @@ export default function StudyManualView() {
 
   return (
     <div data-manual-root className="mx-auto max-w-5xl">
+      <CcnaHubTabs />
       <header className="mb-6">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h1 id={headingId} className="text-xl font-semibold tracking-tight text-slate-900">

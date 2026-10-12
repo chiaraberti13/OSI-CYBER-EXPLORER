@@ -97,15 +97,19 @@ describe('view registry', () => {
 });
 
 describe('navigation derived from the registry', () => {
-  it('projects the registry into groups without losing or duplicating a view', () => {
+  // Views flagged hideFromNav are routable but intentionally absent from the dropdowns
+  // (the CCNA hub overview, reached via the hub switcher and as the landing — IA-01).
+  const NAVIGABLE_VIEWS = VIEW_ORDER.filter((view) => !VIEW_REGISTRY[view].hideFromNav);
+
+  it('projects the registry into groups without losing or duplicating a navigable view', () => {
     const navViews = NAV_ENTRIES.map((item) => item.entry.view);
-    expect([...navViews].sort()).toEqual([...VIEW_ORDER].sort());
+    expect([...navViews].sort()).toEqual([...NAVIGABLE_VIEWS].sort());
     expect(new Set(navViews).size).toBe(navViews.length);
   });
 
   it('keeps each entry in its registry group, in registry order', () => {
     for (const group of NAV_GROUPS) {
-      const expected = VIEW_ORDER.filter((view) => VIEW_REGISTRY[view].group === group.id);
+      const expected = NAVIGABLE_VIEWS.filter((view) => VIEW_REGISTRY[view].group === group.id);
       expect(
         group.entries.map((entry) => entry.view),
         group.id

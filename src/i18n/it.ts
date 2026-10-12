@@ -15,6 +15,12 @@ export const it = {
     guide: 'Guida',
     language: 'Lingua'
   },
+  hub: {
+    eyebrow: 'Percorso CCNA',
+    label: 'Sezioni del percorso CCNA',
+    overview: 'Panoramica',
+    chapters: 'Capitoli'
+  },
   navigation: {
     label: 'Navigazione dei laboratori',
     search: 'Cerca un laboratorio',

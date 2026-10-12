@@ -14,6 +14,12 @@ export const en = {
     guide: 'Guide',
     language: 'Language'
   },
+  hub: {
+    eyebrow: 'CCNA path',
+    label: 'CCNA path sections',
+    overview: 'Overview',
+    chapters: 'Chapters'
+  },
   navigation: {
     label: 'Lab navigation',
     search: 'Search for a lab',

@@ -105,6 +105,12 @@ export interface ViewDefinition {
   component: LazyExoticComponent<ComponentType<ViewProps>>;
   /** Render the view inline (full-page embed of an otherwise modal view). */
   inline?: boolean;
+  /**
+   * Keep the view routable and searchable-by-URL but hide it from the top navigation
+   * dropdowns. Used by the CCNA hub overview (`curriculum`), which is reached through the
+   * in-page hub switcher and as the landing view rather than a separate menu entry (IA-01).
+   */
+  hideFromNav?: boolean;
   /** Which entrance/exit animation to use; defaults to `subtle`. */
   motion?: MotionPreset;
   it: string;
@@ -145,6 +151,7 @@ export const VIEW_REGISTRY: Record<AppView, ViewDefinition> = {
   },
   curriculum: {
     group: 'ccna',
+    hideFromNav: true,
     icon: Map,
     component: view(() => import('../components/CurriculumView')),
     it: 'Mappa CCNA',

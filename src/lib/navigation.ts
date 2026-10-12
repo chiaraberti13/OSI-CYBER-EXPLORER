@@ -47,18 +47,20 @@ export const NAV_GROUPS: NavGroup[] = VIEW_GROUPS.map((group) => ({
   en: group.en,
   itShort: group.itShort,
   enShort: group.enShort,
-  entries: VIEW_ORDER.filter((view) => VIEW_REGISTRY[view].group === group.id).map((view) => {
-    const definition = VIEW_REGISTRY[view];
-    return {
-      view,
-      it: definition.it,
-      en: definition.en,
-      hintIt: definition.hintIt,
-      hintEn: definition.hintEn,
-      keywords: definition.keywords,
-      icon: definition.icon
-    };
-  })
+  entries: VIEW_ORDER.filter((view) => VIEW_REGISTRY[view].group === group.id && !VIEW_REGISTRY[view].hideFromNav).map(
+    (view) => {
+      const definition = VIEW_REGISTRY[view];
+      return {
+        view,
+        it: definition.it,
+        en: definition.en,
+        hintIt: definition.hintIt,
+        hintEn: definition.hintEn,
+        keywords: definition.keywords,
+        icon: definition.icon
+      };
+    }
+  )
 }));
 
 /** Every entry, flattened, in menu order. */

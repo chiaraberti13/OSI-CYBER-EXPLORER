@@ -104,6 +104,9 @@ describe('ViewLink', () => {
     expect(hashes.sort()).toEqual(
       [
         ...Object.values(DOMAIN_LAB_VIEWS).map((view) => `#/${view}`),
+        // The CCNA hub switcher at the top: Overview (self) + Chapters (IA-01).
+        '#/curriculum',
+        '#/manual',
         '#/coverage',
         '#/manual',
         '#/manual',

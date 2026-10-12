@@ -41,10 +41,15 @@ const ALL_APP_VIEWS: AppView[] = [
 ];
 
 describe('navigation model', () => {
-  it('reaches every view exactly once', () => {
+  // The CCNA hub overview is reached through the in-page hub switcher and as the landing
+  // view, not as a separate dropdown entry, so it is intentionally hidden from the nav (IA-01).
+  const HUB_ONLY_VIEWS: AppView[] = ['curriculum'];
+
+  it('reaches every navigable view exactly once', () => {
     const views = NAV_ENTRIES.map((item) => item.entry.view);
     expect(new Set(views).size, 'a view is listed twice').toBe(views.length);
-    expect([...views].sort()).toEqual([...ALL_APP_VIEWS].sort());
+    const expected = ALL_APP_VIEWS.filter((view) => !HUB_ONLY_VIEWS.includes(view));
+    expect([...views].sort()).toEqual([...expected].sort());
   });
 
   it('keeps every group small enough to scan', () => {
