@@ -54,7 +54,7 @@ test.describe('manual onboarding (UX-22)', () => {
     await page.goto('/#/manual');
     await expect(page.getByRole('region', { name: 'How to use this guide' })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Mark as incomplete' })).toHaveAttribute('aria-pressed', 'true');
-    await expect(page.getByLabel('Chapter progress: 1/9', { exact: true })).toBeVisible();
+    await expect(page.getByLabel('Chapter progress: 1/10', { exact: true })).toBeVisible();
   });
 
   test('keeps instructions usable when browser storage is blocked', async ({ page }) => {

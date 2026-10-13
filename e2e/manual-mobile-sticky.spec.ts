@@ -19,7 +19,7 @@ test.describe('manual mobile navigation (UX-25)', () => {
 
     await expect(desktopNav).toBeHidden();
     await expect(mobileNav).toBeVisible();
-    await expect(chapterSelect.locator('option')).toHaveCount(9);
+    await expect(chapterSelect.locator('option')).toHaveCount(10);
     await expect(chapterSelect.locator('optgroup')).toHaveCount(6);
     expect((await mobileNav.boundingBox())?.height).toBeLessThanOrEqual(112);
 
@@ -35,13 +35,13 @@ test.describe('manual mobile navigation (UX-25)', () => {
     await expect(chapterSelect).toHaveValue('ethernet-switching');
 
     await page.getByRole('button', { name: 'Segna come completato' }).click();
-    await expect(mobileNav.getByLabel('Progresso capitoli: 1/9 (11%)')).toBeVisible();
+    await expect(mobileNav.getByLabel('Progresso capitoli: 1/10 (10%)')).toBeVisible();
 
     const secondTopic = topicIndex.getByRole('button').nth(1);
     await secondTopic.click();
     await expect(secondTopic).toHaveAttribute('aria-current', 'location');
     const toolbarBox = await mobileNav.boundingBox();
-    await expect(mobileNav.getByLabel('Progresso capitoli: 1/9 (11%)')).toBeInViewport();
+    await expect(mobileNav.getByLabel('Progresso capitoli: 1/10 (10%)')).toBeInViewport();
 
     const selectedTopic = page.locator('[data-manual-topic="switch-cam-learning"]');
     const selectedTopicBox = await selectedTopic.boundingBox();
@@ -53,7 +53,7 @@ test.describe('manual mobile navigation (UX-25)', () => {
     // The sticky region starts at 104 px; its border and 8 px padding put
     // the navigation itself at 113 px.
     expect(stickyToolbarBox?.y).toBeLessThanOrEqual(114);
-    await expect(mobileNav.getByLabel('Progresso capitoli: 1/9 (11%)')).toBeInViewport();
+    await expect(mobileNav.getByLabel('Progresso capitoli: 1/10 (10%)')).toBeInViewport();
 
     const widths = await page.evaluate(() => ({
       viewport: document.documentElement.clientWidth,
@@ -93,7 +93,7 @@ test.describe('manual mobile navigation (UX-25)', () => {
     await page.getByRole('button', { name: 'English', exact: true }).click();
     const mobileNav = page.getByRole('navigation', { name: 'Mobile manual navigation' });
     const selector = mobileNav.getByRole('combobox', { name: 'Jump to a chapter' });
-    await expect(selector.locator('optgroup[label="CCNA 1.0 · Network Fundamentals · 0/3"]')).toHaveCount(1);
+    await expect(selector.locator('optgroup[label="CCNA 1.0 · Network Fundamentals · 0/4"]')).toHaveCount(1);
     const targets = await mobileNav.locator('button, select').evaluateAll((controls) =>
       controls.map((control) => {
         const box = control.getBoundingClientRect();

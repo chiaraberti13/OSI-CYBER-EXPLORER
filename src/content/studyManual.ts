@@ -2612,5 +2612,301 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
         ]
       }
     ]
+  },
+  {
+    id: 'network-components',
+    cert: 'ccna',
+    order: 10,
+    track: 'ccna',
+    domain: 'network-fundamentals',
+    title: {
+      it: 'Componenti, architetture e virtualizzazione',
+      en: 'Network components, architectures, and virtualization'
+    },
+    summary: {
+      it: 'I mattoni della rete prima dei protocolli: quale decisione prende ogni apparato e quale confine crea, come si scelgono le architetture dal campus al data center, e come virtualizzazione e container cambiano dove vive davvero il traffico.',
+      en: 'The building blocks before the protocols: the single decision each device makes and the boundary it creates, how architectures are chosen from campus to data centre, and how virtualization and containers change where traffic actually lives.'
+    },
+    topics: [
+      {
+        id: 'network-components-roles',
+        title: {
+          it: 'I componenti di rete e la decisione che prendono',
+          en: 'Network components and the decision they make'
+        },
+        objectives: [
+          {
+            it: 'Associare a switch, router, switch multilayer, firewall, access point, WLC ed endpoint la singola decisione che prendono su ogni unità di traffico.',
+            en: 'Match switch, router, multilayer switch, firewall, access point, WLC, and endpoint to the single decision each makes on every unit of traffic.'
+          },
+          {
+            it: 'Dire quale confine ciascun apparato crea (collisione, broadcast, fiducia) e quale non crea.',
+            en: 'State which boundary each device creates (collision, broadcast, trust) and which it does not.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere il modello OSI e sapere come uno switch impara e inoltra i frame (capitoli precedenti).',
+            en: 'Know the OSI model and how a switch learns and forwards frames (earlier chapters).'
+          }
+        ],
+        theory: [
+          {
+            it: 'Ogni apparato prende una sola decisione per ogni unità di traffico, e conoscerla spiega in anticipo perché una configurazione funziona o no. Lo switch Layer 2 confronta il MAC di destinazione con la tabella CAM e inoltra, filtra o fa flooding sulla VLAN: separa i domini di collisione (uno per porta) ma non quello di broadcast. Il router cerca il prefisso più lungo nella routing table, decrementa il TTL e riscrive gli header di livello 2: è il confine del dominio di broadcast, e per questo serve un relay DHCP per servire una subnet remota. Lo switch multilayer concentra i due ruoli: commuta dentro la VLAN e instrada tra VLAN tramite le SVI, con il forwarding in hardware.',
+            en: 'Every device makes a single decision per unit of traffic, and knowing it explains in advance why a configuration works or not. A Layer 2 switch compares the destination MAC with the CAM table and forwards, filters, or floods within the VLAN: it separates collision domains (one per port) but not the broadcast domain. A router looks up the longest prefix in the routing table, decrements the TTL, and rewrites the Layer 2 headers: it is the broadcast-domain boundary, which is why a DHCP relay is needed to serve a remote subnet. A multilayer switch concentrates both roles: it switches inside a VLAN and routes between VLANs through SVIs, with forwarding done in hardware.'
+          },
+          {
+            it: 'Il firewall (e il NGFW) classifica il flusso per zona, indirizzi e servizio — e, in un NGFW, anche per applicazione e identità — poi applica la prima regola corrispondente e mantiene lo stato della sessione: è un confine di fiducia, e il traffico di ritorno passa perché esiste lo stato, non perché esista una regola inversa. Ma non vede ciò che non gli passa davanti: un percorso asimmetrico o un flusso east-west nella stessa VLAN gli sfugge, e il traffico cifrato resta opaco senza ispezione TLS. L’endpoint (host o server) è dove il traffico nasce e termina: per ogni destinazione confronta il proprio indirizzo e la subnet mask — stessa subnet significa ARP diretto, subnet diversa significa consegna al default gateway.',
+            en: 'A firewall (and an NGFW) classifies the flow by zone, addresses, and service — and, in an NGFW, by application and identity too — then applies the first matching rule and keeps session state: it is a trust boundary, and return traffic passes because state exists, not because a reverse rule exists. But it cannot see what does not pass through it: an asymmetric path or an east-west flow inside the same VLAN escapes it, and encrypted traffic stays opaque without TLS inspection. The endpoint (host or server) is where traffic begins and ends: for each destination it compares its own address and the subnet mask — same subnet means ARP directly, a different subnet means delivery to the default gateway.'
+          },
+          {
+            it: 'Sul lato wireless, l’access point fa da bridge tra il mezzo radio half-duplex e la rete cablata, gestendo associazione, contesa del canale e mappatura SSID-VLAN: estende un dominio di broadcast via radio, ma la banda è condivisa e un client associato non è ancora un client autorizzato. Il Wireless LAN Controller centralizza configurazione, RF management, roaming e policy degli AP lightweight (split-MAC) attraverso il tunnel CAPWAP, che separa il control plane dal data plane: aggiunge coerenza e scala, e diventa un punto singolo di fiducia da proteggere. Un AP autonomo, invece, funziona anche senza controller.',
+            en: 'On the wireless side, the access point bridges the half-duplex radio medium and the wired network, handling association, channel contention, and SSID-to-VLAN mapping: it extends a broadcast domain over the air, but bandwidth is shared and an associated client is not yet an authorized client. The Wireless LAN Controller centralizes configuration, RF management, roaming, and policy for lightweight APs (split-MAC) over the CAPWAP tunnel, which separates the control plane from the data plane: it adds consistency and scale, and becomes a single point of trust to protect. An autonomous AP, by contrast, works even without a controller.'
+          }
+        ],
+        example: {
+          it: 'Un frame tra due host in VLAN diverse attraversa lo switch di accesso (decisione L2 sul MAC), sale alla SVI o al router che instrada tra le subnet (decisione L3 sull’IP) e, se c’è un firewall fra le zone, passa solo se una regola lo consente e lo stato di sessione viene creato.',
+          en: 'A frame between two hosts in different VLANs crosses the access switch (an L2 decision on the MAC), rises to the SVI or router that routes between the subnets (an L3 decision on the IP), and, if a firewall sits between the zones, passes only if a rule allows it and session state is created.'
+        },
+        commonMistakes: [
+          {
+            it: 'Pensare che uno switch separi i domini di broadcast: senza VLAN e senza routing tutte le sue porte restano nello stesso dominio di broadcast.',
+            en: 'Thinking a switch separates broadcast domains: without VLANs and without routing, all its ports stay in the same broadcast domain.'
+          },
+          {
+            it: 'Trattare il router come un firewall: senza ACL inoltra qualunque pacchetto per cui esiste una rotta, e una rotta nella RIB non garantisce che il percorso di ritorno esista.',
+            en: 'Treating the router as a firewall: without ACLs it forwards any packet for which a route exists, and a route in the RIB does not guarantee the return path exists.'
+          },
+          {
+            it: 'Scambiare l’access point per uno switch wireless: la banda è condivisa tra i client associati, non commutata per porta.',
+            en: 'Mistaking the access point for a wireless switch: bandwidth is shared among associated clients, not switched per port.'
+          }
+        ],
+        lab: 'fundamentals',
+        references: [{ kind: 'ieee', id: 'IEEE 802.3' }],
+        guidedLabs: [
+          {
+            id: 'gl-device-decision',
+            title: { it: 'Quale apparato, quale confine', en: 'Which device, which boundary' },
+            difficulty: 'intro',
+            lab: 'fundamentals',
+            scenario: {
+              it: 'Il laboratorio «Fondamenti di rete» elenca i componenti con la decisione che prendono, il confine che creano e ciò che non fanno.',
+              en: 'The “Network fundamentals” lab lists the components with the decision they make, the boundary they create, and what they do not do.'
+            },
+            task: {
+              it: 'Per uno scenario dato (es. separare due reparti nello stesso edificio) scegli quali apparati servono e indica, per ciascuno, la decisione che prende e il confine che crea.',
+              en: 'For a given scenario (e.g. separating two departments in the same building) choose which devices are needed and state, for each, the decision it makes and the boundary it creates.'
+            },
+            steps: [
+              {
+                it: 'Apri «Fondamenti di rete» e leggi la tabella dei componenti (decisione, confine, ciò che non fa).',
+                en: 'Open “Network fundamentals” and read the components table (decision, boundary, what it does not do).'
+              },
+              {
+                it: 'Per lo scenario, decidi dove serve un confine di broadcast (router o SVI) e dove basta un confine di collisione (switch).',
+                en: 'For the scenario, decide where a broadcast boundary is needed (router or SVI) and where a collision boundary is enough (switch).'
+              },
+              {
+                it: 'Aggiungi un confine di fiducia (firewall) solo dove una policy fra zone è davvero richiesta.',
+                en: 'Add a trust boundary (firewall) only where a policy between zones is genuinely required.'
+              }
+            ],
+            challenge: {
+              it: 'Lo scenario chiede Wi-Fi per gli ospiti isolato dalla rete interna: quali apparati e quale confine garantiscono l’isolamento, e perché una sola VLAN non basta senza un punto di enforcement L3?',
+              en: 'The scenario asks for guest Wi-Fi isolated from the internal network: which devices and which boundary guarantee the isolation, and why is a single VLAN not enough without an L3 enforcement point?'
+            },
+            solution: [
+              {
+                it: 'Separare due reparti: uno switch dà domini di collisione per porta e, con una VLAN per reparto, due domini di broadcast logici; la comunicazione fra loro passa solo da un confine L3 (router o SVI), ed è lì — non sullo switch — che una ACL o un firewall applica la policy.',
+                en: 'Separating two departments: a switch gives per-port collision domains and, with one VLAN per department, two logical broadcast domains; communication between them passes only through an L3 boundary (router or SVI), and it is there — not on the switch — that an ACL or firewall enforces the policy.'
+              },
+              {
+                it: 'Sfida: il Wi-Fi ospiti è un SSID mappato su una VLAN dedicata sull’AP/WLC; l’isolamento è reale solo se quel confine di broadcast termina su un punto L3 con una policy di default-deny verso l’interno, perché una VLAN separa il livello 2 ma non filtra il livello 3.',
+                en: 'Challenge: guest Wi-Fi is an SSID mapped to a dedicated VLAN on the AP/WLC; isolation is real only if that broadcast boundary terminates at an L3 point with a default-deny policy toward the inside, because a VLAN separates Layer 2 but does not filter Layer 3.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So dire, per ogni apparato scelto, la decisione che prende e il confine che crea.',
+                en: 'I can state, for each chosen device, the decision it makes and the boundary it creates.'
+              },
+              {
+                it: 'So spiegare perché la segmentazione L2 (VLAN) non protegge senza un punto di enforcement L3.',
+                en: 'I can explain why L2 segmentation (VLANs) does not protect without an L3 enforcement point.'
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'network-architectures',
+        title: {
+          it: 'Architetture: due e tre livelli, spine-leaf, SOHO e WAN',
+          en: 'Architectures: two- and three-tier, spine-leaf, SOHO, and WAN'
+        },
+        objectives: [
+          {
+            it: 'Scegliere l’architettura adatta alla scala e al tipo di traffico, dal campus piccolo al data center.',
+            en: 'Choose the architecture suited to the scale and traffic type, from a small campus to the data centre.'
+          },
+          {
+            it: 'Dire il trade-off di ciascuna: ridondanza, numero di apparati, hop e prevedibilità della latenza.',
+            en: 'State the trade-off of each: redundancy, device count, hops, and latency predictability.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Sapere quale decisione prendono switch e router e quale confine creano (argomento precedente).',
+            en: 'Know what decision switches and routers make and what boundary they create (previous topic).'
+          }
+        ],
+        theory: [
+          {
+            it: 'Il modello a campus gerarchico distingue tre funzioni: l’accesso, a cui si collegano gli host; la distribuzione, che aggrega gli switch di accesso e applica policy e routing di blocco; il core, dedicato al solo trasporto veloce fra blocchi. Nell’architettura a due livelli (collapsed core) distribuzione e core coincidono in una coppia di switch: è la scelta normale per una sede singola o un campus piccolo, con meno apparati e meno hop, ma quella coppia concentra il rischio ed è l’intera resilienza del sito. L’architettura a tre livelli tiene il core separato: serve quando i blocchi di accesso sono molti o su più edifici, perché permette di aggiungere o isolare un blocco senza toccare gli altri, al costo di più apparati, più link e un progetto Layer 3 più articolato.',
+            en: 'The hierarchical campus model distinguishes three functions: access, where hosts connect; distribution, which aggregates access switches and applies policy and boundary routing; and the core, dedicated to fast transport between blocks only. In the two-tier (collapsed core) architecture, distribution and core coincide in a pair of switches: the normal choice for a single site or small campus, with fewer devices and fewer hops, but that pair concentrates the risk and is the site’s entire resilience. The three-tier architecture keeps the core separate: it is needed when access blocks are numerous or spread across buildings, because it lets a block be added or isolated without touching the others, at the cost of more devices, more links, and a more elaborate Layer 3 design.'
+          },
+          {
+            it: 'Nel data center domina invece il traffico east-west fra server, e la latenza deve essere prevedibile: l’architettura spine-leaf collega ogni leaf a ogni spine e nessun leaf a un altro leaf, così due server qualsiasi distano sempre lo stesso numero di hop. Offre banda e latenza uniformi, ma richiede molti link, ECMP sul routing e tipicamente un overlay per la segmentazione dei tenant. All’estremo opposto, il SOHO integra routing, switching, wireless e spesso firewall e modem in un unico apparato: massima semplicità dove gli utenti sono pochi, ma nessuna ridondanza e poca visibilità — l’apparato è insieme punto singolo di guasto e unico punto di enforcement, ed è lo scenario tipico del lavoro da remoto da proteggere con una VPN.',
+            en: 'In the data centre, by contrast, east-west traffic between servers dominates, and latency must be predictable: the spine-leaf architecture connects every leaf to every spine and no leaf to another leaf, so any two servers are always the same number of hops apart. It offers uniform bandwidth and latency, but requires many links, ECMP in routing, and typically an overlay for tenant segmentation. At the opposite extreme, SOHO integrates routing, switching, wireless, and often firewall and modem in a single device: maximum simplicity where users are few, but no redundancy and little visibility — the device is both the single point of failure and the only enforcement point, and it is the typical remote-work scenario to protect with a VPN.'
+          },
+          {
+            it: 'La WAN collega sedi distanti con circuiti di un provider — MPLS, Internet con VPN IPsec, linee dedicate o accessi broadband, spesso combinati in SD-WAN — quando le sedi sono oltre la portata del campus e la connettività va acquistata invece che cablata. È il collo di bottiglia dove la banda costa e la latenza è imposta dalla distanza fisica: qui QoS, ridondanza dei circuiti e scelta del percorso contano davvero, mentre nel campus la banda è abbondante ed economica.',
+            en: 'The WAN connects distant sites over provider circuits — MPLS, Internet with IPsec VPNs, leased lines, or broadband access, often combined in SD-WAN — when sites are beyond campus reach and connectivity must be bought rather than cabled. It is the bottleneck where bandwidth costs and latency is imposed by physical distance: here QoS, circuit redundancy, and path selection genuinely matter, whereas in the campus bandwidth is abundant and cheap.'
+          }
+        ],
+        example: {
+          it: 'Un campus piccolo si risolve con due livelli (collapsed core); un data center con molti server che dialogano tra loro vuole spine-leaf per la latenza uniforme; una filiale di poche persone usa un apparato SOHO raggiunto dalla sede via VPN sulla WAN.',
+          en: 'A small campus is solved with two tiers (collapsed core); a data centre with many servers talking to each other wants spine-leaf for uniform latency; a small branch uses a SOHO device reached from headquarters over a VPN on the WAN.'
+        },
+        commonMistakes: [
+          {
+            it: 'Portare lo spine-leaf nel campus: è pensato per il traffico east-west del data center, non per l’accesso degli utenti, dove aggiunge complessità senza vantaggio.',
+            en: 'Bringing spine-leaf into the campus: it is designed for east-west data-centre traffic, not user access, where it adds complexity without benefit.'
+          },
+          {
+            it: 'Imporre tre livelli a una sede singola: il core separato aggiunge costo e latenza senza risolvere un problema reale finché i blocchi di accesso restano pochi.',
+            en: 'Forcing three tiers on a single site: a separate core adds cost and latency without solving a real problem while access blocks stay few.'
+          },
+          {
+            it: 'Trattare il SOHO come una rete resiliente: è un punto singolo di guasto, e la sua unica linea WAN va considerata un rischio, non una garanzia.',
+            en: 'Treating SOHO as a resilient network: it is a single point of failure, and its single WAN link must be treated as a risk, not a guarantee.'
+          }
+        ],
+        lab: 'fundamentals',
+        references: [{ kind: 'cisco', id: 'Cisco Enterprise Campus Architecture' }]
+      },
+      {
+        id: 'network-virtualization',
+        title: {
+          it: 'Virtualizzazione: macchine virtuali, container e VRF',
+          en: 'Virtualization: virtual machines, containers, and VRFs'
+        },
+        objectives: [
+          {
+            it: 'Distinguere macchina virtuale, container e VRF per isolamento e per impatto sulla rete.',
+            en: 'Distinguish virtual machine, container, and VRF by isolation and by network impact.'
+          },
+          {
+            it: 'Spiegare dove vive il traffico che gli strumenti di ispezione tradizionali non vedono.',
+            en: 'Explain where the traffic that traditional inspection tools miss actually lives.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere VLAN e routing di base: la VRF separa il livello 3 come la VLAN separa il livello 2.',
+            en: 'Know VLANs and basic routing: a VRF separates Layer 3 the way a VLAN separates Layer 2.'
+          }
+        ],
+        theory: [
+          {
+            it: 'La virtualizzazione dei server usa un hypervisor per dividere un server fisico in più macchine virtuali, ognuna con il proprio sistema operativo completo e kernel separato: il tipo 1 (bare-metal, es. ESXi) gira direttamente sull’hardware, il tipo 2 sopra un sistema operativo host. Dal punto di vista della rete, ogni VM ha una vNIC collegata a un virtual switch: il traffico tra VM sullo stesso host può non toccare mai la rete fisica, quindi sfugge agli strumenti di ispezione tradizionali posti sui cavi e sugli switch fisici.',
+            en: 'Server virtualization uses a hypervisor to divide one physical server into several virtual machines, each with its own complete operating system and separate kernel: type 1 (bare-metal, e.g. ESXi) runs directly on the hardware, type 2 on top of a host operating system. From the network’s point of view, each VM has a vNIC attached to a virtual switch: traffic between VMs on the same host may never touch the physical network, so it escapes traditional inspection tools placed on physical cables and switches.'
+          },
+          {
+            it: 'I container impacchettano un’applicazione con le sue dipendenze condividendo il kernel dell’host: si avviano in secondi e hanno un footprint molto minore di una VM, ma la condivisione del kernel rende l’isolamento più debole di quello di una macchina virtuale. La loro rete è tipicamente NAT o un overlay per namespace, con indirizzi effimeri: le policy vanno espresse su identità o label, non su indirizzi IP, perché l’indirizzo di un container cambia a ogni riavvio.',
+            en: 'Containers package an application with its dependencies while sharing the host kernel: they start in seconds and have a much smaller footprint than a VM, but sharing the kernel makes isolation weaker than a virtual machine’s. Their networking is typically NAT or an overlay per namespace, with ephemeral addresses: policy must be expressed on identity or labels, not on IP addresses, because a container’s address changes on every restart.'
+          },
+          {
+            it: 'La VRF (Virtual Routing and Forwarding) fa sì che un router mantenga più tabelle di routing indipendenti sullo stesso dispositivo fisico: le interfacce assegnate a VRF diverse non si raggiungono, anche con indirizzi sovrapposti. Separa il livello 3 come una VLAN separa il livello 2, ed è la base del management VRF che isola la gestione dal traffico dati. Ma non cifra e non filtra: per far comunicare due VRF serve un route leaking esplicito o un firewall, altrimenti l’isolamento è totale per costruzione.',
+            en: 'A VRF (Virtual Routing and Forwarding) makes one router keep several independent routing tables on the same physical device: interfaces assigned to different VRFs cannot reach each other, even with overlapping addresses. It separates Layer 3 the way a VLAN separates Layer 2, and is the basis of the management VRF that isolates management from data traffic. But it neither encrypts nor filters: making two VRFs talk requires explicit route leaking or a firewall, otherwise the isolation is total by construction.'
+          }
+        ],
+        example: {
+          it: 'Due VM sullo stesso host dialogano attraverso il virtual switch senza che un pacchetto raggiunga mai lo switch fisico; due clienti con lo stesso blocco 10.0.0.0/8 convivono sullo stesso router in VRF separate senza collidere, finché nessuno configura un route leaking.',
+          en: 'Two VMs on the same host talk through the virtual switch without a single packet ever reaching the physical switch; two customers with the same 10.0.0.0/8 block coexist on the same router in separate VRFs without colliding, as long as no one configures route leaking.'
+        },
+        commonMistakes: [
+          {
+            it: 'Credere che un container isoli come una VM: condividendo il kernel dell’host, una vulnerabilità del kernel attraversa il confine che una macchina virtuale terrebbe separato.',
+            en: 'Believing a container isolates like a VM: by sharing the host kernel, a kernel vulnerability crosses the boundary a virtual machine would keep separate.'
+          },
+          {
+            it: 'Pensare che la VRF cifri o filtri il traffico: isola le tabelle di routing, ma la riservatezza e il filtraggio restano compito di VPN e firewall.',
+            en: 'Thinking a VRF encrypts or filters traffic: it isolates routing tables, but confidentiality and filtering remain the job of VPNs and firewalls.'
+          },
+          {
+            it: 'Dare per scontato che gli strumenti di rete fisici vedano tutto: il traffico tra VM o tra container sullo stesso host resta invisibile senza visibilità a livello di virtual switch.',
+            en: 'Assuming physical network tools see everything: traffic between VMs or between containers on the same host stays invisible without visibility at the virtual-switch level.'
+          }
+        ],
+        lab: 'fundamentals',
+        references: [{ kind: 'cisco', id: 'Cisco Network Virtualization' }],
+        guidedLabs: [
+          {
+            id: 'gl-virtualization-boundaries',
+            title: { it: 'Dove vive davvero il traffico', en: 'Where traffic really lives' },
+            difficulty: 'core',
+            lab: 'fundamentals',
+            scenario: {
+              it: 'Il laboratorio «Fondamenti di rete» riepiloga VM, container e VRF con il loro effetto sulla rete e sulla visibilità.',
+              en: 'The “Network fundamentals” lab summarizes VMs, containers, and VRFs with their effect on the network and on visibility.'
+            },
+            task: {
+              it: 'Per ciascuna tecnologia indica dove passa il traffico fra due carichi e quale strumento (switch fisico, virtual switch, firewall, route leaking) è necessario per vederlo o per metterli in comunicazione.',
+              en: 'For each technology, state where traffic between two workloads goes and which tool (physical switch, virtual switch, firewall, route leaking) is needed to see it or to connect them.'
+            },
+            steps: [
+              {
+                it: 'Apri «Fondamenti di rete» e leggi le righe su virtualizzazione dei server, container e VRF.',
+                en: 'Open “Network fundamentals” and read the rows on server virtualization, containers, and VRFs.'
+              },
+              {
+                it: 'Per due VM sullo stesso host, individua il punto in cui il traffico diventa (o non diventa) visibile agli strumenti fisici.',
+                en: 'For two VMs on the same host, identify where traffic becomes (or does not become) visible to physical tools.'
+              },
+              {
+                it: 'Per due VRF con indirizzi sovrapposti, stabilisci cosa serve per farle comunicare senza collisioni di indirizzamento.',
+                en: 'For two VRFs with overlapping addresses, determine what is needed to make them talk without addressing collisions.'
+              }
+            ],
+            challenge: {
+              it: 'Un container deve esporre un servizio verso l’esterno e restare isolato dagli altri: su cosa fondi la policy se l’indirizzo IP cambia a ogni riavvio?',
+              en: 'A container must expose a service externally and stay isolated from the others: what do you base the policy on if the IP address changes on every restart?'
+            },
+            solution: [
+              {
+                it: 'VM sullo stesso host: il traffico passa dal virtual switch e può non toccare la rete fisica, quindi serve visibilità a livello di hypervisor; VRF con indirizzi sovrapposti: restano separate per costruzione e comunicano solo con route leaking esplicito o attraverso un firewall, che resta anche l’unico punto dove applicare una policy.',
+                en: 'VMs on the same host: traffic passes through the virtual switch and may never touch the physical network, so hypervisor-level visibility is needed; VRFs with overlapping addresses: they stay separate by construction and talk only through explicit route leaking or a firewall, which also remains the only point where a policy can be applied.'
+              },
+              {
+                it: 'Sfida: con indirizzi effimeri la policy non può basarsi sull’IP; si fonda su identità o label del container (e su un confine esplicito verso l’esterno), perché solo quelle restano stabili attraverso i riavvii.',
+                en: 'Challenge: with ephemeral addresses the policy cannot rest on the IP; it rests on the container’s identity or labels (and on an explicit boundary toward the outside), because only those stay stable across restarts.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So dire, per VM, container e VRF, dove passa il traffico e cosa serve per vederlo o filtrarlo.',
+                en: 'I can state, for VMs, containers, and VRFs, where traffic goes and what is needed to see or filter it.'
+              },
+              {
+                it: 'So spiegare perché le policy dei container si esprimono su identità e non su indirizzi IP.',
+                en: 'I can explain why container policy is expressed on identity rather than IP addresses.'
+              }
+            ]
+          }
+        ]
+      }
+    ]
   }
 ];

@@ -20,12 +20,13 @@ test.describe('lab → manual back-link (EDU-STRUCT-05)', () => {
     await expect(page.getByRole('heading', { level: 2, name: /modello OSI/ })).toBeVisible();
   });
 
-  test('a lab shared by two chapters links to both', async ({ page }) => {
+  test('a lab shared by several chapters links to each', async ({ page }) => {
     await page.goto('/#/fundamentals');
     const aside = page.locator('aside', { hasText: 'Teoria nel manuale' });
-    await expect(aside.getByRole('link')).toHaveCount(2);
+    await expect(aside.getByRole('link')).toHaveCount(3);
     await expect(aside.getByRole('link').nth(0)).toHaveAttribute('href', '#/manual/ethernet-switching');
     await expect(aside.getByRole('link').nth(1)).toHaveAttribute('href', '#/manual/ipv4-subnetting');
+    await expect(aside.getByRole('link').nth(2)).toHaveAttribute('href', '#/manual/network-components');
   });
 
   test('the manual itself shows no lab back-link', async ({ page }) => {
