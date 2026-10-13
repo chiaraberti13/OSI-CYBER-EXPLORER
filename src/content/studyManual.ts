@@ -2908,5 +2908,355 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
         ]
       }
     ]
+  },
+  {
+    id: 'ipv6-addressing',
+    cert: 'ccna',
+    order: 11,
+    track: 'ccna',
+    domain: 'network-fundamentals',
+    title: {
+      it: 'IPv6: indirizzamento, SLAAC e dual-stack',
+      en: 'IPv6: addressing, SLAAC, and dual-stack'
+    },
+    summary: {
+      it: 'Come si scrive e si legge un indirizzo IPv6, i tipi che contano (globale, link-local, unique-local, multicast), come un host si autoconfigura con SLAAC e Neighbor Discovery, e perché una rete dual-stack va protetta su entrambi i protocolli.',
+      en: 'How an IPv6 address is written and read, the types that matter (global, link-local, unique-local, multicast), how a host autoconfigures with SLAAC and Neighbor Discovery, and why a dual-stack network must be protected on both protocols.'
+    },
+    topics: [
+      {
+        id: 'ipv6-format-types',
+        title: {
+          it: 'Formato, abbreviazione e tipi di indirizzo',
+          en: 'Format, abbreviation, and address types'
+        },
+        objectives: [
+          {
+            it: 'Abbreviare ed espandere un indirizzo IPv6 applicando correttamente le due regole e il doppio due punti una sola volta.',
+            en: 'Abbreviate and expand an IPv6 address, applying the two rules and the double colon exactly once.'
+          },
+          {
+            it: 'Riconoscere i tipi di indirizzo dal prefisso: globale, link-local, unique-local, loopback, non specificato e multicast.',
+            en: 'Recognise address types from the prefix: global, link-local, unique-local, loopback, unspecified, and multicast.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere l’indirizzamento IPv4 e la notazione CIDR (capitolo sul subnetting).',
+            en: 'Know IPv4 addressing and CIDR notation (the subnetting chapter).'
+          }
+        ],
+        theory: [
+          {
+            it: 'Un indirizzo IPv6 è lungo 128 bit, scritto come otto gruppi (hextet) di quattro cifre esadecimali separati da due punti, ad esempio 2001:db8:0000:0000:0000:0000:0000:0001. Due regole lo accorciano: si eliminano gli zeri iniziali di ogni hextet (0db8 → db8, 0000 → 0) e si sostituisce una sola sequenza di hextet tutti a zero con il doppio due punti ::. Quel doppio due punti può comparire una volta sola, altrimenti l’indirizzo diventa ambiguo: l’esempio si comprime in 2001:db8::1.',
+            en: 'An IPv6 address is 128 bits long, written as eight groups (hextets) of four hexadecimal digits separated by colons, for example 2001:db8:0000:0000:0000:0000:0000:0001. Two rules shorten it: drop the leading zeros of each hextet (0db8 → db8, 0000 → 0) and replace a single run of all-zero hextets with the double colon ::. That double colon may appear only once, otherwise the address becomes ambiguous: the example compresses to 2001:db8::1.'
+          },
+          {
+            it: 'Il prefisso iniziale dice il tipo. L’unicast globale (GUA) sta in 2000::/3 ed è instradabile su Internet; il link-local (LLA) in fe80::/10 esiste su ogni interfaccia, non è instradabile e serve a Neighbor Discovery e ai next-hop; l’unique-local (ULA) in fc00::/7 — in pratica con prefisso fd — è l’equivalente degli indirizzi privati. Il loopback è ::1, l’indirizzo non specificato è :: e il blocco di documentazione è 2001:db8::/32.',
+            en: 'The leading prefix tells the type. Global unicast (GUA) sits in 2000::/3 and is routable on the Internet; link-local (LLA) in fe80::/10 exists on every interface, is not routable, and serves Neighbor Discovery and next-hops; unique-local (ULA) in fc00::/7 — in practice with the fd prefix — is the equivalent of private addresses. The loopback is ::1, the unspecified address is ::, and the documentation block is 2001:db8::/32.'
+          },
+          {
+            it: 'IPv6 non ha il broadcast: al suo posto usa il multicast, nel blocco ff00::/8. Gli indirizzi notevoli sono ff02::1 (tutti i nodi del link) e ff02::2 (tutti i router del link); il multicast solicited-node ff02::1:ff00:0/104 fa sì che la risoluzione dell’indirizzo raggiunga solo gli host che condividono le ultime 24 cifre, invece di disturbare tutti come faceva il broadcast ARP. Una interfaccia IPv6 ha di norma più indirizzi insieme: almeno un link-local e uno o più globali.',
+            en: 'IPv6 has no broadcast: in its place it uses multicast, in the ff00::/8 block. The notable addresses are ff02::1 (all nodes on the link) and ff02::2 (all routers on the link); the solicited-node multicast ff02::1:ff00:0/104 makes address resolution reach only the hosts that share the last 24 bits, instead of disturbing everyone as ARP broadcast did. An IPv6 interface normally holds several addresses at once: at least one link-local and one or more globals.'
+          }
+        ],
+        example: {
+          it: 'L’indirizzo 2001:db8:0000:0000:0000:ff00:0042:8329 si comprime in 2001:db8::ff00:42:8329; fe80::1 è un link-local valido solo sul proprio link; fd00::1 è un unique-local privato che non deve comparire su Internet.',
+          en: 'The address 2001:db8:0000:0000:0000:ff00:0042:8329 compresses to 2001:db8::ff00:42:8329; fe80::1 is a link-local valid only on its own link; fd00::1 is a private unique-local that must not appear on the Internet.'
+        },
+        commonMistakes: [
+          {
+            it: 'Usare il doppio due punti più di una volta: l’indirizzo diventa ambiguo perché non si sa quanti hextet a zero rappresenti ciascuno.',
+            en: 'Using the double colon more than once: the address becomes ambiguous because it is unknown how many zero hextets each one represents.'
+          },
+          {
+            it: 'Cercare un indirizzo di broadcast in IPv6: non esiste, e il suo ruolo è svolto dal multicast ff02::1.',
+            en: 'Looking for a broadcast address in IPv6: there is none, and its role is played by multicast ff02::1.'
+          },
+          {
+            it: 'Credere che un host abbia un solo indirizzo: ne ha sempre almeno due, un link-local e un globale, usati in contesti diversi.',
+            en: 'Believing a host has a single address: it always has at least two, a link-local and a global, used in different contexts.'
+          }
+        ],
+        lab: 'fundamentals',
+        references: [{ kind: 'rfc', id: 'RFC 4291' }],
+        guidedLabs: [
+          {
+            id: 'gl-ipv6-compress',
+            title: { it: 'Comprimere e classificare un indirizzo', en: 'Compress and classify an address' },
+            difficulty: 'intro',
+            lab: 'fundamentals',
+            scenario: {
+              it: 'Il laboratorio «Fondamenti di rete» include uno strumento IPv6 che espande, comprime e genera l’interface ID in formato EUI-64.',
+              en: 'The “Network fundamentals” lab includes an IPv6 tool that expands, compresses, and generates the interface ID in EUI-64 format.'
+            },
+            task: {
+              it: 'Dato un indirizzo in forma estesa, scrivi la forma compressa e indica il tipo (globale, link-local, unique-local, multicast), poi verifica con lo strumento.',
+              en: 'Given an address in expanded form, write the compressed form and state the type (global, link-local, unique-local, multicast), then check with the tool.'
+            },
+            steps: [
+              {
+                it: 'Elimina gli zeri iniziali di ogni hextet.',
+                en: 'Drop the leading zeros of each hextet.'
+              },
+              {
+                it: 'Sostituisci con :: la più lunga sequenza di hextet a zero, una volta sola.',
+                en: 'Replace the longest run of zero hextets with ::, only once.'
+              },
+              {
+                it: 'Leggi il prefisso e classifica il tipo: 2000::/3 globale, fe80::/10 link-local, fd unique-local, ff multicast.',
+                en: 'Read the prefix and classify the type: 2000::/3 global, fe80::/10 link-local, fd unique-local, ff multicast.'
+              }
+            ],
+            challenge: {
+              it: 'Da un indirizzo MAC genera l’interface ID in EUI-64 e spiega perché il settimo bit viene invertito; confronta con un interface ID casuale per la privacy.',
+              en: 'From a MAC address generate the EUI-64 interface ID and explain why the seventh bit is flipped; compare it with a random interface ID for privacy.'
+            },
+            solution: [
+              {
+                it: 'La compressione applica le due regole in ordine: prima gli zeri iniziali di ciascun hextet, poi un solo :: sulla sequenza di zeri più lunga; il tipo si legge dal prefisso senza calcoli, perché IPv6 riserva blocchi fissi (2000::/3, fe80::/10, fc00::/7, ff00::/8).',
+                en: 'Compression applies the two rules in order: first the leading zeros of each hextet, then a single :: on the longest run of zeros; the type is read from the prefix without calculation, because IPv6 reserves fixed blocks (2000::/3, fe80::/10, fc00::/7, ff00::/8).'
+              },
+              {
+                it: 'Sfida: EUI-64 inserisce fffe in mezzo ai 48 bit del MAC e inverte il settimo bit (U/L) per segnalare un identificatore derivato localmente; un interface ID casuale rompe la correlazione con il MAC e protegge la privacy, al prezzo di un indirizzo non deducibile dall’hardware.',
+                en: 'Challenge: EUI-64 inserts fffe into the middle of the 48-bit MAC and flips the seventh bit (U/L) to signal a locally derived identifier; a random interface ID breaks the correlation with the MAC and protects privacy, at the cost of an address not derivable from the hardware.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So comprimere un indirizzo IPv6 applicando il doppio due punti una sola volta.',
+                en: 'I can compress an IPv6 address, applying the double colon only once.'
+              },
+              {
+                it: 'So classificare un indirizzo dal suo prefisso senza eseguire calcoli.',
+                en: 'I can classify an address from its prefix without doing any calculation.'
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'ipv6-slaac-nd',
+        title: {
+          it: 'SLAAC e Neighbor Discovery',
+          en: 'SLAAC and Neighbor Discovery'
+        },
+        objectives: [
+          {
+            it: 'Descrivere come un host ottiene un indirizzo globale con SLAAC a partire dal Router Advertisement.',
+            en: 'Describe how a host obtains a global address with SLAAC from the Router Advertisement.'
+          },
+          {
+            it: 'Spiegare il ruolo di Neighbor Discovery (RS/RA, NS/NA, DAD) e perché sostituisce ARP.',
+            en: 'Explain the role of Neighbor Discovery (RS/RA, NS/NA, DAD) and why it replaces ARP.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere i tipi di indirizzo IPv6 e il multicast solicited-node (argomento precedente).',
+            en: 'Know the IPv6 address types and the solicited-node multicast (previous topic).'
+          }
+        ],
+        theory: [
+          {
+            it: 'Con SLAAC (Stateless Address Autoconfiguration) l’host costruisce da solo il proprio indirizzo globale: invia un Router Solicitation a ff02::2 e riceve un Router Advertisement che annuncia il prefisso /64 del link. L’host unisce quel prefisso a un interface ID — derivato dal MAC con EUI-64 oppure generato in modo casuale per la privacy — e ottiene un indirizzo globale senza alcun server. Il Router Advertisement porta anche i flag M e O che dicono se usare in aggiunta un server DHCPv6 per l’indirizzo (stateful) o solo per informazioni come il DNS (stateless).',
+            en: 'With SLAAC (Stateless Address Autoconfiguration) the host builds its own global address: it sends a Router Solicitation to ff02::2 and receives a Router Advertisement announcing the link’s /64 prefix. The host joins that prefix to an interface ID — derived from the MAC with EUI-64 or generated randomly for privacy — and obtains a global address with no server at all. The Router Advertisement also carries the M and O flags that say whether to additionally use a DHCPv6 server for the address (stateful) or only for information such as DNS (stateless).'
+          },
+          {
+            it: 'Neighbor Discovery (ICMPv6) sostituisce ARP e il broadcast. Per trovare il MAC di un vicino, l’host invia una Neighbor Solicitation al multicast solicited-node del bersaglio e riceve una Neighbor Advertisement con l’indirizzo di livello 2: solo gli host con lo stesso suffisso ascoltano quel gruppo, quindi il disturbo è minimo. Le stesse coppie NS/NA realizzano il Duplicate Address Detection (DAD): prima di usare un indirizzo l’host chiede se qualcuno lo possiede già, e lo adotta solo se nessuno risponde.',
+            en: 'Neighbor Discovery (ICMPv6) replaces ARP and broadcast. To find a neighbour’s MAC, the host sends a Neighbor Solicitation to the target’s solicited-node multicast and receives a Neighbor Advertisement with the Layer 2 address: only hosts with the same suffix listen to that group, so the disturbance is minimal. The same NS/NA pair performs Duplicate Address Detection (DAD): before using an address the host asks whether anyone already owns it, and adopts it only if no one answers.'
+          },
+          {
+            it: 'La conseguenza di sicurezza è diretta: poiché il Router Advertisement è fidato per costruzione, un Router Advertisement falso (rogue RA) può dirottare il default gateway di un intero link, e un server DHCPv6 rogue può imporre un DNS malevolo. Le difese stanno al primo hop — RA Guard e DHCPv6 snooping sullo switch — ed è questo che il laboratorio «IPv6 e dual-stack» mette in scena.',
+            en: 'The security consequence is direct: because the Router Advertisement is trusted by construction, a forged Router Advertisement (rogue RA) can hijack the default gateway of an entire link, and a rogue DHCPv6 server can impose a malicious DNS. The defenses live at the first hop — RA Guard and DHCPv6 snooping on the switch — and this is what the “IPv6 and dual-stack” lab stages.'
+          }
+        ],
+        example: {
+          it: 'Un host nuovo invia un Router Solicitation a ff02::2, riceve il prefisso 2001:db8:acad:1::/64, forma 2001:db8:acad:1 con il proprio interface ID e, superato il DAD, inizia a comunicare senza che esista alcun server DHCP.',
+          en: 'A new host sends a Router Solicitation to ff02::2, receives the prefix 2001:db8:acad:1::/64, forms 2001:db8:acad:1 with its own interface ID and, once DAD passes, starts communicating without any DHCP server existing.'
+        },
+        commonMistakes: [
+          {
+            it: 'Pensare che SLAAC richieda un server: il prefisso arriva dal router nel Router Advertisement, e l’host costruisce l’indirizzo da sé.',
+            en: 'Thinking SLAAC needs a server: the prefix comes from the router in the Router Advertisement, and the host builds the address itself.'
+          },
+          {
+            it: 'Cercare ARP in IPv6: la risoluzione di indirizzo è Neighbor Discovery via NS/NA sul multicast solicited-node.',
+            en: 'Looking for ARP in IPv6: address resolution is Neighbor Discovery via NS/NA on the solicited-node multicast.'
+          },
+          {
+            it: 'Trattare il Router Advertisement come attendibile per definizione: senza RA Guard un annuncio falso dirotta il gateway del link.',
+            en: 'Treating the Router Advertisement as trustworthy by definition: without RA Guard a forged announcement hijacks the link gateway.'
+          }
+        ],
+        lab: 'ipv6security',
+        references: [{ kind: 'rfc', id: 'RFC 4862' }],
+        guidedLabs: [
+          {
+            id: 'gl-ipv6-rogue-ra',
+            title: { it: 'SLAAC e il rischio del rogue RA', en: 'SLAAC and the rogue-RA risk' },
+            difficulty: 'core',
+            lab: 'ipv6security',
+            scenario: {
+              it: 'Il laboratorio «IPv6 e dual-stack» include lo scenario di Router Advertisement rogue e Neighbor Discovery falsificato, con evidenze e difese al primo hop.',
+              en: 'The “IPv6 and dual-stack” lab includes the rogue Router Advertisement and forged Neighbor Discovery scenario, with evidence and first-hop defenses.'
+            },
+            task: {
+              it: 'Ricostruisci come un host arriva al proprio indirizzo con SLAAC e individua il punto in cui un Router Advertisement falso dirotterebbe il traffico, indicando la difesa corretta.',
+              en: 'Reconstruct how a host reaches its address with SLAAC and identify where a forged Router Advertisement would hijack traffic, naming the correct defense.'
+            },
+            steps: [
+              {
+                it: 'Apri «IPv6 e dual-stack» e seleziona lo scenario di RA rogue e Neighbor Discovery.',
+                en: 'Open “IPv6 and dual-stack” and select the rogue RA and Neighbor Discovery scenario.'
+              },
+              {
+                it: 'Segui il flusso RS → RA → formazione dell’indirizzo e nota quale messaggio stabilisce il default gateway.',
+                en: 'Follow the RS → RA → address-formation flow and note which message establishes the default gateway.'
+              },
+              {
+                it: 'Collega l’abuso (RA falso) alla difesa al primo hop (RA Guard) e all’evidenza che la rivela.',
+                en: 'Connect the abuse (forged RA) to the first-hop defense (RA Guard) and to the evidence that reveals it.'
+              }
+            ],
+            challenge: {
+              it: 'Con la privacy extension gli host cambiano interface ID nel tempo: come cambia l’indagine se devi attribuire un flusso a un host preciso?',
+              en: 'With the privacy extension hosts change their interface ID over time: how does the investigation change if you must attribute a flow to a specific host?'
+            },
+            solution: [
+              {
+                it: 'L’host invia RS a ff02::2, il router risponde con un RA che porta il prefisso /64 e si candida come default gateway; l’host forma l’indirizzo e, dopo il DAD, comunica. Il punto debole è proprio l’RA: un annuncio falso si propone come gateway, e solo RA Guard sullo switch — che scarta gli RA sulle porte non fidate — chiude il buco.',
+                en: 'The host sends RS to ff02::2, the router replies with an RA carrying the /64 prefix and offering itself as default gateway; the host forms its address and, after DAD, communicates. The weak point is the RA itself: a forged announcement offers itself as gateway, and only RA Guard on the switch — which drops RAs on untrusted ports — closes the gap.'
+              },
+              {
+                it: 'Sfida: con interface ID che cambiano l’attribuzione non può basarsi sull’indirizzo nel tempo; serve correlare con il MAC osservato nella Neighbor Cache, con i log DHCPv6 (se stateful) e con la finestra temporale, perché l’indirizzo da solo non identifica più l’host in modo stabile.',
+                en: 'Challenge: with changing interface IDs, attribution cannot rely on the address over time; it must correlate with the MAC seen in the Neighbor Cache, with DHCPv6 logs (if stateful), and with the time window, because the address alone no longer identifies the host stably.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So descrivere il flusso SLAAC dal Router Solicitation all’indirizzo pronto dopo il DAD.',
+                en: 'I can describe the SLAAC flow from the Router Solicitation to the address ready after DAD.'
+              },
+              {
+                it: 'So dire perché il Router Advertisement va protetto e con quale difesa al primo hop.',
+                en: 'I can say why the Router Advertisement must be protected and with which first-hop defense.'
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'ipv6-routing-dualstack',
+        title: {
+          it: 'Routing IPv6 e reti dual-stack',
+          en: 'IPv6 routing and dual-stack networks'
+        },
+        objectives: [
+          {
+            it: 'Spiegare come si instrada IPv6 e perché i next-hop sono tipicamente indirizzi link-local.',
+            en: 'Explain how IPv6 is routed and why next-hops are typically link-local addresses.'
+          },
+          {
+            it: 'Descrivere il funzionamento dual-stack e il rischio di una policy applicata a un solo protocollo.',
+            en: 'Describe how dual-stack works and the risk of a policy applied to only one protocol.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere la tabella di routing e il longest prefix match (capitolo sul routing).',
+            en: 'Know the routing table and longest prefix match (the routing chapter).'
+          }
+        ],
+        theory: [
+          {
+            it: 'IPv6 si instrada con la stessa logica di IPv4 — longest prefix match su una tabella separata — ma con alcune differenze pratiche: le rotte statiche si scrivono con ipv6 route, i protocolli hanno versioni dedicate (OSPFv3 al posto di OSPFv2) e soprattutto il next-hop su un collegamento è di norma l’indirizzo link-local del router vicino, non il suo globale. Il router non frammenta più i pacchetti in transito: se un pacchetto è troppo grande scarta e segnala con un messaggio ICMPv6 Packet Too Big, quindi è la sorgente a fare Path MTU Discovery.',
+            en: 'IPv6 is routed with the same logic as IPv4 — longest prefix match on a separate table — but with a few practical differences: static routes are written with ipv6 route, protocols have dedicated versions (OSPFv3 instead of OSPFv2), and above all the next-hop on a link is normally the neighbour router’s link-local address, not its global one. The router no longer fragments packets in transit: if a packet is too large it drops it and signals with an ICMPv6 Packet Too Big message, so the source performs Path MTU Discovery.'
+          },
+          {
+            it: 'La maggior parte delle reti non sostituisce IPv4 con IPv6 di colpo: le fa convivere in dual-stack, dove ogni host e ogni router parlano entrambi i protocolli con due tabelle di routing indipendenti. Gli host moderni, con l’algoritmo Happy Eyeballs, tentano in parallelo IPv6 e IPv4 e usano quello che risponde prima, così la transizione è trasparente all’utente.',
+            en: 'Most networks do not replace IPv4 with IPv6 at once: they run them side by side in dual-stack, where every host and router speaks both protocols with two independent routing tables. Modern hosts, using the Happy Eyeballs algorithm, try IPv6 and IPv4 in parallel and use whichever answers first, so the transition is transparent to the user.'
+          },
+          {
+            it: 'Il rischio del dual-stack è proprio la doppia strada: una ACL o una regola di firewall scritta solo per IPv4 lascia IPv6 completamente aperto, e un host che ottiene un indirizzo IPv6 via SLAAC senza che nessuno lo preveda crea un percorso non filtrato (shadow IPv6). La regola operativa è una sola: ogni policy va applicata a entrambi i protocolli, e la verifica va fatta su entrambi, perché un controllo valido su IPv4 non dice nulla di IPv6.',
+            en: 'The dual-stack risk is precisely the second path: an ACL or firewall rule written only for IPv4 leaves IPv6 completely open, and a host that obtains an IPv6 address via SLAAC without anyone expecting it creates an unfiltered path (shadow IPv6). The operational rule is a single one: every policy must be applied to both protocols, and verification must be done on both, because a check that passes on IPv4 says nothing about IPv6.'
+          }
+        ],
+        example: {
+          it: 'Una azienda abilita IPv6 su un segmento ma lascia l’ACL solo in IPv4: i PC ottengono un indirizzo globale via SLAAC e raggiungono Internet su IPv6 aggirando del tutto i controlli pensati per IPv4.',
+          en: 'A company enables IPv6 on a segment but leaves the ACL only in IPv4: the PCs obtain a global address via SLAAC and reach the Internet over IPv6, bypassing entirely the controls designed for IPv4.'
+        },
+        commonMistakes: [
+          {
+            it: 'Indicare il globale del router come next-hop: su un collegamento il next-hop IPv6 è di norma il link-local del vicino.',
+            en: 'Giving the router’s global address as next-hop: on a link the IPv6 next-hop is normally the neighbour’s link-local.'
+          },
+          {
+            it: 'Aspettarsi che il router frammenti: in IPv6 scarta e invia Packet Too Big, e la sorgente fa Path MTU Discovery.',
+            en: 'Expecting the router to fragment: in IPv6 it drops and sends Packet Too Big, and the source performs Path MTU Discovery.'
+          },
+          {
+            it: 'Proteggere solo IPv4 in una rete dual-stack: IPv6 resta un percorso parallelo non filtrato finché la stessa policy non vi è applicata.',
+            en: 'Protecting only IPv4 in a dual-stack network: IPv6 stays a parallel, unfiltered path until the same policy is applied to it.'
+          }
+        ],
+        lab: 'ipv6security',
+        references: [{ kind: 'rfc', id: 'RFC 8200' }],
+        guidedLabs: [
+          {
+            id: 'gl-ipv6-dual-stack-gap',
+            title: { it: 'Chiudere il divario dual-stack', en: 'Close the dual-stack gap' },
+            difficulty: 'core',
+            lab: 'ipv6security',
+            scenario: {
+              it: 'Il laboratorio «IPv6 e dual-stack» include lo scenario di divergenza di policy dual-stack e shadow IPv6.',
+              en: 'The “IPv6 and dual-stack” lab includes the dual-stack policy-drift and shadow-IPv6 scenario.'
+            },
+            task: {
+              it: 'Individua dove una policy applicata solo a IPv4 lascia IPv6 aperto e indica la verifica che lo dimostra su entrambi i protocolli.',
+              en: 'Identify where a policy applied only to IPv4 leaves IPv6 open and name the verification that proves it on both protocols.'
+            },
+            steps: [
+              {
+                it: 'Apri «IPv6 e dual-stack» e seleziona lo scenario di divergenza di policy dual-stack.',
+                en: 'Open “IPv6 and dual-stack” and select the dual-stack policy-drift scenario.'
+              },
+              {
+                it: 'Confronta la regola IPv4 con l’assenza della regola IPv6 corrispondente.',
+                en: 'Compare the IPv4 rule with the missing corresponding IPv6 rule.'
+              },
+              {
+                it: 'Scegli la verifica che controlla il flusso su entrambi i protocolli, non solo su IPv4.',
+                en: 'Choose the verification that checks the flow on both protocols, not only on IPv4.'
+              }
+            ],
+            challenge: {
+              it: 'Gli host hanno IPv6 attivo per default via SLAAC ma la rete lo ignora: come scopri gli shadow IPv6 prima che diventino un percorso di esfiltrazione?',
+              en: 'Hosts have IPv6 enabled by default via SLAAC but the network ignores it: how do you discover shadow IPv6 before it becomes an exfiltration path?'
+            },
+            solution: [
+              {
+                it: 'Lo shadow IPv6 nasce quando l’ACL vive solo su IPv4: l’host prende un globale via SLAAC e il traffico IPv6 esce non filtrato. La prova è una verifica parallela — stesso test su IPv4 e su IPv6 — che mostra il flusso bloccato su un protocollo e aperto sull’altro; la correzione è replicare la policy in IPv6.',
+                en: 'Shadow IPv6 arises when the ACL lives only on IPv4: the host takes a global via SLAAC and IPv6 traffic leaves unfiltered. The proof is a parallel check — the same test on IPv4 and on IPv6 — showing the flow blocked on one protocol and open on the other; the fix is to replicate the policy in IPv6.'
+              },
+              {
+                it: 'Sfida: si scoprono gli shadow IPv6 inventariando gli indirizzi globali formati via SLAAC (dalla Neighbor Cache degli switch e dai log del primo hop) e disabilitando o governando IPv6 dove non è previsto, invece di ignorarlo — perché è attivo per default a prescindere.',
+                en: 'Challenge: shadow IPv6 is discovered by inventorying the global addresses formed via SLAAC (from the switches’ Neighbor Cache and first-hop logs) and by disabling or governing IPv6 where it is not intended, instead of ignoring it — because it is on by default regardless.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So spiegare perché una policy solo-IPv4 lascia un percorso IPv6 aperto in dual-stack.',
+                en: 'I can explain why an IPv4-only policy leaves an open IPv6 path in dual-stack.'
+              },
+              {
+                it: 'So indicare una verifica che dimostra lo stato del flusso su entrambi i protocolli.',
+                en: 'I can name a verification that proves the flow state on both protocols.'
+              }
+            ]
+          }
+        ]
+      }
+    ]
   }
 ];

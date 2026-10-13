@@ -23,10 +23,11 @@ test.describe('lab → manual back-link (EDU-STRUCT-05)', () => {
   test('a lab shared by several chapters links to each', async ({ page }) => {
     await page.goto('/#/fundamentals');
     const aside = page.locator('aside', { hasText: 'Teoria nel manuale' });
-    await expect(aside.getByRole('link')).toHaveCount(3);
+    await expect(aside.getByRole('link')).toHaveCount(4);
     await expect(aside.getByRole('link').nth(0)).toHaveAttribute('href', '#/manual/ethernet-switching');
     await expect(aside.getByRole('link').nth(1)).toHaveAttribute('href', '#/manual/ipv4-subnetting');
     await expect(aside.getByRole('link').nth(2)).toHaveAttribute('href', '#/manual/network-components');
+    await expect(aside.getByRole('link').nth(3)).toHaveAttribute('href', '#/manual/ipv6-addressing');
   });
 
   test('the manual itself shows no lab back-link', async ({ page }) => {
