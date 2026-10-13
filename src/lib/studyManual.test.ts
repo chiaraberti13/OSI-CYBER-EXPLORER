@@ -14,6 +14,7 @@ import {
   ccnaDomainForChapter,
   chapterCompletion,
   chaptersByDomain,
+  chaptersForLab,
   findChapter,
   manualStats,
   orderedChapters
@@ -180,5 +181,37 @@ describe('study manual selectors', () => {
     expect(stats.topics).toBe(STUDY_MANUAL.reduce((n, c) => n + c.topics.length, 0));
     expect(stats.guidedLabs).toBe(allGuidedLabs().length);
     expect(stats.guidedLabs).toBeGreaterThan(0);
+  });
+
+  // EDU-STRUCT-05 — the lab→chapter reverse map that lets a lab defer its theory.
+  it('maps a lab back to exactly the chapters whose topics cite it, in study order', () => {
+    // Every (topic.lab / guidedLab.lab) citation is covered, and each returned chapter
+    // genuinely cites the lab — so the back-link can never point at an unrelated chapter.
+    const citedLabs = new Set<AppView>();
+    for (const chapter of STUDY_MANUAL) {
+      for (const topic of chapter.topics) {
+        if (topic.lab) citedLabs.add(topic.lab);
+        for (const guided of topic.guidedLabs ?? []) citedLabs.add(guided.lab);
+      }
+    }
+    expect(citedLabs.size).toBeGreaterThan(0);
+
+    for (const lab of citedLabs) {
+      const chapters = chaptersForLab(lab);
+      expect(chapters.length).toBeGreaterThan(0);
+      // Study order, and each chapter really cites the lab.
+      expect(chapters.map((c) => c.order)).toEqual([...chapters.map((c) => c.order)].sort((a, b) => a - b));
+      for (const chapter of chapters) {
+        const cites = chapter.topics.some(
+          (topic) => topic.lab === lab || (topic.guidedLabs ?? []).some((guided) => guided.lab === lab)
+        );
+        expect(cites).toBe(true);
+      }
+    }
+  });
+
+  it('returns no chapter for a view no topic studies (the manual itself, an uncited lab)', () => {
+    expect(chaptersForLab('manual')).toEqual([]);
+    expect(chaptersForLab('curriculum')).toEqual([]);
   });
 });

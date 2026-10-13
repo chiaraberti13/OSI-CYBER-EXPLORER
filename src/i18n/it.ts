@@ -100,6 +100,12 @@ export const it = {
     reload: 'Ricarica la pagina',
     role: 'Messaggio di errore'
   },
+  labManual: {
+    label: 'Teoria nel manuale',
+    intro: 'Qui ti alleni: la spiegazione completa di questo argomento vive nel manuale di studio.',
+    openOne: 'Apri il capitolo',
+    openMany: 'Apri i capitoli'
+  },
   shared: {
     results: 'risultati',
     allPlanes: 'Tutti i piani',

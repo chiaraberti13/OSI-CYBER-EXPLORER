@@ -5,6 +5,7 @@
 
 import { CCNA_DOMAINS, type CcnaDomain } from '../content/ccna';
 import { STUDY_MANUAL, type GuidedLab, type ManualChapter } from '../content/studyManual';
+import type { AppView } from '../store';
 
 /**
  * Pure, side-effect-free selectors over the study manual. Keeping them here (rather
@@ -78,6 +79,19 @@ export function chaptersByDomain(): ManualDomainGroup[] {
   const extensions = ordered.filter((chapter) => chapter.track === 'extension');
   if (extensions.length > 0) groups.push({ key: 'extension', chapters: extensions });
   return groups;
+}
+
+/**
+ * The manual chapters whose theory a given interactive lab lets the student practise, in
+ * study order. A chapter qualifies when one of its topics studies the lab directly
+ * (`topic.lab`) or sets a guided exercise in it (`guidedLab.lab`). This reverse map is
+ * derived from the manual data — the single source of truth — so a lab's "theory lives in
+ * the manual" link (EDU-STRUCT-05) can never drift from the topics that actually cite it.
+ */
+export function chaptersForLab(lab: AppView): ManualChapter[] {
+  return orderedChapters().filter((chapter) =>
+    chapter.topics.some((topic) => topic.lab === lab || (topic.guidedLabs ?? []).some((guided) => guided.lab === lab))
+  );
 }
 
 /** Every guided lab across the manual, in study order. */

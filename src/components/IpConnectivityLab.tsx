@@ -104,7 +104,7 @@ export default function IpConnectivityLab() {
             '1. Prefisso più lungo; 2. distanza amministrativa minore tra rotte dello stesso prefisso; 3. metrica minore all’interno dello stesso protocollo. Percorsi equivalenti possono essere installati in ECMP.',
           fib: 'RIB, FIB e adjacency table',
           fibText:
-            'La RIB raccoglie le rotte candidate del control plane. Le migliori vengono programmate nella FIB; l’adjacency table contiene le informazioni di riscrittura di livello 2. CEF usa FIB e adjacency per inoltrare nel data plane.',
+            'In pratica: la rotta scelta (control plane) viene programmata nella FIB che inoltra davvero i pacchetti (data plane, CEF). Il dettaglio RIB → FIB → adjacency è nel manuale.',
           ospf: 'OSPFv2 single-area',
           cost: 'Calcolatore del costo OSPF',
           reference: 'Reference bandwidth (Mb/s)',
@@ -161,7 +161,7 @@ export default function IpConnectivityLab() {
             '1. Longest prefix; 2. lowest administrative distance among routes for the same prefix; 3. lowest metric within the same protocol. Equivalent paths may be installed as ECMP.',
           fib: 'RIB, FIB, and adjacency table',
           fibText:
-            'The RIB collects control-plane route candidates. The best routes are programmed into the FIB; the adjacency table holds Layer 2 rewrite information. CEF uses the FIB and adjacency table for data-plane forwarding.',
+            'In practice: the chosen route (control plane) is programmed into the FIB that actually forwards packets (data plane, CEF). The full RIB → FIB → adjacency detail is in the manual.',
           ospf: 'Single-area OSPFv2',
           cost: 'OSPF cost calculator',
           reference: 'Reference bandwidth (Mb/s)',

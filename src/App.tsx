@@ -9,6 +9,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import GuideModal from './components/GuideModal';
 import ChunkErrorBoundary from './components/ChunkErrorBoundary';
 import ManualViewSkeleton from './components/ManualViewSkeleton';
+import LabManualLink from './components/LabManualLink';
 import { Suspense, useEffect } from 'react';
 import { useStore } from './store';
 import { useShallow } from 'zustand/react/shallow';
@@ -109,6 +110,15 @@ export default function App() {
       <Navigation />
 
       <main id="main-content" tabIndex={-1} className="max-w-7xl mx-auto min-h-[calc(100dvh-6.625rem)] p-4 md:p-6">
+        {/*
+          EDU-STRUCT-05: a lab defers its theory to the manual. Rendered from the registry
+          view id (not per lab) so every lab a chapter cites carries the same back-link to
+          its chapter, and views with no chapter (manual, curriculum, extension labs) render
+          nothing. It sits outside the lazy boundary so the theory link survives a chunk error.
+        */}
+        <div className="mb-4 empty:hidden">
+          <LabManualLink lab={activeView} />
+        </div>
         {/*
           ENG-09: a lazy chunk that fails to download throws during render. The boundary
           wraps Suspense so it catches that rejection (and any render error in the view)

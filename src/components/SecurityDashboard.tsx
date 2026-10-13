@@ -107,34 +107,9 @@ export default function SecurityDashboard() {
           </h1>
           <p className="text-slate-300 text-[13px] leading-relaxed">
             {language === 'en'
-              ? "The defenders' side: which appliances watch the network, where they sit, and the key difference between detecting an attack (IDS) and actively blocking it (IPS). To run attacks and defenses hands-on, use the Attack & Defense Lab."
-              : 'Il lato dei difensori: quali apparati sorvegliano la rete, dove si posizionano e la differenza chiave tra rilevare un attacco (IDS) e bloccarlo attivamente (IPS). Per provare attacchi e difese in pratica, usa il Laboratorio Attacco & Difesa.'}
+              ? 'The defenders’ side: which appliances watch the network, where they sit, and whether each one only detects (IDS) or actively blocks (IPS). The full theory — passive out-of-band versus active in-line — is in the manual; to run attacks and defenses hands-on, use the Attack & Defense Lab.'
+              : 'Il lato dei difensori: quali apparati sorvegliano la rete, dove si posizionano e se ciascuno solo rileva (IDS) o blocca attivamente (IPS). La teoria completa — passivo fuori linea rispetto ad attivo in linea — è nel manuale; per provare attacchi e difese in pratica, usa il Laboratorio Attacco & Difesa.'}
           </p>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6 pt-4 border-t border-slate-800">
-            <div className="p-4 bg-slate-800/40 rounded-lg border border-slate-800/60">
-              <div className="flex items-center gap-2 text-amber-400 font-bold text-xs uppercase tracking-wider mb-1">
-                <div className="w-2 h-2 rounded-full bg-amber-400" />
-                IDS (Intrusion Detection)
-              </div>
-              <p className="text-slate-400 text-xs">
-                {language === 'en'
-                  ? 'Passive, out-of-band. Reads a copy of the traffic (TAP/mirror): it can flag, log and alert, but cannot stop the attack. It adds no latency.'
-                  : "Passivo, fuori linea. Legge una copia del traffico (TAP/mirror): può segnalare, registrare e allertare, ma non blocca l'attacco. Non rallenta la rete."}
-              </p>
-            </div>
-            <div className="p-4 bg-slate-800/40 rounded-lg border border-slate-800/60">
-              <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs uppercase tracking-wider mb-1">
-                <div className="w-2 h-2 rounded-full bg-emerald-400" />
-                IPS (Intrusion Prevention)
-              </div>
-              <p className="text-slate-400 text-xs">
-                {language === 'en'
-                  ? 'Active, in-line. Sits on the real data path: it inspects packets and drops the malicious ones before they reach the target.'
-                  : 'Attivo, in linea. Sta sul percorso reale dei dati: ispeziona i pacchetti e scarta quelli dannosi prima che arrivino a destinazione.'}
-              </p>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -146,8 +121,8 @@ export default function SecurityDashboard() {
           </h2>
           <p className="text-xs text-slate-400">
             {language === 'en'
-              ? 'Detection (D) only alerts; Prevention (P) actively blocks. Network, Host and Wireless tools each guard a different scope.'
-              : 'Il rilevamento (D) solo allerta; la prevenzione (P) blocca attivamente. Gli strumenti di rete, host e wireless proteggono ambiti diversi.'}
+              ? 'Compare each appliance by scope (Network, Host, Wireless) and posture (detect-only or actively block).'
+              : 'Confronta ogni apparato per ambito (rete, host, wireless) e postura (solo rilevamento o blocco attivo).'}
           </p>
         </div>
 

@@ -69,15 +69,13 @@ export default function IpServicesLab() {
           subtitle:
             'Segui i servizi che rendono operativa una rete, osserva il loro stato e collega ogni abuso alla difesa corretta.',
           dhcp: 'DHCP e relay',
-          relay:
-            'Il relay converte il broadcast client in unicast verso il server e inserisce giaddr per identificare la subnet di origine.',
+          relay: 'Con il relay il client raggiunge un server DHCP in un’altra subnet.',
           clientRoles: 'DHCP e DNS dal punto di vista del client',
           phase: 'Aspetto',
           clientRolesNote:
             'DHCP e DNS non si sostituiscono a vicenda: il primo dà all’host i parametri per comunicare, il secondo gli dice con chi. Distinguerli è ciò che permette di separare un guasto di rete da un guasto di servizio.',
           dns: 'DNS e cache',
-          dnsFlow:
-            'Un resolver ricorsivo interroga root, TLD e server autoritativo quando non possiede una risposta valida in cache. Il TTL limita per quanto tempo il record può essere riutilizzato.',
+          dnsFlow: 'La cache evita di ripetere la risoluzione: il TTL fissa per quanto un record resta valido.',
           nat: 'NAT/PAT explorer',
           inside: 'Inside local IPv4',
           port: 'Porta sorgente',
@@ -121,15 +119,13 @@ export default function IpServicesLab() {
           subtitle:
             'Follow the services that make a network operational, observe their state, and connect each abuse to the appropriate defense.',
           dhcp: 'DHCP and relay',
-          relay:
-            'The relay converts the client broadcast into unicast toward the server and inserts giaddr to identify the source subnet.',
+          relay: 'With a relay the client reaches a DHCP server in another subnet.',
           clientRoles: 'DHCP and DNS from the client’s point of view',
           phase: 'Aspect',
           clientRolesNote:
             'DHCP and DNS do not replace each other: the first gives the host the parameters to communicate, the second tells it with whom. Keeping them apart is what separates a network fault from a service fault.',
           dns: 'DNS and caching',
-          dnsFlow:
-            'A recursive resolver queries root, TLD, and authoritative servers when it lacks a valid cached answer. The TTL limits how long the record may be reused.',
+          dnsFlow: 'The cache avoids repeating resolution: the TTL sets how long a record stays valid.',
           nat: 'NAT/PAT explorer',
           inside: 'Inside local IPv4',
           port: 'Source port',

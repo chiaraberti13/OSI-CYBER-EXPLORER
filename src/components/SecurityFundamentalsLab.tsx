@@ -68,8 +68,7 @@ export default function SecurityFundamentalsLab() {
           deny: 'DENY',
           matched: 'Regola corrispondente',
           implicit: 'Implicit deny',
-          aclNote:
-            'Le ACL vengono lette dall’alto verso il basso e si fermano alla prima corrispondenza. Standard ACL: solo sorgente. Extended ACL: protocollo, sorgente, destinazione e porte. “established” verifica ACK/RST ma non mantiene stato.',
+          aclNote: 'Le ACL vengono lette dall’alto verso il basso e si fermano alla prima corrispondenza.',
           aaa: 'AAA e controllo amministrativo',
           property: 'Proprietà',
           wlan: 'Protocolli di sicurezza wireless e WPA2 PSK',
@@ -108,8 +107,7 @@ export default function SecurityFundamentalsLab() {
           deny: 'DENY',
           matched: 'Matched rule',
           implicit: 'Implicit deny',
-          aclNote:
-            'ACLs are read top-down and stop at the first match. Standard ACL: source only. Extended ACL: protocol, source, destination, and ports. “established” checks ACK/RST but keeps no state.',
+          aclNote: 'ACLs are read top-down and stop at the first match.',
           aaa: 'AAA and administrative control',
           property: 'Property',
           wlan: 'Wireless security protocols and WPA2 PSK',

@@ -99,6 +99,12 @@ export const en = {
     reload: 'Reload the page',
     role: 'Error message'
   },
+  labManual: {
+    label: 'Theory in the manual',
+    intro: 'This is where you practise: the full explanation of this topic lives in the study manual.',
+    openOne: 'Open the chapter',
+    openMany: 'Open the chapters'
+  },
   shared: {
     results: 'results',
     allPlanes: 'All planes',
