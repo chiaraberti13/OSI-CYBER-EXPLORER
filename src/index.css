@@ -104,6 +104,14 @@ body {
 :root[data-theme='dark'] [data-manual-root] [data-testid='chapter-context'] {
   background-color: var(--color-dark-surface);
 }
+/* Chapter-tree rows (IA-04 redesign): the hover affordance must stay theme-coherent
+   and AA, so the light slate hover surface/ink map to the dark surface and ink. */
+:root[data-theme='dark'] [data-manual-root] .hover\:bg-slate-100:hover {
+  background-color: var(--color-dark-surface);
+}
+:root[data-theme='dark'] [data-manual-root] .hover\:text-slate-900:hover {
+  color: var(--color-dark-ink-primary);
+}
 :root[data-theme='dark'] [data-manual-root] .border-slate-100,
 :root[data-theme='dark'] [data-manual-root] .border-slate-200,
 :root[data-theme='dark'] [data-manual-root] .border-slate-200\/70,
