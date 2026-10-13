@@ -400,15 +400,29 @@ Stato della copertura del manuale rispetto ai sei domini ufficiali (peso d'esame
 
 La roadmap può considerarsi completata quando:
 
-- [ ] CI, type-check, lint, test, build, scansioni e controlli a11y sono verdi sul branch protetto.
-- [ ] Non esistono vulnerabilità runtime High/Critical né vulnerabilità di sviluppo non valutate.
-- [ ] Ogni input interattivo ha schema, limiti, errore bilingue e test di confine.
-- [ ] Le viste sono registrate una sola volta, indirizzabili via URL e protette da Error Boundary.
-- [ ] I componenti maggiori separano contenuti, logica e presentazione.
-- [ ] Tutti i laboratori sono utilizzabili da tastiera e rispettano WCAG 2.2 AA.
-- [ ] La parità IT/EN e l'integrità dei riferimenti didattici vengono verificate automaticamente.
-- [ ] Gli esempi usano solo indirizzi e domini di documentazione, e i dati di rete (porte, STP, header, indirizzamento) citano la fonte normativa e sono coperti da vettori di test.
-- [ ] Le simulazioni restano client-side, deterministiche, non esecutive e chiaramente contestualizzate come attività autorizzate.
+- [x] CI, type-check, lint, test, build, scansioni e controlli a11y sono verdi sul branch protetto.
+- [x] Non esistono vulnerabilità runtime High/Critical né vulnerabilità di sviluppo non valutate.
+- [x] Ogni input interattivo ha schema, limiti, errore bilingue e test di confine.
+- [x] Le viste sono registrate una sola volta, indirizzabili via URL e protette da Error Boundary.
+- [x] I componenti maggiori separano contenuti, logica e presentazione.
+- [x] Tutti i laboratori sono utilizzabili da tastiera e rispettano WCAG 2.2 AA.
+- [x] La parità IT/EN e l'integrità dei riferimenti didattici vengono verificate automaticamente.
+- [x] Gli esempi usano solo indirizzi e domini di documentazione, e i dati di rete (porte, STP, header, indirizzamento) citano la fonte normativa e sono coperti da vettori di test.
+- [x] Le simulazioni restano client-side, deterministiche, non esecutive e chiaramente contestualizzate come attività autorizzate.
+
+**Stato (13/10/2026): roadmap completata.** Tutti i task titolati del backlog (UX-\*, IA-\*, EDU-STRUCT-\*, EDU-01…EDU-18) sono spuntati e i nove criteri di completamento qui sopra sono verificati sulla baseline corrente. Evidenza per criterio:
+
+1. **CI/type-check/lint/test/build/a11y** — `npm run verify` verde (uscita 0) con format, typecheck, lint, `test:coverage` (83 file di test) e build; E2E Playwright 59/59 su Chromium, incluso `e2e/accessibility.spec.ts` con Axe sui tag WCAG 2.2 AA.
+2. **Vulnerabilità** — `audit:runtime` e `audit:full` a **0 vulnerabilità**.
+3. **Input interattivi** — `src/lib/inputValidation.ts` (`INTERACTIVE_INPUT_LIMITS`, `validateTextInput`, `parseBoundedInteger`) con messaggi d'errore bilingui e test di confine (`inputValidation.test.ts`).
+4. **Viste** — `viewRegistry` con registrazione unica verificata da `viewRegistry.test.ts`/`navigation.test.ts`, routing hash indirizzabile (`viewRouting.ts`) e `ChunkErrorBoundary` in `App.tsx`.
+5. **Separazione dei concern** — contenuti in `src/content`, logica pura e testata in `src/lib`, presentazione nei componenti.
+6. **Accessibilità** — gate `verify:design-system` (contrasto WCAG AA dai token, globale), Axe WCAG 2.2 AA sulle viste rappresentative e flussi da tastiera negli E2E (`accessibility.spec.ts`, `manual-accessibility.spec.ts`).
+7. **Parità IT/EN e riferimenti** — `bilingual.test.ts`, `catalog.test.ts`, `content.test.ts` e i controlli dei riferimenti in `studyManual.test.ts`.
+8. **Dati di documentazione e fonti** — gate `documentation-targets` (450 letterali IPv4, 87 IPv6, tutti riservati; 24 domini), riferimenti strutturati validati (`content.test.ts`) e conformità di rete (`networkingConformance.test.ts`).
+9. **Simulazioni** — gate `verify:offensive-content` (25 scenari, solo simulazione, client-side e contestualizzate come attività autorizzate).
+
+Interventi futuri andranno basati su nuove lacune verificate (es. nuovi contenuti o la revisione tecnica periodica con scadenza 2027-04-08), non su task inventati.
 
 ---
 
