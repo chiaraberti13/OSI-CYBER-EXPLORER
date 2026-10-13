@@ -19,8 +19,8 @@ test.describe('manual mobile navigation (UX-25)', () => {
 
     await expect(desktopNav).toBeHidden();
     await expect(mobileNav).toBeVisible();
-    await expect(chapterSelect.locator('option')).toHaveCount(14);
-    await expect(chapterSelect.locator('optgroup')).toHaveCount(6);
+    await expect(chapterSelect.locator('option')).toHaveCount(15);
+    await expect(chapterSelect.locator('optgroup')).toHaveCount(7);
     expect((await mobileNav.boundingBox())?.height).toBeLessThanOrEqual(112);
 
     const indexOverflow = await topicIndex.evaluate((index) => ({
@@ -35,13 +35,13 @@ test.describe('manual mobile navigation (UX-25)', () => {
     await expect(chapterSelect).toHaveValue('ethernet-switching');
 
     await page.getByRole('button', { name: 'Segna come completato' }).click();
-    await expect(mobileNav.getByLabel('Progresso capitoli: 1/14 (7%)')).toBeVisible();
+    await expect(mobileNav.getByLabel('Progresso capitoli: 1/15 (7%)')).toBeVisible();
 
     const secondTopic = topicIndex.getByRole('button').nth(1);
     await secondTopic.click();
     await expect(secondTopic).toHaveAttribute('aria-current', 'location');
     const toolbarBox = await mobileNav.boundingBox();
-    await expect(mobileNav.getByLabel('Progresso capitoli: 1/14 (7%)')).toBeInViewport();
+    await expect(mobileNav.getByLabel('Progresso capitoli: 1/15 (7%)')).toBeInViewport();
 
     const selectedTopic = page.locator('[data-manual-topic="switch-cam-learning"]');
     const selectedTopicBox = await selectedTopic.boundingBox();
@@ -53,7 +53,7 @@ test.describe('manual mobile navigation (UX-25)', () => {
     // The sticky region starts at 104 px; its border and 8 px padding put
     // the navigation itself at 113 px.
     expect(stickyToolbarBox?.y).toBeLessThanOrEqual(114);
-    await expect(mobileNav.getByLabel('Progresso capitoli: 1/14 (7%)')).toBeInViewport();
+    await expect(mobileNav.getByLabel('Progresso capitoli: 1/15 (7%)')).toBeInViewport();
 
     const widths = await page.evaluate(() => ({
       viewport: document.documentElement.clientWidth,

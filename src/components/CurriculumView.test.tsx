@@ -39,14 +39,15 @@ describe('CurriculumView — theory defers to the study manual (EDU-STRUCT-03)',
     // The per-chapter "Cap. N:" index was removed from the overview to avoid duplicating
     // the manual's domain navigation.
     expect(screen.queryAllByRole('link', { name: /Cap\. \d+:/ })).toHaveLength(0);
-    // Five of the six domains are covered by chapters, each with one pointer.
-    expect(screen.getAllByRole('link', { name: 'Apri i capitoli nel Manuale' })).toHaveLength(5);
+    // All six domains are now covered by chapters, each with one pointer (EDU-15 added
+    // the Automation & Programmability chapter, closing the last gap).
+    expect(screen.getAllByRole('link', { name: 'Apri i capitoli nel Manuale' })).toHaveLength(6);
   });
 
-  it('marks a domain with no manual chapter yet as coming soon', () => {
+  it('no longer marks any domain as coming soon once every domain has a chapter', () => {
     useStore.setState({ language: 'it' });
     render(<CurriculumView />);
-    // Automation & Programmability (6.0) has no dedicated chapter yet.
-    expect(screen.getByText(/In arrivo: questo dominio/)).toBeTruthy();
+    // Automation & Programmability (6.0) now has a dedicated chapter (EDU-15).
+    expect(screen.queryByText(/In arrivo: questo dominio/)).toBeNull();
   });
 });

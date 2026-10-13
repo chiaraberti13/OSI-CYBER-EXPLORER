@@ -4306,5 +4306,301 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
         ]
       }
     ]
+  },
+  {
+    id: 'automation-programmability',
+    cert: 'ccna',
+    order: 15,
+    track: 'ccna',
+    domain: 'automation-programmability',
+    title: {
+      it: 'Automazione e programmabilità',
+      en: 'Automation and programmability'
+    },
+    summary: {
+      it: 'Il dominio 6.0: perché l’automazione cambia il modo di gestire la rete, come una rete controller-based separa l’intento dal forwarding, e come si parla con gli apparati via REST API, dati JSON e strumenti come Ansible e Terraform.',
+      en: 'Domain 6.0: why automation changes the way a network is managed, how a controller-based network separates intent from forwarding, and how devices are spoken to through REST APIs, JSON data, and tools like Ansible and Terraform.'
+    },
+    topics: [
+      {
+        id: 'automation-impact-sdn',
+        title: {
+          it: 'Impatto dell’automazione e reti controller-based',
+          en: 'Automation impact and controller-based networks'
+        },
+        objectives: [
+          {
+            it: 'Spiegare come l’automazione cambia la gestione della rete rispetto alla configurazione per dispositivo.',
+            en: 'Explain how automation changes network management compared with per-device configuration.'
+          },
+          {
+            it: 'Descrivere una rete controller-based e il ruolo delle API northbound e southbound.',
+            en: 'Describe a controller-based network and the role of northbound and southbound APIs.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Sapere che control plane e data plane prendono decisioni diverse (capitoli su switching e routing).',
+            en: 'Know that the control plane and data plane make different decisions (the switching and routing chapters).'
+          }
+        ],
+        theory: [
+          {
+            it: 'Configurare la rete a mano, dispositivo per dispositivo, non scala: ogni apparato diventa un fiocco di neve con piccole differenze, le modifiche sono lente e gli errori si moltiplicano. L’automazione sostituisce il lavoro ripetitivo con descrizioni riproducibili: la stessa configurazione si applica a cento apparati in modo coerente, le modifiche si versionano come codice e si possono rivedere e annullare. Il guadagno non è solo velocità, è coerenza: la rete fa ciò che il codice descrive, non ciò che qualcuno ricorda di aver digitato.',
+            en: 'Configuring the network by hand, device by device, does not scale: each device becomes a snowflake with small differences, changes are slow, and errors multiply. Automation replaces repetitive work with reproducible descriptions: the same configuration is applied to a hundred devices consistently, changes are versioned like code and can be reviewed and rolled back. The gain is not only speed, it is consistency: the network does what the code describes, not what someone remembers typing.'
+          },
+          {
+            it: 'In una rete controller-based un controller centrale mantiene una vista logica dell’intera rete, traduce l’intento e le policy e programma i dispositivi; i forwarding device continuano a inoltrare nel data plane. È lo stesso principio della SDN (Software-Defined Networking), dove il control plane viene centralizzato e astratto dal piano di inoltro. Il vantaggio è una gestione d’insieme — una policy si esprime una volta e il controller la realizza ovunque — al prezzo di un nuovo punto singolo di fiducia da proteggere: il controller.',
+            en: 'In a controller-based network a central controller maintains a logical view of the whole network, translates intent and policy, and programs the devices; forwarding devices keep forwarding in the data plane. It is the same principle as SDN (Software-Defined Networking), where the control plane is centralised and abstracted from the forwarding plane. The advantage is whole-network management — a policy is expressed once and the controller realises it everywhere — at the cost of a new single point of trust to protect: the controller.'
+          },
+          {
+            it: 'Il controller parla in due direzioni. Le API northbound lo collegano verso l’alto, alle applicazioni e all’intento: è lì che un operatore o un programma esprimono cosa vogliono. Le API southbound lo collegano verso il basso, all’infrastruttura, tramite protocolli come NETCONF e RESTCONF che programmano gli apparati. Capire questa doppia direzione spiega il modello: l’intento scende dall’alto, la realizzazione raggiunge il basso, e il controller sta nel mezzo a tradurre.',
+            en: 'The controller talks in two directions. Northbound APIs connect it upward, to applications and intent: that is where an operator or a program expresses what they want. Southbound APIs connect it downward, to the infrastructure, through protocols such as NETCONF and RESTCONF that program the devices. Understanding this double direction explains the model: intent comes down from above, realisation reaches below, and the controller sits in the middle translating.'
+          }
+        ],
+        example: {
+          it: 'Invece di collegarsi a cinquanta switch per aprire una VLAN, un operatore la chiede una volta al controller tramite l’API northbound; il controller la programma su tutti gli apparati via southbound, in modo coerente e tracciato.',
+          en: 'Instead of connecting to fifty switches to open a VLAN, an operator requests it once from the controller through the northbound API; the controller programs it on every device via southbound, consistently and with an audit trail.'
+        },
+        commonMistakes: [
+          {
+            it: 'Pensare che il controller inoltri i pacchetti: programma i dispositivi, ma il forwarding resta nel data plane degli apparati.',
+            en: 'Thinking the controller forwards packets: it programs the devices, but forwarding stays in the devices’ data plane.'
+          },
+          {
+            it: 'Scambiare northbound e southbound: northbound guarda alle applicazioni e all’intento, southbound all’infrastruttura.',
+            en: 'Swapping northbound and southbound: northbound faces applications and intent, southbound faces the infrastructure.'
+          },
+          {
+            it: 'Sottovalutare il controller come bersaglio: centralizzando il controllo diventa un punto singolo di fiducia da proteggere.',
+            en: 'Underestimating the controller as a target: by centralising control it becomes a single point of trust to protect.'
+          }
+        ],
+        lab: 'automation',
+        references: [{ kind: 'rfc', id: 'RFC 7426' }]
+      },
+      {
+        id: 'rest-apis-json',
+        title: {
+          it: 'REST API e dati strutturati (JSON)',
+          en: 'REST APIs and structured data (JSON)'
+        },
+        objectives: [
+          {
+            it: 'Descrivere le caratteristiche di una REST API e il significato dei metodi HTTP e delle famiglie di stato.',
+            en: 'Describe the characteristics of a REST API and the meaning of the HTTP methods and status families.'
+          },
+          {
+            it: 'Leggere un documento JSON riconoscendone i tipi e la struttura annidata.',
+            en: 'Read a JSON document, recognising its types and nested structure.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere il modello client–server e le porte dei servizi (capitoli sui servizi IP).',
+            en: 'Know the client–server model and service ports (the IP services chapters).'
+          }
+        ],
+        theory: [
+          {
+            it: 'Una REST API espone le risorse come indirizzi (URI) e le si manipola con i metodi HTTP. I metodi hanno significati precisi: GET legge e non modifica nulla (è sicuro), POST crea, PUT sostituisce una risorsa, PATCH ne aggiorna una parte, DELETE la rimuove. GET, PUT e DELETE sono idempotenti — ripeterli porta allo stesso risultato — mentre POST ripetuto può creare doppioni. La risposta porta un codice di stato: la famiglia 2xx indica successo, la 4xx un errore del client (richiesta sbagliata, non autorizzata, risorsa assente), la 5xx un errore del server.',
+            en: 'A REST API exposes resources as addresses (URIs) and manipulates them with HTTP methods. The methods have precise meanings: GET reads and changes nothing (it is safe), POST creates, PUT replaces a resource, PATCH updates part of one, DELETE removes it. GET, PUT, and DELETE are idempotent — repeating them yields the same result — while a repeated POST may create duplicates. The response carries a status code: the 2xx family means success, 4xx a client error (bad request, unauthorized, missing resource), 5xx a server error.'
+          },
+          {
+            it: 'Lo scambio di dati avviene tipicamente in JSON (JavaScript Object Notation), un formato testuale con pochi tipi: oggetti (coppie chiave-valore tra graffe), array (elenchi ordinati tra quadre), stringhe, numeri, i booleani true e false, e null. I valori si annidano — un oggetto può contenere array di oggetti — e la struttura si legge seguendo le chiavi come un percorso. Lo standard JSON non prevede commenti: un commento rende il documento non valido.',
+            en: 'Data exchange typically happens in JSON (JavaScript Object Notation), a textual format with few types: objects (key–value pairs in braces), arrays (ordered lists in brackets), strings, numbers, the booleans true and false, and null. Values nest — an object can contain arrays of objects — and the structure is read by following the keys like a path. The JSON standard allows no comments: a comment makes the document invalid.'
+          },
+          {
+            it: 'YAML è un altro formato molto usato, più leggibile per le persone perché basato sull’indentazione invece che su graffe e quadre, e usato dai file di configurazione e dai playbook. JSON e YAML rappresentano le stesse strutture — oggetti, liste, scalari — quindi spesso si convertono l’uno nell’altro. La regola operativa quando si leggono dati da un’API è non fidarsi del contenuto: va validato contro uno schema atteso, perché un campo mancante o un tipo sbagliato rompe l’automazione a valle.',
+            en: 'YAML is another widely used format, more human-readable because it is based on indentation instead of braces and brackets, and used by configuration files and playbooks. JSON and YAML represent the same structures — objects, lists, scalars — so they often convert into each other. The operational rule when reading data from an API is not to trust the content: it must be validated against an expected schema, because a missing field or a wrong type breaks the downstream automation.'
+          }
+        ],
+        example: {
+          it: 'Un GET verso /devices restituisce un JSON con un array di oggetti, ciascuno con chiavi come hostname e status; leggere quel documento significa seguire le chiavi fino al valore cercato, mentre un POST allo stesso URI creerebbe un nuovo dispositivo.',
+          en: 'A GET to /devices returns JSON with an array of objects, each with keys such as hostname and status; reading that document means following the keys to the wanted value, while a POST to the same URI would create a new device.'
+        },
+        commonMistakes: [
+          {
+            it: 'Considerare GET e POST equivalenti: GET non modifica nulla ed è idempotente, POST crea e ripetuto può duplicare.',
+            en: 'Treating GET and POST as equivalent: GET changes nothing and is idempotent, POST creates and repeated may duplicate.'
+          },
+          {
+            it: 'Mettere commenti in un JSON: lo standard non li prevede e il documento diventa non valido; per i commenti serve un altro formato.',
+            en: 'Putting comments in JSON: the standard does not allow them and the document becomes invalid; another format is needed for comments.'
+          },
+          {
+            it: 'Leggere la famiglia di stato al contrario: 2xx è successo, 4xx è un errore del client, 5xx del server.',
+            en: 'Reading the status family backwards: 2xx is success, 4xx is a client error, 5xx a server error.'
+          }
+        ],
+        lab: 'automation',
+        references: [{ kind: 'rfc', id: 'RFC 8259' }],
+        guidedLabs: [
+          {
+            id: 'gl-json-rest-read',
+            title: { it: 'Leggere JSON e metodi REST', en: 'Reading JSON and REST methods' },
+            difficulty: 'intro',
+            lab: 'automation',
+            scenario: {
+              it: 'Il laboratorio «Automazione» include un ispettore JSON che appiattisce il documento in percorsi e un esploratore dei metodi HTTP con le loro proprietà.',
+              en: 'The “Automation” lab includes a JSON inspector that flattens the document into paths and an HTTP method explorer with their properties.'
+            },
+            task: {
+              it: 'Dato un documento JSON, individua il percorso di un valore annidato; per un’operazione data, scegli il metodo HTTP corretto e dì se è sicuro o idempotente.',
+              en: 'Given a JSON document, find the path to a nested value; for a given operation, choose the correct HTTP method and say whether it is safe or idempotent.'
+            },
+            steps: [
+              {
+                it: 'Apri «Automazione» e incolla un documento JSON nell’ispettore.',
+                en: 'Open “Automation” and paste a JSON document into the inspector.'
+              },
+              {
+                it: 'Segui le chiavi come un percorso fino al valore annidato che cerchi.',
+                en: 'Follow the keys like a path to the nested value you want.'
+              },
+              {
+                it: 'Nell’esploratore dei metodi, associa l’operazione (leggere, creare, sostituire, rimuovere) al metodo e verifica sicurezza e idempotenza.',
+                en: 'In the method explorer, map the operation (read, create, replace, remove) to the method and check safety and idempotency.'
+              }
+            ],
+            challenge: {
+              it: 'Un client ripete la stessa richiesta dopo un timeout: con quali metodi è sicuro farlo senza effetti collaterali, e con quale no?',
+              en: 'A client repeats the same request after a timeout: with which methods is it safe to do so without side effects, and with which is it not?'
+            },
+            solution: [
+              {
+                it: 'Il valore in JSON si raggiunge seguendo le chiavi attraverso oggetti e array fino allo scalare; il metodo si sceglie dall’operazione: GET per leggere (sicuro), POST per creare, PUT per sostituire, PATCH per aggiornare parzialmente, DELETE per rimuovere.',
+                en: 'A JSON value is reached by following the keys through objects and arrays to the scalar; the method is chosen from the operation: GET to read (safe), POST to create, PUT to replace, PATCH to partially update, DELETE to remove.'
+              },
+              {
+                it: 'Sfida: ripetere GET, PUT o DELETE è sicuro perché sono idempotenti — lo stato finale è lo stesso — mentre ripetere POST può creare un doppione, quindi dopo un timeout va gestito con attenzione (per esempio con una chiave di idempotenza).',
+                en: 'Challenge: repeating GET, PUT, or DELETE is safe because they are idempotent — the final state is the same — while repeating POST may create a duplicate, so after a timeout it must be handled carefully (for example with an idempotency key).'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So leggere un valore annidato in un JSON seguendo le sue chiavi.',
+                en: 'I can read a nested value in JSON by following its keys.'
+              },
+              {
+                it: 'So scegliere il metodo HTTP per un’operazione e dire se è sicuro o idempotente.',
+                en: 'I can choose the HTTP method for an operation and say whether it is safe or idempotent.'
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'config-management-tools',
+        title: {
+          it: 'Strumenti di gestione della configurazione',
+          en: 'Configuration management tools'
+        },
+        objectives: [
+          {
+            it: 'Distinguere gli strumenti di configuration management per modello agent/agentless e dati usati.',
+            en: 'Distinguish configuration-management tools by agent/agentless model and the data they use.'
+          },
+          {
+            it: 'Spiegare perché l’idempotenza e l’infrastruttura come codice rendono i cambiamenti riproducibili.',
+            en: 'Explain why idempotency and infrastructure as code make changes reproducible.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere JSON/YAML e l’accesso agli apparati via SSH e API (argomenti precedenti).',
+            en: 'Know JSON/YAML and device access via SSH and APIs (previous topics).'
+          }
+        ],
+        theory: [
+          {
+            it: 'Gli strumenti di gestione della configurazione descrivono lo stato desiderato degli apparati e lo fanno convergere. Ansible è agentless: non richiede software sugli apparati, si collega via SSH, API o NETCONF ed esegue playbook scritti in YAML con inventory e moduli; i moduli dovrebbero convergere in modo idempotente. Puppet e Chef seguono un modello ad agente, con un software che gira sui nodi e applica il modello definito centralmente. La scelta tra agent e agentless dipende da cosa si gestisce e da cosa si può installare.',
+            en: 'Configuration-management tools describe the desired state of devices and make them converge to it. Ansible is agentless: it needs no software on the devices, connects over SSH, APIs, or NETCONF, and runs playbooks written in YAML with inventory and modules; the modules should converge idempotently. Puppet and Chef follow an agent model, with software running on the nodes that applies the centrally defined model. The choice between agent and agentless depends on what is managed and what can be installed.'
+          },
+          {
+            it: 'Il concetto che rende tutto affidabile è l’idempotenza: applicare la stessa descrizione una o dieci volte lascia il sistema nello stesso stato finale, perché lo strumento cambia solo ciò che diverge dallo stato desiderato invece di rieseguire comandi alla cieca. Così un rollout si può ripetere senza paura, e una configurazione fuori posto viene riportata in linea. L’opposto — comandi imperativi rieseguiti — rischia di accumulare effetti e di rendere il risultato non riproducibile.',
+            en: 'The concept that makes everything reliable is idempotency: applying the same description once or ten times leaves the system in the same final state, because the tool changes only what diverges from the desired state instead of blindly re-running commands. So a rollout can be repeated without fear, and an out-of-place configuration is brought back in line. The opposite — imperative commands re-run — risks accumulating effects and making the outcome non-reproducible.'
+          },
+          {
+            it: 'Terraform porta lo stesso principio all’infrastruttura come codice (IaC) con un approccio dichiarativo: si descrive lo stato desiderato delle risorse e Terraform calcola il piano delle modifiche necessarie per raggiungerlo, tenendo traccia di ciò che esiste in un file di stato. La buona pratica, comune a tutti questi strumenti, è versionare le descrizioni come codice, provare prima in dry-run (anteprima senza applicare), fare il rollout a lotti e non mettere mai segreti nel codice: le credenziali vanno lette da un secret manager, non scritte nel playbook.',
+            en: 'Terraform brings the same principle to infrastructure as code (IaC) with a declarative approach: you describe the desired state of the resources and Terraform computes the plan of changes needed to reach it, tracking what exists in a state file. The good practice, common to all these tools, is to version the descriptions as code, try first in dry-run (a preview without applying), roll out in batches, and never put secrets in the code: credentials must be read from a secret manager, not written into the playbook.'
+          }
+        ],
+        example: {
+          it: 'Un playbook Ansible che garantisce “questa VLAN esiste su questi switch” si può rieseguire ogni giorno: la prima volta la crea, le volte successive non cambia nulla perché lo stato già coincide con quello desiderato.',
+          en: 'An Ansible playbook that ensures “this VLAN exists on these switches” can be re-run every day: the first time it creates it, the following times it changes nothing because the state already matches the desired one.'
+        },
+        commonMistakes: [
+          {
+            it: 'Credere che Ansible richieda un agente: è agentless e si collega via SSH, API o NETCONF; sono Puppet e Chef a usare un agente.',
+            en: 'Believing Ansible needs an agent: it is agentless and connects via SSH, APIs, or NETCONF; it is Puppet and Chef that use an agent.'
+          },
+          {
+            it: 'Trattare i playbook come script imperativi: la forza è l’idempotenza, che cambia solo ciò che diverge invece di rieseguire comandi.',
+            en: 'Treating playbooks as imperative scripts: the strength is idempotency, which changes only what diverges instead of re-running commands.'
+          },
+          {
+            it: 'Scrivere segreti nel codice di automazione: vanno letti da un secret manager, mai incorporati nel playbook o nello stato.',
+            en: 'Writing secrets into the automation code: they must be read from a secret manager, never embedded in the playbook or the state.'
+          }
+        ],
+        lab: 'automation',
+        references: [{ kind: 'rfc', id: 'RFC 6241' }],
+        guidedLabs: [
+          {
+            id: 'gl-idempotent-rollout',
+            title: { it: 'Perché un rollout si può ripetere', en: 'Why a rollout can be repeated' },
+            difficulty: 'core',
+            lab: 'automation',
+            scenario: {
+              it: 'Il laboratorio «Automazione» confronta gli strumenti di configuration management e mostra una sequenza operativa sicura (secret manager, dry-run, rollout a lotti).',
+              en: 'The “Automation” lab compares configuration-management tools and shows a safe operational sequence (secret manager, dry-run, batched rollout).'
+            },
+            task: {
+              it: 'Spiega perché applicare due volte lo stesso playbook idempotente non causa danni e individua i tre passi di un rollout sicuro.',
+              en: 'Explain why applying the same idempotent playbook twice causes no harm and identify the three steps of a safe rollout.'
+            },
+            steps: [
+              {
+                it: 'Apri «Automazione» e leggi il confronto tra Ansible, Puppet, Chef e Terraform.',
+                en: 'Open “Automation” and read the comparison between Ansible, Puppet, Chef, and Terraform.'
+              },
+              {
+                it: 'Nota che uno strumento idempotente cambia solo ciò che diverge dallo stato desiderato.',
+                en: 'Note that an idempotent tool changes only what diverges from the desired state.'
+              },
+              {
+                it: 'Individua la sequenza sicura: credenziali dal secret manager, dry-run, rollout a lotti.',
+                en: 'Identify the safe sequence: credentials from the secret manager, dry-run, batched rollout.'
+              }
+            ],
+            challenge: {
+              it: 'Un rollout imperativo rieseguito raddoppia una regola e rompe la rete: come lo evita un approccio dichiarativo e idempotente?',
+              en: 'A re-run imperative rollout doubles a rule and breaks the network: how does a declarative, idempotent approach avoid it?'
+            },
+            solution: [
+              {
+                it: 'Applicare due volte un playbook idempotente non causa danni perché lo strumento confronta lo stato reale con quello desiderato e agisce solo sulla differenza: la seconda esecuzione non trova nulla da cambiare. Il rollout sicuro legge i segreti da un secret manager, prova in dry-run e procede a lotti per limitare l’impatto di un errore.',
+                en: 'Applying an idempotent playbook twice causes no harm because the tool compares the actual state with the desired one and acts only on the difference: the second run finds nothing to change. A safe rollout reads secrets from a secret manager, tries a dry-run, and proceeds in batches to limit the impact of a mistake.'
+              },
+              {
+                it: 'Sfida: un approccio dichiarativo descrive il risultato voluto, non i comandi; applicarlo più volte converge sempre allo stesso stato, mentre una sequenza imperativa rieseguita aggiunge una seconda regola perché esegue di nuovo l’azione invece di verificare lo stato.',
+                en: 'Challenge: a declarative approach describes the wanted result, not the commands; applying it repeatedly always converges to the same state, whereas a re-run imperative sequence adds a second rule because it performs the action again instead of checking the state.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So spiegare l’idempotenza e perché rende ripetibile un rollout.',
+                en: 'I can explain idempotency and why it makes a rollout repeatable.'
+              },
+              {
+                it: 'So elencare i passi di un rollout sicuro e dove tenere i segreti.',
+                en: 'I can list the steps of a safe rollout and where to keep secrets.'
+              }
+            ]
+          }
+        ]
+      }
+    ]
   }
 ];
