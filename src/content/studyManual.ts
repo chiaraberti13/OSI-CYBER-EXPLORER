@@ -3956,5 +3956,355 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
         ]
       }
     ]
+  },
+  {
+    id: 'ccna-security-config',
+    cert: 'ccna',
+    order: 14,
+    track: 'ccna',
+    domain: 'security-fundamentals',
+    title: {
+      it: 'Sicurezza CCNA: AAA, VPN e hardening di livello 2',
+      en: 'CCNA security: AAA, VPN, and Layer 2 hardening'
+    },
+    summary: {
+      it: 'Le configurazioni di sicurezza del dominio 5.0: controllare chi accede agli apparati con AAA, proteggere il traffico tra sedi e utenti remoti con le VPN, e difendere l’access layer con port security, DHCP snooping e DAI oltre al wireless WPA2/WPA3.',
+      en: 'The security configurations of domain 5.0: controlling who accesses devices with AAA, protecting traffic between sites and remote users with VPNs, and defending the access layer with port security, DHCP snooping, and DAI alongside WPA2/WPA3 wireless.'
+    },
+    topics: [
+      {
+        id: 'aaa-access-control',
+        title: {
+          it: 'AAA e controllo dell’accesso',
+          en: 'AAA and access control'
+        },
+        objectives: [
+          {
+            it: 'Spiegare le tre A di AAA e la differenza tra autenticazione locale e server centralizzato.',
+            en: 'Explain the three A’s of AAA and the difference between local authentication and a centralised server.'
+          },
+          {
+            it: 'Distinguere TACACS+ e RADIUS per ambito, porte e ciò che cifrano.',
+            en: 'Distinguish TACACS+ and RADIUS by scope, ports, and what they encrypt.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere l’accesso di gestione cifrato con SSH (capitolo sui servizi IP estesi).',
+            en: 'Know encrypted management access with SSH (the extended IP services chapter).'
+          }
+        ],
+        theory: [
+          {
+            it: 'AAA sta per Authentication, Authorization, Accounting: autenticazione verifica chi sei, autorizzazione decide cosa puoi fare, accounting registra cosa hai fatto. Senza AAA ogni apparato tiene password locali scollegate le une dalle altre; con AAA l’identità è centralizzata su un server, così un account revocato sparisce ovunque in un colpo solo. Si configura sempre un fallback locale, perché se il server diventa irraggiungibile l’amministratore deve comunque poter entrare: un AAA senza via di riserva è un modo per chiudersi fuori.',
+            en: 'AAA stands for Authentication, Authorization, Accounting: authentication verifies who you are, authorization decides what you may do, accounting records what you did. Without AAA each device keeps local passwords disconnected from one another; with AAA identity is centralised on a server, so a revoked account disappears everywhere at once. A local fallback is always configured, because if the server becomes unreachable the administrator must still be able to get in: AAA without a backup path is a way to lock yourself out.'
+          },
+          {
+            it: 'I due protocolli AAA hanno vocazioni diverse. TACACS+ (proprietario Cisco, TCP porta 49) è pensato per l’amministrazione dei dispositivi: separa nettamente le tre A, permette autorizzazioni per comando e cifra l’intero payload. RADIUS (standard, UDP 1812/1813) è pensato per l’accesso alla rete — VPN e 802.1X — unisce autenticazione e autorizzazione e, tradizionalmente, cifra solo la password e non tutto il pacchetto. La scelta segue l’uso: TACACS+ per chi amministra lo switch, RADIUS per chi si collega alla rete.',
+            en: 'The two AAA protocols have different callings. TACACS+ (Cisco proprietary, TCP port 49) is made for device administration: it cleanly separates the three A’s, allows per-command authorization, and encrypts the entire payload. RADIUS (standard, UDP 1812/1813) is made for network access — VPN and 802.1X — it merges authentication and authorization and, traditionally, encrypts only the password and not the whole packet. The choice follows the use: TACACS+ for whoever administers the switch, RADIUS for whoever connects to the network.'
+          },
+          {
+            it: 'L’autenticazione vale quanto le credenziali che protegge: servono passphrase lunghe e uniche, MFA dove possibile e il controllo delle credenziali compromesse, evitando rotazioni arbitrarie che spingono verso pattern deboli. Sull’apparato, enable secret conserva la password con un hash robusto, i privilege level o il modello per comando limitano cosa ciascun ruolo può eseguire, e l’accounting trasforma ogni comando in una traccia verificabile.',
+            en: 'Authentication is only as good as the credentials it protects: you need long, unique passphrases, MFA where possible, and breached-credential checks, avoiding arbitrary rotation that pushes toward weak patterns. On the device, enable secret stores the password with a strong hash, privilege levels or a per-command model limit what each role may run, and accounting turns every command into a verifiable trail.'
+          }
+        ],
+        example: {
+          it: 'Uno switch gestito via TACACS+ autentica l’amministratore sul server centrale e ne registra ogni comando; se il server cade, il metodo locale di riserva permette comunque l’accesso, così una modifica urgente non resta bloccata.',
+          en: 'A switch managed via TACACS+ authenticates the administrator on the central server and logs every command; if the server goes down, the local fallback method still allows access, so an urgent change is not blocked.'
+        },
+        commonMistakes: [
+          {
+            it: 'Configurare AAA senza fallback locale: se il server diventa irraggiungibile ci si chiude fuori dall’apparato.',
+            en: 'Configuring AAA without a local fallback: if the server becomes unreachable you lock yourself out of the device.'
+          },
+          {
+            it: 'Usare RADIUS per l’autorizzazione per comando: è TACACS+ a separarla e a offrirla; RADIUS è pensato per l’accesso alla rete.',
+            en: 'Using RADIUS for per-command authorization: it is TACACS+ that separates and offers it; RADIUS is made for network access.'
+          },
+          {
+            it: 'Credere che RADIUS cifri tutto: tradizionalmente protegge solo la password, non l’intero pacchetto.',
+            en: 'Believing RADIUS encrypts everything: it traditionally protects only the password, not the whole packet.'
+          }
+        ],
+        lab: 'securitycore',
+        references: [{ kind: 'rfc', id: 'RFC 8907' }],
+        guidedLabs: [
+          {
+            id: 'gl-aaa-tacacs-radius',
+            title: { it: 'TACACS+ o RADIUS?', en: 'TACACS+ or RADIUS?' },
+            difficulty: 'core',
+            lab: 'securitycore',
+            scenario: {
+              it: 'Il laboratorio «Sicurezza CCNA» include una tabella di confronto AAA tra TACACS+ e RADIUS per ambito, porte, separazione e cifratura.',
+              en: 'The “CCNA security” lab includes an AAA comparison table between TACACS+ and RADIUS for scope, ports, separation, and encryption.'
+            },
+            task: {
+              it: 'Per due casi d’uso — amministrare uno switch e autenticare l’accesso VPN — scegli il protocollo AAA giusto e motiva.',
+              en: 'For two use cases — administering a switch and authenticating VPN access — choose the right AAA protocol and justify it.'
+            },
+            steps: [
+              {
+                it: 'Apri «Sicurezza CCNA» e leggi la tabella di confronto AAA.',
+                en: 'Open “CCNA security” and read the AAA comparison table.'
+              },
+              {
+                it: 'Associa l’amministrazione dei dispositivi a TACACS+ (autorizzazione per comando, payload cifrato).',
+                en: 'Map device administration to TACACS+ (per-command authorization, encrypted payload).'
+              },
+              {
+                it: 'Associa l’accesso alla rete, VPN e 802.1X a RADIUS.',
+                en: 'Map network access, VPN, and 802.1X to RADIUS.'
+              }
+            ],
+            challenge: {
+              it: 'Il server AAA diventa irraggiungibile durante un intervento: cosa evita che l’amministratore resti chiuso fuori, e come va configurato?',
+              en: 'The AAA server becomes unreachable during maintenance: what prevents the administrator from being locked out, and how is it configured?'
+            },
+            solution: [
+              {
+                it: 'Per amministrare lo switch si sceglie TACACS+, perché separa le tre A, autorizza per comando e cifra l’intero payload; per l’accesso VPN si sceglie RADIUS, il protocollo pensato per l’accesso alla rete e per 802.1X.',
+                en: 'To administer the switch you choose TACACS+, because it separates the three A’s, authorizes per command, and encrypts the entire payload; for VPN access you choose RADIUS, the protocol designed for network access and 802.1X.'
+              },
+              {
+                it: 'Sfida: un metodo locale di riserva nella lista di autenticazione (il server prima, poi il locale) evita il lock-out: se il server AAA non risponde, l’apparato ricade sulle credenziali locali, così l’accesso di emergenza resta possibile.',
+                en: 'Challenge: a local fallback method in the authentication list (server first, then local) avoids the lock-out: if the AAA server does not answer, the device falls back to local credentials, so emergency access stays possible.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So scegliere tra TACACS+ e RADIUS in base all’uso e motivarlo.',
+                en: 'I can choose between TACACS+ and RADIUS based on the use and justify it.'
+              },
+              {
+                it: 'So spiegare perché serve un fallback locale all’autenticazione AAA.',
+                en: 'I can explain why a local fallback to AAA authentication is needed.'
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'vpn-site-remote',
+        title: {
+          it: 'VPN: da sede a sede e accesso remoto',
+          en: 'VPN: site-to-site and remote access'
+        },
+        objectives: [
+          {
+            it: 'Distinguere una VPN site-to-site da una remote-access e dire cosa protegge ciascuna.',
+            en: 'Distinguish a site-to-site VPN from a remote-access one and say what each protects.'
+          },
+          {
+            it: 'Descrivere a grandi linee come IPsec, con IKE, stabilisce un tunnel cifrato.',
+            en: 'Describe in broad terms how IPsec, with IKE, establishes an encrypted tunnel.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere riservatezza, integrità e autenticità (capitolo sui fondamenti di sicurezza).',
+            en: 'Know confidentiality, integrity, and authenticity (the security fundamentals chapter).'
+          }
+        ],
+        theory: [
+          {
+            it: 'Una VPN crea un tunnel cifrato su una rete non fidata, tipicamente Internet. La VPN site-to-site collega due reti intere — due sedi — attraverso i rispettivi gateway: gli host non se ne accorgono, perché sono i router a cifrare e decifrare. La VPN remote-access collega invece un singolo utente alla rete aziendale, con IPsec o TLS: qui contano MFA, postura dell’endpoint, autorizzazioni minime e una policy di split-tunneling valutata, perché il dispositivo che si collega è fuori dal perimetro gestito.',
+            en: 'A VPN creates an encrypted tunnel over an untrusted network, typically the Internet. The site-to-site VPN connects two whole networks — two sites — through their respective gateways: hosts do not notice, because it is the routers that encrypt and decrypt. The remote-access VPN instead connects a single user to the enterprise, with IPsec or TLS: here MFA, endpoint posture, least privilege, and an evaluated split-tunneling policy matter, because the connecting device is outside the managed perimeter.'
+          },
+          {
+            it: 'IPsec è la suite che fornisce riservatezza, integrità e autenticità al traffico del tunnel. La negoziazione avviene con IKE (Internet Key Exchange): in IKEv2 la fase IKE_SA_INIT concorda gli algoritmi e scambia le chiavi con Diffie–Hellman, IKE_AUTH autentica i due peer, e i CHILD_SA proteggono poi il traffico dati. Il risultato è che, anche attraversando Internet, i pacchetti non sono leggibili né alterabili da chi sta in mezzo, e ciascun capo è certo dell’identità dell’altro.',
+            en: 'IPsec is the suite that gives the tunnel traffic confidentiality, integrity, and authenticity. Negotiation happens with IKE (Internet Key Exchange): in IKEv2 the IKE_SA_INIT phase agrees on algorithms and exchanges keys with Diffie–Hellman, IKE_AUTH authenticates the two peers, and the CHILD_SAs then protect the data traffic. The result is that, even across the Internet, packets are neither readable nor alterable by anyone in the middle, and each end is certain of the other’s identity.'
+          },
+          {
+            it: 'Non ogni tunnel cifra. GRE (Generic Routing Encapsulation) incapsula protocolli e traffico multicast — utile per far passare un protocollo di routing — ma non cifra e non autentica: da solo è un tunnel in chiaro. Per questo si usa GRE over IPsec, dove GRE fornisce l’incapsulamento flessibile e IPsec aggiunge la protezione. Confondere incapsulamento e cifratura è l’errore da evitare: un tunnel che passa non è necessariamente un tunnel sicuro.',
+            en: 'Not every tunnel encrypts. GRE (Generic Routing Encapsulation) encapsulates protocols and multicast traffic — useful to carry a routing protocol — but does not encrypt or authenticate: on its own it is a cleartext tunnel. That is why GRE over IPsec is used, where GRE provides the flexible encapsulation and IPsec adds the protection. Confusing encapsulation and encryption is the mistake to avoid: a tunnel that passes is not necessarily a secure tunnel.'
+          }
+        ],
+        example: {
+          it: 'Due filiali si collegano con una VPN site-to-site IPsec: i router cifrano il traffico tra le due reti e gli host comunicano come se fossero nella stessa LAN, mentre un lavoratore da casa entra con una remote-access VPN protetta da MFA.',
+          en: 'Two branches connect with a site-to-site IPsec VPN: the routers encrypt the traffic between the two networks and hosts communicate as if on the same LAN, while a home worker connects with a remote-access VPN protected by MFA.'
+        },
+        commonMistakes: [
+          {
+            it: 'Credere che GRE cifri: incapsula soltanto; serve GRE over IPsec per avere riservatezza e autenticità.',
+            en: 'Believing GRE encrypts: it only encapsulates; GRE over IPsec is needed for confidentiality and authenticity.'
+          },
+          {
+            it: 'Trattare una remote-access VPN come fidata di per sé: l’endpoint è fuori dal perimetro e servono MFA, postura e minimo privilegio.',
+            en: 'Treating a remote-access VPN as trusted in itself: the endpoint is outside the perimeter and needs MFA, posture, and least privilege.'
+          },
+          {
+            it: 'Pensare che il tunnel protegga oltre i suoi estremi: la cifratura vale tra i peer, non dentro le reti che collega.',
+            en: 'Thinking the tunnel protects beyond its endpoints: encryption applies between the peers, not inside the networks it connects.'
+          }
+        ],
+        lab: 'securitycore',
+        references: [{ kind: 'rfc', id: 'RFC 7296' }],
+        guidedLabs: [
+          {
+            id: 'gl-vpn-ipsec-phases',
+            title: { it: 'Cosa fa ogni fase di IKE', en: 'What each IKE phase does' },
+            difficulty: 'core',
+            lab: 'securitycore',
+            scenario: {
+              it: 'Il laboratorio «Sicurezza CCNA» descrive i tipi di VPN e le fasi di IKEv2 che stabiliscono un tunnel IPsec.',
+              en: 'The “CCNA security” lab describes the VPN types and the IKEv2 phases that establish an IPsec tunnel.'
+            },
+            task: {
+              it: 'Metti in ordine le fasi di IKEv2 e indica, per ciascuna, cosa negozia o protegge.',
+              en: 'Put the IKEv2 phases in order and state, for each, what it negotiates or protects.'
+            },
+            steps: [
+              {
+                it: 'Apri «Sicurezza CCNA» e leggi la sezione sulle VPN e su IKEv2.',
+                en: 'Open “CCNA security” and read the VPN and IKEv2 section.'
+              },
+              {
+                it: 'Colloca IKE_SA_INIT (algoritmi e Diffie–Hellman) prima di IKE_AUTH (autenticazione dei peer).',
+                en: 'Place IKE_SA_INIT (algorithms and Diffie–Hellman) before IKE_AUTH (peer authentication).'
+              },
+              {
+                it: 'Attribuisci ai CHILD_SA la protezione effettiva del traffico dati.',
+                en: 'Attribute to the CHILD_SAs the actual protection of the data traffic.'
+              }
+            ],
+            challenge: {
+              it: 'Serve far passare un protocollo di routing tra due sedi e proteggerlo: quale combinazione di tunnel scegli e perché non basta il solo GRE?',
+              en: 'You need to carry a routing protocol between two sites and protect it: which tunnel combination do you choose and why is GRE alone not enough?'
+            },
+            solution: [
+              {
+                it: 'L’ordine è IKE_SA_INIT (concorda algoritmi e scambia le chiavi con Diffie–Hellman), poi IKE_AUTH (autentica i peer), infine i CHILD_SA (proteggono il traffico dati). Ogni fase prepara la successiva: senza chiavi condivise non si può autenticare, senza autenticazione non si protegge il traffico.',
+                en: 'The order is IKE_SA_INIT (agrees on algorithms and exchanges keys with Diffie–Hellman), then IKE_AUTH (authenticates the peers), finally the CHILD_SAs (protect the data traffic). Each phase prepares the next: without shared keys you cannot authenticate, without authentication you do not protect the traffic.'
+              },
+              {
+                it: 'Sfida: per trasportare un protocollo di routing serve GRE (incapsula multicast e protocolli), ma GRE da solo è in chiaro; si usa quindi GRE over IPsec, dove IPsec aggiunge riservatezza, integrità e autenticità al tunnel GRE.',
+                en: 'Challenge: to carry a routing protocol you need GRE (it encapsulates multicast and protocols), but GRE alone is cleartext; so you use GRE over IPsec, where IPsec adds confidentiality, integrity, and authenticity to the GRE tunnel.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So ordinare le fasi di IKEv2 e dire cosa fa ciascuna.',
+                en: 'I can order the IKEv2 phases and say what each one does.'
+              },
+              {
+                it: 'So spiegare perché GRE da solo non protegge e quando serve GRE over IPsec.',
+                en: 'I can explain why GRE alone does not protect and when GRE over IPsec is needed.'
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'layer2-wireless-hardening',
+        title: {
+          it: 'Hardening di livello 2 e wireless',
+          en: 'Layer 2 and wireless hardening'
+        },
+        objectives: [
+          {
+            it: 'Descrivere port security, DHCP snooping e DAI e come si rafforzano a vicenda.',
+            en: 'Describe port security, DHCP snooping, and DAI and how they reinforce one another.'
+          },
+          {
+            it: 'Scegliere la sicurezza wireless adatta tra WPA2 e WPA3, PSK ed Enterprise.',
+            en: 'Choose the right wireless security between WPA2 and WPA3, PSK and Enterprise.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere VLAN, trunk e il funzionamento di DHCP e ARP (capitoli su VLAN e servizi IP).',
+            en: 'Know VLANs, trunks, and how DHCP and ARP work (the VLAN and IP services chapters).'
+          }
+        ],
+        theory: [
+          {
+            it: 'La difesa dell’access layer si costruisce a strati sulla porta. Port Security limita quali e quanti indirizzi MAC possono apparire su una porta e reagisce a una violazione in tre modi: protect scarta in silenzio, restrict scarta e registra, shutdown mette la porta in err-disabled. Il MAC sticky impara l’indirizzo legittimo e lo fissa. È la prima barriera contro un host non autorizzato o un MAC flooding che cerca di saturare la tabella CAM.',
+            en: 'Access-layer defense is built in layers on the port. Port Security limits which and how many MAC addresses may appear on a port and reacts to a violation in three ways: protect drops silently, restrict drops and logs, shutdown puts the port into err-disabled. Sticky MAC learns the legitimate address and pins it. It is the first barrier against an unauthorized host or a MAC flooding that tries to saturate the CAM table.'
+          },
+          {
+            it: 'DHCP Snooping distingue le porte fidate (verso i veri server DHCP) da quelle non fidate (verso gli host): sulle porte non fidate scarta i messaggi da server — Offer e Ack — così un DHCP rogue non può assegnare un gateway falso. Mentre lavora, costruisce una binding table che lega MAC, IP, VLAN e porta di ogni client legittimo. Questa tabella diventa la base di Dynamic ARP Inspection (DAI), che convalida ogni ARP contro di essa e ferma l’ARP spoofing, e di IP Source Guard, che filtra il traffico con IP sorgente non coerente. I tre controlli si rafforzano a vicenda: senza DHCP snooping, DAI non ha contro cosa verificare.',
+            en: 'DHCP Snooping separates trusted ports (toward the real DHCP servers) from untrusted ones (toward hosts): on untrusted ports it drops server messages — Offer and Ack — so a rogue DHCP cannot hand out a fake gateway. As it works, it builds a binding table tying MAC, IP, VLAN, and port of every legitimate client. That table becomes the basis of Dynamic ARP Inspection (DAI), which validates every ARP against it and stops ARP spoofing, and of IP Source Guard, which filters traffic with an inconsistent source IP. The three controls reinforce one another: without DHCP snooping, DAI has nothing to check against.'
+          },
+          {
+            it: 'Sul wireless la sicurezza del livello 2 sta nella coppia autenticazione e cifratura. WPA2 usa AES/CCMP; WPA3 aggiunge SAE, che sostituisce la vulnerabile handshake PSK e resiste agli attacchi a dizionario, e rende obbligatori i Protected Management Frames. La PSK è una chiave condivisa da tutti i client: comoda in casa, inadatta dove servono utenti nominali, perché non identifica nessuno e non si revoca singolarmente. Lì serve WPA2/WPA3-Enterprise con 802.1X, che autentica ogni utente e permette di revocarne uno solo.',
+            en: 'On wireless, Layer 2 security lives in the authentication and encryption pair. WPA2 uses AES/CCMP; WPA3 adds SAE, which replaces the vulnerable PSK handshake and resists dictionary attacks, and makes Protected Management Frames mandatory. The PSK is a key shared by every client: convenient at home, unsuitable where named users are needed, because it identifies no one and cannot be revoked individually. There you need WPA2/WPA3-Enterprise with 802.1X, which authenticates each user and allows a single one to be revoked.'
+          }
+        ],
+        example: {
+          it: 'Su una porta di accesso, Port Security fissa il MAC del PC, DHCP Snooping scarta un server DHCP rogue collegato di nascosto, e DAI blocca l’ARP spoofing confrontando l’ARP con la binding table: tre controlli diversi, un unico access layer difeso.',
+          en: 'On an access port, Port Security pins the PC’s MAC, DHCP Snooping drops a rogue DHCP server plugged in on the sly, and DAI blocks ARP spoofing by comparing ARP against the binding table: three different controls, one defended access layer.'
+        },
+        commonMistakes: [
+          {
+            it: 'Abilitare DAI senza DHCP snooping: manca la binding table contro cui convalidare gli ARP, e il controllo non ha basi.',
+            en: 'Enabling DAI without DHCP snooping: the binding table to validate ARPs against is missing, and the control has no basis.'
+          },
+          {
+            it: 'Lasciare le porte verso i server DHCP come non fidate: DHCP snooping scarterebbe gli Offer legittimi e romperebbe il servizio.',
+            en: 'Leaving the ports toward DHCP servers as untrusted: DHCP snooping would drop legitimate Offers and break the service.'
+          },
+          {
+            it: 'Usare la PSK dove servono utenti nominali: non identifica nessuno e non si revoca; serve l’Enterprise con 802.1X.',
+            en: 'Using the PSK where named users are needed: it identifies no one and cannot be revoked; Enterprise with 802.1X is required.'
+          }
+        ],
+        lab: 'securitycore',
+        references: [{ kind: 'nist', id: 'SP 800-128' }],
+        guidedLabs: [
+          {
+            id: 'gl-l2-defense-stack',
+            title: { it: 'Comporre le difese di livello 2', en: 'Composing the Layer 2 defenses' },
+            difficulty: 'core',
+            lab: 'securitycore',
+            scenario: {
+              it: 'Il laboratorio «Sicurezza CCNA» elenca i controlli dell’access layer — Port Security, DHCP Snooping, DAI, IP Source Guard — e la loro dipendenza dalle trust boundary.',
+              en: 'The “CCNA security” lab lists the access-layer controls — Port Security, DHCP Snooping, DAI, IP Source Guard — and their dependence on trust boundaries.'
+            },
+            task: {
+              it: 'Ordina i controlli secondo le loro dipendenze e indica quale fornisce la binding table agli altri.',
+              en: 'Order the controls by their dependencies and identify which one provides the binding table to the others.'
+            },
+            steps: [
+              {
+                it: 'Apri «Sicurezza CCNA» e individua i controlli dell’access layer.',
+                en: 'Open “CCNA security” and find the access-layer controls.'
+              },
+              {
+                it: 'Riconosci che DHCP Snooping costruisce la binding table (MAC, IP, VLAN, porta).',
+                en: 'Recognise that DHCP Snooping builds the binding table (MAC, IP, VLAN, port).'
+              },
+              {
+                it: 'Collega DAI e IP Source Guard a quella binding table come loro fonte di verità.',
+                en: 'Connect DAI and IP Source Guard to that binding table as their source of truth.'
+              }
+            ],
+            challenge: {
+              it: 'Dopo aver abilitato DAI gli host legittimi perdono la rete: quale configurazione mancante o errata lo spiega, e come si corregge?',
+              en: 'After enabling DAI, legitimate hosts lose the network: which missing or wrong configuration explains it, and how is it fixed?'
+            },
+            solution: [
+              {
+                it: 'L’ordine delle dipendenze parte da Port Security (limita i MAC sulla porta) e da DHCP Snooping, che separa porte fidate e non fidate e costruisce la binding table; su quella tabella si appoggiano DAI (convalida gli ARP) e IP Source Guard (filtra per IP sorgente). DHCP Snooping è la fonte della verità per gli altri due.',
+                en: 'The dependency order starts from Port Security (limits MACs on the port) and DHCP Snooping, which separates trusted and untrusted ports and builds the binding table; on that table rest DAI (validates ARPs) and IP Source Guard (filters by source IP). DHCP Snooping is the source of truth for the other two.'
+              },
+              {
+                it: 'Sfida: se DAI blocca gli host legittimi è perché la binding table non li contiene — DHCP snooping non è attivo, oppure le loro porte o la VLAN non sono incluse — o perché una porta verso un server/uplink fidato è rimasta non fidata; si corregge abilitando lo snooping sulla VLAN giusta e marcando come trusted le porte di infrastruttura.',
+                en: 'Challenge: if DAI blocks legitimate hosts it is because the binding table does not contain them — DHCP snooping is not enabled, or their ports or VLAN are not included — or because a port toward a trusted server/uplink was left untrusted; it is fixed by enabling snooping on the right VLAN and marking the infrastructure ports as trusted.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So ordinare Port Security, DHCP Snooping, DAI e IP Source Guard per dipendenza.',
+                en: 'I can order Port Security, DHCP Snooping, DAI, and IP Source Guard by dependency.'
+              },
+              {
+                it: 'So dire perché DAI senza DHCP snooping non ha basi su cui lavorare.',
+                en: 'I can say why DAI without DHCP snooping has no basis to work on.'
+              }
+            ]
+          }
+        ]
+      }
+    ]
   }
 ];
