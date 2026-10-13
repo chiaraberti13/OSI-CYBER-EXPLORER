@@ -3258,5 +3258,353 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
         ]
       }
     ]
+  },
+  {
+    id: 'network-access-discovery',
+    cert: 'ccna',
+    order: 12,
+    track: 'ccna',
+    domain: 'network-access',
+    title: {
+      it: 'Accesso alla rete: scoperta, EtherChannel e wireless',
+      en: 'Network access: discovery, EtherChannel, and wireless'
+    },
+    summary: {
+      it: 'Come gli apparati si scoprono tra loro con CDP e LLDP, come più link diventano uno solo con EtherChannel, e come funziona una WLAN dai modi dell’access point al controller, alla configurazione WPA2/WPA3 dalla GUI.',
+      en: 'How devices discover each other with CDP and LLDP, how several links become one with EtherChannel, and how a WLAN works from access-point modes to the controller and WPA2/WPA3 configuration from the GUI.'
+    },
+    topics: [
+      {
+        id: 'neighbor-discovery',
+        title: {
+          it: 'Scoperta dei vicini: CDP e LLDP',
+          en: 'Neighbor discovery: CDP and LLDP'
+        },
+        objectives: [
+          {
+            it: 'Distinguere CDP da LLDP e dire quali informazioni sul vicino riportano.',
+            en: 'Distinguish CDP from LLDP and state which neighbour information they report.'
+          },
+          {
+            it: 'Spiegare perché la scoperta dei vicini è utile a chi documenta la rete e rischiosa verso reti non fidate.',
+            en: 'Explain why neighbour discovery helps whoever documents the network and is risky toward untrusted networks.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere switch, trunk e VLAN (capitoli sullo switching e sulle VLAN).',
+            en: 'Know switches, trunks, and VLANs (the switching and VLAN chapters).'
+          }
+        ],
+        theory: [
+          {
+            it: 'CDP (Cisco Discovery Protocol) e LLDP (Link Layer Discovery Protocol) sono protocolli di livello 2 con cui un apparato annuncia la propria identità ai vicini direttamente collegati: a intervalli regolari invia un frame che riporta device ID, piattaforma, versione, porta di uscita e VLAN. Il vicino raccoglie questi annunci e costruisce una mappa di chi è attaccato a quale porta, senza alcuna configurazione IP. CDP è proprietario Cisco; LLDP è lo standard aperto IEEE 802.1AB e funziona anche tra apparati di produttori diversi.',
+            en: 'CDP (Cisco Discovery Protocol) and LLDP (Link Layer Discovery Protocol) are Layer 2 protocols by which a device announces its identity to directly connected neighbours: at regular intervals it sends a frame reporting device ID, platform, version, egress port, and VLAN. The neighbour collects these announcements and builds a map of who is attached to which port, with no IP configuration at all. CDP is Cisco proprietary; LLDP is the open IEEE 802.1AB standard and works between devices from different vendors too.'
+          },
+          {
+            it: 'La stessa informazione che rende la scoperta preziosa per documentare una topologia la rende un regalo per un attaccante: un frame CDP rivela modello, versione del software e VLAN nativa, cioè esattamente ciò che serve per scegliere un exploit o un attacco di VLAN hopping. La regola operativa è disabilitare CDP e LLDP sulle porte verso reti non fidate (accesso utenti, DMZ, link esterni) e lasciarli attivi solo sui collegamenti di infrastruttura dove servono davvero.',
+            en: 'The same information that makes discovery valuable for documenting a topology makes it a gift to an attacker: a CDP frame reveals model, software version, and native VLAN — exactly what is needed to pick an exploit or a VLAN hopping attack. The operational rule is to disable CDP and LLDP on ports facing untrusted networks (user access, DMZ, external links) and leave them on only on the infrastructure links where they are genuinely useful.'
+          },
+          {
+            it: 'La scoperta dei vicini aiuta anche a trovare i disallineamenti: CDP segnala un native VLAN mismatch quando i due estremi di un trunk non concordano sulla VLAN nativa, e confrontare la porta annunciata dal vicino con quella attesa smaschera un cablaggio sbagliato. È diagnostica, non sicurezza: dice com’è fatta la rete, non la protegge.',
+            en: 'Neighbour discovery also helps find mismatches: CDP flags a native VLAN mismatch when the two ends of a trunk disagree on the native VLAN, and comparing the port the neighbour advertises with the expected one exposes miswiring. It is diagnostics, not security: it tells how the network is built, it does not protect it.'
+          }
+        ],
+        example: {
+          it: 'Su uno switch il comando show cdp neighbors elenca, per ogni porta, il vicino direttamente collegato con il suo device ID e la sua porta: è il modo più rapido per ricostruire una topologia non documentata, ma è anche ciò che un attaccante collegato vede per primo.',
+          en: 'On a switch the command show cdp neighbors lists, for each port, the directly connected neighbour with its device ID and its port: it is the fastest way to reconstruct an undocumented topology, but it is also what an attacker who is connected sees first.'
+        },
+        commonMistakes: [
+          {
+            it: 'Credere che CDP e LLDP attraversino la rete: sono limitati al singolo collegamento, perché descrivono solo il vicino direttamente connesso.',
+            en: 'Believing CDP and LLDP cross the network: they are limited to a single link, because they describe only the directly connected neighbour.'
+          },
+          {
+            it: 'Lasciare la scoperta attiva sulle porte di accesso: espone modello, versione e VLAN nativa a chiunque si colleghi.',
+            en: 'Leaving discovery on on access ports: it exposes model, version, and native VLAN to anyone who connects.'
+          },
+          {
+            it: 'Confondere LLDP e CDP: LLDP è lo standard aperto multi-vendor, CDP è proprietario Cisco; su una rete mista serve LLDP.',
+            en: 'Confusing LLDP and CDP: LLDP is the open multi-vendor standard, CDP is Cisco proprietary; a mixed network needs LLDP.'
+          }
+        ],
+        lab: 'access',
+        references: [{ kind: 'ieee', id: 'IEEE 802.1AB' }]
+      },
+      {
+        id: 'etherchannel',
+        title: {
+          it: 'EtherChannel: aggregare i link',
+          en: 'EtherChannel: aggregating links'
+        },
+        objectives: [
+          {
+            it: 'Spiegare perché EtherChannel aggrega più link fisici in un unico collegamento logico e come interagisce con STP.',
+            en: 'Explain why EtherChannel aggregates several physical links into one logical link and how it interacts with STP.'
+          },
+          {
+            it: 'Scegliere le modalità di negoziazione compatibili di LACP e PAgP ed evitare le combinazioni che non formano il canale.',
+            en: 'Choose compatible LACP and PAgP negotiation modes and avoid the combinations that do not form the channel.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere lo Spanning Tree e perché blocca i link ridondanti (capitolo su VLAN e STP).',
+            en: 'Know Spanning Tree and why it blocks redundant links (the VLAN and STP chapter).'
+          }
+        ],
+        theory: [
+          {
+            it: 'EtherChannel unisce da due a otto link fisici paralleli in un unico collegamento logico (port-channel). Il vantaggio è doppio: la banda si somma e, soprattutto, lo Spanning Tree vede un solo link logico e non ne blocca nessuno, così tutti i cavi portano traffico invece di restare in standby. Il bilanciamento distribuisce i flussi sui membri in base a un hash (di MAC, IP o porte): un singolo flusso resta su un membro, ma flussi diversi usano link diversi.',
+            en: 'EtherChannel joins two to eight parallel physical links into one logical link (port-channel). The benefit is twofold: bandwidth adds up and, above all, Spanning Tree sees a single logical link and blocks none of them, so every cable carries traffic instead of sitting in standby. Load balancing spreads flows across the members using a hash (of MAC, IP, or ports): a single flow stays on one member, but different flows use different links.'
+          },
+          {
+            it: 'Il canale si forma solo se i due estremi negoziano in modo compatibile. LACP (standard, IEEE 802.1AX) usa le modalità active (avvia la negoziazione) e passive (risponde soltanto): active con active o active con passive formano il canale, ma passive con passive no, perché nessuno dei due inizia. PAgP (proprietario Cisco) usa desirable (avvia) e auto (risponde) con la stessa logica. La modalità on forza il canale senza negoziare e deve essere su entrambi i lati: on con un lato che negozia non forma il canale e crea instabilità.',
+            en: 'The channel forms only if the two ends negotiate compatibly. LACP (the standard, IEEE 802.1AX) uses the modes active (starts the negotiation) and passive (only responds): active with active or active with passive form the channel, but passive with passive does not, because neither one starts. PAgP (Cisco proprietary) uses desirable (starts) and auto (responds) with the same logic. The on mode forces the channel without negotiating and must be on both sides: on with a side that negotiates does not form the channel and creates instability.'
+          },
+          {
+            it: 'Perché il canale venga su, tutti i membri devono essere coerenti: stessa velocità e duplex, stessa modalità (access o trunk), stesse VLAN consentite e, su un trunk, stessa VLAN nativa. Un solo membro incoerente viene escluso dal canale, e un mismatch di protocollo (un lato LACP e l’altro PAgP) impedisce del tutto la formazione. È un errore frequente mescolare le due famiglie di negoziazione.',
+            en: 'For the channel to come up, all members must be consistent: same speed and duplex, same mode (access or trunk), same allowed VLANs and, on a trunk, same native VLAN. A single inconsistent member is excluded from the channel, and a protocol mismatch (one side LACP and the other PAgP) prevents formation entirely. Mixing the two negotiation families is a frequent mistake.'
+          }
+        ],
+        example: {
+          it: 'Due switch collegati da quattro cavi li aggregano in un port-channel: STP non blocca più tre dei quattro link, la banda disponibile quadruplica e, se un cavo si guasta, il canale continua sui tre rimasti senza una nuova convergenza di STP.',
+          en: 'Two switches connected by four cables aggregate them into a port-channel: STP no longer blocks three of the four links, available bandwidth quadruples and, if a cable fails, the channel continues on the remaining three without a new STP convergence.'
+        },
+        commonMistakes: [
+          {
+            it: 'Configurare entrambi i lati in passive (o entrambi in auto): nessuno avvia la negoziazione e il canale non si forma.',
+            en: 'Configuring both sides as passive (or both as auto): neither starts the negotiation and the channel does not form.'
+          },
+          {
+            it: 'Mescolare LACP e PAgP sui due estremi: i protocolli non si parlano e il port-channel resta giù.',
+            en: 'Mixing LACP and PAgP on the two ends: the protocols do not talk and the port-channel stays down.'
+          },
+          {
+            it: 'Aspettarsi che un singolo flusso superi la velocità di un membro: il bilanciamento è per flusso, non per pacchetto.',
+            en: 'Expecting a single flow to exceed one member’s speed: balancing is per flow, not per packet.'
+          }
+        ],
+        lab: 'access',
+        references: [{ kind: 'ieee', id: 'IEEE 802.1AX' }],
+        guidedLabs: [
+          {
+            id: 'gl-etherchannel-modes',
+            title: { it: 'Quali modalità formano il canale', en: 'Which modes form the channel' },
+            difficulty: 'core',
+            lab: 'access',
+            scenario: {
+              it: 'Il laboratorio «Accesso alla rete» include un simulatore di EtherChannel che, scelte le modalità dei due estremi, mostra se il port-channel si forma.',
+              en: 'The “Network access” lab includes an EtherChannel simulator that, once the two ends’ modes are chosen, shows whether the port-channel forms.'
+            },
+            task: {
+              it: 'Per ogni coppia di modalità prevedi se il canale si forma e perché, poi verifica con il simulatore.',
+              en: 'For each pair of modes predict whether the channel forms and why, then check with the simulator.'
+            },
+            steps: [
+              {
+                it: 'Apri «Accesso alla rete» e individua il simulatore di EtherChannel.',
+                en: 'Open “Network access” and find the EtherChannel simulator.'
+              },
+              {
+                it: 'Imposta i due estremi e ricorda che serve almeno un lato che avvia (active o desirable).',
+                en: 'Set the two ends and remember that at least one side must start (active or desirable).'
+              },
+              {
+                it: 'Verifica che i due lati usino la stessa famiglia (entrambi LACP o entrambi PAgP) e che on sia su entrambi.',
+                en: 'Check that the two sides use the same family (both LACP or both PAgP) and that on is on both.'
+              }
+            ],
+            challenge: {
+              it: 'Il canale è su ma un membro ha una VLAN consentita diversa: cosa succede a quel membro e al traffico di quella VLAN?',
+              en: 'The channel is up but one member has a different allowed VLAN: what happens to that member and to that VLAN’s traffic?'
+            },
+            solution: [
+              {
+                it: 'Il canale si forma quando almeno un lato avvia e l’altro almeno risponde: active/active, active/passive e desirable/auto funzionano; passive/passive e auto/auto no; on richiede on su entrambi; LACP con PAgP non si parla. La ragione è sempre la stessa: qualcuno deve iniziare la negoziazione, e i due lati devono usare lo stesso linguaggio.',
+                en: 'The channel forms when at least one side starts and the other at least responds: active/active, active/passive, and desirable/auto work; passive/passive and auto/auto do not; on requires on on both; LACP with PAgP does not talk. The reason is always the same: someone must start the negotiation, and the two sides must speak the same language.'
+              },
+              {
+                it: 'Sfida: un membro con VLAN consentite diverse viene escluso dal canale per incoerenza; resta fisicamente su ma fuori dal port-channel, e il traffico di quella VLAN non lo usa finché la configurazione non viene allineata.',
+                en: 'Challenge: a member with different allowed VLANs is excluded from the channel for inconsistency; it stays physically up but outside the port-channel, and that VLAN’s traffic does not use it until the configuration is aligned.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So dire, per ogni coppia di modalità, se il canale si forma e perché.',
+                en: 'I can say, for each pair of modes, whether the channel forms and why.'
+              },
+              {
+                it: 'So elencare le coerenze richieste a tutti i membri perché il canale venga su.',
+                en: 'I can list the consistencies required of all members for the channel to come up.'
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'wlan-ap-wlc',
+        title: {
+          it: 'WLAN: modi dell’AP, WLC e sicurezza',
+          en: 'WLAN: AP modes, WLC, and security'
+        },
+        objectives: [
+          {
+            it: 'Distinguere AP autonomo e lightweight e descrivere il ruolo del WLC e del tunnel CAPWAP.',
+            en: 'Distinguish autonomous and lightweight APs and describe the role of the WLC and the CAPWAP tunnel.'
+          },
+          {
+            it: 'Configurare una WLAN WPA2/WPA3 dalla GUI del controller e scegliere il metodo di accesso di gestione corretto.',
+            en: 'Configure a WPA2/WPA3 WLAN from the controller GUI and choose the correct management-access method.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Sapere che un access point fa da bridge tra radio e rete cablata e mappa un SSID su una VLAN (capitolo sui componenti).',
+            en: 'Know that an access point bridges radio and wired network and maps an SSID to a VLAN (the components chapter).'
+          }
+        ],
+        theory: [
+          {
+            it: 'Un access point può essere autonomo — configurato uno per uno e indipendente — oppure lightweight, cioè gestito da un Wireless LAN Controller. Nel modello lightweight l’AP e il WLC parlano attraverso il tunnel CAPWAP, che separa il control plane (gestione, cifrato con DTLS) dal data plane: il WLC centralizza configurazione, RF management, roaming e policy, mentre l’AP resta responsabile delle funzioni radio in tempo reale (split-MAC). È la scelta quando gli AP sono molti, perché una modifica si applica una volta sola sul controller invece che su ogni apparato.',
+            en: 'An access point can be autonomous — configured one by one and independent — or lightweight, that is, managed by a Wireless LAN Controller. In the lightweight model the AP and the WLC talk through the CAPWAP tunnel, which separates the control plane (management, DTLS-encrypted) from the data plane: the WLC centralizes configuration, RF management, roaming, and policy, while the AP remains responsible for real-time radio functions (split-MAC). It is the choice when APs are numerous, because a change is applied once on the controller instead of on every device.'
+          },
+          {
+            it: 'Associarsi non è autenticarsi. Un client prima scopre l’AP (beacon o probe), poi si autentica e solo dopo si associa: sono tre passi distinti, e un client associato non è ancora autorizzato sulla rete. La sicurezza del livello 2 wireless sta nella coppia Authentication Key Management e cifratura: WPA2 usa AES/CCMP, WPA3 aggiunge SAE (che sostituisce la vulnerabile handshake PSK) e rende obbligatori i Protected Management Frames (802.11w). La PSK è condivisa da tutti i client, quindi non identifica nessuno e non si revoca singolarmente: per utenti nominali serve WPA2/WPA3-Enterprise con 802.1X.',
+            en: 'Associating is not authenticating. A client first discovers the AP (beacon or probe), then authenticates, and only afterwards associates: these are three distinct steps, and an associated client is not yet authorized on the network. Wireless Layer 2 security lives in the Authentication Key Management and encryption pair: WPA2 uses AES/CCMP, WPA3 adds SAE (which replaces the vulnerable PSK handshake) and makes Protected Management Frames (802.11w) mandatory. The PSK is shared by every client, so it identifies no one and cannot be revoked individually: for named users you need WPA2/WPA3-Enterprise with 802.1X.'
+          },
+          {
+            it: 'Dalla GUI del WLC una WLAN si crea in pochi passi: nella scheda General si impostano Profile Name, SSID, Status e la Interface che lega la WLAN alla sua VLAN; nella scheda Security si sceglie Layer 2 Security = WPA2 (o WPA2+WPA3), AES/CCMP e Authentication Key Management = PSK con la passphrase. Il controller stesso va protetto: lo si configura via HTTPS (GUI cifrata con TLS) limitato alle sorgenti di management, mai via HTTP in chiaro, perché quella GUI espone le credenziali dell’intera infrastruttura wireless.',
+            en: 'From the WLC GUI a WLAN is created in a few steps: in the General tab you set Profile Name, SSID, Status, and the Interface that binds the WLAN to its VLAN; in the Security tab you choose Layer 2 Security = WPA2 (or WPA2+WPA3), AES/CCMP, and Authentication Key Management = PSK with the passphrase. The controller itself must be protected: you configure it over HTTPS (TLS-encrypted GUI) restricted to management sources, never over cleartext HTTP, because that GUI exposes the credentials of the whole wireless infrastructure.'
+          }
+        ],
+        example: {
+          it: 'Un WLC con venti AP lightweight distribuisce una nuova WLAN WPA2 PSK a tutti in un’unica configurazione: senza controller, la stessa WLAN andrebbe creata a mano su venti AP autonomi, con il rischio di venti configurazioni leggermente diverse.',
+          en: 'A WLC with twenty lightweight APs pushes a new WPA2 PSK WLAN to all of them in a single configuration: without a controller, the same WLAN would have to be created by hand on twenty autonomous APs, with the risk of twenty slightly different configurations.'
+        },
+        commonMistakes: [
+          {
+            it: 'Confondere associazione e autorizzazione: un client associato ha completato il livello 2, non è ancora detto che sia autenticato sulla rete.',
+            en: 'Confusing association and authorization: an associated client has completed Layer 2, it is not yet necessarily authenticated on the network.'
+          },
+          {
+            it: 'Usare la PSK dove servono utenti nominali: non identifica nessuno e non si revoca, quindi per quello serve l’Enterprise con 802.1X.',
+            en: 'Using the PSK where named users are needed: it identifies no one and cannot be revoked, so Enterprise with 802.1X is required for that.'
+          },
+          {
+            it: 'Gestire il WLC via HTTP in chiaro: espone le credenziali di tutta l’infrastruttura wireless; va usato HTTPS limitato alle sorgenti di management.',
+            en: 'Managing the WLC over cleartext HTTP: it exposes the credentials of the whole wireless infrastructure; use HTTPS restricted to management sources.'
+          }
+        ],
+        lab: 'access',
+        references: [{ kind: 'ieee', id: 'IEEE 802.11' }],
+        guidedLabs: [
+          {
+            id: 'gl-wlan-wpa2-gui',
+            title: { it: 'Creare una WLAN WPA2 dalla GUI', en: 'Create a WPA2 WLAN from the GUI' },
+            difficulty: 'core',
+            lab: 'access',
+            scenario: {
+              it: 'Il laboratorio «Accesso alla rete» descrive, scheda per scheda, la sequenza di campi per creare una WLAN WPA2 PSK sulla GUI di un WLC.',
+              en: 'The “Network access” lab describes, tab by tab, the sequence of fields to create a WPA2 PSK WLAN on a WLC GUI.'
+            },
+            task: {
+              it: 'Ricostruisci l’ordine dei campi dalla scheda General a Security e indica dove la WLAN viene legata alla sua VLAN e dove si imposta la cifratura.',
+              en: 'Reconstruct the order of fields from the General tab to Security and point out where the WLAN is bound to its VLAN and where encryption is set.'
+            },
+            steps: [
+              {
+                it: 'Apri «Accesso alla rete» e leggi la sequenza della configurazione WLAN dalla GUI del WLC.',
+                en: 'Open “Network access” and read the WLAN configuration sequence from the WLC GUI.'
+              },
+              {
+                it: 'Nella scheda General individua l’Interface che lega la WLAN alla VLAN (e quindi alla subnet).',
+                en: 'In the General tab find the Interface that binds the WLAN to its VLAN (and therefore to its subnet).'
+              },
+              {
+                it: 'Nella scheda Security imposta Layer 2 Security = WPA2, AES/CCMP e Key Management = PSK con la passphrase.',
+                en: 'In the Security tab set Layer 2 Security = WPA2, AES/CCMP, and Key Management = PSK with the passphrase.'
+              }
+            ],
+            challenge: {
+              it: 'La WLAN deve servire utenti nominali tracciabili invece di una passphrase condivisa: cosa cambia nella scheda Security e perché?',
+              en: 'The WLAN must serve traceable named users instead of a shared passphrase: what changes in the Security tab and why?'
+            },
+            solution: [
+              {
+                it: 'La WLAN si lega alla VLAN tramite l’Interface nella scheda General; la cifratura e l’autenticazione si impostano nella scheda Security con WPA2, AES/CCMP e Key Management = PSK. TKIP resta disattivato perché deprecato, e la passphrase è condivisa da tutti i client.',
+                en: 'The WLAN is bound to its VLAN through the Interface in the General tab; encryption and authentication are set in the Security tab with WPA2, AES/CCMP, and Key Management = PSK. TKIP stays off because it is deprecated, and the passphrase is shared by every client.'
+              },
+              {
+                it: 'Sfida: per utenti nominali si passa da PSK a 802.1X (WPA2/WPA3-Enterprise), che autentica ogni utente contro un server e permette di revocare un singolo accesso; la PSK condivisa non lo consente, perché non distingue un client dall’altro.',
+                en: 'Challenge: for named users you move from PSK to 802.1X (WPA2/WPA3-Enterprise), which authenticates each user against a server and allows a single access to be revoked; the shared PSK cannot, because it does not tell one client from another.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So ricostruire i campi essenziali per creare una WLAN WPA2 PSK dalla GUI del WLC.',
+                en: 'I can reconstruct the essential fields to create a WPA2 PSK WLAN from the WLC GUI.'
+              },
+              {
+                it: 'So spiegare quando serve l’Enterprise con 802.1X al posto della PSK.',
+                en: 'I can explain when Enterprise with 802.1X is needed instead of the PSK.'
+              }
+            ]
+          },
+          {
+            id: 'gl-wlan-evil-twin',
+            title: { it: 'Riconoscere un evil twin', en: 'Recognise an evil twin' },
+            difficulty: 'advanced',
+            lab: 'wirelesssecurity',
+            scenario: {
+              it: 'Il laboratorio «Sicurezza wireless» include lo scenario dell’evil twin con autenticazione enterprise.',
+              en: 'The “Wireless security” lab includes the evil-twin scenario with enterprise authentication.'
+            },
+            task: {
+              it: 'Individua cosa, nell’autenticazione enterprise, impedisce a un evil twin con lo stesso SSID di rubare le credenziali.',
+              en: 'Identify what, in enterprise authentication, prevents an evil twin with the same SSID from stealing credentials.'
+            },
+            steps: [
+              {
+                it: 'Apri «Sicurezza wireless» e seleziona lo scenario di evil twin con EAP.',
+                en: 'Open “Wireless security” and select the evil-twin scenario with EAP.'
+              },
+              {
+                it: 'Nota che lo stesso SSID e un RSSI alto non provano che l’AP sia legittimo.',
+                en: 'Note that the same SSID and a high RSSI do not prove the AP is legitimate.'
+              },
+              {
+                it: 'Collega la difesa alla validazione del certificato del server durante lo scambio EAP.',
+                en: 'Connect the defense to the validation of the server certificate during the EAP exchange.'
+              }
+            ],
+            challenge: {
+              it: 'Con WPA2 PSK, perché un evil twin è più pericoloso che con l’Enterprise, e quale proprietà di WPA3 riduce il rischio?',
+              en: 'With WPA2 PSK, why is an evil twin more dangerous than with Enterprise, and which WPA3 property reduces the risk?'
+            },
+            solution: [
+              {
+                it: 'Nell’autenticazione enterprise (802.1X/EAP-TLS) il client valida il certificato del server prima di presentare le credenziali: un evil twin senza quel certificato fidato viene rifiutato, quindi lo stesso SSID non basta a ingannare il client. I Protected Management Frames (obbligatori con WPA3) impediscono inoltre i frame di deautenticazione falsi che spingono i client verso l’AP ostile.',
+                en: 'In enterprise authentication (802.1X/EAP-TLS) the client validates the server certificate before presenting credentials: an evil twin without that trusted certificate is rejected, so the same SSID is not enough to fool the client. Protected Management Frames (mandatory with WPA3) also prevent the forged deauthentication frames that push clients toward the hostile AP.'
+              },
+              {
+                it: 'Sfida: con WPA2 PSK la chiave è condivisa e non c’è un server da validare, quindi un evil twin che conosce la passphrase intercetta il traffico; WPA3 con SAE rende la handshake resistente al dizionario e, con i Protected Management Frames, toglie all’attaccante la deautenticazione.',
+                en: 'Challenge: with WPA2 PSK the key is shared and there is no server to validate, so an evil twin that knows the passphrase intercepts traffic; WPA3 with SAE makes the handshake dictionary-resistant and, with Protected Management Frames, takes deauthentication away from the attacker.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So spiegare perché lo stesso SSID non prova la legittimità di un AP.',
+                en: 'I can explain why the same SSID does not prove an AP’s legitimacy.'
+              },
+              {
+                it: 'So dire quale proprietà dell’Enterprise e di WPA3 neutralizza un evil twin.',
+                en: 'I can state which property of Enterprise and WPA3 neutralises an evil twin.'
+              }
+            ]
+          }
+        ]
+      }
+    ]
   }
 ];
