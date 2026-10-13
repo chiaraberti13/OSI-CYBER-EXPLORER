@@ -5192,5 +5192,354 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
         ]
       }
     ]
+  },
+  {
+    id: 'hardening-detection-ir',
+    cert: 'securityplus',
+    order: 18,
+    track: 'extension',
+    title: {
+      it: 'Hardening, detection e incident response',
+      en: 'Hardening, detection, and incident response'
+    },
+    summary: {
+      it: 'Il ciclo operativo della difesa: ridurre la superficie con una baseline di configurazione, accorgersi di ciò che accade con telemetria e detection, e rispondere a un incidente leggendo le evidenze senza trarre conclusioni che i dati non reggono.',
+      en: 'The operational cycle of defense: reduce the surface with a configuration baseline, notice what happens with telemetry and detection, and respond to an incident by reading the evidence without drawing conclusions the data does not support.'
+    },
+    topics: [
+      {
+        id: 'config-baseline-hardening',
+        title: {
+          it: 'Baseline di configurazione e hardening',
+          en: 'Configuration baseline and hardening'
+        },
+        objectives: [
+          {
+            it: 'Spiegare perché una baseline sicura riduce la superficie d’attacco e come si riconosce la deriva.',
+            en: 'Explain why a secure baseline reduces the attack surface and how configuration drift is recognised.'
+          },
+          {
+            it: 'Applicare il principio di minima funzionalità a una porta di accesso e a un apparato.',
+            en: 'Apply the principle of least functionality to an access port and to a device.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere la sicurezza di livello 2 e l’accesso sicuro agli apparati (capitolo di sicurezza CCNA).',
+            en: 'Know Layer 2 security and secure device access (the CCNA security chapter).'
+          }
+        ],
+        theory: [
+          {
+            it: 'L’hardening parte da una baseline: una configurazione sicura di riferimento che ogni apparato dovrebbe rispettare. Il principio guida è la minima funzionalità — tenere attivo solo ciò che serve e disabilitare il resto — perché ogni servizio acceso, porta aperta o protocollo legacy è superficie d’attacco in più. Su una porta di accesso la baseline mette insieme più controlli coerenti: la porta in modalità access su una VLAN definita, Port Security, protezioni STP come BPDU Guard, e la disattivazione di negoziazioni non necessarie.',
+            en: 'Hardening starts from a baseline: a reference secure configuration every device should comply with. The guiding principle is least functionality — keep active only what is needed and disable the rest — because every running service, open port, or legacy protocol is extra attack surface. On an access port the baseline combines several consistent controls: the port in access mode on a defined VLAN, Port Security, STP protections such as BPDU Guard, and turning off unnecessary negotiations.'
+          },
+          {
+            it: 'Una baseline serve a poco se non la si confronta nel tempo: la deriva di configurazione (configuration drift) è l’allontanamento graduale degli apparati dallo stato di riferimento, per modifiche manuali, eccezioni temporanee mai rimosse e interventi non tracciati. Il modo per tenerla sotto controllo è trattare la baseline come uno stato desiderato da riaffermare — idealmente con l’automazione idempotente — e rilevare le differenze rispetto ad essa, invece di scoprire a incidente avvenuto che un apparato era configurato diversamente da come si credeva.',
+            en: 'A baseline is of little use if it is not compared over time: configuration drift is the gradual divergence of devices from the reference state, through manual changes, temporary exceptions never removed, and untracked interventions. The way to keep it in check is to treat the baseline as a desired state to reassert — ideally with idempotent automation — and to detect differences from it, instead of discovering after an incident that a device was configured differently than believed.'
+          },
+          {
+            it: 'L’hardening ha però un limite operativo: le soglie e le protezioni vanno dimensionate sulla rete reale. Un filtro anti-spoofing come uRPF in modalità strict, o un policing aggressivo, applicati senza misurare la baseline di traffico, scartano traffico legittimo e trasformano una difesa in un’interruzione. La regola è introdurre i controlli in modo misurato, osservarne l’effetto e stringerli gradualmente: un hardening che spegne la rete non è più sicuro, è solo indisponibile.',
+            en: 'Hardening has an operational limit, though: thresholds and protections must be sized against the real network. An anti-spoofing filter like uRPF in strict mode, or aggressive policing, applied without measuring the traffic baseline, drops legitimate traffic and turns a defense into an outage. The rule is to introduce controls in a measured way, observe their effect, and tighten them gradually: hardening that shuts the network down is not more secure, it is just unavailable.'
+          }
+        ],
+        example: {
+          it: 'Una porta di accesso con baseline: modalità access su una VLAN dedicata, Port Security con il MAC fissato, BPDU Guard attivo e negoziazione trunk disattivata; confrontare periodicamente la configurazione reale con questa baseline rivela la deriva prima che diventi un problema.',
+          en: 'An access port with a baseline: access mode on a dedicated VLAN, Port Security with a pinned MAC, BPDU Guard enabled, and trunk negotiation off; periodically comparing the real configuration against this baseline reveals drift before it becomes a problem.'
+        },
+        commonMistakes: [
+          {
+            it: 'Lasciare attivi servizi e protocolli non necessari: ogni funzione accesa è superficie d’attacco in più contro la minima funzionalità.',
+            en: 'Leaving unnecessary services and protocols enabled: every function left on is extra attack surface against least functionality.'
+          },
+          {
+            it: 'Definire una baseline e non verificarla: senza confronto nel tempo la deriva di configurazione passa inosservata fino all’incidente.',
+            en: 'Defining a baseline and never verifying it: without comparison over time, configuration drift goes unnoticed until the incident.'
+          },
+          {
+            it: 'Applicare soglie aggressive senza misurare: uRPF strict o policing tarati male scartano traffico legittimo.',
+            en: 'Applying aggressive thresholds without measuring: strict uRPF or mis-tuned policing drop legitimate traffic.'
+          }
+        ],
+        lab: 'hardening',
+        references: [{ kind: 'nist', id: 'SP 800-123' }],
+        guidedLabs: [
+          {
+            id: 'gl-access-port-baseline',
+            title: { it: 'Comporre la baseline di una porta', en: 'Composing a port baseline' },
+            difficulty: 'core',
+            lab: 'hardening',
+            scenario: {
+              it: 'Il laboratorio «Hardening» mostra configurazioni di baseline commentate, tra cui quella sicura delle porte di accesso.',
+              en: 'The “Hardening” lab shows commented baseline configurations, including the secure access-port one.'
+            },
+            task: {
+              it: 'Elenca i controlli che compongono una baseline di porta di accesso e spiega quale rischio ciascuno chiude.',
+              en: 'List the controls that make up an access-port baseline and explain which risk each one closes.'
+            },
+            steps: [
+              {
+                it: 'Apri «Hardening» e individua la baseline sicura delle porte di accesso.',
+                en: 'Open “Hardening” and find the secure access-port baseline.'
+              },
+              {
+                it: 'Associa ciascun comando al rischio che riduce (host non autorizzato, loop, trunk non voluto).',
+                en: 'Map each command to the risk it reduces (unauthorized host, loop, unwanted trunk).'
+              },
+              {
+                it: 'Nota che le soglie sono esempi da dimensionare sulla baseline di traffico reale.',
+                en: 'Note that thresholds are examples to be sized against the real traffic baseline.'
+              }
+            ],
+            challenge: {
+              it: 'Dopo settimane di modifiche manuali alcune porte non rispettano più la baseline: come lo scopri e come riporti gli apparati allo stato di riferimento?',
+              en: 'After weeks of manual changes some ports no longer comply with the baseline: how do you discover it and bring the devices back to the reference state?'
+            },
+            solution: [
+              {
+                it: 'La baseline di una porta di accesso mette insieme modalità access su una VLAN definita (chiude il trunk non voluto), Port Security (chiude l’host non autorizzato e il MAC flooding), BPDU Guard (chiude un loop o uno switch ostile), e la disattivazione delle negoziazioni non necessarie. Ogni comando corrisponde a un rischio preciso dell’access layer.',
+                en: 'An access-port baseline combines access mode on a defined VLAN (closes the unwanted trunk), Port Security (closes the unauthorized host and MAC flooding), BPDU Guard (closes a loop or hostile switch), and turning off unnecessary negotiations. Each command maps to a specific access-layer risk.'
+              },
+              {
+                it: 'Sfida: la deriva si scopre confrontando la configurazione reale con la baseline (un diff rispetto allo stato desiderato); si corregge riapplicando la baseline in modo idempotente, così gli apparati tornano allo stato di riferimento e le eccezioni temporanee dimenticate vengono rimosse.',
+                en: 'Challenge: drift is discovered by comparing the real configuration with the baseline (a diff against the desired state); it is fixed by reapplying the baseline idempotently, so devices return to the reference state and forgotten temporary exceptions are removed.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So elencare i controlli di una baseline di porta e il rischio che ciascuno chiude.',
+                en: 'I can list an access-port baseline’s controls and the risk each one closes.'
+              },
+              {
+                it: 'So spiegare cos’è la deriva di configurazione e come riportare un apparato alla baseline.',
+                en: 'I can explain configuration drift and how to bring a device back to the baseline.'
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'telemetry-detection',
+        title: {
+          it: 'Telemetria e detection engineering',
+          en: 'Telemetry and detection engineering'
+        },
+        objectives: [
+          {
+            it: 'Riconoscere le fonti di telemetria utili e perché una buona detection correla più segnali.',
+            en: 'Recognise useful telemetry sources and why good detection correlates multiple signals.'
+          },
+          {
+            it: 'Distinguere un comportamento normale da uno anomalo usando il contesto per ridurre i falsi positivi.',
+            en: 'Distinguish normal from anomalous behaviour using context to reduce false positives.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere i servizi di telemetria (NTP, SNMP, Syslog, NetFlow) e gli attacchi per livello (capitoli sui servizi IP e sugli attacchi).',
+            en: 'Know the telemetry services (NTP, SNMP, Syslog, NetFlow) and per-layer attacks (the IP services and attacks chapters).'
+          }
+        ],
+        theory: [
+          {
+            it: 'La detection comincia dalla telemetria: i dati che la rete già produce — contatori STP, log di firewall e IDS, flussi NetFlow, log dei servizi — sono le tracce su cui si costruisce un rilevamento. Fare detection engineering significa trasformare una fonte in una regola che riconosce un comportamento sospetto, con una logica esplicita e una soglia. Ma un singolo segnale, da solo, dice poco: un contatore che sale può essere un attacco o un normale picco di manutenzione.',
+            en: 'Detection begins with telemetry: the data the network already produces — STP counters, firewall and IDS logs, NetFlow flows, service logs — are the traces on which a detection is built. Doing detection engineering means turning a source into a rule that recognises suspicious behaviour, with explicit logic and a threshold. But a single signal, on its own, says little: a counter that rises may be an attack or a normal maintenance spike.'
+          },
+          {
+            it: 'La differenza tra un allarme utile e il rumore è la correlazione. Una buona regola richiede almeno due segnali indipendenti prima di allertare: per esempio, un cambio di topologia STP è normale durante guasti e manutenzione, ma un nuovo root bridge insieme a un trunk apparso su una porta edge e a una crescita anomala della CAM è un segnale forte. Correlare riduce i falsi positivi perché un singolo evento innocuo non basta a far scattare l’allarme, mentre la coincidenza di più eventi improbabili insieme è ciò che davvero distingue un attacco.',
+            en: 'The difference between a useful alert and noise is correlation. A good rule requires at least two independent signals before alerting: for example, an STP topology change is normal during failures and maintenance, but a new root bridge together with a trunk appearing on an edge port and abnormal CAM growth is a strong signal. Correlation reduces false positives because a single harmless event is not enough to trigger the alert, while the coincidence of several unlikely events together is what truly distinguishes an attack.'
+          },
+          {
+            it: 'Il contesto è ciò che rende leggibile un segnale: frequenza, porta, orario e stato atteso dicono se un evento è normale o no. Lo stesso topology change è innocuo se avviene durante una manutenzione pianificata su una porta nota, e sospetto se arriva di notte da una porta di accesso. Una detection senza contesto o genera troppi falsi positivi — e allora viene ignorata — o è troppo lasca e non vede nulla; il lavoro di tuning consiste proprio nel calibrarla sulla rete reale perché allerti quando serve e taccia quando non serve.',
+            en: 'Context is what makes a signal readable: frequency, port, time, and expected state tell whether an event is normal or not. The same topology change is harmless during planned maintenance on a known port, and suspicious at night from an access port. A detection without context either generates too many false positives — and then it is ignored — or is too loose and sees nothing; the tuning work is exactly about calibrating it against the real network so it alerts when needed and stays quiet when not.'
+          }
+        ],
+        example: {
+          it: 'Una regola per la modifica inattesa della topologia Layer 2 non allerta su un singolo topology change, ma solo quando a quello si aggiunge un secondo segnale — un trunk apparso su una porta edge o un cambio di configurazione — perché è la coincidenza, non l’evento singolo, a indicare un problema.',
+          en: 'A rule for an unexpected Layer 2 topology change does not alert on a single topology change, but only when a second signal joins it — a trunk appearing on an edge port or a configuration change — because it is the coincidence, not the single event, that indicates a problem.'
+        },
+        commonMistakes: [
+          {
+            it: 'Allertare su un singolo segnale: senza correlazione un evento normale genera un falso positivo e la regola viene ignorata.',
+            en: 'Alerting on a single signal: without correlation a normal event generates a false positive and the rule gets ignored.'
+          },
+          {
+            it: 'Ignorare il contesto: frequenza, porta e orario atteso distinguono un evento di manutenzione da un attacco.',
+            en: 'Ignoring context: frequency, port, and expected time distinguish a maintenance event from an attack.'
+          },
+          {
+            it: 'Non fare tuning: una detection troppo lasca non vede nulla, una troppo sensibile annega l’analista nei falsi positivi.',
+            en: 'Not tuning: a detection that is too loose sees nothing, one that is too sensitive drowns the analyst in false positives.'
+          }
+        ],
+        lab: 'detection',
+        references: [{ kind: 'nist', id: 'SP 800-92' }],
+        guidedLabs: [
+          {
+            id: 'gl-correlated-detection',
+            title: { it: 'Due segnali meglio di uno', en: 'Two signals better than one' },
+            difficulty: 'advanced',
+            lab: 'detection',
+            scenario: {
+              it: 'Il laboratorio «Detection engineering» presenta casi d’uso con telemetria, logica di rilevamento e il contesto che distingue il normale dall’anomalo.',
+              en: 'The “Detection engineering” lab presents use cases with telemetry, detection logic, and the context that separates normal from anomalous.'
+            },
+            task: {
+              it: 'Per un caso d’uso, individua la telemetria, scrivi la condizione di correlazione a due segnali e di’ quale contesto riduce i falsi positivi.',
+              en: 'For a use case, identify the telemetry, write the two-signal correlation condition, and state which context reduces false positives.'
+            },
+            steps: [
+              {
+                it: 'Apri «Detection engineering» e scegli un caso d’uso (ad esempio la modifica di topologia Layer 2).',
+                en: 'Open “Detection engineering” and pick a use case (for example the Layer 2 topology change).'
+              },
+              {
+                it: 'Individua le fonti di telemetria e richiedi almeno due segnali indipendenti.',
+                en: 'Identify the telemetry sources and require at least two independent signals.'
+              },
+              {
+                it: 'Aggiungi il contesto (frequenza, porta, root atteso) che separa la manutenzione dall’attacco.',
+                en: 'Add the context (frequency, port, expected root) that separates maintenance from an attack.'
+              }
+            ],
+            challenge: {
+              it: 'La regola allerta troppo spesso durante le manutenzioni programmate: come la calibri senza perdere la capacità di vedere l’attacco?',
+              en: 'The rule alerts too often during scheduled maintenance: how do you tune it without losing the ability to see the attack?'
+            },
+            solution: [
+              {
+                it: 'Una buona detection prende la telemetria (per il Layer 2: contatori STP, BPDU Guard, eventi di porta) e allerta solo quando almeno due segnali indipendenti coincidono — un cambio STP più un evento di porta o di configurazione — invece che su un singolo topology change, che da solo è normale durante guasti e manutenzione.',
+                en: 'A good detection takes the telemetry (for Layer 2: STP counters, BPDU Guard, port events) and alerts only when at least two independent signals coincide — an STP change plus a port or configuration event — rather than on a single topology change, which on its own is normal during failures and maintenance.'
+              },
+              {
+                it: 'Sfida: si calibra con il contesto, non abbassando la sensibilità alla cieca: si escludono le finestre di manutenzione note e le porte attese, si richiede la coincidenza di segnali, e si confronta con il root e la frequenza attesi; così la regola tace sul normale e resta capace di vedere la coincidenza anomala.',
+                en: 'Challenge: you tune with context, not by blindly lowering sensitivity: exclude known maintenance windows and expected ports, require coincident signals, and compare against the expected root and frequency; so the rule stays quiet on the normal and remains able to see the anomalous coincidence.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So costruire una condizione di detection che correla almeno due segnali.',
+                en: 'I can build a detection condition that correlates at least two signals.'
+              },
+              {
+                it: 'So usare il contesto per ridurre i falsi positivi senza accecare la regola.',
+                en: 'I can use context to reduce false positives without blinding the rule.'
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'incident-response-evidence',
+        title: {
+          it: 'Prima risposta ed evidenze operative',
+          en: 'First response and operational evidence'
+        },
+        objectives: [
+          {
+            it: 'Leggere l’output dei comandi come evidenza, distinguendo ciò che prova da ciò che suggerisce soltanto.',
+            en: 'Read command output as evidence, distinguishing what it proves from what it only suggests.'
+          },
+          {
+            it: 'Spiegare perché la correlazione tra più fonti e la catena di custodia reggono un’indagine.',
+            en: 'Explain why correlation across sources and the chain of custody hold up an investigation.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere NTP e Syslog per i timestamp e la raccolta (capitolo sui servizi IP estesi).',
+            en: 'Know NTP and Syslog for timestamps and collection (the extended IP services chapter).'
+          }
+        ],
+        theory: [
+          {
+            it: 'La prima risposta a un incidente si gioca sulle evidenze, e un’evidenza è l’output di un comando o un log letto per ciò che davvero dimostra. Errori fisici su un’interfaccia provano un problema di livello 1, non l’identità di chi lo causa; una Neighbor Cache o una binding table provano una corrispondenza MAC/IP in un momento, non l’intenzione. Il primo lavoro è separare il fatto osservato dall’interpretazione: scrivere cosa mostra l’evidenza prima di scrivere cosa significa.',
+            en: 'First response to an incident turns on evidence, and a piece of evidence is a command’s output or a log read for what it actually proves. Physical errors on an interface prove a Layer 1 problem, not the identity of whoever causes it; a Neighbor Cache or a binding table proves a MAC/IP match at a moment, not intent. The first task is to separate the observed fact from the interpretation: write what the evidence shows before writing what it means.'
+          },
+          {
+            it: 'Una sola fonte raramente basta. Un’osservazione presa da un unico punto può essere un artefatto locale — un collector mal sincronizzato, una vista parziale della rete — mentre la stessa evidenza confermata da più collettori indipendenti è molto più solida. Per questo l’indagine correla: mette in fila i timestamp (ed è qui che un orologio sincronizzato con NTP diventa decisivo), confronta ciò che vedono apparati diversi, e cerca la coerenza tra piano dati, log di controllo e accounting. Una conclusione che regge è quella che più evidenze indipendenti raccontano allo stesso modo.',
+            en: 'A single source is rarely enough. An observation taken from one point may be a local artifact — a badly synchronised collector, a partial view of the network — while the same evidence confirmed by several independent collectors is far more solid. That is why the investigation correlates: it lines up timestamps (and this is where an NTP-synchronised clock becomes decisive), compares what different devices see, and looks for consistency between the data plane, control logs, and accounting. A conclusion that holds is the one that several independent pieces of evidence tell the same way.'
+          },
+          {
+            it: 'Perché un’evidenza regga anche dopo, servono disciplina e catena di custodia: raccoglierla da un collector remoto e immutabile, con timestamp affidabili e accesso ristretto, registrarne la provenienza e l’ora, e preservarla senza alterarla. L’accounting AAA, che lega ogni comando a un’identità e a un momento, è un esempio di evidenza forte proprio perché raccolta in modo disciplinato. La regola che tiene insieme tutto è la prudenza interpretativa: non affermare più di quanto le evidenze provino, e tenere aperte le ipotesi finché la correlazione non le chiude.',
+            en: 'For evidence to hold up later, discipline and a chain of custody are needed: collect it from a remote, immutable collector, with reliable timestamps and restricted access, record its provenance and time, and preserve it without altering it. AAA accounting, which ties every command to an identity and a moment, is an example of strong evidence precisely because it is collected in a disciplined way. The rule that holds it all together is interpretive prudence: do not claim more than the evidence proves, and keep hypotheses open until correlation closes them.'
+          }
+        ],
+        example: {
+          it: 'Davanti a un sospetto ARP spoofing, i log di Dynamic ARP Inspection provano che certi ARP sono stati scartati su una porta e in un momento; correlarli con la binding table di DHCP Snooping e con i timestamp sincronizzati distingue un attacco reale da un semplice errore di configurazione.',
+          en: 'Facing a suspected ARP spoofing, the Dynamic ARP Inspection logs prove that certain ARPs were dropped on a port at a moment; correlating them with the DHCP Snooping binding table and synchronised timestamps separates a real attack from a mere misconfiguration.'
+        },
+        commonMistakes: [
+          {
+            it: 'Confondere ciò che un’evidenza prova con ciò che suggerisce: un contatore o una corrispondenza non dimostrano l’intenzione né l’identità.',
+            en: 'Confusing what evidence proves with what it suggests: a counter or a match does not prove intent or identity.'
+          },
+          {
+            it: 'Fidarsi di un’unica fonte: un’osservazione da un solo collector può essere un artefatto locale, non un fatto della rete.',
+            en: 'Trusting a single source: an observation from one collector may be a local artifact, not a fact of the network.'
+          },
+          {
+            it: 'Correlare con orologi non sincronizzati: senza NTP i timestamp non si allineano e la sequenza degli eventi diventa inservibile.',
+            en: 'Correlating with unsynchronised clocks: without NTP the timestamps do not line up and the event sequence becomes useless.'
+          }
+        ],
+        lab: 'evidence',
+        references: [{ kind: 'nist', id: 'SP 800-61' }],
+        guidedLabs: [
+          {
+            id: 'gl-evidence-correlation',
+            title: { it: 'Cosa prova davvero l’evidenza', en: 'What the evidence really proves' },
+            difficulty: 'advanced',
+            lab: 'evidence',
+            scenario: {
+              it: 'Il laboratorio «Evidenze operative» presenta output di comandi annotati come evidenze, da leggere e correlare per sostenere o smentire un’ipotesi.',
+              en: 'The “Operational evidence” lab presents command output annotated as evidence, to be read and correlated to support or refute a hypothesis.'
+            },
+            task: {
+              it: 'Per un caso, separa ciò che l’evidenza prova da ciò che suggerisce e indica quale seconda fonte la confermerebbe.',
+              en: 'For a case, separate what the evidence proves from what it suggests and name which second source would confirm it.'
+            },
+            steps: [
+              {
+                it: 'Apri «Evidenze operative» e scegli un caso (ad esempio ARP spoofing e DAI).',
+                en: 'Open “Operational evidence” and pick a case (for example ARP spoofing and DAI).'
+              },
+              {
+                it: 'Scrivi cosa mostra l’evidenza prima di scrivere cosa significa.',
+                en: 'Write what the evidence shows before writing what it means.'
+              },
+              {
+                it: 'Individua una seconda fonte indipendente e usa i timestamp NTP per correlarle.',
+                en: 'Identify a second independent source and use NTP timestamps to correlate them.'
+              }
+            ],
+            challenge: {
+              it: 'Una sola evidenza sembra incolpare un host preciso: cosa potrebbe smentirla e perché non vai oltre ciò che i dati provano?',
+              en: 'A single piece of evidence seems to blame a specific host: what could refute it and why do you not go beyond what the data proves?'
+            },
+            solution: [
+              {
+                it: 'Un’evidenza va letta per ciò che dimostra: i log DAI provano che certi ARP sono stati scartati su una porta a un dato istante, non chi e perché; per sostenere l’ipotesi serve correlarli con la binding table di DHCP Snooping, con i timestamp sincronizzati da NTP e con i log di un secondo apparato, finché più fonti indipendenti raccontano la stessa cosa.',
+                en: 'Evidence is read for what it proves: DAI logs prove that certain ARPs were dropped on a port at a given instant, not who and why; to support the hypothesis you correlate them with the DHCP Snooping binding table, with NTP-synchronised timestamps, and with a second device’s logs, until several independent sources tell the same story.'
+              },
+              {
+                it: 'Sfida: un’osservazione da un solo collector può essere un artefatto locale (vista parziale, orologio sfasato); la smentisce una seconda fonte che non concorda. Non si va oltre ciò che i dati provano perché attribuire identità o intenzione a una semplice corrispondenza è il modo più rapido per accusare l’host sbagliato.',
+                en: 'Challenge: an observation from one collector may be a local artifact (partial view, skewed clock); a second source that disagrees refutes it. You do not go beyond what the data proves because attributing identity or intent to a mere match is the fastest way to blame the wrong host.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So distinguere ciò che un’evidenza prova da ciò che soltanto suggerisce.',
+                en: 'I can distinguish what evidence proves from what it only suggests.'
+              },
+              {
+                it: 'So dire perché correlazione, timestamp NTP e catena di custodia reggono un’indagine.',
+                en: 'I can say why correlation, NTP timestamps, and the chain of custody hold up an investigation.'
+              }
+            ]
+          }
+        ]
+      }
+    ]
   }
 ];
