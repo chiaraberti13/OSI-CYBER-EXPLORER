@@ -90,7 +90,8 @@ export const en = {
     certCcna: 'CCNA 200-301',
     certSecurityPlus: 'CompTIA Security+ SY0-701',
     certBoth: 'CCNA 200-301 · Security+ SY0-701',
-    trackExtension: 'Extension'
+    trackExtension: 'Extension',
+    examWeight: 'Exam weight'
   },
   error: {
     chunkTitle: 'This section could not be loaded',

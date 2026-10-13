@@ -236,6 +236,9 @@ describe('StudyManualView (EDU-01)', () => {
     expect(within(nav).getByRole('group', { name: 'CCNA 1.0 · Fondamenti di rete' })).toBeTruthy();
     expect(within(nav).getByRole('group', { name: 'CCNA 3.0 · Connettività IP' })).toBeTruthy();
     expect(within(nav).getByRole('group', { name: 'Estensione' })).toBeTruthy();
+    // The exam-weight badge is labelled so its percentage is not mistaken for completion
+    // progress (which is shown as a fraction/percent elsewhere on the page).
+    expect(within(nav).getAllByLabelText('Peso d’esame: 20%').length).toBeGreaterThan(0);
   });
 
   it('offers a guided lab with a revealable solution and a link into the interactive lab', () => {
