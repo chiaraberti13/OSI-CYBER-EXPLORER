@@ -23,7 +23,7 @@ import type { SecurityReference } from './securityReferences';
  */
 
 export type ManualDifficulty = 'intro' | 'core' | 'advanced';
-export type ManualCert = 'ccna' | 'securityplus' | 'both';
+export type ManualCert = 'ccna' | 'securityplus' | 'both' | 'ejpt';
 
 /** A guided lab exercise: a task that opens an interactive lab, with a worked solution. */
 export interface GuidedLab {
@@ -5535,6 +5535,364 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
               {
                 it: 'So dire perché correlazione, timestamp NTP e catena di custodia reggono un’indagine.',
                 en: 'I can say why correlation, NTP timestamps, and the chain of custody hold up an investigation.'
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'pentest-methodology',
+    cert: 'ejpt',
+    order: 19,
+    track: 'extension',
+    title: {
+      it: 'Metodologia di penetration testing (eJPT)',
+      en: 'Penetration testing methodology (eJPT)'
+    },
+    summary: {
+      it: 'L’estensione offensiva allineata all’eJPT: come si conduce un test autorizzato, dalla definizione dello scope alla segnalazione. Si studia la metodologia — ricognizione, scanning, enumerazione, valutazione delle vulnerabilità ed exploitation — in chiave didattica e difensiva, collegando ogni fase ai livelli OSI e alle tracce che un difensore osserva.',
+      en: 'The offensive extension aligned with the eJPT: how an authorized test is run, from defining the scope to reporting. You study the methodology — reconnaissance, scanning, enumeration, vulnerability assessment, and exploitation — through a teaching and defensive lens, linking each phase to the OSI layers and to the traces a defender observes.'
+    },
+    topics: [
+      {
+        id: 'pentest-engagement-phases',
+        title: {
+          it: 'Ingaggio, autorizzazione e fasi del test',
+          en: 'Engagement, authorization, and the test phases'
+        },
+        objectives: [
+          {
+            it: 'Spiegare perché autorizzazione scritta, scope e regole d’ingaggio precedono ogni attività tecnica.',
+            en: 'Explain why written authorization, scope, and rules of engagement precede any technical activity.'
+          },
+          {
+            it: 'Elencare le fasi di un penetration test e collegarle alla kill chain vista dalla difesa.',
+            en: 'List the phases of a penetration test and link them to the kill chain seen from the defense.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere la kill chain e i percorsi d’attacco multi-stadio (capitolo su attacchi e kill chain).',
+            en: 'Know the kill chain and multi-stage attack paths (the attacks and kill chain chapter).'
+          }
+        ],
+        theory: [
+          {
+            it: 'Un penetration test è una simulazione di attacco autorizzata: senza un permesso scritto le stesse azioni sono un reato. Perciò tutto inizia dal pre-engagement, dove si fissano lo scope (quali sistemi e reti sono inclusi), le regole d’ingaggio (orari, tecniche vietate, finestre di manutenzione) e i contatti per l’escalation. Il modello di conoscenza cambia la prospettiva: black box senza informazioni, white box con documentazione e accessi, grey box una via di mezzo. Lo scope non è burocrazia: definisce il confine legale ed etico del lavoro.',
+            en: 'A penetration test is an authorized attack simulation: without written permission the same actions are a crime. So everything begins with pre-engagement, where you set the scope (which systems and networks are included), the rules of engagement (hours, forbidden techniques, maintenance windows), and the escalation contacts. The knowledge model changes the perspective: black box with no information, white box with documentation and access, grey box in between. Scope is not bureaucracy: it defines the legal and ethical boundary of the work.'
+          },
+          {
+            it: 'Il lavoro tecnico segue poi fasi ordinate. La ricognizione raccoglie informazioni sul bersaglio; lo scanning individua host e porte vive; l’enumerazione estrae dettagli dai servizi (versioni, utenti, condivisioni); la valutazione delle vulnerabilità correla quei dettagli con debolezze note; l’exploitation verifica se una debolezza è davvero sfruttabile; la post-exploitation misura l’impatto reale (accesso, movimento laterale, persistenza); il reporting trasforma tutto in rischi e rimedi prioritari. Ogni fase riduce l’incertezza di quella dopo: si enumera solo ciò che lo scanning ha trovato, si tenta solo ciò che l’enumerazione rende plausibile.',
+            en: 'The technical work then follows ordered phases. Reconnaissance gathers information about the target; scanning finds live hosts and ports; enumeration extracts details from services (versions, users, shares); vulnerability assessment correlates those details with known weaknesses; exploitation checks whether a weakness is truly exploitable; post-exploitation measures the real impact (access, lateral movement, persistence); reporting turns everything into prioritized risks and fixes. Each phase reduces the uncertainty of the next: you enumerate only what scanning found, you attempt only what enumeration makes plausible.'
+          },
+          {
+            it: 'Queste fasi sono lo specchio della kill chain che la difesa conosce: ricognizione ed enumerazione corrispondono alle prime tappe, exploitation e post-exploitation a quelle finali. Ogni azione del tester lascia tracce — query DNS, pacchetti di scanning, tentativi di login — che un difensore rileva con log e IDS. Per questo il valore di un test non è «entrare», ma produrre un report che spieghi come si è entrati, quali evidenze restano e quali controlli avrebbero fermato o rivelato il percorso. Studiare l’offesa serve a rendere la difesa misurabile.',
+            en: 'These phases mirror the kill chain the defense knows: reconnaissance and enumeration map to the early stages, exploitation and post-exploitation to the final ones. Every tester action leaves traces — DNS queries, scanning packets, login attempts — that a defender detects with logs and an IDS. This is why the value of a test is not «getting in», but producing a report that explains how entry happened, which evidence remains, and which controls would have stopped or revealed the path. Studying offense serves to make defense measurable.'
+          }
+        ],
+        example: {
+          it: 'Un test grey box su 192.0.2.0/24 parte dalle regole d’ingaggio (solo quella sottorete, niente DoS, finestra notturna), poi procede per fasi: si mappa la superficie, si scansionano gli host, si enumerano i servizi, si valutano le vulnerabilità e solo le plausibili si verificano; il report finale ordina i rischi per impatto e indica i rimedi.',
+          en: 'A grey-box test on 192.0.2.0/24 starts from the rules of engagement (that subnet only, no DoS, a night window), then proceeds by phases: you map the surface, scan the hosts, enumerate the services, assess the vulnerabilities, and verify only the plausible ones; the final report ranks the risks by impact and states the fixes.'
+        },
+        commonMistakes: [
+          {
+            it: 'Agire fuori scope o senza autorizzazione scritta: trasforma un test in un illecito, qualunque sia l’intenzione.',
+            en: 'Acting out of scope or without written authorization: it turns a test into an offense, whatever the intent.'
+          },
+          {
+            it: 'Saltare alla exploitation senza enumerare: si tenta alla cieca, si fa rumore e si manca il bersaglio reale.',
+            en: 'Jumping to exploitation without enumerating: you attempt blindly, make noise, and miss the real target.'
+          },
+          {
+            it: 'Confondere l’accesso con il risultato: senza un report di rischi e rimedi il test non migliora la difesa.',
+            en: 'Confusing access with the result: without a report of risks and fixes the test does not improve the defense.'
+          }
+        ],
+        lab: 'attackpaths',
+        references: [{ kind: 'nist', id: 'SP 800-115' }],
+        guidedLabs: [
+          {
+            id: 'gl-pentest-phase-map',
+            title: {
+              it: 'Mappa le fasi su un percorso d’attacco',
+              en: 'Map the phases onto an attack path'
+            },
+            difficulty: 'core',
+            lab: 'attackpaths',
+            scenario: {
+              it: 'Il laboratorio «Percorsi d’attacco» mostra percorsi multi-stadio in cui ogni tappa prepara la successiva, proprio come le fasi di un test.',
+              en: 'The “Attack paths” lab shows multi-stage paths where each step sets up the next, just like the phases of a test.'
+            },
+            task: {
+              it: 'Associa ogni tappa del percorso a una fase (ricognizione, scanning, enumerazione, exploitation, post-exploitation) e indica dove un controllo spezzerebbe la catena.',
+              en: 'Match each step of the path to a phase (reconnaissance, scanning, enumeration, exploitation, post-exploitation) and point out where a control would break the chain.'
+            },
+            steps: [
+              {
+                it: 'Apri «Percorsi d’attacco» e scegli un percorso multi-stadio.',
+                en: 'Open “Attack paths” and pick a multi-stage path.'
+              },
+              {
+                it: 'Per ogni tappa scrivi la fase corrispondente e l’evidenza che lascerebbe.',
+                en: 'For each step write the matching phase and the evidence it would leave.'
+              },
+              {
+                it: 'Individua il controllo che interrompe il percorso e di’ in quale fase agisce.',
+                en: 'Identify the control that interrupts the path and say in which phase it acts.'
+              }
+            ],
+            challenge: {
+              it: 'Se il primo controllo fallisse, quale fase successiva offrirebbe la seconda occasione di rilevamento, e con quale evidenza?',
+              en: 'If the first control failed, which later phase would offer the second chance of detection, and with what evidence?'
+            },
+            solution: [
+              {
+                it: 'Le prime tappe di un percorso corrispondono a ricognizione e scanning (query e sonde verso host e porte), le intermedie a enumerazione ed exploitation (dettagli dei servizi e uso di una debolezza), le ultime a post-exploitation (movimento laterale e persistenza). Ogni tappa lascia un’evidenza — query DNS, tentativi di connessione, login anomali — e un controllo posto su una tappa precedente riduce tutte le opzioni successive.',
+                en: 'The early steps of a path correspond to reconnaissance and scanning (queries and probes toward hosts and ports), the middle ones to enumeration and exploitation (service details and the use of a weakness), the last ones to post-exploitation (lateral movement and persistence). Each step leaves evidence — DNS queries, connection attempts, anomalous logins — and a control placed on an earlier step reduces all the later options.'
+              },
+              {
+                it: 'Sfida: se il primo controllo fallisce, la difesa in profondità dà una seconda occasione a una fase successiva — per esempio l’exploitation genera log di errore o un IDS nota il payload — perché nessun singolo controllo è l’unica barriera.',
+                en: 'Challenge: if the first control fails, defense in depth gives a second chance at a later phase — for example exploitation generates error logs or an IDS notices the payload — because no single control is the only barrier.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So riconoscere a quale fase appartiene una tappa e quale evidenza lascia.',
+                en: 'I can tell which phase a step belongs to and what evidence it leaves.'
+              },
+              {
+                it: 'So spiegare perché un controllo su una fase iniziale riduce le opzioni di quelle successive.',
+                en: 'I can explain why a control on an early phase reduces the options of the later ones.'
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'pentest-recon-footprinting',
+        title: {
+          it: 'Ricognizione e footprinting',
+          en: 'Reconnaissance and footprinting'
+        },
+        objectives: [
+          {
+            it: 'Distinguere ricognizione passiva e attiva per il rumore che generano e le tracce che lasciano.',
+            en: 'Distinguish passive and active reconnaissance by the noise they generate and the traces they leave.'
+          },
+          {
+            it: 'Costruire la superficie d’attacco di un bersaglio a partire da fonti aperte e dai servizi esposti.',
+            en: 'Build a target’s attack surface from open sources and the exposed services.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere DNS, porte e servizi (capitoli su servizi IP e su porte e protocolli).',
+            en: 'Know DNS, ports, and services (the IP services and the ports and protocols chapters).'
+          }
+        ],
+        theory: [
+          {
+            it: 'La ricognizione raccoglie informazioni prima di toccare il bersaglio. Quella passiva non invia pacchetti al sistema: usa OSINT (open-source intelligence) come registrazioni DNS pubbliche, record WHOIS, certificati, repository e motori di ricerca. Non lascia tracce sul bersaglio ed è silenziosa. Quella attiva interroga invece direttamente i sistemi — risoluzioni DNS mirate, richieste a un servizio — ed è più ricca ma rumorosa, perché ogni richiesta può finire in un log. Un tester inizia dalla passiva e passa all’attiva solo quando serve.',
+            en: 'Reconnaissance gathers information before touching the target. Passive recon sends no packets to the system: it uses OSINT (open-source intelligence) such as public DNS records, WHOIS data, certificates, repositories, and search engines. It leaves no traces on the target and is quiet. Active recon instead queries the systems directly — targeted DNS lookups, requests to a service — and is richer but noisy, because every request may end up in a log. A tester starts with passive recon and moves to active only when needed.'
+          },
+          {
+            it: 'L’obiettivo è costruire la superficie d’attacco: l’insieme dei punti in cui un bersaglio può essere raggiunto. Il footprinting del DNS enumera i nomi di un dominio — host, sottodomini, record MX e NS — e li traduce in indirizzi; da lì si ricavano gli host esposti e i servizi probabili. Ogni informazione va annotata con la sua fonte e la sua data, perché un dato vecchio o incerto porta fuori strada nelle fasi successive. La ricognizione non «attacca»: disegna la mappa su cui scanning ed enumerazione lavoreranno.',
+            en: 'The goal is to build the attack surface: the set of points where a target can be reached. DNS footprinting enumerates a domain’s names — hosts, subdomains, MX and NS records — and resolves them to addresses; from there you derive the exposed hosts and the likely services. Every piece of information should be recorded with its source and date, because stale or uncertain data leads the later phases astray. Reconnaissance does not «attack»: it draws the map that scanning and enumeration will work on.'
+          },
+          {
+            it: 'Dal lato difensivo, la ricognizione passiva è quasi invisibile, ma quella attiva lascia segni: un picco di query DNS da un’unica origine, risoluzioni di nomi inesistenti, accessi insoliti a servizi esposti. La contromisura non è nascondere il DNS — serve a funzionare — ma ridurre la superficie (chiudere ciò che non deve essere pubblico), tenere coerenti i dati esposti e raccogliere log che rendano riconoscibile un footprinting attivo. Conoscere ciò che un tester cerca è il modo più diretto per decidere cosa non esporre.',
+            en: 'On the defensive side, passive recon is almost invisible, but active recon leaves signs: a spike of DNS queries from a single source, lookups of nonexistent names, unusual access to exposed services. The countermeasure is not to hide DNS — it must work — but to reduce the surface (close what should not be public), keep the exposed data consistent, and collect logs that make active footprinting recognizable. Knowing what a tester looks for is the most direct way to decide what not to expose.'
+          }
+        ],
+        example: {
+          it: 'Per preparare un test su example.test si parte dai record DNS pubblici e dai certificati per elencare host e sottodomini, si annota ogni voce con fonte e data, e si ottiene una mappa di indirizzi e servizi probabili — tutto senza inviare un solo pacchetto d’attacco al bersaglio.',
+          en: 'To prepare a test on example.test you start from public DNS records and certificates to list hosts and subdomains, record each entry with its source and date, and obtain a map of likely addresses and services — all without sending a single attack packet to the target.'
+        },
+        commonMistakes: [
+          {
+            it: 'Partire dalla ricognizione attiva: fa rumore inutile quando l’OSINT passivo avrebbe già dato la mappa.',
+            en: 'Starting with active recon: it makes needless noise when passive OSINT would already give the map.'
+          },
+          {
+            it: 'Fidarsi di dati senza fonte né data: un record vecchio manda scanning ed enumerazione sul bersaglio sbagliato.',
+            en: 'Trusting data with no source or date: a stale record sends scanning and enumeration to the wrong target.'
+          },
+          {
+            it: 'Credere che il DNS vada «nascosto»: deve risolvere; ciò che si riduce è la superficie esposta, non la sua visibilità.',
+            en: 'Believing DNS must be «hidden»: it has to resolve; what you reduce is the exposed surface, not its visibility.'
+          }
+        ],
+        lab: 'ports',
+        references: [{ kind: 'attack', id: 'T1590' }],
+        guidedLabs: [
+          {
+            id: 'gl-pentest-surface-map',
+            title: {
+              it: 'Disegna la superficie dai servizi esposti',
+              en: 'Draw the surface from the exposed services'
+            },
+            difficulty: 'core',
+            lab: 'ports',
+            scenario: {
+              it: 'Il laboratorio «Porte & Protocolli» elenca porte, protocolli e apparati con le loro caratteristiche di sicurezza: la stessa vista che un tester usa per ipotizzare i servizi dietro una porta.',
+              en: 'The “Ports & protocols” lab lists ports, protocols, and devices with their security characteristics: the same view a tester uses to hypothesize the services behind a port.'
+            },
+            task: {
+              it: 'Da un breve elenco di porte aperte deduci i servizi probabili e scrivi quali informazioni l’enumerazione cercherebbe in ciascuno.',
+              en: 'From a short list of open ports deduce the likely services and write down what information enumeration would look for in each.'
+            },
+            steps: [
+              {
+                it: 'Apri «Porte & Protocolli» e cerca le porte 22, 53, 80 e 443.',
+                en: 'Open “Ports & protocols” and look up ports 22, 53, 80, and 443.'
+              },
+              {
+                it: 'Per ciascuna annota il servizio atteso e il dato utile da enumerare (versione, nomi, certificato).',
+                en: 'For each, note the expected service and the useful detail to enumerate (version, names, certificate).'
+              },
+              {
+                it: 'Segna quali di questi servizi dovrebbero essere pubblici e quali no, dal lato difensivo.',
+                en: 'Mark which of these services should be public and which should not, from the defensive side.'
+              }
+            ],
+            challenge: {
+              it: 'Una porta risponde ma con un servizio diverso da quello atteso per quel numero: come lo scopriresti e perché conta per le fasi successive?',
+              en: 'A port responds but with a service different from the one expected for that number: how would you find out, and why does it matter for the later phases?'
+            },
+            solution: [
+              {
+                it: 'Le porte suggeriscono i servizi — 22 per SSH, 53 per DNS, 80 e 443 per HTTP e HTTPS — ma sono solo un’ipotesi: l’enumerazione la conferma leggendo versioni e banner. Per ogni servizio il dato utile cambia: una versione per SSH, i record per il DNS, il certificato e le intestazioni per HTTPS. Dal lato difensivo, un servizio esposto senza ragione è superficie in più da chiudere.',
+                en: 'Ports suggest services — 22 for SSH, 53 for DNS, 80 and 443 for HTTP and HTTPS — but they are only a hypothesis: enumeration confirms it by reading versions and banners. For each service the useful detail changes: a version for SSH, the records for DNS, the certificate and headers for HTTPS. On the defensive side, a service exposed without reason is extra surface to close.'
+              },
+              {
+                it: 'Sfida: un servizio su una porta inattesa si scopre con la rilevazione di versione e banner, che leggono il servizio reale invece di fidarsi del numero; conta perché enumerazione ed eventuale exploitation dipendono dal servizio vero, non dalla porta.',
+                en: 'Challenge: a service on an unexpected port is found with version and banner detection, which read the real service instead of trusting the number; it matters because enumeration and any exploitation depend on the real service, not the port.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So dedurre i servizi probabili dalle porte e dire quale dato enumererei in ciascuno.',
+                en: 'I can deduce the likely services from the ports and say which detail I would enumerate in each.'
+              },
+              {
+                it: 'So spiegare perché la porta è solo un’ipotesi che l’enumerazione deve confermare.',
+                en: 'I can explain why the port is only a hypothesis that enumeration must confirm.'
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'pentest-scanning-enumeration',
+        title: {
+          it: 'Scanning ed enumerazione dei servizi',
+          en: 'Scanning and service enumeration'
+        },
+        objectives: [
+          {
+            it: 'Spiegare host discovery e port scanning TCP e UDP e cosa distingue una porta aperta, chiusa o filtrata.',
+            en: 'Explain host discovery and TCP and UDP port scanning, and what tells an open, closed, or filtered port apart.'
+          },
+          {
+            it: 'Trasformare i risultati dello scanning in enumerazione e in una valutazione delle vulnerabilità difendibile.',
+            en: 'Turn scanning results into enumeration and a defensible vulnerability assessment.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere il three-way handshake TCP e la differenza tra TCP e UDP (capitoli sui fondamenti e sui servizi IP).',
+            en: 'Know the TCP three-way handshake and the difference between TCP and UDP (the fundamentals and IP services chapters).'
+          }
+        ],
+        theory: [
+          {
+            it: 'Lo scanning verifica cosa è vivo e raggiungibile. L’host discovery individua gli host attivi in una sottorete; il port scanning determina quali porte rispondono. Su TCP lo stato si deduce dall’handshake: una risposta SYN-ACK indica una porta aperta, un RST una porta chiusa, nessuna risposta una porta filtrata da un firewall. UDP è più ambiguo perché non ha handshake: il silenzio può significare aperto o filtrato, e spesso serve la risposta del servizio per decidere. Distinguere aperto da filtrato è ciò che separa un servizio reale da un confine di rete.',
+            en: 'Scanning checks what is alive and reachable. Host discovery finds the active hosts in a subnet; port scanning determines which ports respond. On TCP the state is inferred from the handshake: a SYN-ACK reply means an open port, an RST a closed port, no reply a port filtered by a firewall. UDP is more ambiguous because it has no handshake: silence can mean open or filtered, and often the service’s reply is needed to decide. Telling open from filtered is what separates a real service from a network boundary.'
+          },
+          {
+            it: 'Una porta aperta è solo l’inizio: l’enumerazione estrae i dettagli che rendono un servizio sfruttabile o sicuro. La rilevazione di servizio e versione legge il banner o le risposte del protocollo per capire cosa gira e in quale versione; da lì si enumerano utenti, condivisioni, endpoint o record a seconda del servizio. La valutazione delle vulnerabilità correla versione e configurazione con debolezze note, ma resta un’ipotesi finché non è verificata: una versione «vulnerabile» può essere stata corretta con una patch retroportata. Enumerare bene è ciò che evita tentativi alla cieca nella fase di exploitation.',
+            en: 'An open port is only the start: enumeration extracts the details that make a service exploitable or safe. Service and version detection reads the banner or the protocol responses to learn what runs and in which version; from there you enumerate users, shares, endpoints, or records depending on the service. Vulnerability assessment correlates version and configuration with known weaknesses, but it stays a hypothesis until verified: a «vulnerable» version may have been fixed with a backported patch. Enumerating well is what avoids blind attempts in the exploitation phase.'
+          },
+          {
+            it: 'Lo scanning è rumoroso per natura, e questo è l’aggancio della difesa. Una scansione lascia una firma riconoscibile: molte connessioni verso porte diverse in poco tempo, molti RST, pacchetti UDP verso servizi inesistenti. Un IDS e i log di rete la rilevano, e la segmentazione limita cosa uno scanner può persino raggiungere. Per questo i risultati vanno sempre riportati con la data e il metodo: lo stato di una porta è vero al momento della scansione, e una buona difesa cambia quella fotografia tra un test e il successivo.',
+            en: 'Scanning is noisy by nature, and this is the defense’s hook. A scan leaves a recognizable signature: many connections to different ports in a short time, many RSTs, UDP packets toward nonexistent services. An IDS and network logs detect it, and segmentation limits what a scanner can even reach. This is why results must always be reported with the date and the method: a port’s state is true at the moment of the scan, and a good defense changes that snapshot between one test and the next.'
+          }
+        ],
+        example: {
+          it: 'Scansionando un host in 192.0.2.0/24 si trovano la porta 22 aperta (SYN-ACK) e la 80 filtrata (nessuna risposta); l’enumerazione legge la versione del servizio sulla 22 e la annota con data e metodo, mentre l’IDS registra la raffica di connessioni come una firma di scansione.',
+          en: 'Scanning a host in 192.0.2.0/24 finds port 22 open (SYN-ACK) and port 80 filtered (no reply); enumeration reads the service version on 22 and records it with the date and method, while the IDS logs the burst of connections as a scan signature.'
+        },
+        commonMistakes: [
+          {
+            it: 'Trattare «nessuna risposta» come porta chiusa: su TCP indica filtrata, e su UDP il silenzio è ambiguo.',
+            en: 'Treating «no reply» as a closed port: on TCP it means filtered, and on UDP silence is ambiguous.'
+          },
+          {
+            it: 'Dichiarare vulnerabile un servizio dalla sola versione: una patch retroportata smentisce il numero di versione.',
+            en: 'Declaring a service vulnerable from the version alone: a backported patch disproves the version number.'
+          },
+          {
+            it: 'Riportare uno stato senza data né metodo: la fotografia delle porte scade appena la difesa cambia.',
+            en: 'Reporting a state with no date or method: the snapshot of the ports expires as soon as the defense changes.'
+          }
+        ],
+        lab: 'inspection',
+        references: [{ kind: 'attack', id: 'T1046' }],
+        guidedLabs: [
+          {
+            id: 'gl-pentest-scan-states',
+            title: {
+              it: 'Leggi aperto, chiuso e filtrato',
+              en: 'Read open, closed, and filtered'
+            },
+            difficulty: 'advanced',
+            lab: 'inspection',
+            scenario: {
+              it: 'Il laboratorio «Firewall e ispezione» mostra come una regola decide il destino di un flusso: lo stesso meccanismo che fa apparire una porta filtrata a chi scansiona.',
+              en: 'The “Firewall and inspection” lab shows how a rule decides a flow’s fate: the same mechanism that makes a port look filtered to whoever scans.'
+            },
+            task: {
+              it: 'Collega gli stati aperto, chiuso e filtrato alla decisione del firewall e spiega come un difensore riconosce una scansione.',
+              en: 'Link the open, closed, and filtered states to the firewall decision and explain how a defender recognizes a scan.'
+            },
+            steps: [
+              {
+                it: 'Apri «Firewall e ispezione» e segui un flusso permesso e uno scartato.',
+                en: 'Open “Firewall and inspection” and follow an allowed flow and a dropped one.'
+              },
+              {
+                it: 'Associa il flusso scartato alla porta «filtrata» e quello respinto alla porta «chiusa».',
+                en: 'Associate the dropped flow with the «filtered» port and the rejected one with the «closed» port.'
+              },
+              {
+                it: 'Indica quale evidenza (molti tentativi, molti RST) rivelerebbe la scansione nei log.',
+                en: 'Point out which evidence (many attempts, many RSTs) would reveal the scan in the logs.'
+              }
+            ],
+            challenge: {
+              it: 'Due host rispondono in modo diverso alla stessa sonda: cosa ti dice sul firewall davanti a ciascuno e su quale merita enumerazione?',
+              en: 'Two hosts respond differently to the same probe: what does that tell you about the firewall in front of each and which one deserves enumeration?'
+            },
+            solution: [
+              {
+                it: 'Una porta filtrata nasce da un firewall che scarta il pacchetto senza rispondere, perciò lo scanner non vede né SYN-ACK né RST; una porta chiusa produce un RST perché l’host risponde ma nessun servizio ascolta; una aperta completa l’handshake. Nei log la scansione appare come molti tentativi verso porte diverse in poco tempo, spesso con molti RST: un IDS la riconosce per questa firma.',
+                en: 'A filtered port comes from a firewall that drops the packet without replying, so the scanner sees neither SYN-ACK nor RST; a closed port produces an RST because the host answers but no service listens; an open one completes the handshake. In the logs the scan appears as many attempts to different ports in a short time, often with many RSTs: an IDS recognizes it by this signature.'
+              },
+              {
+                it: 'Sfida: se un host dà RST e l’altro resta muto alla stessa sonda, il primo non ha un firewall che filtra quella porta (chiusa) mentre il secondo sì (filtrata); l’enumerazione conviene sull’host e sulle porte che rispondono, non su quelle filtrate che potrebbero nascondere o meno un servizio.',
+                en: 'Challenge: if one host gives an RST and the other stays silent to the same probe, the first has no firewall filtering that port (closed) while the second does (filtered); enumeration is worth it on the host and ports that respond, not on filtered ones that may or may not hide a service.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So dedurre dallo scanning se una porta è aperta, chiusa o filtrata e perché.',
+                en: 'I can infer from scanning whether a port is open, closed, or filtered, and why.'
+              },
+              {
+                it: 'So dire quale evidenza rivela una scansione e come la segmentazione ne limita la portata.',
+                en: 'I can say which evidence reveals a scan and how segmentation limits its reach.'
               }
             ]
           }

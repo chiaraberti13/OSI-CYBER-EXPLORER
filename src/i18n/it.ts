@@ -91,6 +91,7 @@ export const it = {
     certCcna: 'CCNA 200-301',
     certSecurityPlus: 'CompTIA Security+ SY0-701',
     certBoth: 'CCNA 200-301 · Security+ SY0-701',
+    certEjpt: 'eJPT (INE/eLearnSecurity)',
     trackExtension: 'Estensione',
     examWeight: 'Peso d’esame'
   },

@@ -82,7 +82,8 @@ export default function StudyManualView() {
   const certLabel: Record<ManualCert, string> = {
     ccna: t.certCcna,
     securityplus: t.certSecurityPlus,
-    both: t.certBoth
+    both: t.certBoth,
+    ejpt: t.certEjpt
   };
   const chapterDomain = ccnaDomainForChapter(chapter);
   const chapterAlignment =
