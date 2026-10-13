@@ -4897,5 +4897,300 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
         ]
       }
     ]
+  },
+  {
+    id: 'identity-aaa-advanced',
+    cert: 'securityplus',
+    order: 17,
+    track: 'extension',
+    title: {
+      it: 'Identità e AAA avanzati: 802.1X, EAP-TLS e NAC',
+      en: 'Advanced identity and AAA: 802.1X, EAP-TLS, and NAC'
+    },
+    summary: {
+      it: 'L’approfondimento sull’identità in rete: come 802.1X controlla l’ammissione con EAP-TLS, cosa fare dei dispositivi senza supplicant con MAB e i fallback, e come l’autorizzazione dinamica governa la sessione dopo l’accesso.',
+      en: 'The deep dive on network identity: how 802.1X controls admission with EAP-TLS, what to do with devices lacking a supplicant using MAB and fallbacks, and how dynamic authorization governs the session after access.'
+    },
+    topics: [
+      {
+        id: 'dot1x-eap-tls',
+        title: {
+          it: '802.1X ed EAP-TLS: il controllo dell’ammissione',
+          en: '802.1X and EAP-TLS: controlling admission'
+        },
+        objectives: [
+          {
+            it: 'Descrivere i tre ruoli di 802.1X (supplicant, authenticator, server) e il flusso EAP fino all’autorizzazione.',
+            en: 'Describe the three 802.1X roles (supplicant, authenticator, server) and the EAP flow up to authorization.'
+          },
+          {
+            it: 'Spiegare perché la validazione del certificato del server è il punto critico di EAP-TLS.',
+            en: 'Explain why validating the server certificate is the critical point of EAP-TLS.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere AAA e la differenza RADIUS/TACACS+ (capitolo di sicurezza CCNA) e la validazione dei certificati (capitolo su PKI e TLS).',
+            en: 'Know AAA and the RADIUS/TACACS+ difference (the CCNA security chapter) and certificate validation (the PKI and TLS chapter).'
+          }
+        ],
+        theory: [
+          {
+            it: '802.1X è il controllo dell’ammissione alla rete basato sulla porta, e distingue tre ruoli: il supplicant è il client che chiede di entrare, l’authenticator è lo switch o l’access point che tiene la porta chiusa a tutto tranne l’autenticazione, e il server è il RADIUS che decide. Il supplicant scambia EAPOL con l’authenticator, che incapsula l’EAP verso il server RADIUS; finché l’autenticazione non riesce, dalla porta passa solo il traffico di autenticazione, non i dati.',
+            en: '802.1X is port-based network admission control, and it distinguishes three roles: the supplicant is the client asking to get in, the authenticator is the switch or access point that keeps the port closed to everything but authentication, and the server is the RADIUS that decides. The supplicant exchanges EAPOL with the authenticator, which encapsulates the EAP toward the RADIUS server; until authentication succeeds, only authentication traffic passes the port, not data.'
+          },
+          {
+            it: 'EAP-TLS è il metodo EAP più robusto perché autentica con i certificati in entrambi i versi: il client prova la propria identità con il suo certificato e, soprattutto, valida il certificato del server. Se l’autenticazione riesce, il RADIUS non dice solo “sì”: restituisce un’autorizzazione, che può assegnare dinamicamente una VLAN o una policy. Così l’identità determina il livello di accesso: lo stesso cavo mette un dipendente nella VLAN giusta e un ospite in una isolata.',
+            en: 'EAP-TLS is the strongest EAP method because it authenticates with certificates in both directions: the client proves its identity with its certificate and, above all, validates the server certificate. If authentication succeeds, RADIUS does not just say “yes”: it returns an authorization, which can dynamically assign a VLAN or a policy. So identity determines the access level: the same cable puts an employee in the right VLAN and a guest in an isolated one.'
+          },
+          {
+            it: 'Il punto critico è proprio la validazione del certificato del server. Se il supplicant non controlla la CA, il nome e lo scopo del certificato server, consegna il proprio flusso EAP — e quindi le proprie credenziali — a un’infrastruttura rogue che si finge il server legittimo. La difesa è un profilo supplicant gestito con CA e nome del server vincolati (pinned): senza quel vincolo, 802.1X autentica il client verso un attaccante invece che verso la rete. Ed è bene ricordare che 802.1X controlla l’ammissione, non prova che l’endpoint resti integro dopo l’accesso.',
+            en: 'The critical point is exactly the validation of the server certificate. If the supplicant does not check the CA, name, and purpose of the server certificate, it hands its EAP flow — and therefore its credentials — to rogue infrastructure posing as the legitimate server. The defense is a managed supplicant profile with a pinned CA and server name: without that pin, 802.1X authenticates the client toward an attacker instead of toward the network. And it is worth remembering that 802.1X controls admission, it does not prove the endpoint stays uncompromised after access.'
+          }
+        ],
+        example: {
+          it: 'Un portatile aziendale si collega: lo switch tiene la porta chiusa, il supplicant presenta il certificato e valida quello del server RADIUS, l’autenticazione riesce e il RADIUS assegna dinamicamente la VLAN dei dipendenti; un dispositivo sconosciuto, senza certificato valido, resta fuori.',
+          en: 'A corporate laptop connects: the switch keeps the port closed, the supplicant presents its certificate and validates the RADIUS server’s, authentication succeeds, and RADIUS dynamically assigns the employee VLAN; an unknown device, without a valid certificate, stays out.'
+        },
+        commonMistakes: [
+          {
+            it: 'Non vincolare CA e nome del server nel supplicant: il client può autenticarsi verso un server rogue consegnandogli il flusso EAP.',
+            en: 'Not pinning the CA and server name in the supplicant: the client may authenticate toward a rogue server, handing it the EAP flow.'
+          },
+          {
+            it: 'Confondere i ruoli: l’authenticator (lo switch) non decide, inoltra l’EAP al server RADIUS che decide.',
+            en: 'Confusing the roles: the authenticator (the switch) does not decide, it forwards the EAP to the RADIUS server, which decides.'
+          },
+          {
+            it: 'Credere che 802.1X garantisca l’integrità dell’endpoint: controlla l’ammissione, non lo stato del dispositivo dopo l’accesso.',
+            en: 'Believing 802.1X guarantees endpoint integrity: it controls admission, not the device’s state after access.'
+          }
+        ],
+        lab: 'identitytrust',
+        references: [{ kind: 'rfc', id: 'RFC 5216' }],
+        guidedLabs: [
+          {
+            id: 'gl-dot1x-server-cert',
+            title: { it: 'Il certificato che il client deve rifiutare', en: 'The certificate the client must reject' },
+            difficulty: 'advanced',
+            lab: 'identitytrust',
+            scenario: {
+              it: 'Il laboratorio «Identità e AAA» include lo scenario 802.1X/EAP-TLS con supplicant, authenticator e server RADIUS.',
+              en: 'The “Identity and AAA” lab includes the 802.1X/EAP-TLS scenario with supplicant, authenticator, and RADIUS server.'
+            },
+            task: {
+              it: 'Segui il flusso EAP dai tre ruoli e individua il momento in cui il supplicant deve rifiutare un certificato server non autorizzato.',
+              en: 'Follow the EAP flow across the three roles and identify the moment the supplicant must reject an unauthorized server certificate.'
+            },
+            steps: [
+              {
+                it: 'Apri «Identità e AAA» e seleziona lo scenario 802.1X ed EAP-TLS.',
+                en: 'Open “Identity and AAA” and select the 802.1X and EAP-TLS scenario.'
+              },
+              {
+                it: 'Attribuisci lo scambio EAPOL al supplicant/authenticator e l’incapsulamento EAP al RADIUS.',
+                en: 'Attribute the EAPOL exchange to the supplicant/authenticator and the EAP encapsulation to RADIUS.'
+              },
+              {
+                it: 'Verifica che il supplicant validi CA, nome e scopo del certificato server e rifiuti quello non autorizzato.',
+                en: 'Verify that the supplicant validates the server certificate’s CA, name, and purpose and rejects an unauthorized one.'
+              }
+            ],
+            challenge: {
+              it: 'Un attaccante mette in piedi un finto server RADIUS con lo stesso nome ma un certificato di un’altra CA: cosa deve fare il supplicant e perché un profilo non gestito fallisce?',
+              en: 'An attacker stands up a fake RADIUS server with the same name but a certificate from another CA: what must the supplicant do and why does an unmanaged profile fail?'
+            },
+            solution: [
+              {
+                it: 'Il flusso è supplicant ↔ authenticator (EAPOL) e authenticator ↔ RADIUS (EAP incapsulato); con EAP-TLS il supplicant valida il certificato del server prima di presentare le proprie credenziali. Il momento critico è quello: se il certificato server non è firmato dalla CA attesa, con il nome atteso e per lo scopo giusto, va rifiutato.',
+                en: 'The flow is supplicant ↔ authenticator (EAPOL) and authenticator ↔ RADIUS (encapsulated EAP); with EAP-TLS the supplicant validates the server certificate before presenting its own credentials. That is the critical moment: if the server certificate is not signed by the expected CA, with the expected name and for the right purpose, it must be rejected.'
+              },
+              {
+                it: 'Sfida: contro un finto server il supplicant deve rifiutare il certificato perché la CA non coincide con quella vincolata; un profilo non gestito che non fissa CA e nome accetta qualunque certificato “valido” e consegna il flusso EAP all’attaccante — è il vero punto di rottura di EAP-TLS.',
+                en: 'Challenge: against a fake server the supplicant must reject the certificate because the CA does not match the pinned one; an unmanaged profile that does not pin CA and name accepts any “valid” certificate and hands the EAP flow to the attacker — that is the real breaking point of EAP-TLS.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So descrivere i tre ruoli di 802.1X e il flusso EAP fino all’autorizzazione.',
+                en: 'I can describe the three 802.1X roles and the EAP flow up to authorization.'
+              },
+              {
+                it: 'So spiegare perché la validazione del certificato server è il punto critico di EAP-TLS.',
+                en: 'I can explain why server-certificate validation is the critical point of EAP-TLS.'
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'mab-fallback-order',
+        title: {
+          it: 'MAB, guest e l’ordine dei fallback',
+          en: 'MAB, guest, and the order of fallbacks'
+        },
+        objectives: [
+          {
+            it: 'Spiegare a cosa serve MAB e perché è un controllo più debole di 802.1X.',
+            en: 'Explain what MAB is for and why it is a weaker control than 802.1X.'
+          },
+          {
+            it: 'Ordinare i metodi di ammissione (802.1X, MAB, guest) e dire il rischio di ciascun fallback.',
+            en: 'Order the admission methods (802.1X, MAB, guest) and state the risk of each fallback.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere 802.1X e l’apprendimento dei MAC sullo switch (argomento precedente e capitolo sullo switching).',
+            en: 'Know 802.1X and MAC learning on the switch (previous topic and the switching chapter).'
+          }
+        ],
+        theory: [
+          {
+            it: 'Non tutti i dispositivi hanno un supplicant: stampanti, telecamere, sensori e altri apparati IoT spesso non sanno fare 802.1X. Per loro esiste MAB (MAC Authentication Bypass): lo switch, fallito 802.1X, prende il MAC del dispositivo e lo autentica contro il RADIUS come se fosse una credenziale. Funziona, ma è un controllo debole: un MAC si legge e si falsifica, quindi MAB autentica “un indirizzo”, non “un dispositivo fidato”. Va perciò ristretto alle porte dove serve davvero e abbinato a profilazione e a una VLAN con pochi privilegi.',
+            en: 'Not every device has a supplicant: printers, cameras, sensors, and other IoT devices often cannot do 802.1X. For them there is MAB (MAC Authentication Bypass): the switch, after 802.1X fails, takes the device’s MAC and authenticates it against RADIUS as if it were a credential. It works, but it is a weak control: a MAC can be read and spoofed, so MAB authenticates “an address,” not “a trusted device.” It must therefore be restricted to the ports where it is genuinely needed and paired with profiling and a low-privilege VLAN.'
+          },
+          {
+            it: 'I metodi di ammissione si incatenano in un ordine di robustezza decrescente. Prima si prova 802.1X, il più forte, perché basato su credenziali o certificati; se il dispositivo non risponde con EAPOL, si ricade su MAB, basato sul MAC; come ultima risorsa può intervenire un web-auth per gli ospiti, dove l’utente si autentica da un portale. Ogni gradino è più debole del precedente, quindi l’ordine conta: mettere MAB prima di 802.1X, o lasciare un fallback guest troppo permissivo, significa offrire la porta meno sicura come prima scelta.',
+            en: 'The admission methods chain in order of decreasing strength. First 802.1X is tried, the strongest, because it is based on credentials or certificates; if the device does not respond with EAPOL, it falls back to MAB, based on the MAC; as a last resort a web-auth may step in for guests, where the user authenticates from a portal. Each step is weaker than the previous, so order matters: putting MAB before 802.1X, or leaving a too-permissive guest fallback, means offering the least secure door as the first choice.'
+          },
+          {
+            it: 'Un fallback diverso vale per l’amministrazione degli apparati: quando il server AAA è irraggiungibile serve un metodo locale di riserva, altrimenti un guasto del RADIUS chiude fuori gli amministratori. È lo stesso principio visto per AAA, applicato qui: il fallback di accesso alla rete (MAB, guest) e il fallback di gestione (locale) risolvono problemi diversi e non vanno confusi. Il primo ammette dispositivi senza supplicant, il secondo garantisce l’accesso di emergenza agli amministratori.',
+            en: 'A different fallback applies to device administration: when the AAA server is unreachable a local backup method is needed, otherwise a RADIUS failure locks administrators out. It is the same principle seen for AAA, applied here: the network-access fallback (MAB, guest) and the management fallback (local) solve different problems and must not be confused. The first admits devices without a supplicant, the second guarantees emergency access for administrators.'
+          }
+        ],
+        example: {
+          it: 'Una stampante senza supplicant si collega: 802.1X fallisce, lo switch ricade su MAB e autentica il MAC della stampante mettendola in una VLAN a privilegi minimi; un portatile sulla stessa porta supera invece 802.1X e finisce nella VLAN dei dipendenti.',
+          en: 'A printer without a supplicant connects: 802.1X fails, the switch falls back to MAB and authenticates the printer’s MAC, placing it in a low-privilege VLAN; a laptop on the same port instead passes 802.1X and ends up in the employee VLAN.'
+        },
+        commonMistakes: [
+          {
+            it: 'Trattare MAB come equivalente a 802.1X: un MAC è falsificabile, quindi MAB autentica un indirizzo, non un dispositivo fidato.',
+            en: 'Treating MAB as equivalent to 802.1X: a MAC is spoofable, so MAB authenticates an address, not a trusted device.'
+          },
+          {
+            it: 'Sbagliare l’ordine dei metodi: 802.1X va provato per primo, MAB e guest sono fallback progressivamente più deboli.',
+            en: 'Getting the method order wrong: 802.1X is tried first, MAB and guest are progressively weaker fallbacks.'
+          },
+          {
+            it: 'Confondere il fallback di rete con quello di gestione: MAB ammette dispositivi, il fallback locale serve agli amministratori quando il RADIUS è giù.',
+            en: 'Confusing the network fallback with the management one: MAB admits devices, the local fallback serves administrators when RADIUS is down.'
+          }
+        ],
+        lab: 'identitytrust',
+        references: [{ kind: 'ieee', id: 'IEEE 802.1X' }]
+      },
+      {
+        id: 'dynamic-authorization-lifecycle',
+        title: {
+          it: 'Autorizzazione dinamica e ciclo di vita della sessione',
+          en: 'Dynamic authorization and session lifecycle'
+        },
+        objectives: [
+          {
+            it: 'Spiegare come l’autorizzazione dinamica (CoA) cambia la policy di una sessione già aperta.',
+            en: 'Explain how dynamic authorization (CoA) changes the policy of an already-open session.'
+          },
+          {
+            it: 'Descrivere perché l’ammissione non basta e cosa aggiunge la postura e la rivalutazione.',
+            en: 'Describe why admission is not enough and what posture and re-evaluation add.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere 802.1X e l’assegnazione dinamica di VLAN/policy da RADIUS (argomenti precedenti).',
+            en: 'Know 802.1X and the dynamic assignment of VLAN/policy from RADIUS (previous topics).'
+          }
+        ],
+        theory: [
+          {
+            it: 'L’autenticazione decide l’ingresso una volta sola, ma la policy di una sessione può dover cambiare mentre è aperta. La Change of Authorization (CoA) permette al server di modificare o terminare una sessione già autorizzata senza aspettare che l’utente si riconnetta: può spostare un dispositivo in quarantena, cambiargli VLAN o policy, o chiuderne la sessione. È il meccanismo che rende l’accesso reattivo: un endpoint che smette di essere conforme viene isolato subito, non alla prossima autenticazione.',
+            en: 'Authentication decides entry once, but a session’s policy may need to change while it is open. Change of Authorization (CoA) lets the server modify or terminate an already-authorized session without waiting for the user to reconnect: it can move a device to quarantine, change its VLAN or policy, or close its session. It is the mechanism that makes access reactive: an endpoint that stops being compliant is isolated at once, not at the next authentication.'
+          },
+          {
+            it: 'L’ammissione non è integrità. 802.1X prova chi è l’endpoint al momento dell’accesso, ma non che resti sano dopo: un portatile autenticato può prendere malware un minuto dopo. Per questo si aggiunge la valutazione della postura — verificare che il dispositivo abbia antivirus aggiornato, patch, disco cifrato — e la rivalutazione periodica, che insieme alla CoA permette di declassare una sessione che non è più conforme. L’accesso diventa così una condizione continua, non un lasciapassare permanente.',
+            en: 'Admission is not integrity. 802.1X proves who the endpoint is at access time, but not that it stays healthy afterward: an authenticated laptop can pick up malware a minute later. That is why posture assessment is added — checking that the device has an up-to-date antivirus, patches, an encrypted disk — along with periodic re-evaluation, which together with CoA allows a session that is no longer compliant to be downgraded. Access thus becomes a continuous condition, not a permanent pass.'
+          },
+          {
+            it: 'Intorno a tutto questo c’è il ciclo di vita dell’identità: un account o un certificato va creato, assegnato con i privilegi minimi, rivisto e infine revocato quando non serve più. Un certificato device revocato deve essere rifiutato all’autenticazione, e un privilegio concesso per un compito temporaneo va ritirato alla fine. Trascurare la revoca e la dismissione lascia credenziali valide in giro — il modo più comune in cui un accesso legittimo diventa un ingresso per un attaccante.',
+            en: 'Around all this is the identity lifecycle: an account or a certificate must be created, assigned with least privilege, reviewed, and finally revoked when no longer needed. A revoked device certificate must be rejected at authentication, and a privilege granted for a temporary task must be withdrawn at the end. Neglecting revocation and deprovisioning leaves valid credentials lying around — the most common way a legitimate access becomes an attacker’s entry.'
+          }
+        ],
+        example: {
+          it: 'Un portatile autenticato smette di essere conforme perché disattiva l’antivirus: la valutazione della postura lo rileva e una CoA lo sposta in una VLAN di quarantena mentre la sua sessione è ancora aperta, senza attendere una nuova autenticazione.',
+          en: 'An authenticated laptop stops being compliant because it disables the antivirus: posture assessment detects it and a CoA moves it to a quarantine VLAN while its session is still open, without waiting for a new authentication.'
+        },
+        commonMistakes: [
+          {
+            it: 'Considerare l’autenticazione un lasciapassare permanente: senza postura e rivalutazione, un endpoint compromesso dopo l’accesso resta dentro.',
+            en: 'Treating authentication as a permanent pass: without posture and re-evaluation, an endpoint compromised after access stays in.'
+          },
+          {
+            it: 'Ignorare la CoA: senza di essa una policy cambia solo alla prossima autenticazione, troppo tardi per isolare una sessione a rischio.',
+            en: 'Ignoring CoA: without it a policy changes only at the next authentication, too late to isolate a risky session.'
+          },
+          {
+            it: 'Trascurare revoca e dismissione: credenziali e certificati non ritirati restano un accesso valido per chi non dovrebbe più averlo.',
+            en: 'Neglecting revocation and deprovisioning: un-withdrawn credentials and certificates remain a valid access for someone who should no longer have it.'
+          }
+        ],
+        lab: 'identitytrust',
+        references: [{ kind: 'rfc', id: 'RFC 5176' }],
+        guidedLabs: [
+          {
+            id: 'gl-coa-posture',
+            title: { it: 'Reagire durante la sessione', en: 'Reacting during the session' },
+            difficulty: 'advanced',
+            lab: 'identitytrust',
+            scenario: {
+              it: 'Il laboratorio «Identità e AAA» copre l’autorizzazione dinamica e il ciclo di vita della sessione oltre l’ammissione iniziale.',
+              en: 'The “Identity and AAA” lab covers dynamic authorization and the session lifecycle beyond initial admission.'
+            },
+            task: {
+              it: 'Spiega come una sessione già aperta può essere declassata quando l’endpoint non è più conforme, e cosa lo rende possibile.',
+              en: 'Explain how an already-open session can be downgraded when the endpoint is no longer compliant, and what makes it possible.'
+            },
+            steps: [
+              {
+                it: 'Apri «Identità e AAA» e individua lo scenario di sessione e autorizzazione dinamica.',
+                en: 'Open “Identity and AAA” and find the session and dynamic-authorization scenario.'
+              },
+              {
+                it: 'Nota che 802.1X prova l’identità all’accesso, non l’integrità continua dell’endpoint.',
+                en: 'Note that 802.1X proves identity at access, not the endpoint’s ongoing integrity.'
+              },
+              {
+                it: 'Collega la valutazione della postura e la CoA al declassamento di una sessione non più conforme.',
+                en: 'Connect posture assessment and CoA to downgrading a session that is no longer compliant.'
+              }
+            ],
+            challenge: {
+              it: 'Un dispositivo autenticato viene revocato mentre la sessione è attiva: cosa deve succedere subito e cosa alla prossima autenticazione?',
+              en: 'An authenticated device is revoked while the session is active: what must happen immediately and what at the next authentication?'
+            },
+            solution: [
+              {
+                it: 'Una sessione aperta si declassa perché la postura rileva la non conformità e una CoA cambia VLAN/policy o chiude la sessione senza attendere una nuova autenticazione; è questo che rende l’accesso una condizione continua invece di un lasciapassare.',
+                en: 'An open session is downgraded because posture detects the non-compliance and a CoA changes the VLAN/policy or closes the session without waiting for a new authentication; this is what makes access a continuous condition rather than a pass.'
+              },
+              {
+                it: 'Sfida: alla revoca, una CoA deve terminare o mettere subito in quarantena la sessione attiva, e al successivo tentativo l’autenticazione deve fallire perché il certificato device revocato viene rifiutato; senza la CoA la revoca avrebbe effetto solo al prossimo accesso, lasciando una finestra aperta.',
+                en: 'Challenge: on revocation, a CoA must immediately terminate or quarantine the active session, and at the next attempt authentication must fail because the revoked device certificate is rejected; without CoA the revocation would take effect only at the next access, leaving an open window.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So spiegare cosa fa la CoA e perché l’ammissione da sola non basta.',
+                en: 'I can explain what CoA does and why admission alone is not enough.'
+              },
+              {
+                it: 'So dire cosa aggiungono postura, rivalutazione e revoca al controllo dell’accesso.',
+                en: 'I can say what posture, re-evaluation, and revocation add to access control.'
+              }
+            ]
+          }
+        ]
+      }
+    ]
   }
 ];
