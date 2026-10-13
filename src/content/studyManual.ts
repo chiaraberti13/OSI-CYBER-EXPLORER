@@ -3606,5 +3606,355 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
         ]
       }
     ]
+  },
+  {
+    id: 'ip-services-extended',
+    cert: 'ccna',
+    order: 13,
+    track: 'ccna',
+    domain: 'ip-services',
+    title: {
+      it: 'Servizi IP estesi e ridondanza del gateway',
+      en: 'Extended IP services and gateway redundancy'
+    },
+    summary: {
+      it: 'I servizi che rendono una rete gestibile e resiliente: la ridondanza del primo hop con FHRP, il tempo e la telemetria con NTP, SNMP e Syslog, e la qualità del servizio con l’accesso sicuro agli apparati.',
+      en: 'The services that make a network manageable and resilient: first-hop redundancy with FHRP, time and telemetry with NTP, SNMP and Syslog, and quality of service alongside secure device access.'
+    },
+    topics: [
+      {
+        id: 'fhrp-gateway-redundancy',
+        title: {
+          it: 'FHRP: ridondanza del primo hop',
+          en: 'FHRP: first-hop redundancy'
+        },
+        objectives: [
+          {
+            it: 'Spiegare come un FHRP presenta un gateway virtuale e come avviene il subentro tra router.',
+            en: 'Explain how an FHRP presents a virtual gateway and how failover between routers happens.'
+          },
+          {
+            it: 'Distinguere HSRP, VRRP e GLBP per priorità, preempt e comportamento in caso di guasto.',
+            en: 'Distinguish HSRP, VRRP, and GLBP by priority, preemption, and failure behaviour.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Sapere che l’host consegna al default gateway ciò che è fuori dalla sua subnet (capitolo sul routing).',
+            en: 'Know that a host delivers off-subnet traffic to the default gateway (the routing chapter).'
+          }
+        ],
+        theory: [
+          {
+            it: 'Un host ha un solo default gateway configurato: se quel router cade, l’host resta isolato anche quando esiste un secondo router. Un FHRP (First Hop Redundancy Protocol) risolve il problema presentando agli host un indirizzo IP virtuale e un MAC virtuale condivisi da due o più router: gli host puntano al virtuale, e dietro di esso un router è attivo mentre gli altri sono in standby, pronti a subentrare. Questo argomento appartiene al dominio 3.0 (Connettività IP) ma vive qui perché completa i servizi che rendono la rete affidabile.',
+            en: 'A host has a single configured default gateway: if that router fails, the host is isolated even when a second router exists. An FHRP (First Hop Redundancy Protocol) solves this by presenting hosts with a shared virtual IP address and virtual MAC owned by two or more routers: hosts point at the virtual one, and behind it one router is active while the others stand by, ready to take over. This topic belongs to domain 3.0 (IP Connectivity) but lives here because it completes the services that make a network reliable.'
+          },
+          {
+            it: 'HSRP è proprietario Cisco: vince il router con priorità più alta (default 100), poi l’IP più alto, e il MAC virtuale è 0000.0C07.ACxx (xx = gruppo) in HSRPv1. Senza il comando preempt, un router a priorità maggiore che torna online non riprende il ruolo attivo, per evitare un flap. VRRP è lo standard aperto (RFC 5798) con la stessa logica di priorità ma con il preempt attivo per impostazione predefinita. GLBP, anch’esso Cisco, va oltre la coppia attivo/standby: distribuisce il carico tra più gateway dello stesso gruppo invece di tenerne uno solo attivo.',
+            en: 'HSRP is Cisco proprietary: the router with the highest priority wins (default 100), then the highest IP, and the virtual MAC is 0000.0C07.ACxx (xx = group) in HSRPv1. Without the preempt command, a higher-priority router that comes back online does not reclaim the active role, to avoid a flap. VRRP is the open standard (RFC 5798) with the same priority logic but with preemption enabled by default. GLBP, also Cisco, goes beyond the active/standby pair: it shares load across several gateways in the same group instead of keeping only one active.'
+          },
+          {
+            it: 'Il subentro è trasparente perché a cambiare è solo quale router risponde all’IP e al MAC virtuali: gli host non riconfigurano nulla e la loro tabella ARP resta valida. Il tempo di failover dipende dai timer di hello e hold; abbassarli accelera il subentro ma aumenta il traffico di controllo e il rischio di flap su link instabili. L’FHRP protegge il gateway, non il percorso a valle: un guasto oltre il primo hop non lo riguarda.',
+            en: 'Failover is transparent because all that changes is which router answers the virtual IP and MAC: hosts reconfigure nothing and their ARP table stays valid. Failover time depends on the hello and hold timers; lowering them speeds up the takeover but increases control traffic and the risk of flapping on unstable links. An FHRP protects the gateway, not the path downstream: a failure beyond the first hop is none of its concern.'
+          }
+        ],
+        example: {
+          it: 'Due router condividono un IP virtuale che gli host usano come gateway: il router attivo inoltra, lo standby ascolta gli hello; se l’attivo smette di rispondere, lo standby assume IP e MAC virtuali e il traffico prosegue senza che un solo host cambi configurazione.',
+          en: 'Two routers share a virtual IP that hosts use as their gateway: the active router forwards, the standby listens to the hellos; if the active stops responding, the standby takes over the virtual IP and MAC and traffic continues without a single host changing configuration.'
+        },
+        commonMistakes: [
+          {
+            it: 'Dimenticare il comando preempt in HSRP: il router a priorità maggiore non riprende il ruolo attivo quando torna disponibile.',
+            en: 'Forgetting the preempt command in HSRP: the higher-priority router does not reclaim the active role when it becomes available again.'
+          },
+          {
+            it: 'Credere che un FHRP bilanci il carico: HSRP e VRRP tengono un solo router attivo; è GLBP a distribuire il traffico nel gruppo.',
+            en: 'Believing an FHRP load-balances: HSRP and VRRP keep a single active router; it is GLBP that shares traffic within the group.'
+          },
+          {
+            it: 'Pensare che l’FHRP protegga l’intero percorso: copre solo il primo hop, non i guasti a valle del gateway.',
+            en: 'Thinking an FHRP protects the whole path: it covers only the first hop, not failures downstream of the gateway.'
+          }
+        ],
+        lab: 'routing',
+        references: [{ kind: 'rfc', id: 'RFC 5798' }],
+        guidedLabs: [
+          {
+            id: 'gl-fhrp-failover',
+            title: { it: 'Chi subentra, e quando', en: 'Who takes over, and when' },
+            difficulty: 'core',
+            lab: 'routing',
+            scenario: {
+              it: 'Il laboratorio «Connettività IP» include una tabella di confronto FHRP con priorità, preempt e indirizzi virtuali di HSRP e VRRP.',
+              en: 'The “IP connectivity” lab includes an FHRP comparison table with priority, preemption, and virtual addresses of HSRP and VRRP.'
+            },
+            task: {
+              it: 'Dati due router con priorità diverse, stabilisci chi è attivo, chi subentra a un guasto e cosa cambia con o senza preempt.',
+              en: 'Given two routers with different priorities, determine who is active, who takes over on a failure, and what changes with or without preemption.'
+            },
+            steps: [
+              {
+                it: 'Apri «Connettività IP» e leggi la tabella di confronto FHRP.',
+                en: 'Open “IP connectivity” and read the FHRP comparison table.'
+              },
+              {
+                it: 'Individua il router attivo in base alla priorità più alta (poi l’IP più alto).',
+                en: 'Identify the active router by the highest priority (then the highest IP).'
+              },
+              {
+                it: 'Valuta cosa accade quando il router a priorità maggiore torna online, con e senza preempt.',
+                en: 'Assess what happens when the higher-priority router comes back online, with and without preemption.'
+              }
+            ],
+            challenge: {
+              it: 'Vuoi che entrambi i router inoltrino traffico contemporaneamente invece di tenerne uno in standby: quale FHRP scegli e perché?',
+              en: 'You want both routers to forward traffic at once instead of keeping one on standby: which FHRP do you choose and why?'
+            },
+            solution: [
+              {
+                it: 'È attivo il router con priorità più alta (default 100), a parità l’IP più alto; se cade, lo standby assume IP e MAC virtuali. Con HSRP il router a priorità maggiore riprende il ruolo solo se è configurato preempt; con VRRP il preempt è attivo per default, quindi riprende da solo.',
+                en: 'The active router is the one with the highest priority (default 100), ties broken by the highest IP; if it fails, the standby takes over the virtual IP and MAC. With HSRP the higher-priority router reclaims the role only if preempt is configured; with VRRP preemption is on by default, so it reclaims on its own.'
+              },
+              {
+                it: 'Sfida: per far inoltrare entrambi i router si usa GLBP, che distribuisce il carico tra i gateway dello stesso gruppo rispondendo con MAC virtuali diversi ai diversi host; HSRP e VRRP, invece, tengono un solo router attivo per gruppo.',
+                en: 'Challenge: to have both routers forward you use GLBP, which shares load across the gateways in the same group by answering different hosts with different virtual MACs; HSRP and VRRP, instead, keep a single active router per group.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So dire chi è attivo, chi subentra e cosa cambia con o senza preempt.',
+                en: 'I can say who is active, who takes over, and what changes with or without preemption.'
+              },
+              {
+                it: 'So scegliere l’FHRP adatto quando serve bilanciare il carico tra gateway.',
+                en: 'I can choose the right FHRP when load must be shared across gateways.'
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'management-ntp-snmp-syslog',
+        title: {
+          it: 'Tempo e telemetria: NTP, SNMP e Syslog',
+          en: 'Time and telemetry: NTP, SNMP, and Syslog'
+        },
+        objectives: [
+          {
+            it: 'Spiegare perché il tempo sincronizzato con NTP è il presupposto di log e certificati affidabili.',
+            en: 'Explain why time synchronised with NTP is the prerequisite for reliable logs and certificates.'
+          },
+          {
+            it: 'Descrivere il modello SNMP (manager, agent, MIB) e la scala di severità di Syslog.',
+            en: 'Describe the SNMP model (manager, agent, MIB) and the Syslog severity scale.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere i servizi IP di base e il ruolo di client e server (capitolo sui servizi IP).',
+            en: 'Know the basic IP services and the client/server roles (the IP services chapter).'
+          }
+        ],
+        theory: [
+          {
+            it: 'NTP (Network Time Protocol, UDP/123) sincronizza l’orologio degli apparati verso una sorgente di riferimento, organizzata in strati (stratum): lo stratum 0 è l’orologio fisico, lo stratum 1 il server a esso direttamente collegato, e ogni livello successivo si allontana di uno. Il tempo corretto non è un dettaglio: senza di esso i timestamp dei log non si possono correlare tra apparati, la validità dei certificati non si può verificare e un’indagine perde la linea temporale. NTP va autenticato, perché un tempo falsificato può invalidare log e certificati.',
+            en: 'NTP (Network Time Protocol, UDP/123) synchronises device clocks toward a reference source, organised in strata: stratum 0 is the physical clock, stratum 1 the server directly attached to it, and each further level is one step away. Correct time is not a detail: without it, log timestamps cannot be correlated across devices, certificate validity cannot be checked, and an investigation loses its timeline. NTP must be authenticated, because a forged time can invalidate logs and certificates.'
+          },
+          {
+            it: 'SNMP (Simple Network Management Protocol) segue il modello manager–agent–MIB: il manager interroga l’agent sull’apparato, che espone i valori organizzati nella MIB (Management Information Base), e può ricevere trap non sollecitate quando accade un evento. Le versioni 1 e 2c usano community string in chiaro e vanno evitate; SNMPv3 in modalità authPriv aggiunge autenticazione, integrità e cifratura, con viste minime e ACL che limitano chi può leggere e scrivere.',
+            en: 'SNMP (Simple Network Management Protocol) follows the manager–agent–MIB model: the manager queries the agent on the device, which exposes values organised in the MIB (Management Information Base), and can receive unsolicited traps when an event occurs. Versions 1 and 2c use cleartext community strings and should be avoided; SNMPv3 in authPriv mode adds authentication, integrity, and encryption, with minimal views and ACLs that limit who may read and write.'
+          },
+          {
+            it: 'Syslog raccoglie i messaggi di evento degli apparati su una scala di severità da 0 a 7, dove 0 (emergency) è il più grave e 7 (debug) il più dettagliato; impostare una soglia include quel livello e tutti i numericamente inferiori. I log vanno inviati a un collector remoto centralizzato, con timestamp NTP, accesso ristretto e storage immutabile: un log che resta solo sull’apparato sparisce con l’apparato, e un attaccante che compromette il dispositivo può alterarlo.',
+            en: 'Syslog collects device event messages on a severity scale from 0 to 7, where 0 (emergency) is the most severe and 7 (debug) the most detailed; setting a threshold includes that level and all numerically lower ones. Logs must be sent to a centralised remote collector, with NTP timestamps, restricted access, and immutable storage: a log that stays only on the device disappears with the device, and an attacker who compromises it can alter it.'
+          }
+        ],
+        example: {
+          it: 'Quando due switch registrano lo stesso evento, solo un orologio sincronizzato con NTP permette di metterne in fila i log sul collector Syslog; con orologi sfasati, la sequenza degli eventi diventa inservibile per un’indagine.',
+          en: 'When two switches record the same event, only an NTP-synchronised clock lets their logs be lined up on the Syslog collector; with skewed clocks, the sequence of events becomes useless for an investigation.'
+        },
+        commonMistakes: [
+          {
+            it: 'Trattare il tempo come secondario: senza NTP i log non si correlano e la validità dei certificati non si verifica.',
+            en: 'Treating time as secondary: without NTP, logs do not correlate and certificate validity cannot be checked.'
+          },
+          {
+            it: 'Usare SNMPv1/v2c in produzione: le community string viaggiano in chiaro; serve SNMPv3 authPriv.',
+            en: 'Using SNMPv1/v2c in production: community strings travel in cleartext; SNMPv3 authPriv is needed.'
+          },
+          {
+            it: 'Leggere la severità Syslog al contrario: 0 è il più grave e 7 il più dettagliato, e la soglia include i livelli inferiori.',
+            en: 'Reading Syslog severity backwards: 0 is the most severe and 7 the most detailed, and the threshold includes the lower levels.'
+          }
+        ],
+        lab: 'services',
+        references: [{ kind: 'rfc', id: 'RFC 5905' }],
+        guidedLabs: [
+          {
+            id: 'gl-syslog-severity',
+            title: { it: 'Scegliere la soglia di Syslog', en: 'Choosing the Syslog threshold' },
+            difficulty: 'core',
+            lab: 'services',
+            scenario: {
+              it: 'Il laboratorio «Servizi IP» mostra la scala di severità di Syslog da 0 a 7 e la relazione con la soglia impostata.',
+              en: 'The “IP services” lab shows the Syslog severity scale from 0 to 7 and its relationship with the configured threshold.'
+            },
+            task: {
+              it: 'Data una soglia, indica quali livelli vengono registrati e perché, poi verifica con il laboratorio.',
+              en: 'Given a threshold, state which levels are logged and why, then check with the lab.'
+            },
+            steps: [
+              {
+                it: 'Apri «Servizi IP» e individua la scala di severità Syslog (0–7).',
+                en: 'Open “IP services” and find the Syslog severity scale (0–7).'
+              },
+              {
+                it: 'Ricorda che 0 è il più grave e 7 il più dettagliato.',
+                en: 'Remember that 0 is the most severe and 7 the most detailed.'
+              },
+              {
+                it: 'Applica la soglia: include il livello scelto e tutti i numericamente inferiori.',
+                en: 'Apply the threshold: it includes the chosen level and all numerically lower ones.'
+              }
+            ],
+            challenge: {
+              it: 'I log devono reggere in un’indagine: oltre alla soglia, quali tre proprietà del trasporto e dello storage li rendono attendibili?',
+              en: 'The logs must hold up in an investigation: beyond the threshold, which three properties of transport and storage make them trustworthy?'
+            },
+            solution: [
+              {
+                it: 'Una soglia a livello N registra N e tutti i livelli numericamente inferiori: impostare 4 (warning) cattura 0–4 e scarta il rumore di 5–7. La scala è invertita rispetto all’intuito, perché 0 (emergency) è il più grave.',
+                en: 'A threshold at level N logs N and all numerically lower levels: setting 4 (warning) captures 0–4 and drops the 5–7 noise. The scale is inverted from intuition, because 0 (emergency) is the most severe.'
+              },
+              {
+                it: 'Sfida: i log reggono se sono su un collector remoto centralizzato (non spariscono con l’apparato), con timestamp NTP (si correlano tra dispositivi) e su storage immutabile ad accesso ristretto (un attaccante non li altera).',
+                en: 'Challenge: logs hold up if they are on a centralised remote collector (they do not vanish with the device), with NTP timestamps (they correlate across devices), and on immutable, access-restricted storage (an attacker cannot alter them).'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So dire, data una soglia, quali livelli di Syslog vengono registrati.',
+                en: 'I can say, given a threshold, which Syslog levels are logged.'
+              },
+              {
+                it: 'So elencare le proprietà che rendono i log attendibili per un’indagine.',
+                en: 'I can list the properties that make logs trustworthy for an investigation.'
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'qos-secure-access',
+        title: {
+          it: 'QoS e accesso sicuro agli apparati',
+          en: 'QoS and secure device access'
+        },
+        objectives: [
+          {
+            it: 'Spiegare come la QoS classifica, marca e tratta il traffico per-hop e dove sta la trust boundary.',
+            en: 'Explain how QoS classifies, marks, and treats traffic per hop, and where the trust boundary sits.'
+          },
+          {
+            it: 'Scegliere metodi di accesso e trasferimento sicuri (SSH, SCP/SFTP) rispetto a quelli in chiaro.',
+            en: 'Choose secure access and transfer methods (SSH, SCP/SFTP) over cleartext ones.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Sapere che i router prendono decisioni per pacchetto e che la banda è una risorsa contesa (capitoli su routing e WAN).',
+            en: 'Know that routers make per-packet decisions and that bandwidth is a contended resource (the routing and WAN topics).'
+          }
+        ],
+        theory: [
+          {
+            it: 'La QoS (Quality of Service) non crea banda: decide quale traffico riceve un trattamento preferenziale quando le risorse sono contese. Il traffico viene prima classificato e marcato — con CoS a livello 2 o DSCP a livello 3 — poi ogni router applica un comportamento per-hop (Per-Hop Behavior) coerente con quella marcatura: accodamento prioritario per voce e video sensibili al ritardo, scarto selettivo per il traffico meno importante. La trust boundary stabilisce dove una marcatura in arrivo può essere accettata: oltre quel confine le marcature di una sorgente non fidata vanno riscritte, altrimenti chiunque può auto-assegnarsi priorità.',
+            en: 'QoS (Quality of Service) does not create bandwidth: it decides which traffic receives preferential treatment when resources are contended. Traffic is first classified and marked — with CoS at Layer 2 or DSCP at Layer 3 — then each router applies a Per-Hop Behavior consistent with that marking: priority queuing for delay-sensitive voice and video, selective dropping for less important traffic. The trust boundary determines where an incoming marking may be accepted: beyond that boundary the markings of an untrusted source must be rewritten, otherwise anyone can grant themselves priority.'
+          },
+          {
+            it: 'La gestione degli apparati va fatta con protocolli cifrati. SSH (SSHv2, TCP/22) fornisce cifratura, integrità e autenticazione per la CLI e sostituisce Telnet, che trasmette tutto in chiaro; la sua sicurezza dipende anche da AAA, chiavi, un management plane isolato e autorizzazioni minime. Per i trasferimenti di file, TFTP (UDP/69) non autentica e non cifra, e FTP (TCP/21) trasmette credenziali e contenuti in chiaro: per un trasferimento protetto si usano SCP, SFTP o HTTPS.',
+            en: 'Device management must use encrypted protocols. SSH (SSHv2, TCP/22) provides encryption, integrity, and authentication for the CLI and replaces Telnet, which sends everything in cleartext; its security also depends on AAA, keys, an isolated management plane, and least privilege. For file transfers, TFTP (UDP/69) neither authenticates nor encrypts, and FTP (TCP/21) sends credentials and content in cleartext: for a protected transfer use SCP, SFTP, or HTTPS.'
+          },
+          {
+            it: 'Gestione e QoS si incontrano sul management plane: il traffico di gestione va isolato (idealmente in un VRF o una VLAN dedicata), limitato alle sorgenti autorizzate con una ACL e protetto con CoPP (Control Plane Policing) perché un apparato sommerso di richieste non smetta di essere gestibile. La marcatura QoS del traffico di gestione garantisce che un comando di emergenza passi anche quando la rete è congestionata.',
+            en: 'Management and QoS meet on the management plane: management traffic must be isolated (ideally in a dedicated VRF or VLAN), restricted to authorised sources with an ACL, and protected with CoPP (Control Plane Policing) so that a device flooded with requests does not stop being manageable. QoS marking of management traffic ensures an emergency command gets through even when the network is congested.'
+          }
+        ],
+        example: {
+          it: 'Un telefono IP marca la voce con DSCP EF: dentro la trust boundary i router la mettono in coda prioritaria e la voce resta pulita anche su un link saturo; un PC che provasse a marcare il proprio traffico come EF oltre il confine vedrebbe la marcatura riscritta.',
+          en: 'An IP phone marks voice with DSCP EF: inside the trust boundary routers place it in a priority queue and the voice stays clean even on a saturated link; a PC trying to mark its own traffic as EF beyond the boundary would see the marking rewritten.'
+        },
+        commonMistakes: [
+          {
+            it: 'Credere che la QoS aumenti la banda: riordina solo le priorità quando la banda è contesa, non ne aggiunge.',
+            en: 'Believing QoS increases bandwidth: it only reorders priorities when bandwidth is contended, it does not add any.'
+          },
+          {
+            it: 'Fidarsi delle marcature oltre la trust boundary: una sorgente non fidata può auto-assegnarsi priorità se la marcatura non viene riscritta.',
+            en: 'Trusting markings beyond the trust boundary: an untrusted source can grant itself priority if the marking is not rewritten.'
+          },
+          {
+            it: 'Gestire gli apparati con Telnet, FTP o TFTP: trasmettono in chiaro; servono SSH e SCP/SFTP.',
+            en: 'Managing devices with Telnet, FTP, or TFTP: they transmit in cleartext; SSH and SCP/SFTP are needed.'
+          }
+        ],
+        lab: 'services',
+        references: [{ kind: 'rfc', id: 'RFC 2474' }],
+        guidedLabs: [
+          {
+            id: 'gl-qos-trust-boundary',
+            title: { it: 'Dove ci si fida di una marcatura', en: 'Where a marking is trusted' },
+            difficulty: 'core',
+            lab: 'services',
+            scenario: {
+              it: 'Il laboratorio «Servizi IP» descrive i meccanismi di QoS, dalla classificazione e marcatura alla trust boundary.',
+              en: 'The “IP services” lab describes the QoS mechanisms, from classification and marking to the trust boundary.'
+            },
+            task: {
+              it: 'Individua dove una marcatura in arrivo può essere accettata e dove va riscritta, e perché.',
+              en: 'Identify where an incoming marking may be accepted and where it must be rewritten, and why.'
+            },
+            steps: [
+              {
+                it: 'Apri «Servizi IP» e leggi i meccanismi di QoS (classificazione, marcatura, trust boundary).',
+                en: 'Open “IP services” and read the QoS mechanisms (classification, marking, trust boundary).'
+              },
+              {
+                it: 'Individua la trust boundary: il punto fino a cui ci si fida delle marcature.',
+                en: 'Identify the trust boundary: the point up to which markings are trusted.'
+              },
+              {
+                it: 'Stabilisci cosa fare delle marcature provenienti da una porta di accesso non gestita.',
+                en: 'Decide what to do with markings coming from an unmanaged access port.'
+              }
+            ],
+            challenge: {
+              it: 'Un telefono IP e il PC collegato dietro di esso marcano traffico in modo diverso: come si fida la rete del telefono ma non del PC?',
+              en: 'An IP phone and the PC connected behind it mark traffic differently: how does the network trust the phone but not the PC?'
+            },
+            solution: [
+              {
+                it: 'Dentro la trust boundary le marcature sono accettate perché provengono da dispositivi gestiti; oltre il confine — tipicamente la porta di accesso verso un host non fidato — vanno riscritte, altrimenti un host può auto-assegnarsi una priorità alta e rubare la coda prioritaria.',
+                en: 'Inside the trust boundary markings are accepted because they come from managed devices; beyond the boundary — typically the access port toward an untrusted host — they must be rewritten, otherwise a host can grant itself high priority and steal the priority queue.'
+              },
+              {
+                it: 'Sfida: lo switch estende condizionatamente la trust boundary al telefono IP (riconosciuto e gestito) ma non al PC dietro di esso, riscrivendo la marcatura del traffico che arriva dalla porta dati del telefono; così la voce resta prioritaria e il PC non può fingersi voce.',
+                en: 'Challenge: the switch conditionally extends the trust boundary to the IP phone (recognised and managed) but not to the PC behind it, rewriting the marking of traffic arriving from the phone’s data port; this keeps voice prioritised and stops the PC from posing as voice.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So spiegare perché la QoS non crea banda e cosa fa la trust boundary.',
+                en: 'I can explain why QoS does not create bandwidth and what the trust boundary does.'
+              },
+              {
+                it: 'So scegliere protocolli cifrati per gestire e trasferire file sugli apparati.',
+                en: 'I can choose encrypted protocols to manage devices and transfer files.'
+              }
+            ]
+          }
+        ]
+      }
+    ]
   }
 ];
