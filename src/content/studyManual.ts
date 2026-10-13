@@ -4602,5 +4602,300 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
         ]
       }
     ]
+  },
+  {
+    id: 'crypto-vpn-pki-tls',
+    cert: 'securityplus',
+    order: 16,
+    track: 'extension',
+    title: {
+      it: 'Crittografia, VPN/IPsec, PKI e TLS',
+      en: 'Cryptography, VPN/IPsec, PKI, and TLS'
+    },
+    summary: {
+      it: 'L’approfondimento oltre il blueprint CCNA: i mattoni crittografici che danno riservatezza, integrità e autenticità, come IPsec e IKEv2 li mettono in pratica in un tunnel, e come una PKI e il TLS legano una chiave a un’identità attraverso la catena dei certificati.',
+      en: 'The deep dive beyond the CCNA blueprint: the cryptographic building blocks that provide confidentiality, integrity, and authenticity, how IPsec and IKEv2 put them to work in a tunnel, and how a PKI and TLS bind a key to an identity through the certificate chain.'
+    },
+    topics: [
+      {
+        id: 'crypto-building-blocks',
+        title: {
+          it: 'Crittografia: riservatezza, integrità, autenticità',
+          en: 'Cryptography: confidentiality, integrity, authenticity'
+        },
+        objectives: [
+          {
+            it: 'Distinguere cifratura simmetrica e asimmetrica, hashing e firma digitale per il servizio che offrono.',
+            en: 'Distinguish symmetric and asymmetric encryption, hashing, and digital signatures by the service they provide.'
+          },
+          {
+            it: 'Spiegare come questi strumenti si combinano per ottenere riservatezza, integrità e autenticità.',
+            en: 'Explain how these tools combine to achieve confidentiality, integrity, and authenticity.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere la triade CIA (capitolo sui fondamenti di sicurezza).',
+            en: 'Know the CIA triad (the security fundamentals chapter).'
+          }
+        ],
+        theory: [
+          {
+            it: 'Ogni servizio crittografico nasce da uno strumento diverso. La cifratura simmetrica (per esempio AES) usa una sola chiave condivisa per cifrare e decifrare: è veloce e protegge grandi volumi di dati, ma richiede un modo sicuro per scambiare la chiave. La cifratura asimmetrica (per esempio RSA o a curve ellittiche) usa una coppia di chiavi — pubblica e privata — legate matematicamente: ciò che una cifra solo l’altra decifra. È lenta, quindi non si usa per i dati in volume, ma risolve lo scambio di chiavi e la firma.',
+            en: 'Each cryptographic service comes from a different tool. Symmetric encryption (for example AES) uses a single shared key to encrypt and decrypt: it is fast and protects large volumes of data, but it needs a secure way to exchange the key. Asymmetric encryption (for example RSA or elliptic-curve) uses a key pair — public and private — mathematically linked: what one encrypts only the other decrypts. It is slow, so it is not used for bulk data, but it solves key exchange and signing.'
+          },
+          {
+            it: 'Riservatezza, integrità e autenticità si ottengono combinando gli strumenti. La riservatezza viene dalla cifratura. L’integrità viene da una funzione di hash (per esempio SHA-256), che riduce un messaggio a un’impronta di lunghezza fissa: cambiando un solo bit, l’impronta cambia del tutto. L’autenticità e il non ripudio vengono dalla firma digitale: si firma l’hash del messaggio con la propria chiave privata, e chiunque può verificarlo con la chiave pubblica corrispondente, certo che solo il titolare della privata poteva produrlo.',
+            en: 'Confidentiality, integrity, and authenticity are achieved by combining the tools. Confidentiality comes from encryption. Integrity comes from a hash function (for example SHA-256), which reduces a message to a fixed-length fingerprint: change a single bit and the fingerprint changes entirely. Authenticity and non-repudiation come from the digital signature: you sign the hash of the message with your private key, and anyone can verify it with the matching public key, certain that only the holder of the private key could have produced it.'
+          },
+          {
+            it: 'Il problema dello scambio di chiavi si risolve con Diffie–Hellman: due parti costruiscono una chiave simmetrica condivisa scambiandosi solo valori pubblici, senza mai trasmettere la chiave. Usando valori effimeri a ogni sessione si ottiene la forward secrecy: se in futuro una chiave privata di lungo termine viene compromessa, le sessioni passate restano protette perché le loro chiavi non sono derivabili. È questa combinazione — asimmetrica per lo scambio e la firma, simmetrica per i dati, hash per l’integrità — che sta sotto a IPsec e TLS.',
+            en: 'The key-exchange problem is solved with Diffie–Hellman: two parties build a shared symmetric key by exchanging only public values, never transmitting the key itself. Using ephemeral values for each session gives forward secrecy: if a long-term private key is compromised in the future, past sessions stay protected because their keys cannot be derived. It is this combination — asymmetric for exchange and signing, symmetric for the data, hash for integrity — that underpins IPsec and TLS.'
+          }
+        ],
+        example: {
+          it: 'Per spedire un messaggio riservato e firmato: si cifra il contenuto con una chiave simmetrica di sessione (riservatezza), si calcola l’hash del messaggio (integrità) e lo si firma con la propria chiave privata (autenticità), mentre la chiave di sessione viaggia protetta dalla chiave pubblica del destinatario.',
+          en: 'To send a confidential, signed message: encrypt the content with a symmetric session key (confidentiality), compute the message hash (integrity), and sign it with your private key (authenticity), while the session key travels protected by the recipient’s public key.'
+        },
+        commonMistakes: [
+          {
+            it: 'Credere che l’hash cifri: un hash prova l’integrità ma non nasconde nulla; la riservatezza viene dalla cifratura.',
+            en: 'Believing a hash encrypts: a hash proves integrity but hides nothing; confidentiality comes from encryption.'
+          },
+          {
+            it: 'Usare l’asimmetrica per i dati in volume: è lenta; serve a scambiare la chiave e a firmare, poi il traffico va in simmetrica.',
+            en: 'Using asymmetric encryption for bulk data: it is slow; it serves to exchange the key and to sign, then traffic moves to symmetric.'
+          },
+          {
+            it: 'Confondere cifrare e firmare: si cifra con la chiave pubblica del destinatario, si firma con la propria chiave privata.',
+            en: 'Confusing encrypting and signing: you encrypt with the recipient’s public key, you sign with your own private key.'
+          }
+        ],
+        lab: 'vpnsecurity',
+        references: [{ kind: 'nist', id: 'SP 800-175B' }]
+      },
+      {
+        id: 'ipsec-ikev2-depth',
+        title: {
+          it: 'IPsec e IKEv2 in profondità',
+          en: 'IPsec and IKEv2 in depth'
+        },
+        objectives: [
+          {
+            it: 'Descrivere cosa proteggono ESP e AH e il ruolo di SA e SPI nel forwarding IPsec.',
+            en: 'Describe what ESP and AH protect and the role of SAs and SPIs in IPsec forwarding.'
+          },
+          {
+            it: 'Spiegare la negoziazione IKEv2 e come NAT-T e il rekey mantengono il tunnel.',
+            en: 'Explain the IKEv2 negotiation and how NAT-T and rekeying keep the tunnel alive.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere la panoramica VPN del capitolo di sicurezza CCNA e i mattoni crittografici (argomento precedente).',
+            en: 'Know the VPN overview from the CCNA security chapter and the cryptographic building blocks (previous topic).'
+          }
+        ],
+        theory: [
+          {
+            it: 'IPsec protegge i pacchetti con due protocolli. ESP (Encapsulating Security Payload) fornisce riservatezza, integrità e autenticità — è quello che si usa quasi sempre. AH (Authentication Header) fornisce solo integrità e autenticità, senza cifratura, ed è oggi raro perché non attraversa il NAT. Ogni direzione del traffico è protetta da una Security Association (SA) distinta, identificata da un numero chiamato SPI (Security Parameter Index): il ricevente usa lo SPI del pacchetto per trovare la SA giusta e le sue chiavi. Due peer hanno quindi due IPsec SA, una per verso.',
+            en: 'IPsec protects packets with two protocols. ESP (Encapsulating Security Payload) provides confidentiality, integrity, and authenticity — it is what is almost always used. AH (Authentication Header) provides only integrity and authenticity, without encryption, and is rare today because it does not traverse NAT. Each traffic direction is protected by a distinct Security Association (SA), identified by a number called the SPI (Security Parameter Index): the receiver uses the packet’s SPI to find the right SA and its keys. Two peers therefore have two IPsec SAs, one per direction.'
+          },
+          {
+            it: 'La negoziazione la guida IKEv2 in due scambi. IKE_SA_INIT concorda la suite crittografica (cifratura, PRF, integrità, gruppo Diffie–Hellman) e scambia i nonce, costruendo il canale sicuro di controllo (la IKE SA). IKE_AUTH autentica le identità dei due peer e crea la prima CHILD_SA, cioè la coppia di IPsec SA che protegge il traffico dati. Un errore diagnostico comune è fermarsi alla IKE SA in stato UP: quella prova solo il control plane, non che entrambe le IPsec SA esistano né che il traffico passi davvero.',
+            en: 'The negotiation is driven by IKEv2 in two exchanges. IKE_SA_INIT agrees on the cryptographic suite (encryption, PRF, integrity, Diffie–Hellman group) and exchanges nonces, building the secure control channel (the IKE SA). IKE_AUTH authenticates the two peers’ identities and creates the first CHILD_SA, that is, the pair of IPsec SAs that protects the data traffic. A common diagnostic mistake is to stop at the IKE SA being UP: that only proves the control plane, not that both IPsec SAs exist or that traffic actually passes.'
+          },
+          {
+            it: 'Due meccanismi tengono vivo il tunnel. Il NAT-T (NAT Traversal) gestisce il caso in cui un NAT sta tra i peer: IKE parte su UDP/500 e rileva il NAT, poi IKE ed ESP incapsulato passano su UDP/4500, perché l’ESP puro non ha porte e il NAT non saprebbe tradurlo. Il rekey sostituisce periodicamente le chiavi di una SA prima che scadano per tempo o per volume di dati, così una chiave non protegge mai troppo traffico: è l’applicazione pratica della forward secrecy dentro una sessione di lunga durata.',
+            en: 'Two mechanisms keep the tunnel alive. NAT-T (NAT Traversal) handles the case where a NAT sits between the peers: IKE starts on UDP/500 and detects the NAT, then IKE and UDP-encapsulated ESP move to UDP/4500, because bare ESP has no ports and the NAT could not translate it. Rekeying periodically replaces an SA’s keys before they expire by time or data volume, so one key never protects too much traffic: it is the practical application of forward secrecy within a long-lived session.'
+          }
+        ],
+        example: {
+          it: 'Un tunnel tra due sedi dietro NAT negozia con IKEv2 su UDP/500, rileva il NAT e passa a UDP/4500; da quel momento ESP incapsulato in UDP protegge il traffico, con due IPsec SA (una per verso) che vengono rinnovate dal rekey prima di scadere.',
+          en: 'A tunnel between two sites behind NAT negotiates with IKEv2 on UDP/500, detects the NAT, and moves to UDP/4500; from then on UDP-encapsulated ESP protects the traffic, with two IPsec SAs (one per direction) renewed by rekeying before they expire.'
+        },
+        commonMistakes: [
+          {
+            it: 'Dichiarare il tunnel funzionante perché la IKE SA è UP: prova il control plane, non il forwarding né entrambe le IPsec SA.',
+            en: 'Declaring the tunnel working because the IKE SA is UP: it proves the control plane, not forwarding or both IPsec SAs.'
+          },
+          {
+            it: 'Aspettarsi che AH passi il NAT: AH autentica l’intestazione e il NAT la modifica, rompendo la verifica; con il NAT serve ESP e NAT-T.',
+            en: 'Expecting AH to pass NAT: AH authenticates the header and NAT modifies it, breaking the check; with NAT you need ESP and NAT-T.'
+          },
+          {
+            it: 'Trascurare il rekey: una chiave che protegge troppo traffico o troppo a lungo indebolisce la sessione.',
+            en: 'Neglecting rekeying: a key that protects too much traffic or for too long weakens the session.'
+          }
+        ],
+        lab: 'vpnsecurity',
+        references: [{ kind: 'rfc', id: 'RFC 7296' }],
+        guidedLabs: [
+          {
+            id: 'gl-ikev2-child-sa',
+            title: { it: 'Dalla IKE SA alle CHILD_SA', en: 'From the IKE SA to the CHILD_SAs' },
+            difficulty: 'advanced',
+            lab: 'vpnsecurity',
+            scenario: {
+              it: 'Il laboratorio «VPN, IPsec e PKI» mette in scena la negoziazione IKEv2 e il forwarding ESP con SPI e CHILD_SA.',
+              en: 'The “VPN, IPsec, and PKI” lab stages the IKEv2 negotiation and ESP forwarding with SPIs and CHILD_SAs.'
+            },
+            task: {
+              it: 'Ricostruisci cosa stabiliscono IKE_SA_INIT e IKE_AUTH e spiega perché una IKE SA UP non basta a dire che il traffico passa.',
+              en: 'Reconstruct what IKE_SA_INIT and IKE_AUTH establish and explain why an UP IKE SA is not enough to say traffic passes.'
+            },
+            steps: [
+              {
+                it: 'Apri «VPN, IPsec e PKI» e seleziona lo scenario di negoziazione IKEv2.',
+                en: 'Open “VPN, IPsec, and PKI” and select the IKEv2 negotiation scenario.'
+              },
+              {
+                it: 'Attribuisci a IKE_SA_INIT la suite e lo scambio di nonce, a IKE_AUTH l’autenticazione e la prima CHILD_SA.',
+                en: 'Attribute to IKE_SA_INIT the suite and nonce exchange, to IKE_AUTH the authentication and the first CHILD_SA.'
+              },
+              {
+                it: 'Verifica l’esistenza di entrambe le IPsec SA (una per verso) tramite i loro SPI.',
+                en: 'Verify the existence of both IPsec SAs (one per direction) via their SPIs.'
+              }
+            ],
+            challenge: {
+              it: 'Il tunnel “risulta su” ma il traffico non passa in una direzione: quale evidenza cerchi e cosa potrebbe mancare?',
+              en: 'The tunnel “shows up” but traffic does not pass in one direction: what evidence do you look for and what might be missing?'
+            },
+            solution: [
+              {
+                it: 'IKE_SA_INIT costruisce la IKE SA concordando cifratura, PRF, integrità e gruppo DH e scambiando i nonce; IKE_AUTH autentica i peer e crea la prima CHILD_SA. La IKE SA UP prova solo il canale di controllo: per il traffico servono entrambe le IPsec SA, identificate dai rispettivi SPI, e il forwarding ESP effettivo.',
+                en: 'IKE_SA_INIT builds the IKE SA by agreeing on encryption, PRF, integrity, and the DH group and exchanging nonces; IKE_AUTH authenticates the peers and creates the first CHILD_SA. The UP IKE SA proves only the control channel: for traffic you need both IPsec SAs, identified by their SPIs, and actual ESP forwarding.'
+              },
+              {
+                it: 'Sfida: se il traffico manca in un verso, si cerca la IPsec SA di quella direzione (il suo SPI) e i contatori di pacchetti ESP; può mancare la SA in uscita, può esserci un traffic selector non combaciante o un NAT non gestito (manca NAT-T su UDP/4500) che scarta l’ESP.',
+                en: 'Challenge: if traffic is missing in one direction, you look for that direction’s IPsec SA (its SPI) and the ESP packet counters; the outbound SA may be missing, there may be a mismatched traffic selector, or an unhandled NAT (no NAT-T on UDP/4500) dropping the ESP.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So dire cosa stabilisce ciascuno scambio IKEv2 e cosa prova (e non prova) una IKE SA UP.',
+                en: 'I can say what each IKEv2 exchange establishes and what an UP IKE SA proves (and does not prove).'
+              },
+              {
+                it: 'So spiegare il ruolo di SPI e CHILD_SA e quando serve NAT-T.',
+                en: 'I can explain the role of SPIs and CHILD_SAs and when NAT-T is needed.'
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'pki-tls-certificate-chain',
+        title: {
+          it: 'PKI e TLS: la catena dei certificati',
+          en: 'PKI and TLS: the certificate chain'
+        },
+        objectives: [
+          {
+            it: 'Descrivere come una PKI lega una chiave pubblica a un’identità tramite la catena dei certificati.',
+            en: 'Describe how a PKI binds a public key to an identity through the certificate chain.'
+          },
+          {
+            it: 'Spiegare cosa va validato in un certificato e come il TLS lo usa per stabilire una sessione sicura.',
+            en: 'Explain what must be validated in a certificate and how TLS uses it to establish a secure session.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere firma digitale e chiavi pubblica/privata (argomento sui mattoni crittografici).',
+            en: 'Know digital signatures and public/private keys (the cryptographic building blocks topic).'
+          }
+        ],
+        theory: [
+          {
+            it: 'Una chiave pubblica da sola non dice a chi appartiene: serve qualcuno di fidato che lo attesti. Una PKI (Public Key Infrastructure) lo fa con i certificati: una Certificate Authority (CA) firma un certificato che lega una chiave pubblica a un’identità. I certificati formano una catena — il certificato del server è firmato da una CA intermedia, firmata a sua volta da una root CA — e la fiducia si ancora alla root, il trust anchor che sta già nel trust store del client. Validare la catena significa risalirla fino a una root fidata verificando ogni firma.',
+            en: 'A public key alone does not say who it belongs to: someone trusted must attest it. A PKI (Public Key Infrastructure) does this with certificates: a Certificate Authority (CA) signs a certificate binding a public key to an identity. Certificates form a chain — the server certificate is signed by an intermediate CA, itself signed by a root CA — and trust is anchored to the root, the trust anchor already in the client’s trust store. Validating the chain means walking it up to a trusted root, verifying each signature.'
+          },
+          {
+            it: 'La catena valida non basta: validare un certificato significa controllare più cose insieme. Che il nome atteso coincida con il soggetto o con un SAN (Subject Alternative Name) del certificato; che l’uso sia quello giusto (l’EKU, Extended Key Usage, deve autorizzare quell’impiego); che il certificato sia nel suo periodo di validità; e che non sia stato revocato, verificandolo con una CRL (Certificate Revocation List) o con OCSP. Un errore sottile è fidarsi di una chain validation “SUCCESS” che però non ha controllato il nome o la revoca: la catena è buona, ma il certificato potrebbe essere di un’altra identità o già revocato.',
+            en: 'A valid chain is not enough: validating a certificate means checking several things together. That the expected name matches the subject or a SAN (Subject Alternative Name) of the certificate; that the use is the right one (the EKU, Extended Key Usage, must authorise that use); that the certificate is within its validity period; and that it has not been revoked, checking it with a CRL (Certificate Revocation List) or with OCSP. A subtle mistake is trusting a chain validation that reads “SUCCESS” but did not check the name or revocation: the chain is good, but the certificate could belong to another identity or already be revoked.'
+          },
+          {
+            it: 'Il TLS usa questa PKI per proteggere una connessione. Nell’handshake il server presenta il suo certificato, il client lo valida contro il proprio trust store, e con Diffie–Hellman effimero le due parti derivano chiavi di sessione con forward secrecy; da lì il traffico va in cifratura simmetrica. È lo stesso schema di IPsec — asimmetrica e PKI per autenticare e scambiare chiavi, simmetrica per i dati — applicato al livello di trasporto invece che a quello di rete, ed è ciò che rende HTTPS affidabile.',
+            en: 'TLS uses this PKI to protect a connection. In the handshake the server presents its certificate, the client validates it against its own trust store, and with ephemeral Diffie–Hellman the two parties derive session keys with forward secrecy; from there traffic moves to symmetric encryption. It is the same scheme as IPsec — asymmetric and PKI to authenticate and exchange keys, symmetric for the data — applied at the transport layer instead of the network layer, and it is what makes HTTPS trustworthy.'
+          }
+        ],
+        example: {
+          it: 'Un browser che apre un sito HTTPS riceve il certificato del server, risale la catena fino a una root fidata, controlla che il nome del sito sia nel SAN, che il certificato sia valido e non revocato, poi negozia le chiavi di sessione: solo allora la connessione è sicura.',
+          en: 'A browser opening an HTTPS site receives the server certificate, walks the chain up to a trusted root, checks that the site name is in the SAN, that the certificate is valid and not revoked, then negotiates the session keys: only then is the connection secure.'
+        },
+        commonMistakes: [
+          {
+            it: 'Fidarsi di una “chain validation SUCCESS”: non prova che il nome atteso coincida né che la revoca sia stata controllata con esito valido.',
+            en: 'Trusting a “chain validation SUCCESS”: it does not prove the expected name matches or that revocation was successfully checked.'
+          },
+          {
+            it: 'Dimenticare la revoca: un certificato nel suo periodo di validità può essere stato revocato, e va verificato con CRL o OCSP.',
+            en: 'Forgetting revocation: a certificate within its validity period may have been revoked, and must be checked with a CRL or OCSP.'
+          },
+          {
+            it: 'Ignorare l’EKU: un certificato valido per un uso diverso o per un’altra identità deve essere rifiutato, non accettato perché la catena è buona.',
+            en: 'Ignoring the EKU: a certificate valid for a different use or another identity must be rejected, not accepted because the chain is good.'
+          }
+        ],
+        lab: 'vpnsecurity',
+        references: [{ kind: 'rfc', id: 'RFC 5280' }],
+        guidedLabs: [
+          {
+            id: 'gl-cert-validation',
+            title: { it: 'Cosa valida davvero un certificato', en: 'What truly validates a certificate' },
+            difficulty: 'advanced',
+            lab: 'vpnsecurity',
+            scenario: {
+              it: 'Il laboratorio «VPN, IPsec e PKI» include lo scenario di autenticazione del peer con certificato e validazione PKI.',
+              en: 'The “VPN, IPsec, and PKI” lab includes the peer-authentication-with-certificate and PKI-validation scenario.'
+            },
+            task: {
+              it: 'Elenca i controlli che un certificato deve superare oltre alla catena, e di’ perché una “chain SUCCESS” da sola non basta.',
+              en: 'List the checks a certificate must pass beyond the chain, and say why a “chain SUCCESS” alone is not enough.'
+            },
+            steps: [
+              {
+                it: 'Apri «VPN, IPsec e PKI» e seleziona lo scenario di autenticazione con certificato.',
+                en: 'Open “VPN, IPsec, and PKI” and select the certificate authentication scenario.'
+              },
+              {
+                it: 'Verifica la catena fino al trust anchor, poi il nome/SAN, l’EKU e la validità.',
+                en: 'Verify the chain up to the trust anchor, then the name/SAN, the EKU, and validity.'
+              },
+              {
+                it: 'Controlla la revoca con CRL o OCSP prima di accettare il peer.',
+                en: 'Check revocation with a CRL or OCSP before accepting the peer.'
+              }
+            ],
+            challenge: {
+              it: 'Un peer presenta un certificato con catena valida ma nome diverso da quello atteso: va accettato? E se la revoca non è verificabile?',
+              en: 'A peer presents a certificate with a valid chain but a name different from the expected one: should it be accepted? And if revocation cannot be checked?'
+            },
+            solution: [
+              {
+                it: 'Oltre alla catena fino a un trust anchor fidato, un certificato va accettato solo se il nome atteso coincide con il soggetto o un SAN, l’EKU autorizza quell’uso, il certificato è nel periodo di validità e non è revocato (CRL o OCSP). Una “chain SUCCESS” da sola non controlla nome né revoca.',
+                en: 'Beyond the chain up to a trusted trust anchor, a certificate is accepted only if the expected name matches the subject or a SAN, the EKU authorises that use, the certificate is within its validity period, and it is not revoked (CRL or OCSP). A “chain SUCCESS” alone checks neither name nor revocation.'
+              },
+              {
+                it: 'Sfida: un certificato con catena valida ma nome diverso va rifiutato, perché la catena prova l’emissione da una CA fidata, non che quel certificato appartenga all’identità attesa; se la revoca non è verificabile, la scelta prudente è non fidarsi finché lo stato non è noto, perché un certificato revocato e non controllato è un ingresso aperto.',
+                en: 'Challenge: a certificate with a valid chain but a different name must be rejected, because the chain proves issuance by a trusted CA, not that the certificate belongs to the expected identity; if revocation cannot be checked, the prudent choice is not to trust until the status is known, because a revoked, unchecked certificate is an open door.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So elencare i controlli di un certificato oltre alla catena (nome/SAN, EKU, validità, revoca).',
+                en: 'I can list a certificate’s checks beyond the chain (name/SAN, EKU, validity, revocation).'
+              },
+              {
+                it: 'So spiegare perché una catena valida non basta ad accettare un peer.',
+                en: 'I can explain why a valid chain is not enough to accept a peer.'
+              }
+            ]
+          }
+        ]
+      }
+    ]
   }
 ];
