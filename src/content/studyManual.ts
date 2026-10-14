@@ -6615,5 +6615,363 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
         ]
       }
     ]
+  },
+  {
+    id: 'email-human-security',
+    cert: 'securityplus',
+    order: 22,
+    track: 'extension',
+    title: {
+      it: 'Sicurezza dell’email e del fattore umano',
+      en: 'Email and human-layer security'
+    },
+    summary: {
+      it: 'L’estensione sul vettore d’attacco più usato: l’email. Come SPF, DKIM e DMARC autenticano il mittente, come riconoscere phishing e ingegneria sociale, e come rispondere a BEC e consent phishing con un triage evidence-first. Ogni minaccia è accoppiata al controllo che la riduce e all’evidenza che la rivela.',
+      en: 'The extension on the most used attack vector: email. How SPF, DKIM, and DMARC authenticate the sender, how to recognize phishing and social engineering, and how to respond to BEC and consent phishing with an evidence-first triage. Each threat is paired with the control that reduces it and the evidence that reveals it.'
+    },
+    topics: [
+      {
+        id: 'email-authentication-spf-dkim-dmarc',
+        title: {
+          it: 'Autenticazione dell’email: SPF, DKIM e DMARC',
+          en: 'Email authentication: SPF, DKIM, and DMARC'
+        },
+        objectives: [
+          {
+            it: 'Spiegare cosa verifica ciascuno di SPF, DKIM e DMARC e perché serve l’allineamento.',
+            en: 'Explain what each of SPF, DKIM, and DMARC verifies and why alignment is needed.'
+          },
+          {
+            it: 'Leggere una policy DMARC e dire quale abuso ferma e quale no.',
+            en: 'Read a DMARC policy and say which abuse it stops and which it does not.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere il DNS e il concetto di firma digitale (capitoli su servizi IP e su crittografia).',
+            en: 'Know DNS and the concept of a digital signature (the IP services and the cryptography chapters).'
+          }
+        ],
+        theory: [
+          {
+            it: 'Tre meccanismi, pubblicati nel DNS, autenticano un’email e lavorano insieme. SPF (Sender Policy Framework) elenca in un record gli host autorizzati a spedire per un dominio: il ricevente confronta l’IP del mittente con la lista. DKIM (DomainKeys Identified Mail) aggiunge una firma crittografica all’email, verificabile con una chiave pubblica nel DNS: prova che il messaggio non è stato alterato e proviene dal dominio firmatario. DMARC (Domain-based Message Authentication, Reporting and Conformance) le lega in una policy e aggiunge il requisito dell’allineamento: il dominio verificato da SPF o DKIM deve coincidere con quello che l’utente vede nel campo From.',
+            en: 'Three mechanisms, published in DNS, authenticate an email and work together. SPF (Sender Policy Framework) lists in a record the hosts authorized to send for a domain: the receiver compares the sender’s IP with the list. DKIM (DomainKeys Identified Mail) adds a cryptographic signature to the email, verifiable with a public key in DNS: it proves the message was not altered and comes from the signing domain. DMARC (Domain-based Message Authentication, Reporting and Conformance) ties them into a policy and adds the alignment requirement: the domain verified by SPF or DKIM must match the one the user sees in the From field.'
+          },
+          {
+            it: 'L’allineamento è il punto che spesso sfugge. Senza DMARC, un attaccante può superare SPF o DKIM usando un dominio proprio e scrivere un From falso, perché SPF e DKIM da soli non guardano il From visibile. DMARC chiede invece che il dominio autenticato sia allineato al From: così un messaggio che finge un dominio altrui fallisce, anche se è tecnicamente firmato per un dominio diverso. La policy DMARC dice al ricevente cosa fare con i messaggi che falliscono: p=none (solo osserva e manda report), p=quarantine (in spam) o p=reject (rifiuta). Solo reject chiude davvero lo spoofing diretto del dominio.',
+            en: 'Alignment is the point that often escapes notice. Without DMARC, an attacker can pass SPF or DKIM using their own domain and write a fake From, because SPF and DKIM alone do not look at the visible From. DMARC instead requires that the authenticated domain be aligned with the From: so a message faking another’s domain fails, even if it is technically signed for a different domain. The DMARC policy tells the receiver what to do with messages that fail: p=none (only observe and send reports), p=quarantine (to spam), or p=reject (refuse). Only reject truly closes direct domain spoofing.'
+          },
+          {
+            it: 'Resta un limite importante da tenere a mente: DMARC protegge il dominio che l’utente vede nel From, non lo protegge da un dominio diverso ma somigliante. Un attaccante che registra un dominio lookalike supera SPF, DKIM e DMARC perfettamente, perché autentica il proprio dominio: l’autenticazione dell’email risolve lo spoofing esatto, non l’inganno visivo. Per questo l’autenticazione è la base necessaria ma non sufficiente, e va completata dai controlli sul phishing e dalla consapevolezza dell’utente trattati negli argomenti successivi.',
+            en: 'An important limit remains to keep in mind: DMARC protects the domain the user sees in the From, it does not protect against a different but similar domain. An attacker who registers a lookalike domain passes SPF, DKIM, and DMARC perfectly, because they authenticate their own domain: email authentication solves exact spoofing, not visual deception. This is why authentication is the necessary but not sufficient base, and it must be completed by the phishing controls and user awareness covered in the following topics.'
+          }
+        ],
+        example: {
+          it: 'Un messaggio che finge il dominio example.test con un From falso fallisce DMARC se la policy è p=reject, perché nessun dominio allineato lo autentica; ma un messaggio da un dominio lookalike registrato dall’attaccante supera SPF, DKIM e DMARC, perché autentica il proprio dominio, non quello imitato.',
+          en: 'A message faking the domain example.test with a forged From fails DMARC if the policy is p=reject, because no aligned domain authenticates it; but a message from a lookalike domain registered by the attacker passes SPF, DKIM, and DMARC, because it authenticates its own domain, not the imitated one.'
+        },
+        commonMistakes: [
+          {
+            it: 'Credere che SPF o DKIM da soli fermino il From falso: senza l’allineamento di DMARC non guardano il From visibile.',
+            en: 'Believing SPF or DKIM alone stop a forged From: without DMARC alignment they do not look at the visible From.'
+          },
+          {
+            it: 'Lasciare DMARC a p=none pensando di essere protetti: osserva soltanto, non rifiuta nulla.',
+            en: 'Leaving DMARC at p=none thinking you are protected: it only observes, it refuses nothing.'
+          },
+          {
+            it: 'Aspettarsi che DMARC fermi i domini lookalike: autentica il From esatto, non un dominio somigliante.',
+            en: 'Expecting DMARC to stop lookalike domains: it authenticates the exact From, not a similar domain.'
+          }
+        ],
+        lab: 'emailsecurity',
+        references: [{ kind: 'rfc', id: 'RFC 7489' }],
+        guidedLabs: [
+          {
+            id: 'gl-email-auth-alignment',
+            title: {
+              it: 'Quando l’autenticazione ferma lo spoofing',
+              en: 'When authentication stops spoofing'
+            },
+            difficulty: 'core',
+            lab: 'emailsecurity',
+            scenario: {
+              it: 'Il laboratorio «Email e phishing» mette in scena la catena di consegna con SPF, DKIM, DMARC e l’allineamento.',
+              en: 'The “Email and phishing” lab stages the delivery chain with SPF, DKIM, DMARC, and alignment.'
+            },
+            task: {
+              it: 'Per due messaggi distingui cosa autenticano SPF e DKIM, se c’è allineamento DMARC, e di’ quale spoofing viene fermato e quale no.',
+              en: 'For two messages distinguish what SPF and DKIM authenticate, whether there is DMARC alignment, and say which spoofing is stopped and which is not.'
+            },
+            steps: [
+              {
+                it: 'Apri «Email e phishing» e seleziona lo scenario su SPF, DKIM e DMARC.',
+                en: 'Open “Email and phishing” and select the scenario on SPF, DKIM, and DMARC.'
+              },
+              {
+                it: 'Per ogni messaggio verifica il dominio autenticato e se è allineato al From.',
+                en: 'For each message check the authenticated domain and whether it is aligned with the From.'
+              },
+              {
+                it: 'Indica l’esito con policy p=reject e perché un dominio lookalike lo supererebbe.',
+                en: 'State the outcome under a p=reject policy and why a lookalike domain would pass it.'
+              }
+            ],
+            challenge: {
+              it: 'Un messaggio passa SPF ma fallisce DMARC: cosa significa sul dominio che ha autenticato, e perché il ricevente lo tratta come spoofing?',
+              en: 'A message passes SPF but fails DMARC: what does it mean about the domain it authenticated, and why does the receiver treat it as spoofing?'
+            },
+            solution: [
+              {
+                it: 'SPF verifica che l’IP mittente sia autorizzato per un dominio; DKIM verifica una firma legata a un dominio; DMARC chiede che quel dominio sia allineato al From visibile e, con p=reject, rifiuta chi non lo è. Un From falso su un dominio protetto fallisce; un dominio lookalike supera tutto perché autentica sé stesso, non quello imitato — lì serve il riconoscimento del phishing, non l’autenticazione.',
+                en: 'SPF verifies the sender IP is authorized for a domain; DKIM verifies a signature bound to a domain; DMARC requires that domain to be aligned with the visible From and, with p=reject, refuses whoever is not. A forged From on a protected domain fails; a lookalike domain passes everything because it authenticates itself, not the imitated one — there you need phishing recognition, not authentication.'
+              },
+              {
+                it: 'Sfida: passare SPF ma fallire DMARC significa che l’IP era autorizzato per un dominio diverso da quello del From, cioè manca l’allineamento; il ricevente lo tratta come spoofing perché l’identità che l’utente vede non è quella autenticata.',
+                en: 'Challenge: passing SPF but failing DMARC means the IP was authorized for a domain different from the From, that is, alignment is missing; the receiver treats it as spoofing because the identity the user sees is not the authenticated one.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So dire cosa autenticano SPF, DKIM e DMARC e perché serve l’allineamento.',
+                en: 'I can say what SPF, DKIM, and DMARC authenticate and why alignment is needed.'
+              },
+              {
+                it: 'So distinguere lo spoofing diretto, che DMARC ferma, dal dominio lookalike, che non ferma.',
+                en: 'I can distinguish direct spoofing, which DMARC stops, from a lookalike domain, which it does not.'
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'phishing-social-engineering',
+        title: {
+          it: 'Phishing e ingegneria sociale',
+          en: 'Phishing and social engineering'
+        },
+        objectives: [
+          {
+            it: 'Riconoscere gli indicatori di phishing nel mittente, nei link e negli allegati.',
+            en: 'Recognize phishing indicators in the sender, the links, and the attachments.'
+          },
+          {
+            it: 'Collegare le leve psicologiche dell’inganno alle difese tecniche e umane.',
+            en: 'Link the psychological levers of deception to the technical and human defenses.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere l’autenticazione dell’email e i suoi limiti (argomento precedente).',
+            en: 'Know email authentication and its limits (previous topic).'
+          }
+        ],
+        theory: [
+          {
+            it: 'Dove l’autenticazione finisce, inizia l’inganno. Il phishing imita un mittente fidato per far compiere un’azione: cliccare, aprire, pagare, rivelare credenziali. Gli indicatori tecnici stanno nel mittente — un dominio lookalike, un display name che non coincide con l’indirizzo reale, un reply-to diverso dal From — e nei link, dove l’URL mostrato può differire dalla destinazione, nascondersi dietro uno shortener o un QR code, o passare per redirect multipli. Gli allegati portano il payload in archivi o documenti con macro. Riconoscere questi segni è una lettura attenta, la stessa disciplina dell’analisi di una richiesta web.',
+            en: 'Where authentication ends, deception begins. Phishing imitates a trusted sender to make you perform an action: click, open, pay, reveal credentials. The technical indicators are in the sender — a lookalike domain, a display name that does not match the real address, a reply-to different from the From — and in the links, where the shown URL may differ from the destination, hide behind a shortener or a QR code, or pass through multiple redirects. Attachments carry the payload in archives or documents with macros. Recognizing these signs is careful reading, the same discipline as analyzing a web request.'
+          },
+          {
+            it: 'La parte difficile non è tecnica ma umana. Il phishing funziona sfruttando leve psicologiche: l’urgenza («entro oggi»), l’autorità (un dirigente che ordina), la paura (un account bloccato), la curiosità o l’avidità. Queste leve spingono ad agire prima di pensare, ed è per questo che anche un utente informato può cadere sotto pressione. Difendersi significa togliere valore all’azione affrettata: processi che non dipendono da un singolo messaggio, verifiche fuori banda per le richieste sensibili, e la normalità di fermarsi a controllare senza timore di sembrare lenti.',
+            en: 'The hard part is not technical but human. Phishing works by exploiting psychological levers: urgency («by today»), authority (an executive giving an order), fear (a locked account), curiosity, or greed. These levers push you to act before thinking, and this is why even an informed user can fall under pressure. Defending means removing the value of the hasty action: processes that do not depend on a single message, out-of-band verification for sensitive requests, and making it normal to stop and check without fear of seeming slow.'
+          },
+          {
+            it: 'La difesa è a strati, nessuno dei quali basta da solo. L’autenticazione dell’email e i filtri riducono il volume; la riscrittura e l’analisi dei link e il sandboxing degli allegati fermano parte del resto; ma l’ultimo strato è l’utente, ed è per questo che la segnalazione facile è un controllo di sicurezza, non una formalità: un utente che segnala trasforma un singolo bersaglio in un sensore per tutti gli altri. L’obiettivo non è un utente che non sbaglia mai, ma un sistema in cui un errore è reversibile, rilevabile e segnalato in fretta.',
+            en: 'The defense is layered, none of which is enough alone. Email authentication and filters reduce the volume; link rewriting and analysis and attachment sandboxing stop part of the rest; but the last layer is the user, and this is why easy reporting is a security control, not a formality: a user who reports turns a single target into a sensor for everyone else. The goal is not a user who never errs, but a system in which an error is reversible, detectable, and reported quickly.'
+          }
+        ],
+        example: {
+          it: 'Un’email che sembra di un collega chiede con urgenza di aprire un allegato: il display name coincide ma l’indirizzo reale è un dominio lookalike, il reply-to è diverso e il link passa per uno shortener; il controllo fuori banda e la segnalazione fermano l’azione prima che il payload parta.',
+          en: 'An email that looks like it is from a colleague urgently asks to open an attachment: the display name matches but the real address is a lookalike domain, the reply-to is different, and the link passes through a shortener; out-of-band verification and reporting stop the action before the payload runs.'
+        },
+        commonMistakes: [
+          {
+            it: 'Fidarsi del display name: è testo libero; conta l’indirizzo reale e l’allineamento, non il nome mostrato.',
+            en: 'Trusting the display name: it is free text; what counts is the real address and alignment, not the shown name.'
+          },
+          {
+            it: 'Giudicare un link dal testo visibile: la destinazione può differire, nascondersi in un QR o passare per redirect.',
+            en: 'Judging a link by its visible text: the destination can differ, hide in a QR, or pass through redirects.'
+          },
+          {
+            it: 'Trattare la formazione come l’unica difesa: serve, ma senza processi fuori banda e segnalazione facile l’errore resta irreversibile.',
+            en: 'Treating training as the only defense: it helps, but without out-of-band processes and easy reporting the error stays irreversible.'
+          }
+        ],
+        lab: 'emailsecurity',
+        references: [{ kind: 'attack', id: 'T1566' }],
+        guidedLabs: [
+          {
+            id: 'gl-phishing-indicators',
+            title: {
+              it: 'Leggi gli indicatori di un phishing',
+              en: 'Read a phishing’s indicators'
+            },
+            difficulty: 'core',
+            lab: 'emailsecurity',
+            scenario: {
+              it: 'Il laboratorio «Email e phishing» mostra messaggi con display name, domini lookalike, reply-to e link da esaminare.',
+              en: 'The “Email and phishing” lab shows messages with display names, lookalike domains, reply-to, and links to examine.'
+            },
+            task: {
+              it: 'Da un messaggio elenca gli indicatori tecnici e la leva psicologica usata, e indica il controllo che spezza l’azione.',
+              en: 'From a message list the technical indicators and the psychological lever used, and point out the control that breaks the action.'
+            },
+            steps: [
+              {
+                it: 'Apri «Email e phishing» e scegli uno scenario di display name o lookalike.',
+                en: 'Open “Email and phishing” and pick a display-name or lookalike scenario.'
+              },
+              {
+                it: 'Confronta display name, indirizzo reale, reply-to e destinazione del link.',
+                en: 'Compare the display name, real address, reply-to, and the link destination.'
+              },
+              {
+                it: 'Nomina la leva psicologica e il controllo (verifica fuori banda, segnalazione) che la neutralizza.',
+                en: 'Name the psychological lever and the control (out-of-band verification, reporting) that neutralizes it.'
+              }
+            ],
+            challenge: {
+              it: 'Il messaggio passa l’autenticazione dell’email ma resta phishing: com’è possibile e quale difesa resta a fermarlo?',
+              en: 'The message passes email authentication but is still phishing: how is that possible and which defense is left to stop it?'
+            },
+            solution: [
+              {
+                it: 'Gli indicatori tecnici stanno nel mittente (dominio lookalike, display name che non coincide con l’indirizzo, reply-to diverso) e nei link (destinazione diversa dal testo, shortener, QR, redirect). La leva è psicologica — urgenza, autorità, paura. Il controllo che spezza l’azione è la verifica fuori banda per le richieste sensibili e la segnalazione facile, che rende l’errore rilevabile e reversibile.',
+                en: 'The technical indicators are in the sender (lookalike domain, display name not matching the address, different reply-to) and in the links (destination different from the text, shortener, QR, redirect). The lever is psychological — urgency, authority, fear. The control that breaks the action is out-of-band verification for sensitive requests and easy reporting, which makes the error detectable and reversible.'
+              },
+              {
+                it: 'Sfida: un phishing passa l’autenticazione quando l’attaccante usa un dominio lookalike che autentica sé stesso; a quel punto l’autenticazione non aiuta e restano il riconoscimento degli indicatori, i processi fuori banda e la segnalazione.',
+                en: 'Challenge: a phishing passes authentication when the attacker uses a lookalike domain that authenticates itself; at that point authentication does not help and what remains is indicator recognition, out-of-band processes, and reporting.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So elencare gli indicatori di phishing nel mittente, nei link e negli allegati.',
+                en: 'I can list phishing indicators in the sender, the links, and the attachments.'
+              },
+              {
+                it: 'So collegare la leva psicologica alla difesa umana e di processo che la neutralizza.',
+                en: 'I can link the psychological lever to the human and process defense that neutralizes it.'
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'bec-consent-response',
+        title: {
+          it: 'BEC, consent phishing e risposta evidence-first',
+          en: 'BEC, consent phishing, and evidence-first response'
+        },
+        objectives: [
+          {
+            it: 'Distinguere BEC e consent phishing dagli attacchi con payload e dire perché eludono i filtri.',
+            en: 'Distinguish BEC and consent phishing from payload attacks and say why they evade filters.'
+          },
+          {
+            it: 'Descrivere una risposta evidence-first: contenere, raccogliere evidenza, recuperare.',
+            en: 'Describe an evidence-first response: contain, gather evidence, recover.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere il phishing e il modello di autorizzazione (argomenti precedenti e capitolo su AAA).',
+            en: 'Know phishing and the authorization model (previous topics and the AAA chapter).'
+          }
+        ],
+        theory: [
+          {
+            it: 'Gli attacchi più costosi spesso non portano alcun payload. Nel BEC (Business Email Compromise) l’attaccante impersona un dirigente o un fornitore e, con il solo testo, ordina un bonifico o un cambio di coordinate bancarie; il thread hijacking inserisce la richiesta in una conversazione reale già in corso, così sembra legittima. Non c’è link né allegato da analizzare: il filtro tecnico ha poco su cui lavorare, e la difesa diventa il processo — verifica fuori banda obbligatoria per i pagamenti, doppio controllo sui cambi di coordinate, autorità che non si esercita via una sola email.',
+            en: 'The costliest attacks often carry no payload at all. In BEC (Business Email Compromise) the attacker impersonates an executive or a supplier and, with text alone, orders a wire transfer or a change of bank details; thread hijacking inserts the request into a real conversation already in progress, so it looks legitimate. There is no link or attachment to analyze: the technical filter has little to work on, and the defense becomes the process — mandatory out-of-band verification for payments, a double check on detail changes, authority that is not exercised through a single email.'
+          },
+          {
+            it: 'Il consent phishing sposta l’inganno sull’autorizzazione. Invece di rubare la password, l’attaccante induce l’utente ad autorizzare un’applicazione malevola tramite OAuth: l’utente concede il consenso e l’app ottiene un token che le dà accesso a email o dati senza conoscere la password, e sopravvive al cambio password e spesso alla stessa MFA. È l’equivalente, sul piano dell’identità, di una porta lasciata aperta volontariamente. La difesa è governare i consensi — limitare quali app possono essere autorizzate, revisionare i permessi concessi, poter revocare i token — perché qui il controllo degli accessi, non l’autenticazione, è il confine.',
+            en: 'Consent phishing shifts the deception to authorization. Instead of stealing the password, the attacker induces the user to authorize a malicious application via OAuth: the user grants consent and the app obtains a token that gives it access to email or data without knowing the password, and it survives a password change and often MFA itself. It is the identity-layer equivalent of a door deliberately left open. The defense is to govern consents — limit which apps can be authorized, review granted permissions, be able to revoke tokens — because here access control, not authentication, is the boundary.'
+          },
+          {
+            it: 'Quando qualcosa passa, conta la risposta, e va fatta evidence-first. Prima si contiene — revocare le sessioni e i token, bloccare un bonifico, isolare un account — poi si raccoglie l’evidenza prima che sparisca: intestazioni complete del messaggio, log di accesso, consensi OAuth concessi, regole di posta create dall’attaccante (un classico del BEC è una regola che nasconde le risposte). Solo dopo si recupera e si chiude la causa. L’ordine conta: agire senza raccogliere evidenza acceca l’indagine, raccogliere senza contenere lascia correre il danno. La segnalazione rapida dell’utente è ciò che fa partire tutto in tempo.',
+            en: 'When something gets through, the response matters, and it must be evidence-first. First you contain — revoke sessions and tokens, stop a transfer, isolate an account — then you gather the evidence before it disappears: full message headers, access logs, granted OAuth consents, mail rules created by the attacker (a BEC classic is a rule that hides the replies). Only then do you recover and close the root cause. The order matters: acting without gathering evidence blinds the investigation, gathering without containing lets the damage run. The user’s quick report is what sets it all off in time.'
+          }
+        ],
+        example: {
+          it: 'Un fornitore su example.test chiede via email di aggiornare le coordinate per il prossimo pagamento: nessun link, solo testo in un thread reale; la verifica fuori banda ferma il BEC, mentre un consenso OAuth sospetto viene revocato e le regole di posta create dall’attaccante entrano nell’evidenza prima del recovery.',
+          en: 'A supplier on example.test asks by email to update the details for the next payment: no link, only text in a real thread; out-of-band verification stops the BEC, while a suspicious OAuth consent is revoked and the mail rules created by the attacker enter the evidence before recovery.'
+        },
+        commonMistakes: [
+          {
+            it: 'Cercare un link o un allegato in un BEC: l’inganno è nel testo e nel processo, non in un payload.',
+            en: 'Looking for a link or attachment in a BEC: the deception is in the text and the process, not in a payload.'
+          },
+          {
+            it: 'Credere che il cambio password fermi il consent phishing: il token OAuth concesso sopravvive; va revocato.',
+            en: 'Believing a password change stops consent phishing: the granted OAuth token survives; it must be revoked.'
+          },
+          {
+            it: 'Recuperare prima di raccogliere l’evidenza: cancella le tracce (regole di posta, log) che spiegano l’incidente.',
+            en: 'Recovering before gathering the evidence: it erases the traces (mail rules, logs) that explain the incident.'
+          }
+        ],
+        lab: 'emailsecurity',
+        references: [{ kind: 'attack', id: 'T1566.002' }],
+        guidedLabs: [
+          {
+            id: 'gl-bec-evidence-first',
+            title: {
+              it: 'Rispondi a un BEC senza perdere l’evidenza',
+              en: 'Respond to a BEC without losing the evidence'
+            },
+            difficulty: 'advanced',
+            lab: 'emailsecurity',
+            scenario: {
+              it: 'Il laboratorio «Email e phishing» mette in scena BEC, consent phishing e il triage evidence-first.',
+              en: 'The “Email and phishing” lab stages BEC, consent phishing, and the evidence-first triage.'
+            },
+            task: {
+              it: 'Ordina le azioni di risposta (contenere, raccogliere evidenza, recuperare) e di’ perché il cambio password non basta per il consent phishing.',
+              en: 'Order the response actions (contain, gather evidence, recover) and say why a password change is not enough for consent phishing.'
+            },
+            steps: [
+              {
+                it: 'Apri «Email e phishing» e seleziona lo scenario di BEC o consent phishing.',
+                en: 'Open “Email and phishing” and select the BEC or consent-phishing scenario.'
+              },
+              {
+                it: 'Elenca l’evidenza da raccogliere (intestazioni, log, consensi OAuth, regole di posta).',
+                en: 'List the evidence to gather (headers, logs, OAuth consents, mail rules).'
+              },
+              {
+                it: 'Metti in ordine contenimento, raccolta ed evidenza, e recovery, spiegando l’ordine.',
+                en: 'Put containment, gathering and evidence, and recovery in order, explaining the order.'
+              }
+            ],
+            challenge: {
+              it: 'Dopo un consent phishing la password è stata cambiata ma l’accesso continua: cosa è stato dimenticato e come lo chiudi?',
+              en: 'After a consent phishing the password was changed but access continues: what was forgotten and how do you close it?'
+            },
+            solution: [
+              {
+                it: 'Il BEC e il consent phishing non portano payload: il primo inganna con testo e processo, il secondo ottiene un token OAuth. La risposta è evidence-first: prima contenere (revocare sessioni e token, bloccare pagamenti), poi raccogliere l’evidenza prima che sparisca (intestazioni, log, consensi, regole di posta create dall’attaccante), infine recuperare. Il cambio password non revoca il token OAuth, che va revocato esplicitamente.',
+                en: 'BEC and consent phishing carry no payload: the first deceives with text and process, the second obtains an OAuth token. The response is evidence-first: first contain (revoke sessions and tokens, stop payments), then gather the evidence before it disappears (headers, logs, consents, mail rules created by the attacker), finally recover. A password change does not revoke the OAuth token, which must be revoked explicitly.'
+              },
+              {
+                it: 'Sfida: se l’accesso continua dopo il cambio password, è stato dimenticato il token OAuth concesso all’app malevola; si chiude revocando il consenso e i token dell’app, non cambiando di nuovo la password.',
+                en: 'Challenge: if access continues after the password change, the OAuth token granted to the malicious app was forgotten; you close it by revoking the app’s consent and tokens, not by changing the password again.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So dire perché BEC e consent phishing eludono i filtri basati su payload.',
+                en: 'I can say why BEC and consent phishing evade payload-based filters.'
+              },
+              {
+                it: 'So ordinare una risposta evidence-first e spiegare perché il token OAuth va revocato.',
+                en: 'I can order an evidence-first response and explain why the OAuth token must be revoked.'
+              }
+            ]
+          }
+        ]
+      }
+    ]
   }
 ];

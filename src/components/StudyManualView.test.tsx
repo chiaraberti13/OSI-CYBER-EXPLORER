@@ -158,7 +158,7 @@ describe('StudyManualView (EDU-01)', () => {
     await user.click(markComplete);
 
     expect(screen.getByRole('button', { name: 'Segna come da completare' }).getAttribute('aria-pressed')).toBe('true');
-    expect(screen.getByLabelText('Progresso capitoli: 1/21')).toBeTruthy();
+    expect(screen.getByLabelText('Progresso capitoli: 1/22')).toBeTruthy();
 
     await user.click(screen.getByRole('button', { name: 'Azzera progresso' }));
     expect(screen.getByRole('button', { name: 'Segna come completato' }).getAttribute('aria-pressed')).toBe('false');
@@ -200,9 +200,9 @@ describe('StudyManualView (EDU-01)', () => {
 
     const mobileNav = screen.getByRole('navigation', { name: 'Navigazione mobile del manuale' });
     const chapterSelect = within(mobileNav).getByRole('combobox', { name: 'Vai a un capitolo' });
-    expect(within(chapterSelect).getAllByRole('option')).toHaveLength(21);
+    expect(within(chapterSelect).getAllByRole('option')).toHaveLength(22);
     expect(chapterSelect.querySelector('optgroup[label="CCNA 1.0 · Fondamenti di rete · 0/5"]')).not.toBeNull();
-    expect(chapterSelect.querySelector('optgroup[label="Estensione · 0/7"]')).not.toBeNull();
+    expect(chapterSelect.querySelector('optgroup[label="Estensione · 0/8"]')).not.toBeNull();
     expect(within(mobileNav).getAllByRole('button')).toHaveLength(4);
 
     await user.selectOptions(chapterSelect, 'ethernet-switching');

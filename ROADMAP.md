@@ -92,8 +92,18 @@ revisione dei contenuti tecnici è vincolante.
       `docs/verify/2026-10-14-pentest03.md`.
 - [ ] **SECX-01 (P2) — Sicurezza applicativa e supply chain.** Capitolo che insegna
       `applicationsecurity` dal lato difensivo (OWASP, SSDLC, SBOM, provenienza, hardening CI/CD).
-- [ ] **SECX-02 (P2) — Email e fattore umano.** Capitolo che insegna `emailsecurity` (phishing,
-      BEC, SPF/DKIM/DMARC) con lab guidato.
+- [x] **SECX-02 (P2) — Email e fattore umano.** Capitolo che insegna `emailsecurity` (phishing,
+      BEC, SPF/DKIM/DMARC) con lab guidato. **Esito (14/10/2026):** nuovo capitolo estensione
+      «Sicurezza dell'email e del fattore umano» (ordine 22, cert Security+) con tre argomenti —
+      autenticazione dell'email (SPF, DKIM, DMARC e allineamento, policy, limite dei domini
+      lookalike), phishing e ingegneria sociale (indicatori tecnici, leve psicologiche, difesa a
+      strati), BEC/consent phishing/risposta evidence-first (token OAuth, ordine
+      contenere→evidenza→recovery) — ciascuno con obiettivi, teoria progressiva, esempio su
+      `example.test`, errori comuni, riferimenti (RFC 7489, MITRE ATT&CK T1566/T1566.002) e un
+      laboratorio guidato su `emailsecurity` (lab finora non insegnato: divario guida↔lab chiuso
+      per l'email). Il manuale sale a **22 capitoli / 67 argomenti / 53 laboratori guidati**;
+      aggiornate le asserzioni di conteggio (progresso `x/22`, 22 opzioni, optgroup «Estensione ·
+      0/8»). `npm run verify` verde, E2E Chromium verdi. Report: `docs/verify/2026-10-14-secx02.md`.
 - [ ] **SECX-03 (P2) — Difese e resilienza non ancora in guida.** Insegnare i laboratori
       `endpointsecurity`, `routingsecurity`, `availability`, `recovery`, `segmentation`,
       `managementsecurity`, `layer2security` con capitoli/argomenti dedicati (uno per incremento).
