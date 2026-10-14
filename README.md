@@ -76,6 +76,8 @@ Every screen is available in **Italian and English**, switchable with one click.
 
 On the first manual visit, **How to use this guide** explains the chapter index, guided labs and previous/next navigation. Close it once to keep it hidden on later visits, or reopen it from the same named button. Chapter progress and this preference stay in the current browser. See [manual help and persistence](docs/STUDY_MANUAL_HELP.md#english).
 
+Studying for both certifications? The **[study path](docs/STUDY_PATH.md#english)** sequences the manual toward **CCNA 200-301** and **eJPT**, with the explicit prerequisites that tie the offensive methodology back to the networking foundation.
+
 ## Tech stack
 
 | Area       | Choice                                 |

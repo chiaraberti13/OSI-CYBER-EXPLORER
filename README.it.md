@@ -72,6 +72,8 @@ Ogni schermata è disponibile in **italiano e inglese**, commutabile con un clic
 
 Al primo accesso al manuale, **Come usare questa guida** spiega indice, laboratori guidati e navigazione precedente/successivo. Chiudi le istruzioni una volta per mantenerle nascoste agli accessi successivi oppure riaprile dal pulsante con lo stesso nome. Il progresso dei capitoli e questa preferenza restano nel browser corrente. Vedi [istruzioni del manuale e persistenza](docs/STUDY_MANUAL_HELP.md#italiano).
 
+Studi per entrambe le certificazioni? Il **[percorso di studio](docs/STUDY_PATH.md#italiano)** ordina il manuale verso **CCNA 200-301** ed **eJPT**, con i prerequisiti espliciti che legano la metodologia offensiva alle fondamenta di networking.
+
 ## Stack tecnologico
 
 TypeScript · React 19 · Vite 8 · Tailwind CSS 4 · Zustand (`persist`) · Motion · lucide-react · Web Audio API · Vitest.

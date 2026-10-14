@@ -142,8 +142,15 @@ revisione dei contenuti tecnici è vincolante.
 
 ## 🎓 Instructional Designer — progressione didattica
 
-- [ ] **EDU-30 (P1) — Sequenza didattica a doppio binario.** Definire l'ordine di studio che
+- [x] **EDU-30 (P1) — Sequenza didattica a doppio binario.** Definire l'ordine di studio che
       intreccia i capitoli CCNA e il percorso eJPT (prerequisiti espliciti tra reti e offensiva).
+      **Esito (14/10/2026):** nuovo documento bilingue `docs/STUDY_PATH.md` (sezioni English /
+      Italiano) che definisce il principio («offensiva per ultima, mai per prima»), un percorso in
+      quattro fasi (A fondamenti di rete, B fondamenti di sicurezza, C approfondimenti/estensione,
+      D metodologia offensiva eJPT) e una **tabella di prerequisiti incrociati** che lega ciascun
+      capitolo eJPT (19/20/21) ai capitoli CCNA su cui si fonda, con la nota inversa che accoppia
+      ogni tecnica eJPT alla difesa CCNA che la contiene. Collegato da entrambi i README (EN/IT).
+      Report: `docs/verify/2026-10-14-edu30.md`.
 - [ ] **EDU-31 (P2) — Collegamenti incrociati guida↔lab.** Ogni laboratorio insegnato in guida
       espone il back-link alla teoria (EDU-STRUCT-05), verificato dalla mappa inversa.
 
