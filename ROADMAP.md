@@ -109,8 +109,15 @@ revisione dei contenuti tecnici è vincolante.
 
 ## 🔎 QA/Test Engineer — copertura e regressioni
 
-- [ ] **QA-20 (P1) — Copertura E2E del percorso eJPT.** Uno smoke E2E che apre il capitolo eJPT,
+- [x] **QA-20 (P1) — Copertura E2E del percorso eJPT.** Uno smoke E2E che apre il capitolo eJPT,
       verifica l'etichetta cert e la navigabilità dei nuovi argomenti/laboratori guidati, con Axe.
+      **Esito (14/10/2026):** nuovo spec `e2e/manual-ejpt.spec.ts` (4 test) che, per i tre capitoli
+      eJPT (`pentest-methodology`, `web-app-pentest`, `exploitation-post-exploitation`), apre il
+      deep-link, verifica il titolo di capitolo, l'etichetta cert «Estensione · eJPT
+      (INE/eLearnSecurity)», i tre argomenti nel rail «In questa pagina» e le tre azioni primarie
+      «Fai l'esercizio guidato», più una scansione Axe WCAG 2.2 AA per capitolo; un quarto test
+      verifica la presenza dei tre capitoli nella navigazione desktop. Suite E2E: **63/63** su
+      Chromium. Report: `docs/verify/2026-10-14-qa20.md`.
 - [ ] **QA-21 (P2) — Regressione parità IT/EN per i nuovi contenuti offensivi.** Estendere i
       controlli di parità e documentazione-target a ogni nuovo capitolo della Fase 2.
 
