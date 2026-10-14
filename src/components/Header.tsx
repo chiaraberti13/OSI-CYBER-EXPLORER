@@ -17,9 +17,14 @@ export default function Header() {
     <header className="sticky top-0 z-50 border-b border-slate-200/60 bg-canvas/80 backdrop-blur-xl">
       <div className="max-w-7xl mx-auto px-3 sm:px-6 min-h-14 flex items-center justify-between gap-2">
         <div className="flex items-center gap-2.5">
-          <div className="w-6 h-6 border border-slate-300 flex items-center justify-center rounded-md">
-            <div className="w-2.5 h-2.5 border border-slate-900 rotate-45" />
-          </div>
+          {/* App mark: a stack of OSI layers on the brand tile, the top layer cyan
+              (the cyber accent). Identical to the favicon so tab and header match. */}
+          <svg viewBox="0 0 32 32" aria-hidden="true" className="h-6 w-6">
+            <rect x="1" y="1" width="30" height="30" rx="7.5" fill="#4f46e5" />
+            <rect x="8.5" y="9.4" width="15" height="3.1" rx="1.55" fill="#22d3ee" />
+            <rect x="8.5" y="14.45" width="15" height="3.1" rx="1.55" fill="#ffffff" />
+            <rect x="8.5" y="19.5" width="15" height="3.1" rx="1.55" fill="#ffffff" opacity="0.7" />
+          </svg>
           <span className="font-medium text-slate-900 text-sm tracking-tight">
             <span className="hidden min-[360px]:inline">OSI Cyber Explorer</span>
             <span className="min-[360px]:hidden">OSI</span>

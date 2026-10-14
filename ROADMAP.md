@@ -144,6 +144,16 @@ revisione dei contenuti tecnici è vincolante.
 
 ## 🎨 Visual Designer — identità e gerarchia
 
+- [x] **VIS-11 (P2) — Nuovo marchio dell'app e favicon (richiesta utente).** Sostituito il
+      generico «rombo nel quadrato» (monocromo, disegnato in CSS nell'header e ripetuto nel
+      favicon) con un marchio coerente con l'identità del prodotto: uno **stack di livelli OSI** su
+      tile indaco di brand (`#4f46e5`), con la barra superiore **ciano** (`#22d3ee`, l'accento
+      cyber del banner) e le inferiori bianche a opacità calante per profondità. **Esito
+      (14/10/2026):** aggiornati `public/favicon.svg` e il mark inline nell'header (SVG identico, in
+      sostituzione del `div` ruotato), e rigenerati i raster coerenti `public/favicon.ico` (32+16
+      px) e `public/apple-touch-icon.png` (180×180 full-bleed) renderizzati da Chromium e convertiti
+      con ImageMagick. `theme-color` indaco invariato. `npm run verify` verde, E2E Chromium
+      **63/63**. Report: `docs/verify/2026-10-14-vis11-icon.md`.
 - [ ] **VIS-10 (P3) — Segno visivo del percorso di certificazione.** Un indicatore coerente (non
       solo testuale) che distingua capitoli CCNA, eJPT ed estensione nell'albero e nell'intestazione,
       rispettando contrasto AA e tema scuro.
