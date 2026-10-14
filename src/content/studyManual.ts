@@ -8047,5 +8047,363 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
         ]
       }
     ]
+  },
+  {
+    id: 'availability-dos-capacity',
+    cert: 'securityplus',
+    order: 26,
+    track: 'extension',
+    title: {
+      it: 'Disponibilità, DoS e capacità',
+      en: 'Availability, DoS, and capacity'
+    },
+    summary: {
+      it: 'L’estensione sulla «A» della triade CIA: tenere in piedi il servizio. Il modello del DoS come esaurimento di una risorsa finita, i flood che riempiono le tabelle di stato più del traffico stesso, e la capacità e le code che decidono quale traffico sopravvive sotto pressione. La difesa non è un solo dispositivo ma la scelta del punto giusto in cui fermare o assorbire l’esaurimento.',
+      en: 'The extension on the «A» of the CIA triad: keeping the service up. The DoS model as exhaustion of a finite resource, the floods that fill state tables more than the traffic itself, and the capacity and queues that decide which traffic survives under pressure. The defense is not a single device but choosing the right point at which to stop or absorb the exhaustion.'
+    },
+    topics: [
+      {
+        id: 'availability-resource-model',
+        title: {
+          it: 'Il modello del DoS: esaurire una risorsa finita',
+          en: 'The DoS model: exhausting a finite resource'
+        },
+        objectives: [
+          {
+            it: 'Spiegare il DoS come esaurimento della risorsa più scarsa invece che come «troppo traffico».',
+            en: 'Explain DoS as exhaustion of the scarcest resource rather than as «too much traffic».'
+          },
+          {
+            it: 'Scegliere il punto di enforcement giusto: locale o a monte, secondo la risorsa esaurita.',
+            en: 'Choose the right enforcement point: local or upstream, according to the exhausted resource.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere la triade CIA e gli attacchi per livello (capitoli sui fondamenti di sicurezza e sugli attacchi).',
+            en: 'Know the CIA triad and attacks by layer (the security fundamentals and the attacks chapters).'
+          }
+        ],
+        theory: [
+          {
+            it: 'La disponibilità non si perde «per troppo traffico» in astratto, ma perché una risorsa finita si esaurisce. Ogni servizio ne ha una più scarsa delle altre: la banda di un collegamento, le voci di una tabella di stato, i cicli di CPU, la memoria. Il DoS (Denial of Service) mira proprio a quella: saturare il link più stretto, riempire la tabella più piccola, consumare la CPU più carica. Ragionare per risorsa, non per volume, è ciò che distingue una difesa efficace: contro una saturazione di banda non serve un firewall più veloce, serve fermare il traffico prima del collo di bottiglia.',
+            en: 'Availability is not lost «from too much traffic» in the abstract, but because a finite resource runs out. Every service has one scarcer than the others: a link’s bandwidth, a state table’s entries, CPU cycles, memory. DoS (Denial of Service) aims at exactly that: saturate the narrowest link, fill the smallest table, consume the busiest CPU. Reasoning by resource, not by volume, is what makes a defense effective: against bandwidth saturation a faster firewall does not help, you need to stop the traffic before the bottleneck.'
+          },
+          {
+            it: 'Da qui la domanda chiave: dove si applica l’enforcement? Se la risorsa esaurita è la banda del collegamento in ingresso, il punto giusto è a monte — presso il provider o un servizio di scrubbing — perché quando il traffico è già arrivato sul link, il link è già saturo, qualunque cosa faccia il dispositivo locale. Se invece la risorsa è una tabella di stato o la CPU di un apparato, l’enforcement locale ha senso perché può rifiutare ciò che la riempirebbe. Sbagliare il punto è l’errore classico: mettere una difesa dietro al collo di bottiglia non salva ciò che sta davanti.',
+            en: 'Hence the key question: where is enforcement applied? If the exhausted resource is the inbound link’s bandwidth, the right point is upstream — at the provider or a scrubbing service — because once the traffic has already reached the link, the link is already saturated, whatever the local device does. If instead the resource is a state table or a device’s CPU, local enforcement makes sense because it can refuse what would fill it. Getting the point wrong is the classic mistake: placing a defense behind the bottleneck does not save what sits in front of it.'
+          },
+          {
+            it: 'Questo modello unifica attacchi che sembrano diversi. Un flood di banda, un SYN flood che riempie il backlog, una reflection che consuma il link, un esaurimento della tabella NAT: cambia la risorsa, non la logica. Per questo la difesa della disponibilità si progetta mappando, per ogni servizio, la risorsa più scarsa e il punto in cui la si protegge — a monte per la banda, localmente per lo stato e la CPU — e misurando la capacità normale per riconoscere quando viene superata. Conoscere la propria risorsa più scarsa meglio dell’attaccante è, di nuovo, il cuore della difesa.',
+            en: 'This model unifies attacks that look different. A bandwidth flood, a SYN flood filling the backlog, a reflection consuming the link, a NAT-table exhaustion: the resource changes, not the logic. This is why availability defense is designed by mapping, for each service, the scarcest resource and the point where it is protected — upstream for bandwidth, locally for state and CPU — and by measuring normal capacity to recognize when it is exceeded. Knowing your own scarcest resource better than the attacker is, again, the heart of the defense.'
+          }
+        ],
+        example: {
+          it: 'Un flood che satura il link in ingresso verso 192.0.2.0/24 non si ferma con il firewall locale, già a valle del collo di bottiglia: va mitigato a monte, presso il provider; un esaurimento della tabella di stato, invece, si ferma localmente rifiutando ciò che la riempirebbe.',
+          en: 'A flood saturating the inbound link toward 192.0.2.0/24 is not stopped by the local firewall, already downstream of the bottleneck: it must be mitigated upstream, at the provider; a state-table exhaustion, instead, is stopped locally by refusing what would fill it.'
+        },
+        commonMistakes: [
+          {
+            it: 'Pensare al DoS come «troppo traffico»: conta la risorsa più scarsa che si esaurisce, non il volume in sé.',
+            en: 'Thinking of DoS as «too much traffic»: what counts is the scarcest resource that runs out, not the volume itself.'
+          },
+          {
+            it: 'Mettere la difesa dietro al collo di bottiglia: una saturazione di banda si ferma a monte, non localmente.',
+            en: 'Placing the defense behind the bottleneck: bandwidth saturation is stopped upstream, not locally.'
+          },
+          {
+            it: 'Non misurare la capacità normale: senza una linea di base non si riconosce quando viene superata.',
+            en: 'Not measuring normal capacity: without a baseline you cannot recognize when it is exceeded.'
+          }
+        ],
+        lab: 'availability',
+        references: [{ kind: 'attack', id: 'T1498' }],
+        guidedLabs: [
+          {
+            id: 'gl-availability-enforcement-point',
+            title: {
+              it: 'Scegli dove fermare l’esaurimento',
+              en: 'Choose where to stop the exhaustion'
+            },
+            difficulty: 'core',
+            lab: 'availability',
+            scenario: {
+              it: 'Il laboratorio «Disponibilità e DoS» mostra la saturazione del link e il punto di enforcement.',
+              en: 'The “Availability and DoS” lab shows link saturation and the enforcement point.'
+            },
+            task: {
+              it: 'Per due scenari indica la risorsa esaurita e se l’enforcement giusto è locale o a monte, spiegando perché.',
+              en: 'For two scenarios state the exhausted resource and whether the right enforcement is local or upstream, explaining why.'
+            },
+            steps: [
+              {
+                it: 'Apri «Disponibilità e DoS» e scegli lo scenario sulla saturazione del link.',
+                en: 'Open “Availability and DoS” and pick the link-saturation scenario.'
+              },
+              {
+                it: 'Individua la risorsa più scarsa e dove si trova rispetto al collo di bottiglia.',
+                en: 'Identify the scarcest resource and where it sits relative to the bottleneck.'
+              },
+              {
+                it: 'Indica il punto di enforcement giusto (locale o a monte) e perché.',
+                en: 'State the right enforcement point (local or upstream) and why.'
+              }
+            ],
+            challenge: {
+              it: 'Il firewall locale è potentissimo ma il servizio resta giù: quale risorsa è esaurita e dove andava fermata?',
+              en: 'The local firewall is very powerful but the service stays down: which resource is exhausted and where should it have been stopped?'
+            },
+            solution: [
+              {
+                it: 'Il DoS esaurisce la risorsa più scarsa: se è la banda del link in ingresso, l’enforcement va a monte (provider o scrubbing), perché a valle il collo di bottiglia è già saturo; se è una tabella di stato o la CPU, l’enforcement locale può rifiutare ciò che la riempirebbe. Si misura la capacità normale per riconoscere il superamento.',
+                en: 'DoS exhausts the scarcest resource: if it is the inbound link’s bandwidth, enforcement goes upstream (provider or scrubbing), because downstream the bottleneck is already saturated; if it is a state table or the CPU, local enforcement can refuse what would fill it. You measure normal capacity to recognize when it is exceeded.'
+              },
+              {
+                it: 'Sfida: se il firewall locale è potente ma il servizio resta giù, la risorsa esaurita è la banda del link in ingresso, a monte del firewall; andava fermata presso il provider, perché nessun dispositivo a valle del collo di bottiglia può liberare un link già saturo.',
+                en: 'Challenge: if the local firewall is powerful but the service stays down, the exhausted resource is the inbound link’s bandwidth, upstream of the firewall; it had to be stopped at the provider, because no device downstream of the bottleneck can free an already-saturated link.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So ragionare sul DoS per risorsa esaurita invece che per volume.',
+                en: 'I can reason about DoS by exhausted resource instead of by volume.'
+              },
+              {
+                it: 'So scegliere l’enforcement locale o a monte secondo dove sta il collo di bottiglia.',
+                en: 'I can choose local or upstream enforcement according to where the bottleneck is.'
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'availability-state-floods',
+        title: {
+          it: 'Flood di stato: SYN, reflection e tabelle di stato',
+          en: 'State floods: SYN, reflection, and state tables'
+        },
+        objectives: [
+          {
+            it: 'Spiegare perché un flood costa poco all’attaccante e molto al difensore in termini di stato.',
+            en: 'Explain why a flood costs the attacker little and the defender a lot in terms of state.'
+          },
+          {
+            it: 'Collegare SYN flood, reflection/amplification ed esaurimento delle tabelle alle rispettive difese.',
+            en: 'Link SYN floods, reflection/amplification, and table exhaustion to their respective defenses.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere l’handshake TCP, NAT e lo spoofing dell’origine (capitoli su fondamenti, servizi IP e routing).',
+            en: 'Know the TCP handshake, NAT, and source spoofing (the fundamentals, IP services, and routing chapters).'
+          }
+        ],
+        theory: [
+          {
+            it: 'Molti attacchi di disponibilità non esauriscono la banda ma lo stato, ed è lì la loro economia: inviare costa poco, mantenere lo stato costa molto. Il SYN flood ne è l’esempio: l’attaccante invia molti SYN senza completare l’handshake, e ogni SYN occupa una voce nel backlog delle connessioni half-open; con poche risorse riempie una tabella che il server deve tenere. La difesa non è bloccare i SYN ma non pagarne lo stato: i SYN cookie permettono al server di non allocare nulla finché l’handshake non è completato, spostando il costo indietro sull’attaccante.',
+            en: 'Many availability attacks exhaust not bandwidth but state, and that is their economy: sending costs little, keeping the state costs a lot. The SYN flood is the example: the attacker sends many SYN without completing the handshake, and each SYN takes an entry in the half-open connection backlog; with few resources it fills a table the server must hold. The defense is not to block SYN but to not pay their state: SYN cookies let the server allocate nothing until the handshake is completed, pushing the cost back onto the attacker.'
+          },
+          {
+            it: 'La reflection con amplification porta l’asimmetria all’estremo. L’attaccante invia piccole richieste con l’indirizzo di origine falsificato a quello della vittima verso servizi che rispondono con molto più di quanto ricevono; i server «riflettono» e amplificano verso la vittima, che riceve un volume enorme da sorgenti legittime. Due difese si combinano: a monte, l’anti-spoofing (BCP 38, visto nel capitolo sul routing) impedisce alla sorgente falsificata di partire; sul servizio riflettente, limitare le risposte e non esporre protocolli amplificanti riduce il fattore di amplificazione.',
+            en: 'Reflection with amplification takes the asymmetry to the extreme. The attacker sends small requests with the source address forged to the victim’s toward services that reply with much more than they receive; the servers «reflect» and amplify toward the victim, which receives a huge volume from legitimate sources. Two defenses combine: upstream, anti-spoofing (BCP 38, seen in the routing chapter) prevents the forged source from leaving; on the reflecting service, limiting responses and not exposing amplifying protocols reduces the amplification factor.'
+          },
+          {
+            it: 'Lo stesso schema vale per ogni tabella di stato condivisa: le traduzioni NAT/PAT, le sessioni di un firewall stateful, le voci di una tabella di connessioni. Riempirle nega il servizio a tutti, perché una tabella piena non distingue il traffico legittimo da quello ostile. Le difese sono coerenti: limitare quante voci una singola sorgente può creare, far scadere prima lo stato incompleto, e dimensionare le tabelle sulla capacità attesa misurata. Il filo conduttore è sempre lo stesso — non lasciare che un pacchetto economico imponga uno stato costoso senza prova di legittimità.',
+            en: 'The same pattern holds for every shared state table: NAT/PAT translations, a stateful firewall’s sessions, a connection table’s entries. Filling them denies the service to everyone, because a full table does not tell legitimate traffic from hostile. The defenses are consistent: limit how many entries a single source can create, expire incomplete state sooner, and size the tables to the measured expected capacity. The thread is always the same — do not let a cheap packet impose expensive state without proof of legitimacy.'
+          }
+        ],
+        example: {
+          it: 'Un SYN flood riempie il backlog delle half-open: i SYN cookie evitano di allocare stato finché l’handshake non è completo. Una reflection con origine falsificata verso 192.0.2.0/24 si contrasta con l’anti-spoofing a monte e limitando le risposte del servizio riflettente.',
+          en: 'A SYN flood fills the half-open backlog: SYN cookies avoid allocating state until the handshake is complete. A reflection with a forged source toward 192.0.2.0/24 is countered with upstream anti-spoofing and by limiting the reflecting service’s responses.'
+        },
+        commonMistakes: [
+          {
+            it: 'Difendersi dal SYN flood bloccando i SYN: la soluzione è non allocare stato finché l’handshake non è completo.',
+            en: 'Defending against a SYN flood by blocking SYN: the solution is to not allocate state until the handshake is complete.'
+          },
+          {
+            it: 'Ignorare l’anti-spoofing: senza BCP 38 la reflection con origine falsificata parte indisturbata.',
+            en: 'Ignoring anti-spoofing: without BCP 38 the reflection with a forged source leaves undisturbed.'
+          },
+          {
+            it: 'Non limitare lo stato per sorgente: una singola origine può riempire una tabella condivisa e negarla a tutti.',
+            en: 'Not limiting state per source: a single source can fill a shared table and deny it to everyone.'
+          }
+        ],
+        lab: 'availability',
+        references: [{ kind: 'rfc', id: 'RFC 4987' }],
+        guidedLabs: [
+          {
+            id: 'gl-availability-state-cost',
+            title: {
+              it: 'Non pagare lo stato di un pacchetto economico',
+              en: 'Do not pay the state of a cheap packet'
+            },
+            difficulty: 'advanced',
+            lab: 'availability',
+            scenario: {
+              it: 'Il laboratorio «Disponibilità e DoS» mostra SYN flood, reflection e l’esaurimento delle tabelle di stato.',
+              en: 'The “Availability and DoS” lab shows SYN floods, reflection, and state-table exhaustion.'
+            },
+            task: {
+              it: 'Collega SYN flood, reflection ed esaurimento NAT alle difese che spostano il costo sull’attaccante.',
+              en: 'Link SYN floods, reflection, and NAT exhaustion to the defenses that shift the cost onto the attacker.'
+            },
+            steps: [
+              {
+                it: 'Apri «Disponibilità e DoS» e scegli lo scenario sul SYN flood e il backlog.',
+                en: 'Open “Availability and DoS” and pick the SYN flood and backlog scenario.'
+              },
+              {
+                it: 'Individua la tabella di stato che si riempie e cosa la alimenta.',
+                en: 'Identify the state table that fills and what feeds it.'
+              },
+              {
+                it: 'Indica la difesa che evita di pagare lo stato o che taglia la sorgente falsificata.',
+                en: 'State the defense that avoids paying the state or that cuts the forged source.'
+              }
+            ],
+            challenge: {
+              it: 'Una reflection arriva da server legittimi: come la fermi senza bloccare quei server, e dove?',
+              en: 'A reflection arrives from legitimate servers: how do you stop it without blocking those servers, and where?'
+            },
+            solution: [
+              {
+                it: 'I flood di stato sfruttano l’asimmetria tra l’invio (economico) e il mantenimento dello stato (costoso). Il SYN flood si contrasta con i SYN cookie, che non allocano stato finché l’handshake non è completo; la reflection si contrasta a monte con l’anti-spoofing (BCP 38) e limitando le risposte del servizio riflettente; l’esaurimento delle tabelle si contrasta limitando lo stato per sorgente e facendo scadere prima lo stato incompleto.',
+                en: 'State floods exploit the asymmetry between sending (cheap) and keeping state (expensive). The SYN flood is countered with SYN cookies, which allocate no state until the handshake is complete; reflection is countered upstream with anti-spoofing (BCP 38) and by limiting the reflecting service’s responses; table exhaustion is countered by limiting state per source and expiring incomplete state sooner.'
+              },
+              {
+                it: 'Sfida: una reflection arriva da server legittimi, quindi non si bloccano quelli; si ferma alla radice con l’anti-spoofing a monte (che impedisce la partenza dell’origine falsificata) e riducendo l’amplificazione sul servizio riflettente, non filtrando la vittima a valle.',
+                en: 'Challenge: a reflection arrives from legitimate servers, so you do not block those; you stop it at the root with upstream anti-spoofing (which prevents the forged source from leaving) and by reducing amplification on the reflecting service, not by filtering the victim downstream.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So spiegare perché un flood di stato costa poco all’attaccante e molto al difensore.',
+                en: 'I can explain why a state flood costs the attacker little and the defender a lot.'
+              },
+              {
+                it: 'So collegare SYN flood, reflection ed esaurimento delle tabelle alle rispettive difese.',
+                en: 'I can link SYN floods, reflection, and table exhaustion to their respective defenses.'
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'availability-capacity-queues',
+        title: {
+          it: 'Capacità, code e QoS: il traffico critico sotto pressione',
+          en: 'Capacity, queues, and QoS: critical traffic under pressure'
+        },
+        objectives: [
+          {
+            it: 'Riconoscere l’esaurimento di capacità in tabelle, cache e servizi oltre il link.',
+            en: 'Recognize capacity exhaustion in tables, caches, and services beyond the link.'
+          },
+          {
+            it: 'Spiegare come QoS e code decidono quale traffico sopravvive quando la risorsa è contesa.',
+            en: 'Explain how QoS and queues decide which traffic survives when the resource is contended.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere QoS, DNS e NAT (capitoli sui servizi IP e sui servizi IP estesi).',
+            en: 'Know QoS, DNS, and NAT (the IP services and extended IP services chapters).'
+          }
+        ],
+        theory: [
+          {
+            it: 'La capacità si esaurisce anche dove non c’è un attacco esplicito. Una tabella CAM che trabocca fa degradare lo switch a flooding; un pool di lease DHCP esaurito nega l’indirizzo a nuovi host; una cache DNS con troppi cache miss scarica sulla recursion e sui server a monte; una tabella di traduzioni NAT piena blocca nuove sessioni. In tutti i casi la risorsa non è la banda ma una struttura dati o un servizio con un limite, e il sintomo — lentezza, intermittenza, fallimenti nuovi a parità di configurazione — è lo stesso di un attacco. Per questo misurare la capacità normale è un controllo di sicurezza, non solo di capacity planning.',
+            en: 'Capacity runs out even where there is no explicit attack. An overflowing CAM table degrades the switch to flooding; an exhausted DHCP lease pool denies addresses to new hosts; a DNS cache with too many cache misses offloads onto recursion and upstream servers; a full NAT translation table blocks new sessions. In all cases the resource is not bandwidth but a data structure or a service with a limit, and the symptom — slowness, intermittence, new failures with unchanged configuration — is the same as an attack. This is why measuring normal capacity is a security control, not only capacity planning.'
+          },
+          {
+            it: 'Quando la risorsa è contesa e non basta per tutti, qualcuno deve decidere chi passa: lo fanno le code e la QoS. Senza una politica, la contesa è cieca e il traffico critico — voce, controllo, gestione — muore per starvation accanto a quello di volume. La QoS classifica il traffico e gli assegna code e priorità, così che sotto pressione le classi critiche mantengano la loro quota invece di competere ad armi pari con un download. Ma la QoS non crea capacità: ridistribuisce la scarsità secondo una priorità scelta, e una classificazione sbagliata protegge il traffico sbagliato.',
+            en: 'When the resource is contended and not enough for everyone, someone must decide who passes: queues and QoS do. Without a policy, contention is blind and critical traffic — voice, control, management — dies of starvation next to volume traffic. QoS classifies the traffic and assigns it queues and priorities, so that under pressure the critical classes keep their share instead of competing on equal terms with a download. But QoS does not create capacity: it redistributes scarcity according to a chosen priority, and a wrong classification protects the wrong traffic.'
+          },
+          {
+            it: 'Il capitolo si chiude ricomponendo il quadro: la disponibilità è una proprietà di sistema, non di un dispositivo. Si difende mappando la risorsa più scarsa di ogni servizio, scegliendo il punto di enforcement (a monte per la banda, locale per lo stato e la CPU), non pagando stato costoso per pacchetti economici, e usando capacità e QoS per far sopravvivere il traffico critico quando la scarsità è inevitabile. È la «A» della triade CIA resa operativa: non «niente cade mai», ma «ciò che conta resta in piedi, e ce ne accorgiamo in tempo».',
+            en: 'The chapter closes by recomposing the picture: availability is a property of the system, not of a device. It is defended by mapping each service’s scarcest resource, choosing the enforcement point (upstream for bandwidth, local for state and CPU), not paying expensive state for cheap packets, and using capacity and QoS to let critical traffic survive when scarcity is unavoidable. It is the «A» of the CIA triad made operational: not «nothing ever falls», but «what matters stays up, and we notice in time».'
+          }
+        ],
+        example: {
+          it: 'Sotto pressione, senza QoS la voce si interrompe mentre un download occupa la coda; classificando il traffico, la classe critica mantiene la sua quota. Una tabella NAT piena, invece, non si risolve con la QoS ma dimensionando la tabella e limitando lo stato per sorgente.',
+          en: 'Under pressure, without QoS voice breaks up while a download occupies the queue; by classifying the traffic, the critical class keeps its share. A full NAT table, instead, is not solved by QoS but by sizing the table and limiting state per source.'
+        },
+        commonMistakes: [
+          {
+            it: 'Cercare sempre la banda: spesso a esaurirsi è una tabella, una cache o un pool, non il link.',
+            en: 'Always looking at bandwidth: often what runs out is a table, a cache, or a pool, not the link.'
+          },
+          {
+            it: 'Credere che la QoS crei capacità: ridistribuisce la scarsità, e una classificazione sbagliata protegge il traffico sbagliato.',
+            en: 'Believing QoS creates capacity: it redistributes scarcity, and a wrong classification protects the wrong traffic.'
+          },
+          {
+            it: 'Non avere una linea di base: senza capacità normale misurata, un esaurimento sembra un guasto casuale.',
+            en: 'Having no baseline: without measured normal capacity, an exhaustion looks like a random fault.'
+          }
+        ],
+        lab: 'availability',
+        references: [{ kind: 'attack', id: 'T1499' }],
+        guidedLabs: [
+          {
+            id: 'gl-availability-qos-starvation',
+            title: {
+              it: 'Fai sopravvivere il traffico critico',
+              en: 'Let the critical traffic survive'
+            },
+            difficulty: 'core',
+            lab: 'availability',
+            scenario: {
+              it: 'Il laboratorio «Disponibilità e DoS» mostra la capacità di tabelle e servizi e le code QoS.',
+              en: 'The “Availability and DoS” lab shows the capacity of tables and services and the QoS queues.'
+            },
+            task: {
+              it: 'Distingui un esaurimento di capacità da un flood e spiega come la QoS fa sopravvivere il traffico critico.',
+              en: 'Tell a capacity exhaustion from a flood and explain how QoS lets the critical traffic survive.'
+            },
+            steps: [
+              {
+                it: 'Apri «Disponibilità e DoS» e scegli lo scenario su QoS e code.',
+                en: 'Open “Availability and DoS” and pick the QoS and queues scenario.'
+              },
+              {
+                it: 'Individua la risorsa esaurita (tabella, cache, pool) o la coda contesa.',
+                en: 'Identify the exhausted resource (table, cache, pool) or the contended queue.'
+              },
+              {
+                it: 'Indica se serve QoS, dimensionamento o limite per sorgente, e perché.',
+                en: 'State whether QoS, sizing, or per-source limiting is needed, and why.'
+              }
+            ],
+            challenge: {
+              it: 'La QoS è configurata ma il traffico critico cade comunque: cosa può essere sbagliato nella classificazione?',
+              en: 'QoS is configured but the critical traffic still drops: what can be wrong in the classification?'
+            },
+            solution: [
+              {
+                it: 'Un esaurimento di capacità riguarda una struttura con un limite — CAM, lease DHCP, cache DNS, tabella NAT — e si risolve dimensionando e limitando lo stato per sorgente, non con la QoS. La QoS serve quando la risorsa è contesa: classifica il traffico e dà alle classi critiche una quota garantita, così sotto pressione non muoiono per starvation. Ma non crea capacità: ridistribuisce la scarsità secondo la priorità scelta.',
+                en: 'A capacity exhaustion concerns a structure with a limit — CAM, DHCP leases, DNS cache, NAT table — and is solved by sizing and limiting state per source, not with QoS. QoS is for when the resource is contended: it classifies traffic and gives critical classes a guaranteed share, so under pressure they do not die of starvation. But it does not create capacity: it redistributes scarcity by the chosen priority.'
+              },
+              {
+                it: 'Sfida: se il traffico critico cade pur con QoS, la classificazione è probabilmente sbagliata — il traffico critico non viene riconosciuto e finisce nella classe di default, o una classe troppo ampia gli toglie la quota; si corregge marcando correttamente il traffico critico al confine di fiducia e verificando le code.',
+                en: 'Challenge: if critical traffic drops despite QoS, the classification is probably wrong — the critical traffic is not recognized and ends up in the default class, or an overly broad class takes its share; you fix it by correctly marking the critical traffic at the trust boundary and verifying the queues.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So riconoscere un esaurimento di capacità oltre la banda e la difesa adatta.',
+                en: 'I can recognize a capacity exhaustion beyond bandwidth and the fitting defense.'
+              },
+              {
+                it: 'So spiegare come la QoS fa sopravvivere il traffico critico e perché non crea capacità.',
+                en: 'I can explain how QoS lets critical traffic survive and why it does not create capacity.'
+              }
+            ]
+          }
+        ]
+      }
+    ]
   }
 ];

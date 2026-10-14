@@ -68,17 +68,24 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
       capitoli / 73 argomenti / 59 laboratori guidati**. Report: `docs/verify/2026-10-14-content01-segmentation.md`.
 - [~] **CONTENT-02 (P2) — Laboratori difensivi ancora non in guida (uno per incremento).** Insegnare
   `routingsecurity`, `availability`, `recovery`, `managementsecurity`, `layer2security` con
-  capitoli/argomenti dedicati, chiudendo del tutto il divario guida↔laboratori. **In corso — 1
-  di 5 (14/10/2026):** aggiunto il capitolo estensione «Sicurezza del routing e del control
-  plane» (ordine 25, cert Security+) che insegna `routingsecurity`, con tre argomenti — fiducia
-  del routing (adiacenze OSPF, integrità LSDB, redistribuzione/default-route injection), BGP/RPKI
-  e anti-spoofing (uRPF, BCP 38), protezione del control plane (CoPP, coerenza RIB/FIB) —
-  ciascuno con obiettivi, teoria progressiva, esempio su `192.0.2.0/24`, errori comuni,
-  riferimenti (RFC 2328, RFC 7454, NIST SP 800-189) e un laboratorio guidato su `routingsecurity`.
-  Manuale a **25 capitoli / 76 argomenti / 62 laboratori guidati**; aggiornate le asserzioni di
-  conteggio (progresso `x/25`, 25 opzioni, optgroup «Estensione · 0/11»). Restano da insegnare:
-  `availability`, `recovery`, `managementsecurity`, `layer2security`. Report:
-  `docs/verify/2026-10-14-content02-routing.md`.
+  capitoli/argomenti dedicati, chiudendo del tutto il divario guida↔laboratori. **In corso — 2
+  di 5 (14/10/2026).**
+  - **(1/5)** «Sicurezza del routing e del control plane» (ordine 25, cert Security+) che insegna
+    `routingsecurity` — fiducia del routing (adiacenze OSPF, integrità LSDB, redistribuzione/
+    default-route injection), BGP/RPKI e anti-spoofing (uRPF, BCP 38), protezione del control plane
+    (CoPP, coerenza RIB/FIB). Riferimenti RFC 2328/RFC 7454/NIST SP 800-189. Report:
+    `docs/verify/2026-10-14-content02-routing.md`.
+  - **(2/5)** «Disponibilità, DoS e capacità» (ordine 26, cert Security+) che insegna `availability`
+    — il modello del DoS come esaurimento della risorsa più scarsa e scelta del punto di enforcement
+    (locale/a monte), i flood di stato (SYN flood e SYN cookie, reflection/amplification con
+    anti-spoofing, esaurimento delle tabelle), capacità e QoS (CAM/DHCP/DNS/NAT, code e starvation
+    del traffico critico). Riferimenti MITRE ATT&CK T1498/T1499, RFC 4987. Report:
+    `docs/verify/2026-10-14-content02-availability.md`.
+
+  Manuale a **26 capitoli / 79 argomenti / 65 laboratori guidati**; aggiornate le asserzioni di
+  conteggio (progresso `x/26`, 26 opzioni, optgroup «Estensione · 0/12»). Restano da insegnare:
+  `recovery`, `managementsecurity`, `layer2security`.
+
 - [ ] **EDU-31 (P2) — Collegamenti incrociati guida↔lab.** Verificare che ogni laboratorio insegnato
       esponga il back-link alla teoria (EDU-STRUCT-05) via la mappa inversa, anche per i nuovi
       capitoli.

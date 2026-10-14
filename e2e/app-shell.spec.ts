@@ -180,10 +180,10 @@ test.describe('application shell', () => {
 
   test('chapter completion persists locally, aggregates by domain, and resets (UX-21)', async ({ page }) => {
     await page.goto('/#/manual');
-    await expect(page.getByLabel('Progresso capitoli: 0/25', { exact: true })).toBeVisible();
+    await expect(page.getByLabel('Progresso capitoli: 0/26', { exact: true })).toBeVisible();
 
     await page.getByRole('button', { name: 'Segna come completato' }).click();
-    await expect(page.getByLabel('Progresso capitoli: 1/25', { exact: true })).toBeVisible();
+    await expect(page.getByLabel('Progresso capitoli: 1/26', { exact: true })).toBeVisible();
     await page.reload();
     await expect(page.getByRole('button', { name: 'Segna come da completare' })).toHaveAttribute(
       'aria-pressed',
@@ -196,7 +196,7 @@ test.describe('application shell', () => {
 
     await page.getByRole('button', { name: 'Azzera progresso' }).click();
     await page.reload();
-    await expect(page.getByLabel('Progresso capitoli: 0/25', { exact: true })).toBeVisible();
+    await expect(page.getByLabel('Progresso capitoli: 0/26', { exact: true })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Segna come completato' })).toHaveAttribute('aria-pressed', 'false');
   });
 
