@@ -8405,5 +8405,363 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
         ]
       }
     ]
+  },
+  {
+    id: 'management-plane-telemetry-security',
+    cert: 'securityplus',
+    order: 27,
+    track: 'extension',
+    title: {
+      it: 'Sicurezza del piano di gestione e della telemetria',
+      en: 'Management-plane and telemetry security'
+    },
+    summary: {
+      it: 'L’estensione sul terzo piano, dopo dati e controllo: il piano di gestione, cioè come si amministra e si osserva la rete. Isolare la gestione da chi non deve raggiungerla, rendere la telemetria autentica e ancorata a un tempo attendibile perché valga come evidenza, e conoscere i punti ciechi del monitoraggio. Chi controlla la gestione controlla la rete: la difesa è trattarla come la superficie critica che è.',
+      en: 'The extension on the third plane, after data and control: the management plane — how the network is administered and observed. Isolate management from those who should not reach it, make telemetry authentic and anchored to trusted time so it counts as evidence, and know the blind spots of monitoring. Whoever controls management controls the network: the defense is to treat it as the critical surface it is.'
+    },
+    topics: [
+      {
+        id: 'management-isolation-access',
+        title: {
+          it: 'Isolare la gestione: OOB, management VRF e accesso',
+          en: 'Isolating management: OOB, management VRF, and access'
+        },
+        objectives: [
+          {
+            it: 'Spiegare perché il piano di gestione va separato da quello dati e come lo si isola.',
+            en: 'Explain why the management plane must be separated from the data plane and how it is isolated.'
+          },
+          {
+            it: 'Collegare accesso amministrativo, identità e accounting a chi può fare cosa sul dispositivo.',
+            en: 'Link administrative access, identity, and accounting to who can do what on the device.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere AAA, SSH e la segmentazione (capitoli su sicurezza CCNA, identità e segmentazione).',
+            en: 'Know AAA, SSH, and segmentation (the CCNA security, identity, and segmentation chapters).'
+          }
+        ],
+        theory: [
+          {
+            it: 'Oltre al piano dati (inoltro) e al piano di controllo (routing), esiste il piano di gestione: come si configura e si osserva un dispositivo. È il più sensibile, perché chi lo raggiunge può riconfigurare tutto, e per questo va isolato da chi non deve toccarlo. L’isolamento ideale è out-of-band (OOB): una rete di gestione fisicamente o logicamente separata da quella produttiva, così che un problema o un attacco sul piano dati non chiuda la porta dell’amministratore e, soprattutto, un host qualunque in produzione non raggiunga le interfacce di gestione. Quando l’OOB puro non è possibile, una management VRF separa il traffico di gestione in-band in una tabella di routing dedicata.',
+            en: 'Beyond the data plane (forwarding) and the control plane (routing), there is the management plane: how a device is configured and observed. It is the most sensitive, because whoever reaches it can reconfigure everything, and this is why it must be isolated from those who should not touch it. The ideal isolation is out-of-band (OOB): a management network physically or logically separate from the production one, so that a problem or an attack on the data plane does not lock the administrator out and, above all, no random production host reaches the management interfaces. When pure OOB is not possible, a management VRF separates the in-band management traffic into a dedicated routing table.'
+          },
+          {
+            it: 'Isolare il percorso non basta: conta anche chi vi accede e cosa può fare. L’accesso amministrativo va fatto con un trasporto cifrato (SSHv2, mai Telnet in chiaro) sulle linee VTY, con identità individuali invece di un account condiviso, così che ogni azione sia attribuibile a una persona. L’AAA lega l’autenticazione a un sistema centrale, l’autorizzazione a cosa quel ruolo può eseguire, e l’accounting a un registro di chi ha fatto cosa e quando. Un account condiviso o un trasporto in chiaro vanificano l’isolamento del percorso, perché il confine lo attraversa chi non dovrebbe o senza lasciare traccia.',
+            en: 'Isolating the path is not enough: who accesses it and what they can do also matters. Administrative access must use an encrypted transport (SSHv2, never cleartext Telnet) on the VTY lines, with individual identities instead of a shared account, so that every action is attributable to a person. AAA ties authentication to a central system, authorization to what that role may run, and accounting to a record of who did what and when. A shared account or a cleartext transport defeats the path isolation, because the boundary is crossed by someone who should not, or without leaving a trace.'
+          },
+          {
+            it: 'Il principio è lo stesso di tutto il capitolo precedente sul routing: nessuna fiducia implicita, nemmeno «dentro». La gestione è un segmento ad alto valore — come i servizi condivisi della segmentazione — e va trattata come tale: raggiungibile solo dalle postazioni autorizzate, con accesso autenticato, autorizzato per ruolo e registrato. Dal lato del tester, le interfacce di gestione esposte sono un bersaglio di primo livello proprio perché aprono tutto; dal lato della difesa, isolarle e governarne l’accesso è il controllo con il più alto impatto sull’intera rete.',
+            en: 'The principle is the same as the whole previous routing chapter: no implicit trust, not even «inside». Management is a high-value segment — like the shared services of segmentation — and must be treated as such: reachable only from authorized stations, with authenticated access, authorized by role, and recorded. On the tester’s side, exposed management interfaces are a first-class target precisely because they open everything; on the defensive side, isolating them and governing their access is the control with the highest impact on the whole network.'
+          }
+        ],
+        example: {
+          it: 'Le interfacce di gestione dei dispositivi in 192.0.2.0/24 sono raggiungibili solo via rete OOB (o management VRF), con accesso SSHv2 su VTY, identità individuali e AAA: un host qualunque in produzione non le raggiunge e ogni comando resta attribuibile a una persona nell’accounting.',
+          en: 'The management interfaces of the devices in 192.0.2.0/24 are reachable only via the OOB network (or a management VRF), with SSHv2 access on VTY, individual identities, and AAA: no random production host reaches them and every command stays attributable to a person in the accounting.'
+        },
+        commonMistakes: [
+          {
+            it: 'Gestire in-band sulla rete di produzione: un problema o un attacco sul piano dati chiude fuori l’amministratore.',
+            en: 'Managing in-band on the production network: a problem or an attack on the data plane locks the administrator out.'
+          },
+          {
+            it: 'Usare Telnet o un account condiviso: il trasporto in chiaro e l’identità non individuale vanificano l’isolamento.',
+            en: 'Using Telnet or a shared account: the cleartext transport and the non-individual identity defeat the isolation.'
+          },
+          {
+            it: 'Trattare la gestione come un segmento qualunque: è ad alto valore e va raggiungibile solo dalle postazioni autorizzate.',
+            en: 'Treating management as any segment: it is high-value and must be reachable only from authorized stations.'
+          }
+        ],
+        lab: 'managementsecurity',
+        references: [{ kind: 'nist', id: 'SP 800-53 Rev. 5' }],
+        guidedLabs: [
+          {
+            id: 'gl-management-isolation',
+            title: {
+              it: 'Isola la gestione e rendi attribuibile l’accesso',
+              en: 'Isolate management and make access attributable'
+            },
+            difficulty: 'core',
+            lab: 'managementsecurity',
+            scenario: {
+              it: 'Il laboratorio «Management e telemetria» mostra OOB, management VRF e il percorso in-band, con accesso e accounting.',
+              en: 'The “Management and telemetry” lab shows OOB, the management VRF, and the in-band path, with access and accounting.'
+            },
+            task: {
+              it: 'Indica come isoli il piano di gestione e come rendi ogni comando attribuibile a una persona.',
+              en: 'State how you isolate the management plane and how you make every command attributable to a person.'
+            },
+            steps: [
+              {
+                it: 'Apri «Management e telemetria» e confronta OOB, management VRF e percorso in-band.',
+                en: 'Open “Management and telemetry” and compare OOB, the management VRF, and the in-band path.'
+              },
+              {
+                it: 'Individua l’accesso SSHv2 su VTY con identità individuali e AAA.',
+                en: 'Identify the SSHv2 access on VTY with individual identities and AAA.'
+              },
+              {
+                it: 'Segna dove l’accounting rende ogni comando attribuibile a una persona.',
+                en: 'Mark where accounting makes every command attributable to a person.'
+              }
+            ],
+            challenge: {
+              it: 'La gestione è in-band e il piano dati va giù: perché l’amministratore resta chiuso fuori e come lo eviti?',
+              en: 'Management is in-band and the data plane goes down: why is the administrator locked out and how do you avoid it?'
+            },
+            solution: [
+              {
+                it: 'Il piano di gestione è il più sensibile perché chi lo raggiunge riconfigura tutto; va isolato con l’OOB (rete separata) o una management VRF, raggiungibile solo dalle postazioni autorizzate. L’accesso usa SSHv2 su VTY con identità individuali, e l’AAA lega autenticazione, autorizzazione per ruolo e accounting, così ogni azione è attribuibile a una persona.',
+                en: 'The management plane is the most sensitive because whoever reaches it reconfigures everything; it is isolated with OOB (a separate network) or a management VRF, reachable only from authorized stations. Access uses SSHv2 on VTY with individual identities, and AAA ties authentication, role authorization, and accounting, so every action is attributable to a person.'
+              },
+              {
+                it: 'Sfida: con gestione in-band, un guasto o un attacco sul piano dati interrompe anche il percorso di gestione e chiude fuori l’amministratore; lo si evita con l’OOB, un percorso di gestione indipendente dal piano dati che resta raggiungibile proprio quando serve di più.',
+                en: 'Challenge: with in-band management, a fault or an attack on the data plane also breaks the management path and locks the administrator out; you avoid it with OOB, a management path independent of the data plane that stays reachable exactly when it is needed most.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So spiegare perché il piano di gestione va isolato e come (OOB, management VRF).',
+                en: 'I can explain why the management plane must be isolated and how (OOB, management VRF).'
+              },
+              {
+                it: 'So legare accesso, identità e accounting all’attribuibilità di ogni comando.',
+                en: 'I can tie access, identity, and accounting to the attributability of every command.'
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'management-trusted-telemetry',
+        title: {
+          it: 'Telemetria attendibile: SNMPv3, Syslog e tempo',
+          en: 'Trusted telemetry: SNMPv3, Syslog, and time'
+        },
+        objectives: [
+          {
+            it: 'Spiegare perché la telemetria vale come evidenza solo se autentica e integra.',
+            en: 'Explain why telemetry counts as evidence only if it is authentic and intact.'
+          },
+          {
+            it: 'Collegare il tempo attendibile (NTP) alla correlazione e alla catena di custodia.',
+            en: 'Link trusted time (NTP) to correlation and the chain of custody.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere SNMP, Syslog e NTP di base (capitolo sui servizi IP estesi) e la detection.',
+            en: 'Know basic SNMP, Syslog, and NTP (the extended IP services chapter) and detection.'
+          }
+        ],
+        theory: [
+          {
+            it: 'La telemetria — i dati che la rete emette su sé stessa — serve a vedere e a provare cosa è successo, ma vale come evidenza solo se è autentica e integra. SNMP va usato nella versione 3, che aggiunge autenticazione e cifratura e limita con le viste cosa ogni utente può leggere o scrivere: le versioni precedenti, con la community in chiaro, espongono lo stato del dispositivo e, in scrittura, la sua configurazione. Allo stesso modo il Syslog remoto va trasportato in modo protetto verso un collector affidabile, perché i log valgono solo se non possono essere letti o alterati lungo il percorso: un’evidenza manomissibile non è un’evidenza.',
+            en: 'Telemetry — the data the network emits about itself — serves to see and to prove what happened, but it counts as evidence only if it is authentic and intact. SNMP must be used in version 3, which adds authentication and encryption and limits with views what each user may read or write: earlier versions, with the cleartext community, expose the device state and, on write, its configuration. Likewise remote Syslog must be transported protected toward a trustworthy collector, because logs count only if they cannot be read or altered along the way: tamperable evidence is not evidence.'
+          },
+          {
+            it: 'C’è un ingrediente che tiene insieme tutta la telemetria: il tempo attendibile. Senza orologi sincronizzati su una fonte NTP affidabile, i log di sistemi diversi non si possono correlare — un evento sembra precedere la sua causa, o due tracce dello stesso fatto non combaciano. Il tempo è anche parte della catena di custodia: un’evidenza con un timestamp incoerente perde valore in un’indagine. Per questo l’NTP non è un dettaglio operativo ma un controllo di sicurezza, e la sua stessa fonte va protetta: un tempo falsificato falsifica a cascata ogni correlazione che vi si appoggia.',
+            en: 'There is one ingredient that holds all telemetry together: trusted time. Without clocks synchronized to a reliable NTP source, the logs of different systems cannot be correlated — an event seems to precede its cause, or two traces of the same fact do not match. Time is also part of the chain of custody: evidence with an inconsistent timestamp loses value in an investigation. This is why NTP is not an operational detail but a security control, and its own source must be protected: a forged time cascades into forging every correlation that relies on it.'
+          },
+          {
+            it: 'Il filo conduttore è che la telemetria è una difesa solo quando ci si può fidare di ciò che dice. Autenticità (SNMPv3, trasporto Syslog protetto), integrità (collector affidabile, log non alterabili) e tempo attendibile (NTP protetto) sono i tre requisiti che trasformano dei dati in evidenza. È la stessa disciplina evidence-first vista per l’email e per l’endpoint, portata al piano di gestione: non basta raccogliere, bisogna poter dimostrare che ciò che si è raccolto è vero e collocato correttamente nel tempo.',
+            en: 'The thread is that telemetry is a defense only when you can trust what it says. Authenticity (SNMPv3, protected Syslog transport), integrity (a trustworthy collector, tamper-resistant logs), and trusted time (protected NTP) are the three requirements that turn data into evidence. It is the same evidence-first discipline seen for email and for the endpoint, brought to the management plane: collecting is not enough, you must be able to prove that what you collected is true and correctly placed in time.'
+          }
+        ],
+        example: {
+          it: 'Un collector riceve Syslog da dispositivi in 192.0.2.0/24 su un trasporto protetto e SNMPv3 autenticato; grazie all’NTP condiviso, i log si correlano con timestamp coerenti, e un evento e la sua causa restano nell’ordine giusto in un’indagine.',
+          en: 'A collector receives Syslog from devices in 192.0.2.0/24 over a protected transport and authenticated SNMPv3; thanks to shared NTP, the logs correlate with consistent timestamps, and an event and its cause stay in the right order in an investigation.'
+        },
+        commonMistakes: [
+          {
+            it: 'Usare SNMP v1/v2c con community in chiaro: espone lo stato e, in scrittura, la configurazione del dispositivo.',
+            en: 'Using SNMP v1/v2c with a cleartext community: it exposes the state and, on write, the device configuration.'
+          },
+          {
+            it: 'Trascurare il tempo attendibile: senza NTP coerente i log non si correlano e l’evidenza perde valore.',
+            en: 'Neglecting trusted time: without consistent NTP the logs do not correlate and the evidence loses value.'
+          },
+          {
+            it: 'Fidarsi di log manomissibili: un trasporto o un collector non protetti rendono l’evidenza inutilizzabile.',
+            en: 'Trusting tamperable logs: an unprotected transport or collector makes the evidence unusable.'
+          }
+        ],
+        lab: 'managementsecurity',
+        references: [{ kind: 'rfc', id: 'RFC 3411' }],
+        guidedLabs: [
+          {
+            id: 'gl-management-evidence',
+            title: {
+              it: 'Rendi la telemetria un’evidenza affidabile',
+              en: 'Make telemetry reliable evidence'
+            },
+            difficulty: 'advanced',
+            lab: 'managementsecurity',
+            scenario: {
+              it: 'Il laboratorio «Management e telemetria» mostra SNMPv3, il Syslog remoto e il tempo attendibile.',
+              en: 'The “Management and telemetry” lab shows SNMPv3, remote Syslog, and trusted time.'
+            },
+            task: {
+              it: 'Indica i tre requisiti che rendono la telemetria un’evidenza e cosa succede se manca il tempo attendibile.',
+              en: 'State the three requirements that make telemetry evidence and what happens if trusted time is missing.'
+            },
+            steps: [
+              {
+                it: 'Apri «Management e telemetria» e confronta SNMPv3 con le versioni in chiaro.',
+                en: 'Open “Management and telemetry” and compare SNMPv3 with the cleartext versions.'
+              },
+              {
+                it: 'Verifica il trasporto protetto del Syslog verso un collector affidabile.',
+                en: 'Check the protected transport of Syslog toward a trustworthy collector.'
+              },
+              {
+                it: 'Segna come l’NTP condiviso permette di correlare log di sistemi diversi.',
+                en: 'Mark how shared NTP lets you correlate logs from different systems.'
+              }
+            ],
+            challenge: {
+              it: 'Due log dello stesso evento non combaciano nei tempi: cosa è saltato e perché invalida la correlazione?',
+              en: 'Two logs of the same event do not match in time: what broke and why does it invalidate the correlation?'
+            },
+            solution: [
+              {
+                it: 'La telemetria vale come evidenza solo se è autentica (SNMPv3 con autenticazione e viste, non le community in chiaro), integra (Syslog su trasporto protetto verso un collector affidabile, log non alterabili) e ancorata a un tempo attendibile (NTP protetto). Insieme, i tre requisiti trasformano dei dati in prova utilizzabile.',
+                en: 'Telemetry counts as evidence only if it is authentic (SNMPv3 with authentication and views, not cleartext communities), intact (Syslog over a protected transport toward a trustworthy collector, tamper-resistant logs), and anchored to trusted time (protected NTP). Together, the three requirements turn data into usable proof.'
+              },
+              {
+                it: 'Sfida: se i tempi di due log non combaciano è saltato il tempo attendibile — orologi non sincronizzati o una fonte NTP non affidabile; invalida la correlazione perché un evento può sembrare precedere la sua causa, e un timestamp incoerente rompe la catena di custodia.',
+                en: 'Challenge: if two logs’ times do not match, trusted time broke — unsynchronized clocks or an unreliable NTP source; it invalidates the correlation because an event can seem to precede its cause, and an inconsistent timestamp breaks the chain of custody.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So dire i tre requisiti (autenticità, integrità, tempo) che rendono la telemetria un’evidenza.',
+                en: 'I can state the three requirements (authenticity, integrity, time) that make telemetry evidence.'
+              },
+              {
+                it: 'So spiegare perché l’NTP attendibile è un controllo di sicurezza, non un dettaglio.',
+                en: 'I can explain why trusted NTP is a security control, not a detail.'
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'management-automation-blind-spots',
+        title: {
+          it: 'Automazione e punti ciechi: NETCONF, backup e collector',
+          en: 'Automation and blind spots: NETCONF, backups, and collectors'
+        },
+        objectives: [
+          {
+            it: 'Distinguere lo stato previsto da quello effettivo con le interfacce programmabili (NETCONF/RESTCONF).',
+            en: 'Distinguish intended from actual state with the programmable interfaces (NETCONF/RESTCONF).'
+          },
+          {
+            it: 'Riconoscere i punti ciechi: informazioni esposte, backup non protetti e sampling dei collector.',
+            en: 'Recognize the blind spots: exposed information, unprotected backups, and collector sampling.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere automazione e API (capitolo su automazione e programmabilità) e la telemetria (argomento precedente).',
+            en: 'Know automation and APIs (the automation and programmability chapter) and telemetry (previous topic).'
+          }
+        ],
+        theory: [
+          {
+            it: 'Le interfacce programmabili cambiano come si gestisce e come si verifica. NETCONF e RESTCONF, con i modelli dati YANG, permettono di leggere e scrivere la configurazione in modo strutturato, e soprattutto di confrontare lo stato previsto (ciò che si è inteso configurare) con lo stato effettivo (ciò che il dispositivo ha davvero). È un controllo potente contro la deriva silenziosa: una configurazione che «dovrebbe» essere applicata ma non lo è diventa visibile. Ma un canale programmabile è anche un accesso di gestione a tutti gli effetti, e come tale va autenticato, autorizzato e registrato: un’API di gestione esposta è pericolosa quanto una VTY aperta.',
+            en: 'Programmable interfaces change how you manage and how you verify. NETCONF and RESTCONF, with the YANG data models, let you read and write configuration in a structured way, and above all compare the intended state (what you meant to configure) with the actual state (what the device really has). It is a powerful control against silent drift: a configuration that «should» be applied but is not becomes visible. But a programmable channel is also a management access in every respect, and as such must be authenticated, authorized, and recorded: an exposed management API is as dangerous as an open VTY.'
+          },
+          {
+            it: 'Il piano di gestione ha anche punti ciechi che vanno conosciuti. I protocolli di scoperta come CDP e LLDP sono utili all’inventario ma espongono informazioni — modello, versione, porte, vicini — a chi è sul segmento: vanno attivati solo dove servono e non verso segmenti non fidati. I backup di configurazione contengono segreti e sono una copia completa della rete: vanno protetti come i segreti stessi e il restore va verificato, perché un backup che non si ripristina non è un backup. Infine i collector campionano: ciò che non viene campionato o che cade in una finestra di non copertura è un punto cieco, e un attaccante esperto lavora proprio lì.',
+            en: 'The management plane also has blind spots that must be known. Discovery protocols like CDP and LLDP are useful for inventory but expose information — model, version, ports, neighbors — to whoever is on the segment: they must be enabled only where needed and not toward untrusted segments. Configuration backups contain secrets and are a full copy of the network: they must be protected like the secrets themselves and the restore must be verified, because a backup that does not restore is not a backup. Finally, collectors sample: what is not sampled or falls in a non-coverage window is a blind spot, and a skilled attacker works exactly there.'
+          },
+          {
+            it: 'Il capitolo chiude la trilogia dei piani: dati, controllo e gestione. Il filo è unico — nessuna fiducia implicita, tutto verificato — applicato a chi amministra e osserva la rete: isolare la gestione, autenticare e registrare l’accesso, rendere la telemetria autentica e ben datata, verificare lo stato effettivo e conoscere i punti ciechi. Chi controlla la gestione controlla la rete; per questo il piano di gestione non è l’ultimo per importanza, ma spesso il primo bersaglio, e difenderlo è ciò che rende affidabile tutto il resto che abbiamo costruito.',
+            en: 'The chapter closes the trilogy of planes: data, control, and management. The thread is one — no implicit trust, everything verified — applied to those who administer and observe the network: isolate management, authenticate and record access, make telemetry authentic and well-timed, verify the actual state, and know the blind spots. Whoever controls management controls the network; this is why the management plane is not the least important, but often the first target, and defending it is what makes everything else we have built trustworthy.'
+          }
+        ],
+        example: {
+          it: 'Con NETCONF si confronta lo stato effettivo di un dispositivo in 192.0.2.0/24 con quello previsto e si scopre una regola mancante; intanto il CDP è disattivato verso i segmenti non fidati, i backup di configurazione sono protetti come segreti e il restore è verificato.',
+          en: 'With NETCONF you compare a device’s actual state in 192.0.2.0/24 with the intended one and find a missing rule; meanwhile CDP is disabled toward untrusted segments, the configuration backups are protected like secrets, and the restore is verified.'
+        },
+        commonMistakes: [
+          {
+            it: 'Esporre un’API di gestione senza controlli: NETCONF/RESTCONF è un accesso di gestione come una VTY.',
+            en: 'Exposing a management API without controls: NETCONF/RESTCONF is a management access like a VTY.'
+          },
+          {
+            it: 'Lasciare CDP/LLDP ovunque: rivelano modello, versione e vicini a chi è su un segmento non fidato.',
+            en: 'Leaving CDP/LLDP everywhere: they reveal model, version, and neighbors to whoever is on an untrusted segment.'
+          },
+          {
+            it: 'Non verificare il restore: un backup con segreti che non si ripristina non protegge e non è un backup.',
+            en: 'Not verifying the restore: a backup with secrets that does not restore protects nothing and is not a backup.'
+          }
+        ],
+        lab: 'managementsecurity',
+        references: [{ kind: 'rfc', id: 'RFC 6241' }],
+        guidedLabs: [
+          {
+            id: 'gl-management-actual-state',
+            title: {
+              it: 'Verifica lo stato effettivo e trova il punto cieco',
+              en: 'Verify the actual state and find the blind spot'
+            },
+            difficulty: 'advanced',
+            lab: 'managementsecurity',
+            scenario: {
+              it: 'Il laboratorio «Management e telemetria» mostra NETCONF/RESTCONF, l’esposizione di CDP/LLDP, i backup e i collector.',
+              en: 'The “Management and telemetry” lab shows NETCONF/RESTCONF, CDP/LLDP exposure, backups, and collectors.'
+            },
+            task: {
+              it: 'Confronta stato previsto ed effettivo e indica un punto cieco del monitoraggio e come lo chiudi.',
+              en: 'Compare intended and actual state and point out a monitoring blind spot and how you close it.'
+            },
+            steps: [
+              {
+                it: 'Apri «Management e telemetria» e usa NETCONF/RESTCONF per leggere lo stato effettivo.',
+                en: 'Open “Management and telemetry” and use NETCONF/RESTCONF to read the actual state.'
+              },
+              {
+                it: 'Confronta con lo stato previsto e individua una deriva silenziosa.',
+                en: 'Compare with the intended state and find a silent drift.'
+              },
+              {
+                it: 'Segna un punto cieco (CDP esposto, backup non protetto, sampling) e come lo chiudi.',
+                en: 'Mark a blind spot (exposed CDP, unprotected backup, sampling) and how you close it.'
+              }
+            ],
+            challenge: {
+              it: 'Il monitoraggio «non vede niente» eppure qualcosa è cambiato: dove può essere il punto cieco?',
+              en: 'Monitoring «sees nothing» yet something changed: where can the blind spot be?'
+            },
+            solution: [
+              {
+                it: 'NETCONF/RESTCONF con YANG permette di leggere lo stato effettivo e confrontarlo con quello previsto, rendendo visibile una deriva che la sola intenzione nasconderebbe; ma è un accesso di gestione e va autenticato, autorizzato e registrato. I punti ciechi sono CDP/LLDP che espongono informazioni su segmenti non fidati, i backup con segreti non protetti o con restore non verificato, e il sampling dei collector che non copre tutto.',
+                en: 'NETCONF/RESTCONF with YANG lets you read the actual state and compare it with the intended one, making visible a drift that intent alone would hide; but it is a management access and must be authenticated, authorized, and recorded. The blind spots are CDP/LLDP exposing information on untrusted segments, backups with unprotected secrets or an unverified restore, and collector sampling that does not cover everything.'
+              },
+              {
+                it: 'Sfida: se il monitoraggio non vede un cambiamento, il punto cieco è dove non campiona o non raccoglie — una finestra di sampling scoperta, un dispositivo fuori dall’inventario del collector, o un canale non monitorato; si chiude confrontando lo stato effettivo via NETCONF e allargando la copertura dove il sampling lasciava un buco.',
+                en: 'Challenge: if monitoring does not see a change, the blind spot is where it does not sample or collect — an uncovered sampling window, a device outside the collector’s inventory, or an unmonitored channel; you close it by comparing the actual state via NETCONF and widening coverage where sampling left a gap.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So confrontare stato previsto ed effettivo e trattare un’API di gestione come un accesso critico.',
+                en: 'I can compare intended and actual state and treat a management API as a critical access.'
+              },
+              {
+                it: 'So riconoscere i punti ciechi (CDP, backup, sampling) e come chiuderli.',
+                en: 'I can recognize the blind spots (CDP, backups, sampling) and how to close them.'
+              }
+            ]
+          }
+        ]
+      }
+    ]
   }
 ];

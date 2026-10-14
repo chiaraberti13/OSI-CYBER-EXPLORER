@@ -68,7 +68,7 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
       capitoli / 73 argomenti / 59 laboratori guidati**. Report: `docs/verify/2026-10-14-content01-segmentation.md`.
 - [~] **CONTENT-02 (P2) — Laboratori difensivi ancora non in guida (uno per incremento).** Insegnare
   `routingsecurity`, `availability`, `recovery`, `managementsecurity`, `layer2security` con
-  capitoli/argomenti dedicati, chiudendo del tutto il divario guida↔laboratori. **In corso — 2
+  capitoli/argomenti dedicati, chiudendo del tutto il divario guida↔laboratori. **In corso — 3
   di 5 (14/10/2026).**
   - **(1/5)** «Sicurezza del routing e del control plane» (ordine 25, cert Security+) che insegna
     `routingsecurity` — fiducia del routing (adiacenze OSPF, integrità LSDB, redistribuzione/
@@ -81,10 +81,17 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
     anti-spoofing, esaurimento delle tabelle), capacità e QoS (CAM/DHCP/DNS/NAT, code e starvation
     del traffico critico). Riferimenti MITRE ATT&CK T1498/T1499, RFC 4987. Report:
     `docs/verify/2026-10-14-content02-availability.md`.
+  - **(3/5)** «Sicurezza del piano di gestione e della telemetria» (ordine 27, cert Security+) che
+    insegna `managementsecurity` — isolamento della gestione (OOB, management VRF, SSHv2/VTY/AAA e
+    accounting), telemetria attendibile (SNMPv3, Syslog protetto, tempo attendibile NTP per la
+    correlazione e la catena di custodia), automazione e punti ciechi (NETCONF/RESTCONF/YANG stato
+    effettivo, esposizione CDP/LLDP, backup e restore, sampling dei collector). Completa la trilogia
+    dei piani (dati/controllo/gestione). Riferimenti NIST SP 800-53 Rev. 5, RFC 3411, RFC 6241.
+    Report: `docs/verify/2026-10-14-content02-management.md`.
 
-  Manuale a **26 capitoli / 79 argomenti / 65 laboratori guidati**; aggiornate le asserzioni di
-  conteggio (progresso `x/26`, 26 opzioni, optgroup «Estensione · 0/12»). Restano da insegnare:
-  `recovery`, `managementsecurity`, `layer2security`.
+  Manuale a **27 capitoli / 82 argomenti / 68 laboratori guidati**; aggiornate le asserzioni di
+  conteggio (progresso `x/27`, 27 opzioni, optgroup «Estensione · 0/13»). Restano da insegnare:
+  `recovery`, `layer2security`.
 
 - [ ] **EDU-31 (P2) — Collegamenti incrociati guida↔lab.** Verificare che ogni laboratorio insegnato
       esponga il back-link alla teoria (EDU-STRUCT-05) via la mappa inversa, anche per i nuovi
