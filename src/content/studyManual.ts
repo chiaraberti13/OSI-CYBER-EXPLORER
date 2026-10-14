@@ -6973,5 +6973,363 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
         ]
       }
     ]
+  },
+  {
+    id: 'endpoint-security-posture',
+    cert: 'securityplus',
+    order: 23,
+    track: 'extension',
+    title: {
+      it: 'Sicurezza dell’endpoint e postura',
+      en: 'Endpoint security and posture'
+    },
+    summary: {
+      it: 'L’estensione sul punto in cui l’attacco atterra: l’host. Dall’inventario e dalla baseline al patching basato sul rischio, dall’EDR e l’application control alla postura continua e all’isolamento in risposta. È il complemento difensivo della post-exploitation: dove l’offensiva cerca privilegi e persistenza, l’endpoint li contiene e li rivela.',
+      en: 'The extension on where the attack lands: the host. From inventory and the baseline to risk-based patching, from EDR and application control to continuous posture and isolation in response. It is the defensive complement of post-exploitation: where the offensive seeks privileges and persistence, the endpoint contains and reveals them.'
+    },
+    topics: [
+      {
+        id: 'endpoint-inventory-baseline-patching',
+        title: {
+          it: 'Inventario, baseline e patching basato sul rischio',
+          en: 'Inventory, baseline, and risk-based patching'
+        },
+        objectives: [
+          {
+            it: 'Spiegare perché inventario e baseline precedono ogni altro controllo sull’endpoint.',
+            en: 'Explain why inventory and the baseline precede every other control on the endpoint.'
+          },
+          {
+            it: 'Prioritizzare il patching in base al rischio invece che al numero di vulnerabilità.',
+            en: 'Prioritize patching by risk instead of by the number of vulnerabilities.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere la gestione delle vulnerabilità e la difesa in profondità (capitoli sui fondamenti di sicurezza).',
+            en: 'Know vulnerability management and defense in depth (the security fundamentals chapters).'
+          }
+        ],
+        theory: [
+          {
+            it: 'La sicurezza dell’endpoint inizia da ciò che spesso manca: sapere cosa si possiede. Un inventario completo di host, proprietario e ruolo è la precondizione di ogni controllo, perché un dispositivo non gestito — fuori inventario, senza agente, senza baseline — è il punto cieco da cui parte la maggior parte delle compromissioni. Sapere cosa esiste permette poi di definire una baseline sicura: la configurazione attesa di un host conforme. Il nemico della baseline è il configuration drift, lo scostamento che si accumula nel tempo; rilevarlo e riportare l’host alla baseline è un controllo continuo, non un’attività una tantum.',
+            en: 'Endpoint security starts from what is often missing: knowing what you own. A complete inventory of hosts, owner, and role is the precondition of every control, because an unmanaged device — out of inventory, without an agent, without a baseline — is the blind spot most compromises start from. Knowing what exists then lets you define a secure baseline: the expected configuration of a compliant host. The enemy of the baseline is configuration drift, the deviation that accumulates over time; detecting it and returning the host to the baseline is a continuous control, not a one-off activity.'
+          },
+          {
+            it: 'Il patching è il controllo più citato e il più frainteso. Non si possono applicare tutte le patch subito, e trattarle tutte come uguali spreca la finestra di intervento sulle cose sbagliate. Il patching basato sul rischio ordina gli interventi per la combinazione di gravità della vulnerabilità, esposizione reale dell’host (è raggiungibile? il servizio è attivo?) e sfruttabilità nota: una vulnerabilità critica su un host esposto e con exploit disponibile viene prima di una critica su un host isolato e non sfruttabile. Il numero di vulnerabilità non è una metrica di rischio; il rischio è ciò che un attaccante può davvero raggiungere e usare.',
+            en: 'Patching is the most cited and most misunderstood control. You cannot apply every patch at once, and treating them all as equal wastes the intervention window on the wrong things. Risk-based patching orders the work by the combination of the vulnerability’s severity, the host’s real exposure (is it reachable? is the service active?), and known exploitability: a critical vulnerability on an exposed host with an available exploit comes before a critical one on an isolated, non-exploitable host. The number of vulnerabilities is not a risk metric; the risk is what an attacker can actually reach and use.'
+          },
+          {
+            it: 'Questi tre controlli si sostengono a vicenda ed è lì la loro forza. L’inventario dice quali host esistono; la baseline dice come dovrebbero essere configurati; il patching basato sul rischio decide dove intervenire prima. Senza inventario, patching e baseline hanno buchi invisibili; senza baseline, il drift riapre ciò che il patching aveva chiuso; senza priorità di rischio, lo sforzo si disperde. È la stessa logica della ricognizione vista dal lato offensivo, ribaltata in difesa: conoscere la propria superficie meglio di chi la attacca.',
+            en: 'These three controls support one another, and that is their strength. The inventory says which hosts exist; the baseline says how they should be configured; risk-based patching decides where to act first. Without inventory, patching and the baseline have invisible gaps; without the baseline, drift reopens what patching had closed; without risk priority, effort is scattered. It is the same logic as reconnaissance seen from the offensive side, flipped into defense: knowing your own surface better than whoever attacks it.'
+          }
+        ],
+        example: {
+          it: 'Su un host in 192.0.2.0/24 fuori inventario, senza baseline né agente, una vulnerabilità critica resta scoperta; una volta inventariato e portato alla baseline, il patching basato sul rischio la tratta prima di una pari gravità su un host isolato, perché esposizione e sfruttabilità, non il solo numero, ordinano l’intervento.',
+          en: 'On a host in 192.0.2.0/24 that is out of inventory, without a baseline or an agent, a critical vulnerability stays uncovered; once inventoried and brought to the baseline, risk-based patching handles it before an equally severe one on an isolated host, because exposure and exploitability, not the number alone, order the work.'
+        },
+        commonMistakes: [
+          {
+            it: 'Proteggere senza inventariare: un dispositivo non gestito è il punto cieco da cui parte la compromissione.',
+            en: 'Protecting without inventorying: an unmanaged device is the blind spot the compromise starts from.'
+          },
+          {
+            it: 'Misurare la sicurezza col numero di patch mancanti: conta il rischio, cioè esposizione e sfruttabilità, non il conteggio.',
+            en: 'Measuring security by the number of missing patches: what counts is risk — exposure and exploitability — not the count.'
+          },
+          {
+            it: 'Trattare la baseline come una tantum: senza rilevare il drift l’host torna insicuro tra un controllo e l’altro.',
+            en: 'Treating the baseline as a one-off: without detecting drift the host becomes insecure again between checks.'
+          }
+        ],
+        lab: 'endpointsecurity',
+        references: [{ kind: 'nist', id: 'SP 800-40 Rev. 4' }],
+        guidedLabs: [
+          {
+            id: 'gl-endpoint-risk-patch',
+            title: {
+              it: 'Ordina il patching per rischio',
+              en: 'Order patching by risk'
+            },
+            difficulty: 'core',
+            lab: 'endpointsecurity',
+            scenario: {
+              it: 'Il laboratorio «Endpoint e postura» mette in scena inventario, baseline e vulnerabilità con la loro esposizione.',
+              en: 'The “Endpoint and posture” lab stages inventory, the baseline, and vulnerabilities with their exposure.'
+            },
+            task: {
+              it: 'Date più vulnerabilità su host diversi, ordinale per rischio e spiega perché il numero da solo non basta.',
+              en: 'Given several vulnerabilities on different hosts, order them by risk and explain why the number alone is not enough.'
+            },
+            steps: [
+              {
+                it: 'Apri «Endpoint e postura» e osserva lo stato di inventario e baseline degli host.',
+                en: 'Open “Endpoint and posture” and observe the inventory and baseline state of the hosts.'
+              },
+              {
+                it: 'Per ogni vulnerabilità nota gravità, esposizione dell’host e sfruttabilità.',
+                en: 'For each vulnerability note the severity, the host’s exposure, and exploitability.'
+              },
+              {
+                it: 'Ordina gli interventi e motiva la priorità con il rischio, non con il conteggio.',
+                en: 'Order the work and justify the priority by risk, not by the count.'
+              }
+            ],
+            challenge: {
+              it: 'Un host ha più vulnerabilità di un altro ma va patchato dopo: quali condizioni lo giustificano?',
+              en: 'One host has more vulnerabilities than another but is patched later: which conditions justify that?'
+            },
+            solution: [
+              {
+                it: 'Il rischio ordina gli interventi per gravità, esposizione reale (raggiungibilità, servizio attivo) e sfruttabilità nota: una critica su host esposto e con exploit disponibile precede una critica su host isolato. L’inventario rende visibili gli host non gestiti e la baseline tiene fermo ciò che il patching ha chiuso; il numero di vulnerabilità non è una metrica di rischio.',
+                en: 'Risk orders the work by severity, real exposure (reachability, active service), and known exploitability: a critical one on an exposed host with an available exploit precedes a critical one on an isolated host. The inventory makes unmanaged hosts visible and the baseline holds what patching closed; the number of vulnerabilities is not a risk metric.'
+              },
+              {
+                it: 'Sfida: un host con più vulnerabilità va dopo quando è isolato e non sfruttabile mentre l’altro è esposto con exploit disponibile; l’esposizione e la sfruttabilità, non il conteggio, decidono la priorità.',
+                en: 'Challenge: a host with more vulnerabilities comes later when it is isolated and not exploitable while the other is exposed with an available exploit; exposure and exploitability, not the count, decide the priority.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So dire perché inventario e baseline precedono gli altri controlli sull’endpoint.',
+                en: 'I can say why inventory and the baseline precede the other endpoint controls.'
+              },
+              {
+                it: 'So ordinare il patching per rischio invece che per numero di vulnerabilità.',
+                en: 'I can order patching by risk instead of by the number of vulnerabilities.'
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'endpoint-edr-application-control',
+        title: {
+          it: 'EDR, host firewall e application control',
+          en: 'EDR, host firewall, and application control'
+        },
+        objectives: [
+          {
+            it: 'Descrivere cosa osserva un EDR e perché copertura, sensor health e tamper protection contano.',
+            en: 'Describe what an EDR observes and why coverage, sensor health, and tamper protection matter.'
+          },
+          {
+            it: 'Collegare host firewall e application control alle classi di minaccia che riducono.',
+            en: 'Link the host firewall and application control to the threat classes they reduce.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere inventario e baseline dell’endpoint (argomento precedente) e la post-exploitation (percorso eJPT).',
+            en: 'Know endpoint inventory and the baseline (previous topic) and post-exploitation (the eJPT path).'
+          }
+        ],
+        theory: [
+          {
+            it: 'L’EDR (Endpoint Detection and Response) osserva ciò che accade sull’host — processi, comportamenti, accessi — e rileva i segni della post-exploitation che la rete non vede: un processo privilegiato anomalo, un dump di credenziali, un meccanismo di avvio aggiunto. Ma un EDR vale quanto la sua copertura: un host senza agente è invisibile, un sensore spento o manomesso non riporta, e per questo la copertura, la sensor health e la tamper protection sono controlli di primo livello. Un attaccante esperto cerca proprio di disattivare o aggirare l’EDR; monitorarne lo stato è parte della difesa, non un dettaglio operativo.',
+            en: 'EDR (Endpoint Detection and Response) observes what happens on the host — processes, behaviors, accesses — and detects the signs of post-exploitation the network does not see: an anomalous privileged process, a credential dump, an added startup mechanism. But an EDR is worth only its coverage: a host without an agent is invisible, a sensor that is off or tampered with does not report, and this is why coverage, sensor health, and tamper protection are first-class controls. A skilled attacker tries precisely to disable or bypass the EDR; monitoring its state is part of the defense, not an operational detail.'
+          },
+          {
+            it: 'Due controlli preventivi affiancano la detection. L’host firewall non guarda al perimetro ma al traffico east–west, tra host interni: limita quali connessioni un host accetta e inizia, riducendo proprio il movimento laterale che la post-exploitation usa per propagarsi. L’application control decide quale codice può eseguire sull’host: consentire solo applicazioni note e bloccare script e macro non autorizzati chiude molte catene d’attacco alla radice, perché un payload che non può eseguire non fa danni. Insieme, firewall e application control riducono la superficie che l’EDR dovrà altrimenti rilevare dopo.',
+            en: 'Two preventive controls flank the detection. The host firewall does not look at the perimeter but at east–west traffic, between internal hosts: it limits which connections a host accepts and initiates, reducing exactly the lateral movement that post-exploitation uses to spread. Application control decides which code may run on the host: allowing only known applications and blocking unauthorized scripts and macros closes many attack chains at the root, because a payload that cannot run does no harm. Together, the firewall and application control reduce the surface the EDR would otherwise have to detect later.'
+          },
+          {
+            it: 'La logica è la difesa in profondità applicata all’host: l’application control e l’host firewall prevengono, l’EDR rileva ciò che passa, e la postura (argomento successivo) verifica che tutto questo sia attivo prima di concedere accesso. Nessuno dei tre basta da solo: l’application control si può aggirare con tecniche note, l’host firewall non vede ciò che è già in esecuzione, l’EDR non protegge un host che non ha agente. È la loro combinazione, misurata dalla copertura, a rendere l’endpoint un livello di difesa e non solo un bersaglio.',
+            en: 'The logic is defense in depth applied to the host: application control and the host firewall prevent, the EDR detects what gets through, and posture (the next topic) verifies that all of this is active before granting access. None of the three is enough alone: application control can be bypassed with known techniques, the host firewall does not see what is already running, the EDR does not protect a host that has no agent. It is their combination, measured by coverage, that makes the endpoint a layer of defense and not just a target.'
+          }
+        ],
+        example: {
+          it: 'Dopo un accesso iniziale, l’application control impedisce l’esecuzione di uno script non autorizzato, l’host firewall blocca la connessione east–west verso un secondo host, e l’EDR — con sensore integro e non manomesso — segnala il processo anomalo: tre livelli, misurati dalla copertura, contro una stessa catena.',
+          en: 'After an initial access, application control prevents an unauthorized script from running, the host firewall blocks the east–west connection toward a second host, and the EDR — with an intact, untampered sensor — flags the anomalous process: three layers, measured by coverage, against one chain.'
+        },
+        commonMistakes: [
+          {
+            it: 'Fidarsi dell’EDR senza misurarne la copertura: un host senza agente o con sensore spento è invisibile.',
+            en: 'Trusting the EDR without measuring its coverage: a host without an agent or with a sensor off is invisible.'
+          },
+          {
+            it: 'Pensare che il firewall perimetrale basti: il movimento laterale è east–west e lo limita l’host firewall.',
+            en: 'Thinking the perimeter firewall is enough: lateral movement is east–west and the host firewall limits it.'
+          },
+          {
+            it: 'Trascurare script e macro: senza application control un payload che non è un eseguibile classico passa lo stesso.',
+            en: 'Neglecting scripts and macros: without application control a payload that is not a classic executable passes anyway.'
+          }
+        ],
+        lab: 'endpointsecurity',
+        references: [{ kind: 'attack', id: 'T1562.001' }],
+        guidedLabs: [
+          {
+            id: 'gl-endpoint-defense-layers',
+            title: {
+              it: 'Componi i livelli di difesa dell’host',
+              en: 'Compose the host defense layers'
+            },
+            difficulty: 'advanced',
+            lab: 'endpointsecurity',
+            scenario: {
+              it: 'Il laboratorio «Endpoint e postura» mostra EDR, host firewall e application control e il loro stato.',
+              en: 'The “Endpoint and posture” lab shows EDR, the host firewall, and application control and their state.'
+            },
+            task: {
+              it: 'Per una catena post-accesso indica quale livello previene, quale rileva e perché la copertura dell’EDR è decisiva.',
+              en: 'For a post-access chain state which layer prevents, which detects, and why EDR coverage is decisive.'
+            },
+            steps: [
+              {
+                it: 'Apri «Endpoint e postura» e osserva copertura e sensor health dell’EDR.',
+                en: 'Open “Endpoint and posture” and observe EDR coverage and sensor health.'
+              },
+              {
+                it: 'Attribuisci all’application control e all’host firewall ciò che prevengono.',
+                en: 'Attribute to application control and the host firewall what they prevent.'
+              },
+              {
+                it: 'Indica cosa resta all’EDR da rilevare e cosa succede se il sensore è assente.',
+                en: 'Point out what is left for the EDR to detect and what happens if the sensor is absent.'
+              }
+            ],
+            challenge: {
+              it: 'Se l’EDR non segnala nulla, come distingui un host sicuro da un host senza agente o con sensore manomesso?',
+              en: 'If the EDR reports nothing, how do you tell a secure host from a host without an agent or with a tampered sensor?'
+            },
+            solution: [
+              {
+                it: 'L’application control previene l’esecuzione di script e macro non autorizzati; l’host firewall previene le connessioni east–west del movimento laterale; l’EDR rileva ciò che passa — processi privilegiati anomali, dump di credenziali, meccanismi di avvio. La copertura è decisiva perché un host senza agente è invisibile: la difesa vale quanto la sua estensione, non quanto il singolo controllo.',
+                en: 'Application control prevents unauthorized scripts and macros from running; the host firewall prevents the east–west connections of lateral movement; the EDR detects what gets through — anomalous privileged processes, credential dumps, startup mechanisms. Coverage is decisive because a host without an agent is invisible: the defense is worth its extent, not a single control.'
+              },
+              {
+                it: 'Sfida: «nessuna segnalazione» non significa sicuro; lo si distingue verificando la sensor health e la copertura — un host senza agente o con sensore manomesso non riporta, ed è proprio ciò che un attaccante cerca di ottenere.',
+                en: 'Challenge: «no alert» does not mean secure; you tell them apart by checking sensor health and coverage — a host without an agent or with a tampered sensor does not report, which is exactly what an attacker tries to achieve.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So dire cosa prevengono host firewall e application control e cosa rileva l’EDR.',
+                en: 'I can say what the host firewall and application control prevent and what the EDR detects.'
+              },
+              {
+                it: 'So spiegare perché copertura e sensor health rendono l’EDR affidabile.',
+                en: 'I can explain why coverage and sensor health make the EDR trustworthy.'
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'endpoint-posture-isolation',
+        title: {
+          it: 'Postura continua, privilegi e isolamento',
+          en: 'Continuous posture, privileges, and isolation'
+        },
+        objectives: [
+          {
+            it: 'Spiegare come la postura continua condiziona l’accesso di rete di un endpoint.',
+            en: 'Explain how continuous posture conditions an endpoint’s network access.'
+          },
+          {
+            it: 'Collegare igiene dei privilegi locali e isolamento in risposta al contenimento dell’impatto.',
+            en: 'Link local-privilege hygiene and isolation in response to containing the impact.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere l’autenticazione di rete/NAC e la post-exploitation (capitolo su identità/AAA e percorso eJPT).',
+            en: 'Know network/NAC authentication and post-exploitation (the identity/AAA chapter and the eJPT path).'
+          }
+        ],
+        theory: [
+          {
+            it: 'La postura continua lega l’accesso di rete allo stato dell’endpoint: non basta che l’identità sia valida, deve esserlo anche l’host — agente attivo, baseline rispettata, patch minime presenti. È l’applicazione del principio Zero Trust all’endpoint: la fiducia non è concessa una volta all’ammissione, ma verificata di continuo, e un host che esce dalla conformità perde o riduce l’accesso finché non rientra. Questo chiude il caso dell’host «già dentro» che si degrada nel tempo, che l’autenticazione iniziale da sola non coprirebbe.',
+            en: 'Continuous posture ties network access to the endpoint’s state: it is not enough for the identity to be valid, the host must be too — agent active, baseline respected, minimum patches present. It is the Zero Trust principle applied to the endpoint: trust is not granted once at admission but verified continuously, and a host that falls out of compliance loses or reduces access until it returns. This closes the case of the «already inside» host that degrades over time, which initial authentication alone would not cover.'
+          },
+          {
+            it: 'L’igiene dei privilegi locali decide quanto vale un accesso quando arriva. Se gli utenti lavorano con privilegi amministrativi permanenti, un accesso iniziale diventa subito pieno controllo; se i privilegi sono minimi ed elevati solo quando serve, l’escalation che la post-exploitation cerca trova meno terreno. Allo stesso modo contano le credenziali locali: password riutilizzate tra host o cache non protette alimentano il movimento laterale. È il lato difensivo esatto di ciò che il tester cerca in post-exploitation — togliere valore all’accesso prima che l’attaccante lo misuri.',
+            en: 'Local-privilege hygiene decides how much an access is worth when it arrives. If users work with permanent administrative privileges, an initial access immediately becomes full control; if privileges are minimal and elevated only when needed, the escalation that post-exploitation seeks finds less ground. Local credentials matter the same way: passwords reused across hosts or unprotected caches feed lateral movement. It is the exact defensive side of what the tester looks for in post-exploitation — removing an access’s value before the attacker measures it.'
+          },
+          {
+            it: 'Quando la prevenzione non basta, conta la risposta sull’host, e segue la stessa disciplina evidence-first vista per l’email. L’isolamento stacca l’endpoint dalla rete per fermare la propagazione senza spegnerlo, così l’evidenza resta acquisibile; si raccolgono gli artefatti (processi, connessioni, modifiche alla baseline) prima di ripulire; la riammissione avviene solo dopo che l’host è riportato alla baseline e verificato. L’ordine — isolare, acquisire, bonificare, riammettere — evita i due errori opposti: spegnere e perdere l’evidenza, o bonificare in fretta e lasciare rientrare un host ancora compromesso.',
+            en: 'When prevention is not enough, the response on the host matters, and it follows the same evidence-first discipline seen for email. Isolation detaches the endpoint from the network to stop the spread without powering it off, so the evidence stays acquirable; you collect the artifacts (processes, connections, baseline changes) before cleaning; readmission happens only after the host is returned to the baseline and verified. The order — isolate, acquire, remediate, readmit — avoids the two opposite errors: powering off and losing the evidence, or remediating in haste and letting a still-compromised host back in.'
+          }
+        ],
+        example: {
+          it: 'Un endpoint che esce dalla baseline perde l’accesso per postura continua; se è compromesso, viene isolato senza spegnerlo, se ne acquisiscono processi e connessioni come evidenza, poi è riportato alla baseline e solo allora riammesso — mentre i privilegi locali minimi avevano già ridotto quanto l’accesso iniziale poteva fare.',
+          en: 'An endpoint that falls out of the baseline loses access through continuous posture; if it is compromised, it is isolated without being powered off, its processes and connections are acquired as evidence, then it is returned to the baseline and only then readmitted — while minimal local privileges had already reduced what the initial access could do.'
+        },
+        commonMistakes: [
+          {
+            it: 'Verificare la postura solo all’ammissione: un host conforme oggi può degradarsi domani; serve la verifica continua.',
+            en: 'Checking posture only at admission: a host compliant today can degrade tomorrow; continuous verification is needed.'
+          },
+          {
+            it: 'Lasciare privilegi amministrativi permanenti: trasformano un accesso iniziale in controllo completo senza escalation.',
+            en: 'Leaving permanent administrative privileges: they turn an initial access into full control without escalation.'
+          },
+          {
+            it: 'Spegnere l’host compromesso: ferma la propagazione ma distrugge l’evidenza; si isola, non si spegne.',
+            en: 'Powering off the compromised host: it stops the spread but destroys the evidence; you isolate, you do not power off.'
+          }
+        ],
+        lab: 'endpointsecurity',
+        references: [{ kind: 'nist', id: 'SP 800-137' }],
+        guidedLabs: [
+          {
+            id: 'gl-endpoint-isolation-order',
+            title: {
+              it: 'Isola senza perdere l’evidenza',
+              en: 'Isolate without losing the evidence'
+            },
+            difficulty: 'advanced',
+            lab: 'endpointsecurity',
+            scenario: {
+              it: 'Il laboratorio «Endpoint e postura» mette in scena postura continua, privilegi locali e il ciclo di isolamento e riammissione.',
+              en: 'The “Endpoint and posture” lab stages continuous posture, local privileges, and the isolation and readmission cycle.'
+            },
+            task: {
+              it: 'Ordina isolamento, acquisizione, bonifica e riammissione e spiega perché i privilegi minimi riducono l’impatto a monte.',
+              en: 'Order isolation, acquisition, remediation, and readmission and explain why minimal privileges reduce the impact upstream.'
+            },
+            steps: [
+              {
+                it: 'Apri «Endpoint e postura» e osserva la postura e i privilegi locali di un host.',
+                en: 'Open “Endpoint and posture” and observe a host’s posture and local privileges.'
+              },
+              {
+                it: 'Metti in ordine isolamento, acquisizione dell’evidenza, bonifica alla baseline e riammissione.',
+                en: 'Put isolation, evidence acquisition, remediation to the baseline, and readmission in order.'
+              },
+              {
+                it: 'Spiega cosa avrebbe ridotto i privilegi amministrativi permanenti sull’impatto dell’accesso.',
+                en: 'Explain what permanent administrative privileges would have changed about the access’s impact.'
+              }
+            ],
+            challenge: {
+              it: 'Un host bonificato in fretta torna in rete e la compromissione riparte: quale passo è stato saltato e in quale ordine andava fatto?',
+              en: 'A hastily remediated host returns to the network and the compromise restarts: which step was skipped and in what order should it have been done?'
+            },
+            solution: [
+              {
+                it: 'La postura continua toglie l’accesso a un host che esce dalla baseline; i privilegi locali minimi riducono quanto vale un accesso iniziale, togliendo terreno all’escalation. In risposta l’ordine è isolare (senza spegnere, per conservare l’evidenza), acquisire gli artefatti, bonificare riportando alla baseline, e riammettere solo dopo la verifica.',
+                en: 'Continuous posture removes access from a host that falls out of the baseline; minimal local privileges reduce how much an initial access is worth, taking ground from escalation. In response the order is isolate (without powering off, to preserve the evidence), acquire the artifacts, remediate by returning to the baseline, and readmit only after verification.'
+              },
+              {
+                it: 'Sfida: se la compromissione riparte, è stata saltata la verifica prima della riammissione — l’host è rientrato non ancora riportato alla baseline; l’ordine corretto riammette solo dopo bonifica e verifica.',
+                en: 'Challenge: if the compromise restarts, the verification before readmission was skipped — the host returned not yet brought to the baseline; the correct order readmits only after remediation and verification.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So spiegare come la postura continua condiziona l’accesso e perché va verificata nel tempo.',
+                en: 'I can explain how continuous posture conditions access and why it must be verified over time.'
+              },
+              {
+                it: 'So ordinare isolamento, acquisizione, bonifica e riammissione senza perdere l’evidenza.',
+                en: 'I can order isolation, acquisition, remediation, and readmission without losing the evidence.'
+              }
+            ]
+          }
+        ]
+      }
+    ]
   }
 ];

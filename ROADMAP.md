@@ -104,9 +104,20 @@ revisione dei contenuti tecnici è vincolante.
       per l'email). Il manuale sale a **22 capitoli / 67 argomenti / 53 laboratori guidati**;
       aggiornate le asserzioni di conteggio (progresso `x/22`, 22 opzioni, optgroup «Estensione ·
       0/8»). `npm run verify` verde, E2E Chromium verdi. Report: `docs/verify/2026-10-14-secx02.md`.
-- [ ] **SECX-03 (P2) — Difese e resilienza non ancora in guida.** Insegnare i laboratori
-      `endpointsecurity`, `routingsecurity`, `availability`, `recovery`, `segmentation`,
-      `managementsecurity`, `layer2security` con capitoli/argomenti dedicati (uno per incremento).
+- [~] **SECX-03 (P2) — Difese e resilienza non ancora in guida.** Insegnare i laboratori
+  `endpointsecurity`, `routingsecurity`, `availability`, `recovery`, `segmentation`,
+  `managementsecurity`, `layer2security` con capitoli/argomenti dedicati (uno per incremento).
+  **In corso — 1 di 7 (14/10/2026):** aggiunto il capitolo estensione «Sicurezza dell'endpoint
+  e postura» (ordine 23, cert Security+) che insegna `endpointsecurity`, con tre argomenti —
+  inventario/baseline/patching basato sul rischio, EDR/host firewall/application control,
+  postura continua/privilegi/isolamento — ciascuno con obiettivi, teoria progressiva, esempio
+  su `192.0.2.0/24`, errori comuni, riferimenti (NIST SP 800-40 Rev. 4 e SP 800-137, MITRE
+  ATT&CK T1562.001) e un laboratorio guidato su `endpointsecurity`; pensato come complemento
+  difensivo della post-exploitation eJPT. Il manuale sale a **23 capitoli / 70 argomenti / 56
+  laboratori guidati**; aggiornate le asserzioni di conteggio (progresso `x/23`, 23 opzioni,
+  optgroup «Estensione · 0/9»). Restano da insegnare: `routingsecurity`, `availability`,
+  `recovery`, `segmentation`, `managementsecurity`, `layer2security`. `npm run verify` verde,
+  E2E Chromium verdi. Report: `docs/verify/2026-10-14-secx03-endpoint.md`.
 
 ## 💻 Senior Software Developer — architettura e manutenibilità
 
