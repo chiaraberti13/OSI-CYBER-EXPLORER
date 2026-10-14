@@ -7331,5 +7331,363 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
         ]
       }
     ]
+  },
+  {
+    id: 'segmentation-trust-boundaries',
+    cert: 'securityplus',
+    order: 24,
+    track: 'extension',
+    title: {
+      it: 'Segmentazione e confini di fiducia',
+      en: 'Segmentation and trust boundaries'
+    },
+    summary: {
+      it: 'L’estensione su dove la rete decide chi può parlare con chi. Cosa separa davvero un confine e cosa no, come la microsegmentazione e lo Zero Trust tolgono la fiducia implicita che alimenta il movimento laterale, e come overlay, VRF e servizi condivisi complicano l’applicazione della policy. È il complemento difensivo del movimento laterale: dove l’offensiva sfrutta la rete piatta, la segmentazione la spezza.',
+      en: 'The extension on where the network decides who may talk to whom. What a boundary really separates and what it does not, how microsegmentation and Zero Trust remove the implicit trust that feeds lateral movement, and how overlays, VRFs, and shared services complicate policy enforcement. It is the defensive complement of lateral movement: where the offensive exploits the flat network, segmentation breaks it.'
+    },
+    topics: [
+      {
+        id: 'segmentation-separation-enforcement',
+        title: {
+          it: 'Separare non è applicare: VLAN, ACL e confini',
+          en: 'Separating is not enforcing: VLANs, ACLs, and boundaries'
+        },
+        objectives: [
+          {
+            it: 'Distinguere la separazione di un dominio di broadcast dall’applicazione di una policy.',
+            en: 'Distinguish separating a broadcast domain from enforcing a policy.'
+          },
+          {
+            it: 'Collocare e orientare un’ACL perché il confine applichi davvero ciò che intende.',
+            en: 'Place and direct an ACL so the boundary actually enforces what it intends.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere VLAN, trunk e ACL (capitoli su VLAN/STP e sulle difese di rete).',
+            en: 'Know VLANs, trunks, and ACLs (the VLAN/STP and the network defenses chapters).'
+          }
+        ],
+        theory: [
+          {
+            it: 'Il primo malinteso della segmentazione è credere che una VLAN sia un firewall. Una VLAN separa un dominio di broadcast: mette host in reti logiche distinte, ma di per sé non impedisce il traffico tra di esse — basta un router o una SVI e le VLAN si parlano. La separazione è una precondizione, non l’applicazione della policy: chi può parlare con chi lo decide un controllo di filtraggio — un’ACL o un firewall — posto sul confine. Confondere i due porta a reti «segmentate» in cui, di fatto, tutto raggiunge tutto appena c’è instradamento.',
+            en: 'The first misconception of segmentation is believing a VLAN is a firewall. A VLAN separates a broadcast domain: it puts hosts in distinct logical networks, but on its own it does not prevent traffic between them — a router or an SVI is enough and the VLANs talk. Separation is a precondition, not policy enforcement: who may talk to whom is decided by a filtering control — an ACL or a firewall — placed on the boundary. Confusing the two leads to «segmented» networks where, in fact, everything reaches everything as soon as there is routing.'
+          },
+          {
+            it: 'Applicare la policy richiede collocazione e direzione corrette del filtro. Un’ACL agisce su un’interfaccia in una direzione (in ingresso o in uscita): la stessa regola posta nel punto sbagliato o nel verso sbagliato filtra l’opposto di ciò che si intende, o non filtra affatto. Una ACL stateless, inoltre, valuta ogni pacchetto per sé: applicata in una sola direzione lascia passare il ritorno, perché non sa nulla della sessione. La regola pratica è ragionare sul flusso reale — origine, destinazione, direzione sull’interfaccia — e verificare il confine nei due versi, non solo in quello «andata».',
+            en: 'Enforcing the policy requires the filter’s correct placement and direction. An ACL acts on an interface in one direction (inbound or outbound): the same rule placed in the wrong spot or the wrong direction filters the opposite of what is intended, or does not filter at all. A stateless ACL, moreover, evaluates each packet on its own: applied in only one direction it lets the return through, because it knows nothing of the session. The practical rule is to reason about the real flow — source, destination, direction on the interface — and to verify the boundary in both directions, not just the «outbound» one.'
+          },
+          {
+            it: 'Il valore del confine si misura da ciò che ferma, non da quante VLAN esistono. Una buona segmentazione parte dalla domanda «quali flussi sono necessari?» e nega il resto per default, invece di separare tutto e poi riaprire caso per caso. Questo rende il confine leggibile — poche regole che esprimono l’intento — e verificabile: si prova un flusso consentito e uno negato in entrambe le direzioni e si confronta l’esito con l’intento. Un confine che nessuno verifica è un’ipotesi, non un controllo.',
+            en: 'The value of a boundary is measured by what it stops, not by how many VLANs exist. Good segmentation starts from the question «which flows are necessary?» and denies the rest by default, instead of separating everything and then reopening case by case. This makes the boundary readable — a few rules that express the intent — and verifiable: you test an allowed flow and a denied one in both directions and compare the outcome with the intent. A boundary nobody verifies is a hypothesis, not a control.'
+          }
+        ],
+        example: {
+          it: 'Due VLAN su 192.0.2.0/24 restano raggiungibili tra loro appena una SVI le instrada; solo un’ACL collocata sull’interfaccia giusta e nella direzione giusta applica la policy, e va provata nei due versi perché, stateless, da sola lascerebbe passare il traffico di ritorno.',
+          en: 'Two VLANs on 192.0.2.0/24 stay mutually reachable as soon as an SVI routes them; only an ACL placed on the right interface and in the right direction enforces the policy, and it must be tested in both directions because, being stateless, on its own it would let the return traffic through.'
+        },
+        commonMistakes: [
+          {
+            it: 'Trattare la VLAN come un firewall: separa il broadcast, non applica una policy tra le reti.',
+            en: 'Treating a VLAN as a firewall: it separates the broadcast, it does not enforce a policy between networks.'
+          },
+          {
+            it: 'Applicare l’ACL in una sola direzione: stateless, lascia passare il ritorno della sessione.',
+            en: 'Applying the ACL in only one direction: being stateless, it lets the session’s return through.'
+          },
+          {
+            it: 'Misurare la segmentazione col numero di VLAN: conta ciò che il confine ferma, verificato nei due versi.',
+            en: 'Measuring segmentation by the number of VLANs: what counts is what the boundary stops, verified both ways.'
+          }
+        ],
+        lab: 'segmentation',
+        references: [{ kind: 'nist', id: 'SP 800-41 Rev. 1' }],
+        guidedLabs: [
+          {
+            id: 'gl-seg-direction',
+            title: {
+              it: 'Applica la policy nel punto e nel verso giusti',
+              en: 'Enforce the policy at the right spot and direction'
+            },
+            difficulty: 'core',
+            lab: 'segmentation',
+            scenario: {
+              it: 'Il laboratorio «Segmentazione» mostra dove un confine applica davvero la policy e dove soltanto separa.',
+              en: 'The “Segmentation” lab shows where a boundary really enforces the policy and where it only separates.'
+            },
+            task: {
+              it: 'Per un flusso tra due VLAN indica dove va l’ACL e in quale direzione, e perché va verificata nei due versi.',
+              en: 'For a flow between two VLANs state where the ACL goes and in which direction, and why it must be verified both ways.'
+            },
+            steps: [
+              {
+                it: 'Apri «Segmentazione» e scegli lo scenario su direzione e posizionamento delle ACL.',
+                en: 'Open “Segmentation” and pick the scenario on ACL direction and placement.'
+              },
+              {
+                it: 'Individua l’interfaccia e la direzione in cui l’ACL applica l’intento.',
+                en: 'Identify the interface and direction in which the ACL enforces the intent.'
+              },
+              {
+                it: 'Prova un flusso consentito e uno negato in entrambe le direzioni e confronta con l’intento.',
+                en: 'Test an allowed flow and a denied one in both directions and compare with the intent.'
+              }
+            ],
+            challenge: {
+              it: 'La regola «andata» funziona ma il ritorno passa lo stesso: cosa manca e come lo correggi senza aprire troppo?',
+              en: 'The «outbound» rule works but the return passes anyway: what is missing and how do you fix it without opening too much?'
+            },
+            solution: [
+              {
+                it: 'La VLAN separa il broadcast ma le due reti si parlano appena una SVI le instrada; la policy la applica un’ACL collocata sull’interfaccia giusta e nel verso giusto. Essendo stateless, valuta ogni pacchetto per sé: se copre solo l’andata, il ritorno passa. Si verifica provando un flusso consentito e uno negato nei due versi e confrontando con l’intento.',
+                en: 'The VLAN separates the broadcast but the two networks talk as soon as an SVI routes them; the policy is enforced by an ACL placed on the right interface and in the right direction. Being stateless, it evaluates each packet on its own: if it covers only the outbound path, the return passes. You verify by testing an allowed flow and a denied one both ways and comparing with the intent.'
+              },
+              {
+                it: 'Sfida: il ritorno passa perché l’ACL stateless non conosce la sessione; si corregge filtrando anche la direzione di ritorno con regole speculari e mirate al flusso necessario, o spostando l’applicazione a un firewall stateful che segue la sessione, senza aprire oltre il necessario.',
+                en: 'Challenge: the return passes because the stateless ACL does not know the session; you fix it by also filtering the return direction with mirrored rules targeted to the needed flow, or by moving enforcement to a stateful firewall that follows the session, without opening more than necessary.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So distinguere separare un broadcast dall’applicare una policy sul confine.',
+                en: 'I can distinguish separating a broadcast from enforcing a policy on the boundary.'
+              },
+              {
+                it: 'So collocare e orientare un’ACL e verificarla nei due versi.',
+                en: 'I can place and direct an ACL and verify it in both directions.'
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'segmentation-microseg-zero-trust',
+        title: {
+          it: 'Microsegmentazione, east–west e Zero Trust',
+          en: 'Microsegmentation, east–west, and Zero Trust'
+        },
+        objectives: [
+          {
+            it: 'Spiegare perché la rete piatta alimenta il movimento laterale e come la microsegmentazione lo limita.',
+            en: 'Explain why the flat network feeds lateral movement and how microsegmentation limits it.'
+          },
+          {
+            it: 'Descrivere il principio Zero Trust applicato ai confini interni e ai dispositivi non gestiti.',
+            en: 'Describe the Zero Trust principle applied to internal boundaries and unmanaged devices.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere il movimento laterale (percorso eJPT) e i confini di segmentazione (argomento precedente).',
+            en: 'Know lateral movement (the eJPT path) and segmentation boundaries (previous topic).'
+          }
+        ],
+        theory: [
+          {
+            it: 'La rete piatta è il moltiplicatore d’impatto che il movimento laterale sfrutta: se ogni host raggiunge ogni altro, un singolo punto d’appoggio apre l’intera infrastruttura. La microsegmentazione risponde spostando il confine vicino al carico: non più solo macro-zone (VLAN di reparto), ma politiche fini tra host e servizi, così che un host compromesso possa parlare solo con ciò che gli serve davvero. L’effetto non è impedire la compromissione iniziale, ma contenerne la propagazione — ridurre la distanza che un attaccante può coprire dal punto d’ingresso al dato critico.',
+            en: 'The flat network is the impact multiplier that lateral movement exploits: if every host reaches every other, a single foothold opens the whole infrastructure. Microsegmentation responds by moving the boundary close to the workload: no longer only macro-zones (department VLANs), but fine policies between hosts and services, so a compromised host can talk only to what it truly needs. The effect is not to prevent the initial compromise, but to contain its spread — to reduce the distance an attacker can cover from the entry point to the critical data.'
+          },
+          {
+            it: 'Lo Zero Trust generalizza il principio: nessuna fiducia implicita basata sulla posizione in rete. Essere «dentro» un segmento non autorizza nulla; ogni accesso è verificato per identità e contesto, a ogni richiesta. Applicato ai confini interni, significa trattare il traffico east–west come si tratterebbe quello dal perimetro, e trattare i dispositivi guest, IoT e non gestiti come non fidati per default, confinandoli in segmenti da cui non raggiungono i sistemi sensibili. È l’opposto esatto della rete piatta: la posizione non è più una credenziale.',
+            en: 'Zero Trust generalizes the principle: no implicit trust based on network location. Being «inside» a segment authorizes nothing; every access is verified for identity and context, on every request. Applied to internal boundaries, it means treating east–west traffic as you would perimeter traffic, and treating guest, IoT, and unmanaged devices as untrusted by default, confining them to segments from which they do not reach sensitive systems. It is the exact opposite of the flat network: location is no longer a credential.'
+          },
+          {
+            it: 'Microsegmentazione e Zero Trust non sostituiscono gli altri controlli: li rendono efficaci. Un confine fine senza monitoraggio est–ovest non si accorge di essere aggirato; una verifica continua senza identità affidabile non decide bene; una policy fine ingestibile a mano ha bisogno di automazione per restare coerente. Per questo la segmentazione moderna è un sistema — identità, policy, monitoraggio e automazione insieme — e il suo scopo misurabile resta uno: trasformare una compromissione da «accesso a tutto» a «accesso a poco», così che il tempo di rilevamento conti più della prevenzione perfetta.',
+            en: 'Microsegmentation and Zero Trust do not replace the other controls: they make them effective. A fine boundary without east–west monitoring does not notice it is being bypassed; continuous verification without reliable identity does not decide well; a fine policy unmanageable by hand needs automation to stay consistent. This is why modern segmentation is a system — identity, policy, monitoring, and automation together — and its measurable goal stays one: to turn a compromise from «access to everything» into «access to little», so that detection time matters more than perfect prevention.'
+          }
+        ],
+        example: {
+          it: 'In una rete piatta un host compromesso raggiunge i server critici; con la microsegmentazione quell’host parla solo con i servizi che gli servono, i dispositivi IoT restano confinati, e la verifica Zero Trust a ogni accesso fa sì che «essere nel segmento» non autorizzi il salto successivo.',
+          en: 'In a flat network a compromised host reaches the critical servers; with microsegmentation that host talks only to the services it needs, the IoT devices stay confined, and Zero Trust verification at every access makes «being in the segment» not authorize the next hop.'
+        },
+        commonMistakes: [
+          {
+            it: 'Fidarsi della posizione in rete: «dentro» un segmento non è un’autorizzazione; lo Zero Trust la toglie.',
+            en: 'Trusting network location: «inside» a segment is not an authorization; Zero Trust removes it.'
+          },
+          {
+            it: 'Mettere i dispositivi non gestiti nella rete generale: guest e IoT vanno confinati come non fidati per default.',
+            en: 'Putting unmanaged devices on the general network: guest and IoT must be confined as untrusted by default.'
+          },
+          {
+            it: 'Credere che la segmentazione prevenga la compromissione: ne contiene la propagazione, e va affiancata al monitoraggio.',
+            en: 'Believing segmentation prevents the compromise: it contains the spread, and must be paired with monitoring.'
+          }
+        ],
+        lab: 'segmentation',
+        references: [{ kind: 'nist', id: 'SP 800-207' }],
+        guidedLabs: [
+          {
+            id: 'gl-seg-contain-lateral',
+            title: {
+              it: 'Contieni il movimento laterale',
+              en: 'Contain lateral movement'
+            },
+            difficulty: 'advanced',
+            lab: 'segmentation',
+            scenario: {
+              it: 'Il laboratorio «Segmentazione» mostra il traffico east–west e i confini che lo limitano.',
+              en: 'The “Segmentation” lab shows east–west traffic and the boundaries that limit it.'
+            },
+            task: {
+              it: 'Da un host compromesso individua dove la microsegmentazione e lo Zero Trust spezzano la propagazione e cosa resta da monitorare.',
+              en: 'From a compromised host identify where microsegmentation and Zero Trust break the spread and what is left to monitor.'
+            },
+            steps: [
+              {
+                it: 'Apri «Segmentazione» e scegli lo scenario sul movimento laterale east–west.',
+                en: 'Open “Segmentation” and pick the east–west lateral-movement scenario.'
+              },
+              {
+                it: 'Indica quali salti cadono confinando l’host ai soli servizi necessari.',
+                en: 'Point out which hops fall when confining the host to only the needed services.'
+              },
+              {
+                it: 'Segna dove la verifica Zero Trust toglie la fiducia implicita e cosa resta al monitoraggio.',
+                en: 'Mark where Zero Trust verification removes implicit trust and what is left to monitoring.'
+              }
+            ],
+            challenge: {
+              it: 'Con la microsegmentazione attiva, quale condizione residua permetterebbe comunque un salto laterale?',
+              en: 'With microsegmentation active, which residual condition would still allow a lateral hop?'
+            },
+            solution: [
+              {
+                it: 'La rete piatta lascia che un host raggiunga tutto; confinandolo ai soli servizi necessari cadono i salti verso ciò che non gli serve, e lo Zero Trust toglie l’autorizzazione implicita della posizione verificando ogni accesso per identità e contesto. Resta al monitoraggio est–ovest accorgersi di un confine aggirato: la segmentazione contiene, la detection rivela.',
+                en: 'The flat network lets a host reach everything; confining it to only the needed services drops the hops toward what it does not need, and Zero Trust removes the position’s implicit authorization by verifying every access for identity and context. It is left to east–west monitoring to notice a bypassed boundary: segmentation contains, detection reveals.'
+              },
+              {
+                it: 'Sfida: un salto laterale resta possibile se un servizio condiviso raggiungibile da più segmenti, o una credenziale valida ovunque, ricrea la fiducia che la segmentazione doveva togliere; lì serve lo Zero Trust sull’accesso al servizio, non solo il confine di rete.',
+                en: 'Challenge: a lateral hop stays possible if a shared service reachable from several segments, or a credential valid everywhere, recreates the trust segmentation was meant to remove; there you need Zero Trust on the service access, not only the network boundary.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So spiegare come la microsegmentazione contiene il movimento laterale.',
+                en: 'I can explain how microsegmentation contains lateral movement.'
+              },
+              {
+                it: 'So dire perché lo Zero Trust toglie la fiducia basata sulla posizione in rete.',
+                en: 'I can say why Zero Trust removes trust based on network location.'
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'segmentation-overlay-shared-services',
+        title: {
+          it: 'VRF, overlay e servizi condivisi',
+          en: 'VRFs, overlays, and shared services'
+        },
+        objectives: [
+          {
+            it: 'Spiegare come VRF e overlay separano il traffico e dove il route leaking riapre un confine.',
+            en: 'Explain how VRFs and overlays separate traffic and where route leaking reopens a boundary.'
+          },
+          {
+            it: 'Riconoscere i rischi dei servizi condivisi e del routing asimmetrico per l’ispezione stateful.',
+            en: 'Recognize the risks of shared services and asymmetric routing for stateful inspection.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere il routing e l’ispezione stateful (capitoli su routing e sulle difese di rete).',
+            en: 'Know routing and stateful inspection (the routing and network defenses chapters).'
+          }
+        ],
+        theory: [
+          {
+            it: 'Quando una VLAN non basta, la separazione sale di livello. La VRF (Virtual Routing and Forwarding) dà a un router più tabelle di routing indipendenti: due VRF non si raggiungono anche se condividono l’hardware, come compartimenti stagni del piano di instradamento. Gli overlay (per esempio in una fabric con controller) incapsulano il traffico di tenant diversi su una stessa rete fisica, e la policy la decide il controller per tenant. In entrambi i casi la separazione è forte per costruzione; il punto delicato è dove, di proposito, la si apre.',
+            en: 'When a VLAN is not enough, separation moves up a level. A VRF (Virtual Routing and Forwarding) gives a router multiple independent routing tables: two VRFs do not reach each other even if they share the hardware, like watertight compartments of the forwarding plane. Overlays (for example in a controller-based fabric) encapsulate the traffic of different tenants over one physical network, and the policy is decided by the controller per tenant. In both cases separation is strong by construction; the delicate point is where, on purpose, you open it.'
+          },
+          {
+            it: 'Il route leaking è l’apertura controllata tra VRF: si importano rotte selezionate da una VRF all’altra per consentire flussi specifici. È utile e spesso necessario — un servizio condiviso deve essere raggiungibile da più VRF — ma ogni leak è un confine riaperto, e va trattato come una regola di policy esplicita, non come una conseguenza accidentale di una ridistribuzione troppo larga. La domanda da porsi è sempre la stessa: quale flusso minimo richiede questo leak, e cosa diventa raggiungibile come effetto collaterale?',
+            en: 'Route leaking is the controlled opening between VRFs: selected routes are imported from one VRF to another to allow specific flows. It is useful and often necessary — a shared service must be reachable from several VRFs — but every leak is a reopened boundary, and must be treated as an explicit policy rule, not as an accidental consequence of an overly broad redistribution. The question to ask is always the same: which minimal flow does this leak require, and what becomes reachable as a side effect?'
+          },
+          {
+            it: 'I servizi condivisi — DNS, autenticazione, gestione — sono raggiungibili da tutti i segmenti per definizione, e proprio per questo sono il punto in cui la segmentazione si indebolisce: un servizio condiviso compromesso parla con l’intera rete. Vanno quindi trattati come un segmento ad alto valore, con accesso minimo e in una sola direzione dove possibile. Un rischio tecnico correlato è il routing asimmetrico: se andata e ritorno di un flusso passano per percorsi diversi, un firewall stateful può vedere solo metà della sessione e scartarla, o peggio lasciarla passare senza stato. Verificare il confine nei due versi vale qui più che altrove.',
+            en: 'Shared services — DNS, authentication, management — are reachable from all segments by definition, and for exactly this reason they are the point where segmentation weakens: a compromised shared service talks to the whole network. They must therefore be treated as a high-value segment, with minimal access and in one direction where possible. A related technical risk is asymmetric routing: if a flow’s outbound and return take different paths, a stateful firewall may see only half the session and drop it, or worse let it through without state. Verifying the boundary in both directions is worth more here than elsewhere.'
+          }
+        ],
+        example: {
+          it: 'Un servizio condiviso in una VRF è reso raggiungibile da altre VRF con un route leaking mirato al solo flusso necessario; se andata e ritorno prendono percorsi diversi, il firewall stateful vede mezza sessione, quindi il confine va verificato nei due versi e il leak tenuto minimo.',
+          en: 'A shared service in one VRF is made reachable from other VRFs with a route leak targeted to the only needed flow; if outbound and return take different paths, the stateful firewall sees half a session, so the boundary must be verified both ways and the leak kept minimal.'
+        },
+        commonMistakes: [
+          {
+            it: 'Trattare il route leaking come una ridistribuzione qualunque: ogni leak è un confine riaperto, da rendere esplicito e minimo.',
+            en: 'Treating route leaking as any redistribution: every leak is a reopened boundary, to be made explicit and minimal.'
+          },
+          {
+            it: 'Mettere i servizi condivisi nella rete generale: sono raggiungibili da tutti e vanno trattati come segmento ad alto valore.',
+            en: 'Putting shared services on the general network: they are reachable by all and must be treated as a high-value segment.'
+          },
+          {
+            it: 'Ignorare il routing asimmetrico: spezza l’ispezione stateful, che vede solo metà della sessione.',
+            en: 'Ignoring asymmetric routing: it breaks stateful inspection, which sees only half the session.'
+          }
+        ],
+        lab: 'segmentation',
+        references: [{ kind: 'rfc', id: 'RFC 4364' }],
+        guidedLabs: [
+          {
+            id: 'gl-seg-route-leak',
+            title: {
+              it: 'Apri un confine senza spalancarlo',
+              en: 'Open a boundary without flinging it wide'
+            },
+            difficulty: 'advanced',
+            lab: 'segmentation',
+            scenario: {
+              it: 'Il laboratorio «Segmentazione» mostra VRF, route leaking e servizi condivisi tra segmenti.',
+              en: 'The “Segmentation” lab shows VRFs, route leaking, and shared services across segments.'
+            },
+            task: {
+              it: 'Rendi un servizio condiviso raggiungibile da due VRF con il flusso minimo e spiega il rischio del routing asimmetrico.',
+              en: 'Make a shared service reachable from two VRFs with the minimal flow and explain the asymmetric-routing risk.'
+            },
+            steps: [
+              {
+                it: 'Apri «Segmentazione» e scegli lo scenario su VRF e route leaking.',
+                en: 'Open “Segmentation” and pick the VRF and route-leaking scenario.'
+              },
+              {
+                it: 'Importa solo le rotte necessarie al flusso verso il servizio condiviso.',
+                en: 'Import only the routes needed for the flow toward the shared service.'
+              },
+              {
+                it: 'Verifica andata e ritorno e segnala dove un percorso asimmetrico romperebbe lo stateful.',
+                en: 'Verify outbound and return and flag where an asymmetric path would break the stateful inspection.'
+              }
+            ],
+            challenge: {
+              it: 'Dopo il leak un segmento raggiunge più del previsto: cosa è stato importato di troppo e come lo restringi?',
+              en: 'After the leak a segment reaches more than intended: what was imported in excess and how do you narrow it?'
+            },
+            solution: [
+              {
+                it: 'La VRF separa per costruzione; il route leaking apre un confine importando rotte selezionate, e va tenuto al flusso minimo necessario al servizio condiviso. Il servizio condiviso è un segmento ad alto valore, con accesso minimo e, dove possibile, in una sola direzione. Il routing asimmetrico è il rischio tecnico: se andata e ritorno divergono, il firewall stateful vede mezza sessione, perciò il confine si verifica nei due versi.',
+                en: 'The VRF separates by construction; route leaking opens a boundary by importing selected routes, and must be kept to the minimal flow the shared service needs. The shared service is a high-value segment, with minimal access and, where possible, one direction. Asymmetric routing is the technical risk: if outbound and return diverge, the stateful firewall sees half a session, so the boundary is verified both ways.'
+              },
+              {
+                it: 'Sfida: se un segmento raggiunge più del previsto, è stata importata una rotta troppo ampia (un prefisso che copre oltre il servizio); si restringe importando solo il prefisso del servizio e negando il resto, e si riverifica nei due versi.',
+                en: 'Challenge: if a segment reaches more than intended, an overly broad route was imported (a prefix covering beyond the service); you narrow it by importing only the service’s prefix and denying the rest, and you re-verify both ways.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So spiegare come VRF e overlay separano e dove il route leaking riapre un confine.',
+                en: 'I can explain how VRFs and overlays separate and where route leaking reopens a boundary.'
+              },
+              {
+                it: 'So riconoscere il rischio dei servizi condivisi e del routing asimmetrico per lo stateful.',
+                en: 'I can recognize the risk of shared services and asymmetric routing for stateful inspection.'
+              }
+            ]
+          }
+        ]
+      }
+    ]
   }
 ];
