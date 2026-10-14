@@ -6257,5 +6257,363 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
         ]
       }
     ]
+  },
+  {
+    id: 'exploitation-post-exploitation',
+    cert: 'ejpt',
+    order: 21,
+    track: 'extension',
+    title: {
+      it: 'Exploitation e post-exploitation (eJPT)',
+      en: 'Exploitation and post-exploitation (eJPT)'
+    },
+    summary: {
+      it: 'La parte centrale del penetration testing di host e rete: trasformare una debolezza confermata in accesso, poi misurare l’impatto reale con l’escalation dei privilegi, il movimento laterale e il pivoting. Tutto in chiave concettuale e difensiva — nessun comando operativo — con il controllo che spezza ogni fase e solo target di documentazione.',
+      en: 'The core of host and network penetration testing: turning a confirmed weakness into access, then measuring the real impact with privilege escalation, lateral movement, and pivoting. All conceptual and defense-oriented — no operational commands — with the control that breaks each phase and only documentation targets.'
+    },
+    topics: [
+      {
+        id: 'exploitation-concepts',
+        title: {
+          it: 'Dall’enumerazione all’exploitation',
+          en: 'From enumeration to exploitation'
+        },
+        objectives: [
+          {
+            it: 'Distinguere exploit e payload e spiegare perché l’exploitation verifica, non presume.',
+            en: 'Distinguish exploit and payload and explain why exploitation verifies, it does not assume.'
+          },
+          {
+            it: 'Collegare ogni exploitation a un’evidenza e alla difesa che la previene o la rileva.',
+            en: 'Link every exploitation to an evidence and to the defense that prevents or detects it.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Aver enumerato servizi e versioni e ipotizzato una debolezza (capitoli sullo scanning e sul web).',
+            en: 'Have enumerated services and versions and hypothesized a weakness (the scanning and web chapters).'
+          }
+        ],
+        theory: [
+          {
+            it: 'L’exploitation è il momento in cui una debolezza ipotizzata viene verificata trasformandola in accesso. Conviene separare due concetti: l’exploit è la tecnica che sfrutta un difetto specifico; il payload è ciò che viene eseguito una volta che l’exploit ha funzionato — per esempio l’apertura di una sessione di controllo. Tenerli distinti spiega perché un framework modulare abbina lo stesso payload a exploit diversi. L’exploitation serve a confermare un rischio, non a presumerlo: una versione «vulnerabile» resta un’ipotesi finché un tentativo controllato non dimostra che il difetto è davvero raggiungibile e sfruttabile in quel contesto.',
+            en: 'Exploitation is the moment when a hypothesized weakness is verified by turning it into access. It helps to separate two concepts: the exploit is the technique that abuses a specific flaw; the payload is what runs once the exploit has worked — for example opening a control session. Keeping them distinct explains why a modular framework pairs the same payload with different exploits. Exploitation serves to confirm a risk, not to assume it: a «vulnerable» version remains a hypothesis until a controlled attempt proves that the flaw is truly reachable and exploitable in that context.'
+          },
+          {
+            it: 'Non ogni debolezza raggiungibile è sfruttabile allo stesso modo: contano l’affidabilità (un tentativo che fa crashare il servizio è rumoroso e dannoso), le condizioni (configurazione, protezioni di memoria, privilegi del servizio) e l’impatto che l’accesso ottenuto comporta. Un tester responsabile sceglie la via più sicura per dimostrare il rischio e si ferma a ciò che le regole d’ingaggio consentono: l’obiettivo è la prova, non il danno. Per questo l’exploitation va sempre registrata con il bersaglio, il difetto, il metodo e l’esito, così da essere ripetibile e inseribile nel report come rischio con il suo rimedio.',
+            en: 'Not every reachable weakness is exploitable in the same way: what matters is reliability (an attempt that crashes the service is noisy and harmful), the conditions (configuration, memory protections, the service’s privileges), and the impact that the obtained access entails. A responsible tester chooses the safest way to demonstrate the risk and stops at what the rules of engagement allow: the goal is the proof, not the damage. For this reason exploitation must always be recorded with the target, the flaw, the method, and the outcome, so it is repeatable and can enter the report as a risk with its fix.'
+          },
+          {
+            it: 'La difesa agisce prima, durante e dopo. Prima: ridurre la superficie e applicare le patch toglie all’exploit il difetto su cui lavora, mentre il minimo privilegio limita cosa un servizio compromesso può fare. Durante: un IPS e i log riconoscono il tentativo per la sua firma — payload anomali, crash ripetuti, connessioni inattese in uscita. Dopo: l’accesso ottenuto lascia tracce (nuovi processi, sessioni, autenticazioni) che un sistema di detection correla. Studiare l’exploitation serve esattamente a sapere quali di questi controlli mancano e quale evidenza cercare.',
+            en: 'The defense acts before, during, and after. Before: reducing the surface and applying patches removes from the exploit the flaw it works on, while least privilege limits what a compromised service can do. During: an IPS and the logs recognize the attempt by its signature — anomalous payloads, repeated crashes, unexpected outbound connections. After: the obtained access leaves traces (new processes, sessions, authentications) that a detection system correlates. Studying exploitation serves exactly to know which of these controls are missing and which evidence to look for.'
+          }
+        ],
+        example: {
+          it: 'Su un host in 192.0.2.0/24 un servizio di cui l’enumerazione ha letto la versione viene verificato con un tentativo controllato: se l’accesso si apre, il rischio è provato e si registra bersaglio, difetto, metodo ed esito; la patch mancante e il minimo privilegio sono il rimedio che il report indica.',
+          en: 'On a host in 192.0.2.0/24 a service whose version enumeration read is verified with a controlled attempt: if access opens, the risk is proven and you record target, flaw, method, and outcome; the missing patch and least privilege are the fix the report states.'
+        },
+        commonMistakes: [
+          {
+            it: 'Presumere la vulnerabilità dalla sola versione: senza verifica controllata resta un’ipotesi, non un rischio provato.',
+            en: 'Assuming the vulnerability from the version alone: without a controlled check it stays a hypothesis, not a proven risk.'
+          },
+          {
+            it: 'Confondere exploit e payload: il primo sfrutta il difetto, il secondo è ciò che viene eseguito dopo.',
+            en: 'Confusing exploit and payload: the first abuses the flaw, the second is what runs afterward.'
+          },
+          {
+            it: 'Cercare l’accesso a ogni costo: un tentativo che fa crashare il servizio viola le regole d’ingaggio e distrugge l’evidenza.',
+            en: 'Seeking access at any cost: an attempt that crashes the service violates the rules of engagement and destroys the evidence.'
+          }
+        ],
+        lab: 'attacklab',
+        references: [{ kind: 'attack', id: 'T1210' }],
+        guidedLabs: [
+          {
+            id: 'gl-exploit-verify-defense',
+            title: {
+              it: 'Verifica il rischio e trova il controllo',
+              en: 'Verify the risk and find the control'
+            },
+            difficulty: 'advanced',
+            lab: 'attacklab',
+            scenario: {
+              it: 'Il laboratorio «Attacco & Difesa» mostra un attacco che si svolge passo dopo passo e il punto in cui una difesa attiva lo interrompe.',
+              en: 'The “Attack & defense” lab shows an attack unfolding step by step and the point where an active defense interrupts it.'
+            },
+            task: {
+              it: 'Individua il passo di exploitation, distingui exploit e payload e indica quale controllo (patch, minimo privilegio, IPS) lo fermerebbe o lo rivelerebbe.',
+              en: 'Find the exploitation step, tell exploit and payload apart, and point out which control (patch, least privilege, IPS) would stop or reveal it.'
+            },
+            steps: [
+              {
+                it: 'Apri «Attacco & Difesa» e scegli uno scenario con una difesa attivabile.',
+                en: 'Open “Attack & defense” and pick a scenario with an activatable defense.'
+              },
+              {
+                it: 'Individua il passo in cui il difetto diventa accesso e separa l’exploit dal payload.',
+                en: 'Find the step where the flaw becomes access and separate the exploit from the payload.'
+              },
+              {
+                it: 'Attiva la difesa e osserva in quale punto il percorso viene interrotto.',
+                en: 'Enable the defense and observe at which point the path is interrupted.'
+              }
+            ],
+            challenge: {
+              it: 'Se la patch non fosse disponibile, quale altro controllo ridurrebbe l’impatto dell’exploitation e quale evidenza lascerebbe comunque il tentativo?',
+              en: 'If the patch were not available, which other control would reduce the exploitation’s impact and what evidence would the attempt leave anyway?'
+            },
+            solution: [
+              {
+                it: 'Il passo di exploitation è quello in cui un difetto raggiungibile diventa accesso: l’exploit è la tecnica che lo sfrutta, il payload è ciò che viene eseguito dopo (per esempio una sessione di controllo). La patch toglie il difetto; se manca, il minimo privilegio limita cosa l’accesso ottenuto può fare e la segmentazione ne contiene la portata, mentre un IPS e i log riconoscono il tentativo per la sua firma.',
+                en: 'The exploitation step is the one where a reachable flaw becomes access: the exploit is the technique that abuses it, the payload is what runs afterward (for example a control session). The patch removes the flaw; if it is missing, least privilege limits what the obtained access can do and segmentation contains its reach, while an IPS and the logs recognize the attempt by its signature.'
+              },
+              {
+                it: 'Sfida: senza patch, il minimo privilegio e la segmentazione riducono l’impatto anche se l’exploit riesce; il tentativo lascia comunque evidenza — payload anomali, crash o una connessione inattesa in uscita — che la detection correla.',
+                en: 'Challenge: without a patch, least privilege and segmentation reduce the impact even if the exploit succeeds; the attempt still leaves evidence — anomalous payloads, crashes, or an unexpected outbound connection — that detection correlates.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So distinguere exploit e payload e dire perché l’exploitation verifica anziché presumere.',
+                en: 'I can distinguish exploit and payload and say why exploitation verifies instead of assuming.'
+              },
+              {
+                it: 'So indicare i controlli che fermano o rivelano un’exploitation e l’evidenza che lascia.',
+                en: 'I can state the controls that stop or reveal an exploitation and the evidence it leaves.'
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'post-exploitation-privesc',
+        title: {
+          it: 'Post-exploitation: privilegi, bottino e persistenza',
+          en: 'Post-exploitation: privileges, loot, and persistence'
+        },
+        objectives: [
+          {
+            it: 'Descrivere le attività di post-exploitation e cosa misurano in termini di impatto reale.',
+            en: 'Describe post-exploitation activities and what they measure in terms of real impact.'
+          },
+          {
+            it: 'Collegare escalation dei privilegi, raccolta di credenziali e persistenza alle difese che le contengono.',
+            en: 'Link privilege escalation, credential harvesting, and persistence to the defenses that contain them.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere l’exploitation e il modello di accesso (argomento precedente e capitolo su AAA).',
+            en: 'Know exploitation and the access model (previous topic and the AAA chapter).'
+          }
+        ],
+        theory: [
+          {
+            it: 'Ottenuto un primo accesso, la post-exploitation misura cosa quell’accesso vale davvero. Si parte dalla consapevolezza della situazione: chi sono, con quali privilegi, su quale host e in quale rete. L’escalation dei privilegi cerca di passare da un’utenza limitata a una amministrativa sfruttando configurazioni errate, servizi deboli o permessi eccessivi. La raccolta di credenziali recupera password, token o chiavi riutilizzabili altrove. Ogni passo trasforma un punto d’appoggio in impatto misurabile, che è ciò che il report deve quantificare: non «sono entrato», ma «fin dove si arriva da lì».',
+            en: 'Once a first access is obtained, post-exploitation measures what that access is really worth. It starts from situational awareness: who I am, with what privileges, on which host, and in which network. Privilege escalation tries to move from a limited account to an administrative one by abusing misconfigurations, weak services, or excessive permissions. Credential harvesting recovers passwords, tokens, or keys reusable elsewhere. Each step turns a foothold into measurable impact, which is what the report must quantify: not «I got in», but «how far you can reach from there».'
+          },
+          {
+            it: 'La persistenza è la capacità di mantenere l’accesso nel tempo, oltre la sessione iniziale. In un test serve a dimostrare un rischio reale — un attaccante vero non si disconnette — ma va trattata con cautela: ogni meccanismo lasciato va documentato e rimosso a fine ingaggio, perché dimenticarne uno è un rischio introdotto dal test stesso. È qui che la differenza tra un test e un attacco si vede nella disciplina: si registra ogni modifica, si preferisce il metodo meno invasivo e si ripulisce. La persistenza dimostra l’impatto; la tracciabilità la rende sicura.',
+            en: 'Persistence is the ability to keep access over time, beyond the initial session. In a test it serves to demonstrate a real risk — a real attacker does not disconnect — but it must be handled carefully: every mechanism left behind must be documented and removed at the end of the engagement, because forgetting one is a risk introduced by the test itself. This is where the difference between a test and an attack shows in discipline: you record every change, prefer the least invasive method, and clean up. Persistence demonstrates the impact; traceability makes it safe.'
+          },
+          {
+            it: 'Le difese della post-exploitation sono quelle che contengono l’impatto dopo che il perimetro è caduto. Il minimo privilegio fa sì che un accesso iniziale valga poco; la separazione degli account impedisce che una credenziale apra tutto; la gestione dei segreti evita password riutilizzabili sugli host. Un sistema di detection sugli endpoint nota i segni della post-exploitation — nuovi processi privilegiati, dump di credenziali, meccanismi di avvio aggiunti — e la segmentazione limita quanto in là si arriva. Studiare queste attività serve a capire perché «assumere la violazione» e difendere in profondità è più realistico che fidarsi del solo perimetro.',
+            en: 'The defenses of post-exploitation are those that contain the impact after the perimeter has fallen. Least privilege makes an initial access worth little; account separation prevents one credential from opening everything; secrets management avoids passwords reusable across hosts. An endpoint detection system notices the signs of post-exploitation — new privileged processes, credential dumps, added startup mechanisms — and segmentation limits how far you get. Studying these activities serves to understand why «assume breach» and defending in depth is more realistic than trusting the perimeter alone.'
+          }
+        ],
+        example: {
+          it: 'Da un accesso limitato su un host, una configurazione errata consente l’escalation a privilegi amministrativi e il recupero di una credenziale riutilizzabile; il report quantifica l’impatto e indica il rimedio — minimo privilegio, separazione degli account e gestione dei segreti — mentre ogni modifica lasciata viene documentata e rimossa.',
+          en: 'From a limited access on a host, a misconfiguration allows escalation to administrative privileges and the recovery of a reusable credential; the report quantifies the impact and states the fix — least privilege, account separation, and secrets management — while every change left behind is documented and removed.'
+        },
+        commonMistakes: [
+          {
+            it: 'Fermarsi al primo accesso: senza misurare l’impatto il report non dice quanto vale davvero la compromissione.',
+            en: 'Stopping at the first access: without measuring the impact the report does not say how much the compromise is really worth.'
+          },
+          {
+            it: 'Lasciare meccanismi di persistenza non documentati: diventano un rischio introdotto dal test e vanno rimossi a fine ingaggio.',
+            en: 'Leaving undocumented persistence mechanisms: they become a risk introduced by the test and must be removed at the end of the engagement.'
+          },
+          {
+            it: 'Trattare il perimetro come unica difesa: dopo il primo accesso contano minimo privilegio, segmentazione e detection sugli endpoint.',
+            en: 'Treating the perimeter as the only defense: after the first access, least privilege, segmentation, and endpoint detection are what count.'
+          }
+        ],
+        lab: 'attackpaths',
+        references: [{ kind: 'attack', id: 'T1068' }],
+        guidedLabs: [
+          {
+            id: 'gl-postexploit-impact',
+            title: {
+              it: 'Misura l’impatto oltre il primo accesso',
+              en: 'Measure the impact beyond the first access'
+            },
+            difficulty: 'advanced',
+            lab: 'attackpaths',
+            scenario: {
+              it: 'Il laboratorio «Percorsi d’attacco» mostra come un punto d’appoggio porti, passo dopo passo, a un impatto più profondo.',
+              en: 'The “Attack paths” lab shows how a foothold leads, step by step, to a deeper impact.'
+            },
+            task: {
+              it: 'Segui un percorso oltre il primo accesso e associa escalation, raccolta di credenziali e persistenza alla difesa che le contiene.',
+              en: 'Follow a path beyond the first access and match escalation, credential harvesting, and persistence to the defense that contains them.'
+            },
+            steps: [
+              {
+                it: 'Apri «Percorsi d’attacco» e scegli un percorso che prosegua dopo il primo accesso.',
+                en: 'Open “Attack paths” and pick a path that continues after the first access.'
+              },
+              {
+                it: 'Attribuisci a ogni tappa l’attività di post-exploitation e l’impatto che aggiunge.',
+                en: 'Attribute to each step the post-exploitation activity and the impact it adds.'
+              },
+              {
+                it: 'Indica la difesa che conterrebbe quella tappa (minimo privilegio, segmentazione, detection).',
+                en: 'Point out the defense that would contain that step (least privilege, segmentation, detection).'
+              }
+            ],
+            challenge: {
+              it: 'Se il minimo privilegio fosse applicato, quali tappe del percorso cadrebbero e quale impatto resterebbe comunque da riportare?',
+              en: 'If least privilege were applied, which steps of the path would fall and what impact would still remain to report?'
+            },
+            solution: [
+              {
+                it: 'Oltre il primo accesso, la consapevolezza della situazione precede l’escalation dei privilegi, che a sua volta abilita la raccolta di credenziali e, infine, la persistenza. Ogni tappa aggiunge impatto: da «un host» a «un amministratore» a «credenziali riutilizzabili» a «accesso mantenuto». Le difese sono rispettivamente minimo privilegio, separazione degli account e gestione dei segreti, con la detection sugli endpoint a rivelare i segni e la segmentazione a limitare la portata.',
+                en: 'Beyond the first access, situational awareness precedes privilege escalation, which in turn enables credential harvesting and, finally, persistence. Each step adds impact: from «a host» to «an administrator» to «reusable credentials» to «maintained access». The defenses are respectively least privilege, account separation, and secrets management, with endpoint detection to reveal the signs and segmentation to limit the reach.'
+              },
+              {
+                it: 'Sfida: con il minimo privilegio cadono l’escalation e gran parte della raccolta di credenziali, perché l’accesso iniziale vale poco; resta da riportare l’impatto del solo primo accesso e l’evidenza del tentativo, che valgono comunque come rischio e come verifica della detection.',
+                en: 'Challenge: with least privilege, escalation and much of the credential harvesting fall, because the initial access is worth little; what remains to report is the impact of the first access alone and the evidence of the attempt, which still count as a risk and as a check of detection.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So descrivere le attività di post-exploitation e l’impatto che ciascuna aggiunge.',
+                en: 'I can describe post-exploitation activities and the impact each one adds.'
+              },
+              {
+                it: 'So collegare escalation, credenziali e persistenza alle difese che le contengono.',
+                en: 'I can link escalation, credentials, and persistence to the defenses that contain them.'
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'lateral-movement-pivoting',
+        title: {
+          it: 'Movimento laterale e pivoting',
+          en: 'Lateral movement and pivoting'
+        },
+        objectives: [
+          {
+            it: 'Spiegare come un punto d’appoggio raggiunge sistemi più profondi tramite movimento laterale e pivoting.',
+            en: 'Explain how a foothold reaches deeper systems through lateral movement and pivoting.'
+          },
+          {
+            it: 'Collegare la portata del movimento alle difese est-ovest: segmentazione, Zero Trust, monitoraggio.',
+            en: 'Link the reach of movement to the east-west defenses: segmentation, Zero Trust, monitoring.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere la post-exploitation e la segmentazione (argomento precedente e capitolo sulle difese di rete).',
+            en: 'Know post-exploitation and segmentation (previous topic and the network defenses chapter).'
+          }
+        ],
+        theory: [
+          {
+            it: 'Il movimento laterale è lo spostamento da un sistema compromesso a un altro all’interno della stessa rete, riusando le credenziali e le relazioni di fiducia raccolte nella post-exploitation. Il pivoting è la tecnica che lo rende possibile oltre i confini di rete: l’host compromesso diventa un ponte verso segmenti che l’attaccante non raggiungerebbe direttamente, instradando il traffico attraverso di esso. Insieme trasformano un singolo punto d’appoggio in un percorso verso il bersaglio reale — spesso dati o sistemi che il perimetro proteggeva proprio impedendo l’accesso diretto.',
+            en: 'Lateral movement is the shift from one compromised system to another within the same network, reusing the credentials and trust relationships gathered in post-exploitation. Pivoting is the technique that makes it possible beyond network boundaries: the compromised host becomes a bridge toward segments the attacker could not reach directly, routing traffic through it. Together they turn a single foothold into a path toward the real target — often data or systems that the perimeter protected precisely by preventing direct access.'
+          },
+          {
+            it: 'Ciò che abilita il movimento è la fiducia implicita: reti piatte dove ogni host raggiunge ogni altro, credenziali valide ovunque, relazioni di fiducia non verificate a ogni passo. La mappa che conta non è quella degli indirizzi ma quella delle relazioni: chi può autenticarsi dove, quale host si fida di quale. Un tester segue proprio queste relazioni; documentarle è spesso il risultato più utile di un test, perché mostra al difensore i percorsi che non sapeva di avere. L’impatto non è il numero di host «presi», ma la distanza coperta dal punto d’ingresso al dato critico.',
+            en: 'What enables movement is implicit trust: flat networks where every host reaches every other, credentials valid everywhere, trust relationships not verified at each step. The map that matters is not the one of addresses but the one of relationships: who can authenticate where, which host trusts which. A tester follows exactly these relationships; documenting them is often the most useful result of a test, because it shows the defender the paths they did not know they had. The impact is not the number of hosts «taken», but the distance covered from the entry point to the critical data.'
+          },
+          {
+            it: 'Le difese sono est-ovest, cioè tra sistemi interni, non solo al perimetro. La segmentazione spezza la rete piatta così che un host compromesso non raggiunga l’intera infrastruttura; il principio Zero Trust verifica identità e autorizzazione a ogni accesso invece di fidarsi della posizione in rete; il monitoraggio del traffico interno rivela movimenti insoliti — autenticazioni tra host che non dialogano mai, un host che instrada traffico verso un segmento nuovo. Studiare il movimento laterale è il modo diretto per capire perché la fiducia implicita è il moltiplicatore d’impatto che le difese moderne cercano di togliere.',
+            en: 'The defenses are east-west, that is between internal systems, not just at the perimeter. Segmentation breaks the flat network so that a compromised host does not reach the whole infrastructure; the Zero Trust principle verifies identity and authorization at every access instead of trusting the network location; internal traffic monitoring reveals unusual movements — authentications between hosts that never talk, a host routing traffic toward a new segment. Studying lateral movement is the direct way to understand why implicit trust is the impact multiplier that modern defenses try to remove.'
+          }
+        ],
+        example: {
+          it: 'Da un host compromesso in 192.0.2.0/24, una credenziale riutilizzabile consente il movimento laterale verso un secondo host, che fa da pivot verso un segmento interno non raggiungibile direttamente; la segmentazione e la verifica Zero Trust a ogni accesso avrebbero spezzato il percorso, e il monitoraggio est-ovest lo avrebbe rivelato.',
+          en: 'From a compromised host in 192.0.2.0/24, a reusable credential allows lateral movement to a second host, which acts as a pivot toward an internal segment not reachable directly; segmentation and Zero Trust verification at every access would have broken the path, and east-west monitoring would have revealed it.'
+        },
+        commonMistakes: [
+          {
+            it: 'Misurare l’impatto in host «presi»: conta la distanza dal punto d’ingresso al dato critico, non il conteggio.',
+            en: 'Measuring impact in hosts «taken»: what counts is the distance from the entry point to the critical data, not the count.'
+          },
+          {
+            it: 'Fidarsi del solo perimetro: il movimento laterale è interno, e lo fermano segmentazione e Zero Trust, non il firewall di confine.',
+            en: 'Trusting the perimeter alone: lateral movement is internal, and segmentation and Zero Trust stop it, not the border firewall.'
+          },
+          {
+            it: 'Ignorare le relazioni di fiducia: sono la mappa reale del movimento, più degli indirizzi IP.',
+            en: 'Ignoring trust relationships: they are the real map of movement, more than the IP addresses.'
+          }
+        ],
+        lab: 'attackpaths',
+        references: [{ kind: 'attack', id: 'T1021' }],
+        guidedLabs: [
+          {
+            id: 'gl-lateral-trust-map',
+            title: {
+              it: 'Segui le relazioni di fiducia',
+              en: 'Follow the trust relationships'
+            },
+            difficulty: 'advanced',
+            lab: 'attackpaths',
+            scenario: {
+              it: 'Il laboratorio «Percorsi d’attacco» mostra percorsi che attraversano più sistemi: il terreno del movimento laterale e del pivoting.',
+              en: 'The “Attack paths” lab shows paths that cross multiple systems: the ground of lateral movement and pivoting.'
+            },
+            task: {
+              it: 'Ricostruisci come il percorso passa da un host all’altro e indica dove segmentazione o Zero Trust lo spezzerebbero.',
+              en: 'Reconstruct how the path moves from one host to another and point out where segmentation or Zero Trust would break it.'
+            },
+            steps: [
+              {
+                it: 'Apri «Percorsi d’attacco» e scegli un percorso che attraversa più host.',
+                en: 'Open “Attack paths” and pick a path that crosses multiple hosts.'
+              },
+              {
+                it: 'Per ogni salto indica la relazione di fiducia o la credenziale che lo rende possibile.',
+                en: 'For each hop indicate the trust relationship or credential that makes it possible.'
+              },
+              {
+                it: 'Segna dove una barriera est-ovest (segmentazione, Zero Trust, monitoraggio) interromperebbe il percorso.',
+                en: 'Mark where an east-west barrier (segmentation, Zero Trust, monitoring) would interrupt the path.'
+              }
+            ],
+            challenge: {
+              it: 'Se la rete fosse segmentata, il pivoting resterebbe possibile? Quale condizione residua lo permetterebbe ancora?',
+              en: 'If the network were segmented, would pivoting still be possible? Which residual condition would still allow it?'
+            },
+            solution: [
+              {
+                it: 'Il percorso avanza riusando credenziali e relazioni di fiducia: ogni salto è un host che si fida di un altro o una credenziale valida altrove, e il pivoting usa un host compromesso come ponte verso segmenti non raggiungibili direttamente. La mappa che conta è quella delle relazioni. La segmentazione spezza i salti tra segmenti, lo Zero Trust toglie la fiducia implicita verificando ogni accesso, e il monitoraggio est-ovest rivela le autenticazioni insolite.',
+                en: 'The path advances by reusing credentials and trust relationships: each hop is a host that trusts another or a credential valid elsewhere, and pivoting uses a compromised host as a bridge toward segments not reachable directly. The map that matters is the one of relationships. Segmentation breaks the hops between segments, Zero Trust removes implicit trust by verifying every access, and east-west monitoring reveals the unusual authentications.'
+              },
+              {
+                it: 'Sfida: con la rete segmentata il pivoting resta possibile solo se una regola troppo permissiva o una credenziale valida su più segmenti ricrea la fiducia che la segmentazione doveva togliere; è lì che lo Zero Trust, verificando ogni accesso, chiude il residuo.',
+                en: 'Challenge: with a segmented network, pivoting stays possible only if an overly permissive rule or a credential valid across segments recreates the trust that segmentation was meant to remove; that is where Zero Trust, by verifying every access, closes the residue.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So spiegare movimento laterale e pivoting e la fiducia implicita che li abilita.',
+                en: 'I can explain lateral movement and pivoting and the implicit trust that enables them.'
+              },
+              {
+                it: 'So dire quali difese est-ovest spezzano il percorso e perché il perimetro non basta.',
+                en: 'I can say which east-west defenses break the path and why the perimeter is not enough.'
+              }
+            ]
+          }
+        ]
+      }
+    ]
   }
 ];

@@ -75,9 +75,21 @@ revisione dei contenuti tecnici è vincolante.
       le asserzioni di conteggio in test ed E2E (progresso `x/20`, 20 opzioni, optgroup «Estensione ·
       0/6»). `npm run verify` verde, E2E Chromium verdi (Axe WCAG 2.2 AA incluso). Report:
       `docs/verify/2026-10-14-pentest02.md`.
-- [ ] **PENTEST-03 (P2) — Exploitation e post-exploitation (concetti).** Modello concettuale di
+- [x] **PENTEST-03 (P2) — Exploitation e post-exploitation (concetti).** Modello concettuale di
       exploitation, movimento laterale, pivoting e persistenza, mappato alla kill chain e alle
-      evidenze; riusa `attackpaths` e `attacklab`.
+      evidenze; riusa `attackpaths` e `attacklab`. **Esito (14/10/2026):** nuovo capitolo
+      estensione «Exploitation e post-exploitation (eJPT)» (ordine 21, cert `eJPT`) con tre
+      argomenti — dall'enumerazione all'exploitation (exploit vs payload, verifica anziché
+      presunzione), post-exploitation (consapevolezza, escalation dei privilegi, raccolta di
+      credenziali, persistenza), movimento laterale e pivoting (fiducia implicita, difese
+      est-ovest) — ciascuno con obiettivi, teoria progressiva, esempio su `192.0.2.0/24`, errori
+      comuni, riferimenti MITRE ATT&CK (T1210, T1068, T1021) e un laboratorio guidato su
+      `attacklab`/`attackpaths`. **Nessun comando operativo**: tutto concettuale, accoppiato alla
+      difesa (patch, minimo privilegio, segmentazione, Zero Trust, detection). Il manuale sale a
+      **21 capitoli / 64 argomenti / 50 laboratori guidati**; aggiornate le asserzioni di conteggio
+      in test ed E2E (progresso `x/21`, 21 opzioni, optgroup «Estensione · 0/7»). `npm run verify`
+      verde, E2E Chromium verdi (Axe WCAG 2.2 AA incluso). Report:
+      `docs/verify/2026-10-14-pentest03.md`.
 - [ ] **SECX-01 (P2) — Sicurezza applicativa e supply chain.** Capitolo che insegna
       `applicationsecurity` dal lato difensivo (OWASP, SSDLC, SBOM, provenienza, hardening CI/CD).
 - [ ] **SECX-02 (P2) — Email e fattore umano.** Capitolo che insegna `emailsecurity` (phishing,
