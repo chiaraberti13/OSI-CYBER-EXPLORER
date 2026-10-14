@@ -9,7 +9,17 @@ import { act, cleanup, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import StudyManualView from './StudyManualView';
 import { scrollBehaviorForReducedMotion } from '../lib/motion';
+import { chaptersByDomain, manualStats } from '../lib/studyManual';
 import { useStore } from '../store';
+
+// ENG-31 — derive the chapter-count expectations from the manual dataset (the single
+// source of truth) so adding a chapter never forces a hand-edit here. Asserting the
+// rendered counts against the data also proves the view surfaces every chapter and
+// group, rather than a literal matching itself.
+const TOTAL_CHAPTERS = manualStats().chapters;
+const CHAPTER_GROUPS = chaptersByDomain();
+const FIRST_DOMAIN_CHAPTERS = CHAPTER_GROUPS[0].chapters.length;
+const EXTENSION_CHAPTERS = CHAPTER_GROUPS.find((group) => group.key === 'extension')?.chapters.length ?? 0;
 
 afterEach(() => {
   cleanup();
@@ -158,7 +168,7 @@ describe('StudyManualView (EDU-01)', () => {
     await user.click(markComplete);
 
     expect(screen.getByRole('button', { name: 'Segna come da completare' }).getAttribute('aria-pressed')).toBe('true');
-    expect(screen.getByLabelText('Progresso capitoli: 1/28')).toBeTruthy();
+    expect(screen.getByLabelText(`Progresso capitoli: 1/${TOTAL_CHAPTERS}`)).toBeTruthy();
 
     await user.click(screen.getByRole('button', { name: 'Azzera progresso' }));
     expect(screen.getByRole('button', { name: 'Segna come completato' }).getAttribute('aria-pressed')).toBe('false');
@@ -200,9 +210,11 @@ describe('StudyManualView (EDU-01)', () => {
 
     const mobileNav = screen.getByRole('navigation', { name: 'Navigazione mobile del manuale' });
     const chapterSelect = within(mobileNav).getByRole('combobox', { name: 'Vai a un capitolo' });
-    expect(within(chapterSelect).getAllByRole('option')).toHaveLength(28);
-    expect(chapterSelect.querySelector('optgroup[label="CCNA 1.0 · Fondamenti di rete · 0/5"]')).not.toBeNull();
-    expect(chapterSelect.querySelector('optgroup[label="Estensione · 0/14"]')).not.toBeNull();
+    expect(within(chapterSelect).getAllByRole('option')).toHaveLength(TOTAL_CHAPTERS);
+    expect(
+      chapterSelect.querySelector(`optgroup[label="CCNA 1.0 · Fondamenti di rete · 0/${FIRST_DOMAIN_CHAPTERS}"]`)
+    ).not.toBeNull();
+    expect(chapterSelect.querySelector(`optgroup[label="Estensione · 0/${EXTENSION_CHAPTERS}"]`)).not.toBeNull();
     expect(within(mobileNav).getAllByRole('button')).toHaveLength(4);
 
     await user.selectOptions(chapterSelect, 'ethernet-switching');

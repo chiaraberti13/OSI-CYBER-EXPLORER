@@ -1,7 +1,12 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
+import { manualStats } from '../src/lib/studyManual';
 
 const WCAG_TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'];
+
+// ENG-31 — derive the chapter total from the manual dataset so a new chapter never
+// forces a hand-edit here.
+const TOTAL_CHAPTERS = manualStats().chapters;
 
 test.describe('manual onboarding (UX-22)', () => {
   test('remembers dismissal across reloads, lab visits and chapter progress resets', async ({ page }) => {
@@ -54,7 +59,7 @@ test.describe('manual onboarding (UX-22)', () => {
     await page.goto('/#/manual');
     await expect(page.getByRole('region', { name: 'How to use this guide' })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Mark as incomplete' })).toHaveAttribute('aria-pressed', 'true');
-    await expect(page.getByLabel('Chapter progress: 1/28', { exact: true })).toBeVisible();
+    await expect(page.getByLabel(`Chapter progress: 1/${TOTAL_CHAPTERS}`, { exact: true })).toBeVisible();
   });
 
   test('keeps instructions usable when browser storage is blocked', async ({ page }) => {

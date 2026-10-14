@@ -1,5 +1,11 @@
 import { test, expect, type Page } from '@playwright/test';
 import { VIEW_ORDER } from '../src/content/viewRegistry';
+import { chaptersByDomain, manualStats } from '../src/lib/studyManual';
+
+// ENG-31 — derive chapter-count expectations from the manual dataset so a new chapter
+// never forces a hand-edit here.
+const TOTAL_CHAPTERS = manualStats().chapters;
+const FIRST_DOMAIN_CHAPTERS = chaptersByDomain()[0].chapters.length;
 
 /**
  * ENG-12 smoke tests for the application shell: first load, the language toggle,
@@ -180,10 +186,10 @@ test.describe('application shell', () => {
 
   test('chapter completion persists locally, aggregates by domain, and resets (UX-21)', async ({ page }) => {
     await page.goto('/#/manual');
-    await expect(page.getByLabel('Progresso capitoli: 0/28', { exact: true })).toBeVisible();
+    await expect(page.getByLabel(`Progresso capitoli: 0/${TOTAL_CHAPTERS}`, { exact: true })).toBeVisible();
 
     await page.getByRole('button', { name: 'Segna come completato' }).click();
-    await expect(page.getByLabel('Progresso capitoli: 1/28', { exact: true })).toBeVisible();
+    await expect(page.getByLabel(`Progresso capitoli: 1/${TOTAL_CHAPTERS}`, { exact: true })).toBeVisible();
     await page.reload();
     await expect(page.getByRole('button', { name: 'Segna come da completare' })).toHaveAttribute(
       'aria-pressed',
@@ -192,11 +198,13 @@ test.describe('application shell', () => {
 
     // Per-domain aggregation lives in the manual's own chapter navigation (IA-01a); the
     // overview no longer duplicates the chapter index (IA-01b).
-    await expect(page.getByLabel('CCNA 1.0 · Fondamenti di rete · Progresso capitoli: 1/5')).toBeVisible();
+    await expect(
+      page.getByLabel(`CCNA 1.0 · Fondamenti di rete · Progresso capitoli: 1/${FIRST_DOMAIN_CHAPTERS}`)
+    ).toBeVisible();
 
     await page.getByRole('button', { name: 'Azzera progresso' }).click();
     await page.reload();
-    await expect(page.getByLabel('Progresso capitoli: 0/28', { exact: true })).toBeVisible();
+    await expect(page.getByLabel(`Progresso capitoli: 0/${TOTAL_CHAPTERS}`, { exact: true })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Segna come completato' })).toHaveAttribute('aria-pressed', 'false');
   });
 

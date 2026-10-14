@@ -52,9 +52,18 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
 - [ ] **ENG-30 (P2) — Selettori di dominio-cert per il manuale.** Esporre nel modello contenuti la
       distinzione CCNA/eJPT/estensione così che indice e filtri possano raggruppare per percorso di
       certificazione senza logica ad hoc nella vista.
-- [ ] **ENG-31 (P2) — Guard di conteggio dei capitoli.** Derivare dal dataset i numeri `x/N` oggi
+- [x] **ENG-31 (P2) — Guard di conteggio dei capitoli.** Derivare dal dataset i numeri `x/N` oggi
       fissati nei test E2E/unit (progresso, opzioni del selettore, optgroup), per azzerare il costo
-      di manutenzione a ogni nuovo capitolo.
+      di manutenzione a ogni nuovo capitolo. **Esito (14/10/2026):** i conteggi di capitoli nei test
+      sono ora derivati dai selettori puri già testati (`manualStats()`, `chaptersByDomain()` in
+      `src/lib/studyManual.ts`), unica fonte di verità, invece di letterali ripetuti. Sostituiti in
+      `src/components/StudyManualView.test.tsx` (opzioni del selettore, optgroup CCNA/estensione,
+      progresso), `e2e/manual-mobile-sticky.spec.ts` (opzioni, numero di optgroup, progresso con la
+      percentuale derivata, optgroup inglese), `e2e/app-shell.spec.ts` (progresso totale e per dominio)
+      e `e2e/manual-help.spec.ts` (progresso inglese). Le asserzioni ora provano che la vista rende
+      **ogni** capitolo e gruppo (coerenza vista↔dati), non che un numero coincida con se stesso, e un
+      nuovo capitolo non richiederà più di aggiornare a mano questi `x/N`. Solo codice di test: nessun
+      cambio a prodotto o contenuti. Report: `docs/verify/2026-10-14-eng31-chapter-counts.md`.
 
 ## 🎓 Instructional Designer — contenuti e progressione
 

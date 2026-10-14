@@ -1,5 +1,16 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
+import { chaptersByDomain, manualStats } from '../src/lib/studyManual';
+
+// ENG-31 — derive the chapter-count expectations from the manual dataset so a new
+// chapter never forces a hand-edit here, and so these assertions prove the rendered
+// navigation mirrors the data rather than a literal matching itself.
+const TOTAL_CHAPTERS = manualStats().chapters;
+const CHAPTER_GROUPS = chaptersByDomain();
+const DOMAIN_GROUP_COUNT = CHAPTER_GROUPS.length;
+const FIRST_DOMAIN_CHAPTERS = CHAPTER_GROUPS[0].chapters.length;
+// Progress label after exactly one completed chapter, mirroring the view's rounding.
+const ONE_OF_ALL_PERCENT = Math.round((1 / TOTAL_CHAPTERS) * 100);
 
 test.describe('manual mobile navigation (UX-25)', () => {
   test.use({ viewport: { width: 320, height: 800 } });
@@ -19,8 +30,8 @@ test.describe('manual mobile navigation (UX-25)', () => {
 
     await expect(desktopNav).toBeHidden();
     await expect(mobileNav).toBeVisible();
-    await expect(chapterSelect.locator('option')).toHaveCount(28);
-    await expect(chapterSelect.locator('optgroup')).toHaveCount(7);
+    await expect(chapterSelect.locator('option')).toHaveCount(TOTAL_CHAPTERS);
+    await expect(chapterSelect.locator('optgroup')).toHaveCount(DOMAIN_GROUP_COUNT);
     expect((await mobileNav.boundingBox())?.height).toBeLessThanOrEqual(112);
 
     const indexOverflow = await topicIndex.evaluate((index) => ({
@@ -35,13 +46,14 @@ test.describe('manual mobile navigation (UX-25)', () => {
     await expect(chapterSelect).toHaveValue('ethernet-switching');
 
     await page.getByRole('button', { name: 'Segna come completato' }).click();
-    await expect(mobileNav.getByLabel('Progresso capitoli: 1/28 (4%)')).toBeVisible();
+    const progressLabel = `Progresso capitoli: 1/${TOTAL_CHAPTERS} (${ONE_OF_ALL_PERCENT}%)`;
+    await expect(mobileNav.getByLabel(progressLabel)).toBeVisible();
 
     const secondTopic = topicIndex.getByRole('button').nth(1);
     await secondTopic.click();
     await expect(secondTopic).toHaveAttribute('aria-current', 'location');
     const toolbarBox = await mobileNav.boundingBox();
-    await expect(mobileNav.getByLabel('Progresso capitoli: 1/28 (4%)')).toBeInViewport();
+    await expect(mobileNav.getByLabel(progressLabel)).toBeInViewport();
 
     const selectedTopic = page.locator('[data-manual-topic="switch-cam-learning"]');
     const selectedTopicBox = await selectedTopic.boundingBox();
@@ -53,7 +65,7 @@ test.describe('manual mobile navigation (UX-25)', () => {
     // The sticky region starts at 104 px; its border and 8 px padding put
     // the navigation itself at 113 px.
     expect(stickyToolbarBox?.y).toBeLessThanOrEqual(114);
-    await expect(mobileNav.getByLabel('Progresso capitoli: 1/28 (4%)')).toBeInViewport();
+    await expect(mobileNav.getByLabel(progressLabel)).toBeInViewport();
 
     const widths = await page.evaluate(() => ({
       viewport: document.documentElement.clientWidth,
@@ -93,7 +105,9 @@ test.describe('manual mobile navigation (UX-25)', () => {
     await page.getByRole('button', { name: 'English', exact: true }).click();
     const mobileNav = page.getByRole('navigation', { name: 'Mobile manual navigation' });
     const selector = mobileNav.getByRole('combobox', { name: 'Jump to a chapter' });
-    await expect(selector.locator('optgroup[label="CCNA 1.0 · Network Fundamentals · 0/5"]')).toHaveCount(1);
+    await expect(
+      selector.locator(`optgroup[label="CCNA 1.0 · Network Fundamentals · 0/${FIRST_DOMAIN_CHAPTERS}"]`)
+    ).toHaveCount(1);
     const targets = await mobileNav.locator('button, select').evaluateAll((controls) =>
       controls.map((control) => {
         const box = control.getBoundingClientRect();
