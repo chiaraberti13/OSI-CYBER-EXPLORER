@@ -5899,5 +5899,363 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
         ]
       }
     ]
+  },
+  {
+    id: 'web-app-pentest',
+    cert: 'ejpt',
+    order: 20,
+    track: 'extension',
+    title: {
+      it: 'Penetration testing delle applicazioni web (eJPT)',
+      en: 'Web application penetration testing (eJPT)'
+    },
+    summary: {
+      it: 'Il dominio web dell’eJPT: come si studia un’applicazione dal lato del tester — HTTP e proxy di intercettazione, le classi di injection e la loro radice comune, autenticazione, sessioni e controllo degli accessi. Ogni tecnica è presentata in chiave difensiva, con la contromisura che la neutralizza e solo target di documentazione.',
+      en: 'The eJPT web domain: how an application is studied from the tester’s side — HTTP and an intercepting proxy, the injection classes and their common root, authentication, sessions, and access control. Each technique is presented through a defensive lens, with the countermeasure that neutralizes it and only documentation targets.'
+    },
+    topics: [
+      {
+        id: 'web-http-proxy-mapping',
+        title: {
+          it: 'HTTP, mappatura dell’app e proxy di intercettazione',
+          en: 'HTTP, app mapping, and the intercepting proxy'
+        },
+        objectives: [
+          {
+            it: 'Leggere una richiesta e una risposta HTTP: metodo, percorso, intestazioni, stato e cookie.',
+            en: 'Read an HTTP request and response: method, path, headers, status, and cookies.'
+          },
+          {
+            it: 'Mappare la superficie di un’applicazione web con un proxy di intercettazione, dal lato difensivo e offensivo.',
+            en: 'Map a web application’s surface with an intercepting proxy, from the defensive and offensive sides.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere il livello applicativo e TLS (capitoli su DNS/web e su crittografia e TLS).',
+            en: 'Know the application layer and TLS (the DNS/web and the cryptography and TLS chapters).'
+          }
+        ],
+        theory: [
+          {
+            it: 'Il web parla HTTP, un protocollo testuale a richiesta e risposta. La richiesta ha un metodo (GET per leggere, POST per inviare, e poi PUT, DELETE, HEAD), un percorso, delle intestazioni e un corpo opzionale; la risposta porta un codice di stato (200 riuscito, 301 e 302 redirezione, 401 e 403 accesso negato, 404 non trovato, 500 errore del server), intestazioni e il corpo. Lo stato della sessione vive nei cookie, perché HTTP di per sé non ricorda nulla tra una richiesta e l’altra. Capire questi pezzi è il prerequisito di ogni analisi: un test web è prima di tutto lettura attenta di richieste e risposte.',
+            en: 'The web speaks HTTP, a textual request–response protocol. The request has a method (GET to read, POST to send, and then PUT, DELETE, HEAD), a path, headers, and an optional body; the response carries a status code (200 success, 301 and 302 redirection, 401 and 403 access denied, 404 not found, 500 server error), headers, and the body. Session state lives in cookies, because HTTP itself remembers nothing between one request and the next. Understanding these pieces is the prerequisite of any analysis: a web test is first of all careful reading of requests and responses.'
+          },
+          {
+            it: 'Mappare l’applicazione significa scoprirne la superficie: le pagine, i parametri, i punti in cui accetta input e i confini tra aree pubbliche e autenticate. Un proxy di intercettazione si pone tra il browser e il server e mostra — e, con autorizzazione, consente di modificare — ogni richiesta prima che parta. È lo strumento che trasforma il browser da semplice client in uno strumento di osservazione: si vedono i parametri nascosti, le intestazioni, i cookie e le risposte reali, non solo ciò che la pagina mostra. La mappatura non attacca: costruisce l’elenco dei punti che le fasi successive esamineranno.',
+            en: 'Mapping the application means discovering its surface: the pages, the parameters, the points where it accepts input, and the boundaries between public and authenticated areas. An intercepting proxy sits between the browser and the server and shows — and, with authorization, lets you modify — every request before it leaves. It is the tool that turns the browser from a mere client into an observation instrument: you see the hidden parameters, the headers, the cookies, and the real responses, not just what the page displays. Mapping does not attack: it builds the list of points that the later phases will examine.'
+          },
+          {
+            it: 'Dal lato difensivo, la stessa visibilità guida l’hardening. Le intestazioni di sicurezza della risposta — per esempio quelle che impongono HTTPS, limitano l’inclusione in frame o restringono le sorgenti di script — riducono intere classi di attacco. I log del server registrano metodi insoliti, raffiche verso percorsi inesistenti e codici 401 o 403 ripetuti, che sono la firma di una mappatura attiva. Ridurre la superficie — rimuovere endpoint dimenticati, non esporre parametri di debug — vale più di qualunque filtro aggiunto dopo. Conoscere ciò che un proxy rivela è il modo diretto per decidere cosa non lasciare esposto.',
+            en: 'On the defensive side, the same visibility guides hardening. The response security headers — for example those that enforce HTTPS, limit framing, or restrict script sources — cut whole classes of attack. Server logs record unusual methods, bursts toward nonexistent paths, and repeated 401 or 403 codes, which are the signature of active mapping. Reducing the surface — removing forgotten endpoints, not exposing debug parameters — is worth more than any filter added afterward. Knowing what a proxy reveals is the direct way to decide what not to leave exposed.'
+          }
+        ],
+        example: {
+          it: 'Su example.test un proxy mostra una richiesta GET con un parametro nascosto e una risposta 200 che imposta un cookie di sessione; lo stesso tracciato, dal lato difensivo, rivela quali intestazioni di sicurezza mancano e quali 404 ripetuti segnalano una mappatura in corso.',
+          en: 'On example.test a proxy shows a GET request with a hidden parameter and a 200 response that sets a session cookie; the same trace, from the defensive side, reveals which security headers are missing and which repeated 404 responses signal mapping in progress.'
+        },
+        commonMistakes: [
+          {
+            it: 'Fidarsi di ciò che mostra la pagina: parametri e cookie reali si vedono nel proxy, non nel contenuto reso.',
+            en: 'Trusting what the page shows: the real parameters and cookies are seen in the proxy, not in the rendered content.'
+          },
+          {
+            it: 'Ignorare i codici di stato: un 403 o un 500 raccontano del confine di accesso o di un errore più di una pagina «vuota».',
+            en: 'Ignoring the status codes: a 403 or a 500 tells of the access boundary or an error more than an «empty» page does.'
+          },
+          {
+            it: 'Trattare HTTP come senza stato dimenticando i cookie: la sessione vive lì, ed è lì che va protetta.',
+            en: 'Treating HTTP as stateless while forgetting cookies: the session lives there, and that is where it must be protected.'
+          }
+        ],
+        lab: 'applicationsecurity',
+        references: [{ kind: 'attack', id: 'T1595' }],
+        guidedLabs: [
+          {
+            id: 'gl-web-map-surface',
+            title: {
+              it: 'Mappa la superficie da richieste e risposte',
+              en: 'Map the surface from requests and responses'
+            },
+            difficulty: 'core',
+            lab: 'applicationsecurity',
+            scenario: {
+              it: 'Il laboratorio «DNS, web e applicazioni» mette in scena il percorso di una richiesta e le evidenze che lascia: la stessa vista con cui un tester mappa un’app.',
+              en: 'The “DNS, web, and applications” lab stages a request’s path and the evidence it leaves: the same view a tester uses to map an app.'
+            },
+            task: {
+              it: 'Da una richiesta e dalla sua risposta ricava metodo, punti di input e stato della sessione, e indica quale intestazione di sicurezza mancante noteresti dal lato difensivo.',
+              en: 'From a request and its response derive the method, the input points, and the session state, and point out which missing security header you would notice from the defensive side.'
+            },
+            steps: [
+              {
+                it: 'Apri «DNS, web e applicazioni» e segui una richiesta applicativa fino alla risposta.',
+                en: 'Open “DNS, web, and applications” and follow an application request to its response.'
+              },
+              {
+                it: 'Annota metodo, percorso, parametri e il cookie di sessione impostato dalla risposta.',
+                en: 'Note the method, path, parameters, and the session cookie set by the response.'
+              },
+              {
+                it: 'Indica quale intestazione di sicurezza, se assente, amplierebbe la superficie di attacco.',
+                en: 'Point out which security header, if absent, would widen the attack surface.'
+              }
+            ],
+            challenge: {
+              it: 'Due endpoint restituiscono lo stesso contenuto ma codici di stato diversi: cosa ti dice sul confine di accesso e su quale merita attenzione?',
+              en: 'Two endpoints return the same content but different status codes: what does that tell you about the access boundary and which one deserves attention?'
+            },
+            solution: [
+              {
+                it: 'Una richiesta rivela il metodo e i punti di input (percorso, parametri, corpo); la risposta rivela lo stato e il cookie di sessione, dove vive la continuità tra richieste. Dal lato difensivo, l’assenza di intestazioni che impongono HTTPS o restringono le sorgenti di script allarga la superficie: un cookie di sessione senza i suoi attributi di protezione è esposto a furto e a invio in chiaro.',
+                en: 'A request reveals the method and the input points (path, parameters, body); the response reveals the status and the session cookie, where continuity between requests lives. On the defensive side, the absence of headers that enforce HTTPS or restrict script sources widens the surface: a session cookie without its protection attributes is exposed to theft and to being sent in the clear.'
+              },
+              {
+                it: 'Sfida: stesso contenuto con codici diversi indica che il confine di accesso sta nello stato, non nella pagina — per esempio 200 per l’utente autenticato e 403 per l’anonimo; merita attenzione l’endpoint che a volte risponde 200 senza che l’identità lo giustifichi, perché è il sintomo di un controllo degli accessi debole.',
+                en: 'Challenge: the same content with different codes indicates that the access boundary is in the state, not in the page — for example 200 for the authenticated user and 403 for the anonymous one; the endpoint that sometimes answers 200 without the identity justifying it deserves attention, because it is the symptom of a weak access control.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So leggere metodo, stato, intestazioni e cookie di una coppia richiesta/risposta.',
+                en: 'I can read the method, status, headers, and cookies of a request/response pair.'
+              },
+              {
+                it: 'So dire quali intestazioni di sicurezza e quali log riducono o rivelano la mappatura.',
+                en: 'I can say which security headers and which logs reduce or reveal mapping.'
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'web-injection-classes',
+        title: {
+          it: 'Injection: SQL, XSS e comandi, una radice comune',
+          en: 'Injection: SQL, XSS, and commands, one common root'
+        },
+        objectives: [
+          {
+            it: 'Riconoscere SQLi, XSS, command injection e path traversal come varianti di un unico difetto.',
+            en: 'Recognize SQLi, XSS, command injection, and path traversal as variants of a single flaw.'
+          },
+          {
+            it: 'Spiegare la difesa strutturale di ciascuna classe senza affidarsi al solo filtraggio.',
+            en: 'Explain the structural defense of each class without relying on filtering alone.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Aver mappato un’applicazione e individuato i suoi punti di input (argomento precedente).',
+            en: 'Have mapped an application and found its input points (previous topic).'
+          }
+        ],
+        theory: [
+          {
+            it: 'Le injection hanno tutte la stessa radice: un input dell’utente raggiunge un interprete e ne cambia il significato invece di restare un semplice dato. Nella SQL injection l’input entra in una query e ne altera la logica; nel cross-site scripting (XSS) l’input viene reso come markup nel browser di un’altra vittima ed esegue script nel suo contesto; nella command injection l’input finisce in un comando di sistema; nel path traversal l’input manipola un percorso di file per uscire dalla cartella prevista. Nomi diversi, stesso schema: il confine tra dato e istruzione non è stato mantenuto.',
+            en: 'Injections all share the same root: a user input reaches an interpreter and changes its meaning instead of remaining mere data. In SQL injection the input enters a query and alters its logic; in cross-site scripting (XSS) the input is rendered as markup in another victim’s browser and runs script in their context; in command injection the input ends up in a system command; in path traversal the input manipulates a file path to escape the intended folder. Different names, same pattern: the boundary between data and instruction was not kept.'
+          },
+          {
+            it: 'Poiché la radice è comune, lo è anche la difesa di fondo: separare i dati dalle istruzioni alla fonte. Per la SQL injection la difesa strutturale sono le query parametrizzate, che spediscono la logica e i dati su canali distinti, così l’input non può diventare codice. Per l’XSS è la codifica in uscita nel contesto giusto (HTML, attributo, JavaScript) più una policy che limita le sorgenti di script. Per la command injection è evitare la shell e passare argomenti separati; per il path traversal è normalizzare e confinare il percorso a una radice consentita. La validazione dell’input aiuta, ma da sola non basta: è un filtro, non il confine.',
+            en: 'Because the root is common, so is the underlying defense: separate data from instructions at the source. For SQL injection the structural defense is parameterized queries, which send logic and data on separate channels, so the input cannot become code. For XSS it is output encoding in the right context (HTML, attribute, JavaScript) plus a policy that limits script sources. For command injection it is avoiding the shell and passing separated arguments; for path traversal it is normalizing and confining the path to an allowed root. Input validation helps, but alone it is not enough: it is a filter, not the boundary.'
+          },
+          {
+            it: 'Dal lato del test, riconoscere la classe guida l’evidenza da cercare e il rischio da riportare, senza bisogno di sferrare un attacco reale: un parametro che cambia il numero di risultati suggerisce SQL injection, un valore che riappare non codificato nella pagina suggerisce XSS. Dal lato della difesa, le stesse osservazioni diventano test di regressione e regole di rilevamento. Il valore del lavoro non è «rompere» l’app, ma dimostrare dove il confine dato/istruzione manca e indicare la correzione strutturale: è questo che rende un report utile allo sviluppatore.',
+            en: 'On the testing side, recognizing the class guides the evidence to look for and the risk to report, without needing to launch a real attack: a parameter that changes the number of results suggests SQL injection, a value that reappears unencoded in the page suggests XSS. On the defensive side, the same observations become regression tests and detection rules. The value of the work is not «breaking» the app, but showing where the data/instruction boundary is missing and stating the structural fix: that is what makes a report useful to the developer.'
+          }
+        ],
+        example: {
+          it: 'Su example.test un campo di ricerca che cambia il numero di risultati a seconda di caratteri speciali segnala un confine dato/istruzione debole verso il database; la correzione non è filtrare quei caratteri ma usare query parametrizzate, e il test diventa una regressione permanente.',
+          en: 'On example.test a search field that changes the number of results depending on special characters signals a weak data/instruction boundary toward the database; the fix is not to filter those characters but to use parameterized queries, and the test becomes a permanent regression.'
+        },
+        commonMistakes: [
+          {
+            it: 'Trattare le injection come problemi separati: condividono la radice, quindi condividono la difesa strutturale.',
+            en: 'Treating injections as separate problems: they share the root, so they share the structural defense.'
+          },
+          {
+            it: 'Affidarsi alla sola blocklist di caratteri: un filtro si aggira, mentre separare dati e istruzioni chiude la classe.',
+            en: 'Relying on a character blocklist alone: a filter is bypassed, while separating data and instructions closes the class.'
+          },
+          {
+            it: 'Confondere la validazione dell’input con la codifica in uscita: servono entrambe, in punti diversi del flusso.',
+            en: 'Confusing input validation with output encoding: both are needed, at different points of the flow.'
+          }
+        ],
+        lab: 'applicationsecurity',
+        references: [{ kind: 'attack', id: 'T1190' }],
+        guidedLabs: [
+          {
+            id: 'gl-web-injection-root',
+            title: {
+              it: 'Risali alla radice comune delle injection',
+              en: 'Trace injections to their common root'
+            },
+            difficulty: 'advanced',
+            lab: 'applicationsecurity',
+            scenario: {
+              it: 'Il laboratorio «DNS, web e applicazioni» mostra scenari in cui un input non fidato attraversa l’applicazione: il terreno in cui nascono le injection.',
+              en: 'The “DNS, web, and applications” lab shows scenarios where an untrusted input crosses the application: the ground where injections arise.'
+            },
+            task: {
+              it: 'Per due scenari diversi indica a quale interprete arriva l’input e quale difesa strutturale chiude la classe, senza usare alcun payload.',
+              en: 'For two different scenarios state which interpreter the input reaches and which structural defense closes the class, without using any payload.'
+            },
+            steps: [
+              {
+                it: 'Apri «DNS, web e applicazioni» e scegli uno scenario con input dell’utente.',
+                en: 'Open “DNS, web, and applications” and pick a scenario with user input.'
+              },
+              {
+                it: 'Individua l’interprete di destinazione (database, browser, shell, file system).',
+                en: 'Identify the destination interpreter (database, browser, shell, file system).'
+              },
+              {
+                it: 'Associa la difesa strutturale corretta e di’ perché il solo filtro non basta.',
+                en: 'Match the correct structural defense and say why filtering alone is not enough.'
+              }
+            ],
+            challenge: {
+              it: 'Se un input compare sia in una query sia nella pagina resa, quali due difese servono e in quali punti distinti del flusso agiscono?',
+              en: 'If an input appears both in a query and in the rendered page, which two defenses are needed and at which distinct points of the flow do they act?'
+            },
+            solution: [
+              {
+                it: 'In ogni injection l’input raggiunge un interprete e ne cambia il significato: verso il database è SQL injection (difesa: query parametrizzate), verso il browser è XSS (difesa: codifica in uscita più restrizione delle sorgenti di script), verso la shell è command injection (difesa: niente shell, argomenti separati), verso il file system è path traversal (difesa: normalizzazione e radice consentita). Il filtro è aggirabile; separare dati e istruzioni alla fonte chiude la classe.',
+                en: 'In every injection the input reaches an interpreter and changes its meaning: toward the database it is SQL injection (defense: parameterized queries), toward the browser it is XSS (defense: output encoding plus restriction of script sources), toward the shell it is command injection (defense: no shell, separated arguments), toward the file system it is path traversal (defense: normalization and an allowed root). The filter is bypassable; separating data and instructions at the source closes the class.'
+              },
+              {
+                it: 'Sfida: un input che compare in una query e nella pagina richiede due difese in punti diversi — query parametrizzate dove entra nel database e codifica in uscita dove viene reso nel browser — perché proteggono interpreti diversi in momenti diversi del flusso.',
+                en: 'Challenge: an input that appears in a query and in the page requires two defenses at different points — parameterized queries where it enters the database and output encoding where it is rendered in the browser — because they protect different interpreters at different moments of the flow.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So ricondurre SQLi, XSS, command injection e path traversal alla stessa radice.',
+                en: 'I can trace SQLi, XSS, command injection, and path traversal to the same root.'
+              },
+              {
+                it: 'So indicare la difesa strutturale di ciascuna classe e perché il filtro non basta.',
+                en: 'I can state the structural defense of each class and why filtering is not enough.'
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'web-auth-session-access',
+        title: {
+          it: 'Autenticazione, sessioni e controllo degli accessi',
+          en: 'Authentication, sessions, and access control'
+        },
+        objectives: [
+          {
+            it: 'Distinguere i difetti di autenticazione, di gestione della sessione e di controllo degli accessi.',
+            en: 'Distinguish authentication, session management, and access control flaws.'
+          },
+          {
+            it: 'Collegare ogni difetto alla sua difesa: credenziali robuste, cookie protetti, autorizzazione lato server.',
+            en: 'Link each flaw to its defense: strong credentials, protected cookies, server-side authorization.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere i cookie di sessione e il modello di accesso (argomenti precedenti e capitolo su AAA).',
+            en: 'Know session cookies and the access model (previous topics and the AAA chapter).'
+          }
+        ],
+        theory: [
+          {
+            it: 'Tre difetti vicini ma distinti riguardano l’identità. L’autenticazione risponde a «chi sei»: è debole quando ammette credenziali facili, non limita i tentativi o espone messaggi che rivelano se un’utenza esiste, aprendo al brute force. La gestione della sessione risponde a «sei ancora tu»: il cookie che rappresenta la sessione va protetto con gli attributi che ne impediscono l’invio in chiaro e la lettura da script, e va rigenerato al login per evitare la session fixation. Confondere i due porta a difendere l’uno e lasciare scoperto l’altro.',
+            en: 'Three close but distinct flaws concern identity. Authentication answers «who are you»: it is weak when it allows easy credentials, does not limit attempts, or exposes messages that reveal whether an account exists, opening the door to brute force. Session management answers «are you still you»: the cookie that represents the session must be protected with the attributes that prevent its transmission in the clear and its reading by script, and it must be regenerated at login to avoid session fixation. Confusing the two leads to defending one and leaving the other exposed.'
+          },
+          {
+            it: 'Il controllo degli accessi risponde a «puoi farlo»: decide se l’identità autenticata è autorizzata a quella risorsa o azione. È qui che nasce l’IDOR (Insecure Direct Object Reference), quando cambiando un identificatore nella richiesta si raggiunge il dato di un altro utente perché il server si fida del parametro invece di verificare il permesso; e l’escalation di privilegi, quando un utente ordinario raggiunge funzioni amministrative. La regola è che l’autorizzazione va decisa lato server a ogni richiesta, non dedotta da ciò che l’interfaccia mostra o nasconde al client.',
+            en: 'Access control answers «may you do it»: it decides whether the authenticated identity is authorized for that resource or action. This is where IDOR (Insecure Direct Object Reference) arises, when changing an identifier in the request reaches another user’s data because the server trusts the parameter instead of checking the permission; and privilege escalation, when an ordinary user reaches administrative functions. The rule is that authorization must be decided server-side on every request, not inferred from what the interface shows or hides on the client.'
+          },
+          {
+            it: 'Dal lato del test queste debolezze si dimostrano con osservazioni mirate e autorizzate — un identificatore che, cambiato, restituisce dati altrui; una sessione che resta valida dopo il logout — non con furti reali di account. Dal lato della difesa le contromisure sono nette: credenziali robuste con limitazione dei tentativi e messaggi d’errore uniformi; cookie con i loro attributi di protezione e rigenerati al login; autorizzazione verificata lato server per ogni oggetto e ogni azione. Un report che lega ciascun difetto alla sua difesa trasforma la prova in una correzione verificabile.',
+            en: 'On the testing side these weaknesses are shown with targeted, authorized observations — an identifier that, when changed, returns someone else’s data; a session that stays valid after logout — not with real account theft. On the defensive side the countermeasures are clear-cut: strong credentials with attempt limiting and uniform error messages; cookies with their protection attributes and regenerated at login; authorization verified server-side for every object and every action. A report that links each flaw to its defense turns the proof into a verifiable fix.'
+          }
+        ],
+        example: {
+          it: 'Su example.test una richiesta con un identificatore di oggetto che, incrementato, restituisce il record di un altro utente dimostra un IDOR; la difesa non è nascondere l’identificatore ma verificare lato server, a ogni richiesta, che l’utente autenticato sia autorizzato a quel record.',
+          en: 'On example.test a request with an object identifier that, when incremented, returns another user’s record demonstrates an IDOR; the defense is not to hide the identifier but to verify server-side, on every request, that the authenticated user is authorized for that record.'
+        },
+        commonMistakes: [
+          {
+            it: 'Confondere autenticazione e autorizzazione: provare «chi sei» non prova «puoi farlo»; servono controlli distinti.',
+            en: 'Confusing authentication and authorization: proving «who you are» does not prove «you may do it»; distinct checks are needed.'
+          },
+          {
+            it: 'Affidare il controllo degli accessi al client: nascondere un pulsante non protegge la risorsa, che va autorizzata lato server.',
+            en: 'Entrusting access control to the client: hiding a button does not protect the resource, which must be authorized server-side.'
+          },
+          {
+            it: 'Non rigenerare la sessione al login: lasciare valido il vecchio identificatore apre alla session fixation.',
+            en: 'Not regenerating the session at login: leaving the old identifier valid opens the door to session fixation.'
+          }
+        ],
+        lab: 'applicationsecurity',
+        references: [{ kind: 'attack', id: 'T1078' }],
+        guidedLabs: [
+          {
+            id: 'gl-web-access-boundary',
+            title: {
+              it: 'Prova il confine dell’autorizzazione',
+              en: 'Test the authorization boundary'
+            },
+            difficulty: 'advanced',
+            lab: 'applicationsecurity',
+            scenario: {
+              it: 'Il laboratorio «DNS, web e applicazioni» mostra richieste autenticate e il loro esito: il terreno in cui si vede se l’autorizzazione è decisa lato server.',
+              en: 'The “DNS, web, and applications” lab shows authenticated requests and their outcome: the ground where you see whether authorization is decided server-side.'
+            },
+            task: {
+              it: 'Distingui, su due richieste, un difetto di autenticazione, uno di sessione e uno di controllo degli accessi, e associa a ciascuno la difesa corretta.',
+              en: 'On two requests, tell an authentication flaw, a session flaw, and an access-control flaw apart, and match each to the correct defense.'
+            },
+            steps: [
+              {
+                it: 'Apri «DNS, web e applicazioni» e osserva una richiesta autenticata con il suo cookie.',
+                en: 'Open “DNS, web, and applications” and observe an authenticated request with its cookie.'
+              },
+              {
+                it: 'Cambia (concettualmente) un identificatore di oggetto e ragiona su cosa dovrebbe rispondere il server.',
+                en: 'Change (conceptually) an object identifier and reason about what the server should answer.'
+              },
+              {
+                it: 'Associa a ciò che osservi la difesa: credenziali, attributi del cookie o autorizzazione lato server.',
+                en: 'Match what you observe to the defense: credentials, cookie attributes, or server-side authorization.'
+              }
+            ],
+            challenge: {
+              it: 'Una sessione resta valida dopo il logout: è un difetto di autenticazione, di sessione o di controllo degli accessi, e come lo correggi?',
+              en: 'A session stays valid after logout: is it an authentication, a session, or an access-control flaw, and how do you fix it?'
+            },
+            solution: [
+              {
+                it: 'L’autenticazione debole si vede nei tentativi non limitati e nei messaggi che rivelano le utenze (difesa: credenziali robuste, limitazione, errori uniformi). Il difetto di sessione si vede in un cookie senza attributi di protezione o non rigenerato al login (difesa: attributi del cookie e rigenerazione). Il controllo degli accessi fallisce quando un identificatore cambiato restituisce dati altrui (difesa: autorizzazione lato server a ogni richiesta). Sono livelli distinti e ognuno ha la sua contromisura.',
+                en: 'Weak authentication shows in unlimited attempts and in messages that reveal accounts (defense: strong credentials, limiting, uniform errors). The session flaw shows in a cookie without protection attributes or not regenerated at login (defense: cookie attributes and regeneration). Access control fails when a changed identifier returns someone else’s data (defense: server-side authorization on every request). They are distinct layers and each has its own countermeasure.'
+              },
+              {
+                it: 'Sfida: una sessione valida dopo il logout è un difetto di gestione della sessione; si corregge invalidando il token lato server al logout e rigenerandolo al login, così il vecchio identificatore non vale più.',
+                en: 'Challenge: a session valid after logout is a session-management flaw; you fix it by invalidating the token server-side at logout and regenerating it at login, so the old identifier is no longer valid.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So distinguere difetti di autenticazione, sessione e controllo degli accessi.',
+                en: 'I can distinguish authentication, session, and access-control flaws.'
+              },
+              {
+                it: 'So associare a ciascuno la difesa e perché l’autorizzazione va decisa lato server.',
+                en: 'I can match each to its defense and why authorization must be decided server-side.'
+              }
+            ]
+          }
+        ]
+      }
+    ]
   }
 ];

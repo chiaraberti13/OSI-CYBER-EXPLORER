@@ -59,10 +59,22 @@ revisione dei contenuti tecnici è vincolante.
       capitoli / 58 argomenti / 44 laboratori guidati; aggiornate le asserzioni di conteggio in test
       ed E2E (progresso `x/19`, opzioni selettore, optgroup «Estensione · 0/5»). `npm run verify`
       verde, E2E Chromium verdi (Axe WCAG 2.2 AA incluso). Report: `docs/verify/2026-10-13-pentest01.md`.
-- [ ] **PENTEST-02 (P1) — Web application penetration testing (eJPT).** Argomenti su attacchi web
+- [x] **PENTEST-02 (P1) — Web application penetration testing (eJPT).** Argomenti su attacchi web
       (injection, XSS, traversal, autenticazione/sessione) in chiave difensiva, riusando
       `applicationsecurity`. **Completato quando:** il capitolo insegna il dominio web dell'eJPT con
       lab guidati su `applicationsecurity`, senza payload eseguibili e con sole contromisure.
+      **Esito (14/10/2026):** nuovo capitolo estensione «Penetration testing delle applicazioni web
+      (eJPT)» (ordine 20, cert `eJPT`) con tre argomenti — HTTP/mappatura/proxy di intercettazione,
+      le classi di injection (SQLi, XSS, command injection, path traversal) e la loro radice comune,
+      autenticazione/sessione/controllo degli accessi (IDOR, session fixation) — ciascuno con
+      obiettivi, teoria progressiva, esempio su `example.test`, errori comuni, riferimenti MITRE
+      ATT&CK (T1595, T1190, T1078) e un laboratorio guidato su `applicationsecurity`. **Nessun
+      payload eseguibile**: injection e difetti descritti per concetto e radice, sempre con la
+      contromisura strutturale (query parametrizzate, codifica in uscita, autorizzazione lato
+      server). Il manuale sale a **20 capitoli / 61 argomenti / 47 laboratori guidati**; aggiornate
+      le asserzioni di conteggio in test ed E2E (progresso `x/20`, 20 opzioni, optgroup «Estensione ·
+      0/6»). `npm run verify` verde, E2E Chromium verdi (Axe WCAG 2.2 AA incluso). Report:
+      `docs/verify/2026-10-14-pentest02.md`.
 - [ ] **PENTEST-03 (P2) — Exploitation e post-exploitation (concetti).** Modello concettuale di
       exploitation, movimento laterale, pivoting e persistenza, mappato alla kill chain e alle
       evidenze; riusa `attackpaths` e `attacklab`.
