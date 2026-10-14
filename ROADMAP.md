@@ -68,7 +68,7 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
       capitoli / 73 argomenti / 59 laboratori guidati**. Report: `docs/verify/2026-10-14-content01-segmentation.md`.
 - [~] **CONTENT-02 (P2) — Laboratori difensivi ancora non in guida (uno per incremento).** Insegnare
   `routingsecurity`, `availability`, `recovery`, `managementsecurity`, `layer2security` con
-  capitoli/argomenti dedicati, chiudendo del tutto il divario guida↔laboratori. **In corso — 3
+  capitoli/argomenti dedicati, chiudendo del tutto il divario guida↔laboratori. **In corso — 4
   di 5 (14/10/2026).**
   - **(1/5)** «Sicurezza del routing e del control plane» (ordine 25, cert Security+) che insegna
     `routingsecurity` — fiducia del routing (adiacenze OSPF, integrità LSDB, redistribuzione/
@@ -88,10 +88,16 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
     effettivo, esposizione CDP/LLDP, backup e restore, sampling dei collector). Completa la trilogia
     dei piani (dati/controllo/gestione). Riferimenti NIST SP 800-53 Rev. 5, RFC 3411, RFC 6241.
     Report: `docs/verify/2026-10-14-content02-management.md`.
+  - **(4/5)** «Resilienza e ripristino» (ordine 28, cert Security+) che insegna `recovery` — la
+    ridondanza vera (percorsi/alimentazione realmente indipendenti, spare validato, accesso OOB), la
+    procedura (dipendenze, continuità minima, condizioni di arresto) e la validazione (RTO/RPO, test
+    per nome non per IP, backup verificati in restore). Chiude la faccia «ripristino» della
+    disponibilità. Riferimenti NIST SP 800-34 Rev. 1, SP 800-53 Rev. 5, SP 800-184. Report:
+    `docs/verify/2026-10-14-content02-recovery.md`.
 
-  Manuale a **27 capitoli / 82 argomenti / 68 laboratori guidati**; aggiornate le asserzioni di
-  conteggio (progresso `x/27`, 27 opzioni, optgroup «Estensione · 0/13»). Restano da insegnare:
-  `recovery`, `layer2security`.
+  Manuale a **28 capitoli / 85 argomenti / 71 laboratori guidati**; aggiornate le asserzioni di
+  conteggio (progresso `x/28`, 28 opzioni, optgroup «Estensione · 0/14»). Resta da insegnare:
+  `layer2security`.
 
 - [ ] **EDU-31 (P2) — Collegamenti incrociati guida↔lab.** Verificare che ogni laboratorio insegnato
       esponga il back-link alla teoria (EDU-STRUCT-05) via la mappa inversa, anche per i nuovi

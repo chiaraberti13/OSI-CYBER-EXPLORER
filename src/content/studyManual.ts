@@ -8763,5 +8763,363 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
         ]
       }
     ]
+  },
+  {
+    id: 'resilience-recovery',
+    cert: 'securityplus',
+    order: 28,
+    track: 'extension',
+    title: {
+      it: 'Resilienza e ripristino',
+      en: 'Resilience and recovery'
+    },
+    summary: {
+      it: 'L’estensione sull’altra faccia della disponibilità: non evitare il guasto, ma riprendersi quando accade. La ridondanza che aiuta davvero (percorsi e alimentazione realmente indipendenti, accesso OOB), la procedura di ripristino con dipendenze, continuità minima e condizioni di arresto, e la validazione — perché un ripristino non è finito finché non è provato per nome, con RTO/RPO rispettati e backup che si ripristinano davvero.',
+      en: 'The extension on the other face of availability: not avoiding the failure, but recovering when it happens. Redundancy that truly helps (genuinely independent paths and power, OOB access), the recovery procedure with dependencies, minimum continuity, and stop conditions, and validation — because a recovery is not done until it is proven by name, with RTO/RPO met and backups that actually restore.'
+    },
+    topics: [
+      {
+        id: 'recovery-true-redundancy',
+        title: {
+          it: 'Ridondanza vera: percorsi, alimentazione e accesso OOB',
+          en: 'True redundancy: paths, power, and OOB access'
+        },
+        objectives: [
+          {
+            it: 'Distinguere la ridondanza configurata dall’indipendenza reale (nessun destino condiviso).',
+            en: 'Distinguish configured redundancy from real independence (no shared fate).'
+          },
+          {
+            it: 'Spiegare perché l’accesso OOB e uno spare validato rendono possibile il ripristino.',
+            en: 'Explain why OOB access and a validated spare make recovery possible.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere FHRP, la disponibilità e il piano di gestione (capitoli su servizi IP estesi, disponibilità e gestione).',
+            en: 'Know FHRP, availability, and the management plane (the extended IP services, availability, and management chapters).'
+          }
+        ],
+        theory: [
+          {
+            it: 'La ridondanza serve a sopravvivere a un guasto, ma aiuta solo se le due vie non cadono insieme. Due collegamenti «ridondati» che passano per lo stesso cavidotto, lo stesso apparato o la stessa alimentazione condividono un destino: un singolo evento li spegne entrambi, e la ridondanza esiste sulla carta ma non nei fatti. La domanda giusta non è «ho un secondo percorso?» ma «il secondo percorso è davvero indipendente dal primo?». Lo stesso vale per l’alimentazione (alimentatori e linee separate) e per gli apparati (uno spare realmente disponibile e, soprattutto, validato: uno spare mai provato è un’ipotesi, non una difesa).',
+            en: 'Redundancy exists to survive a failure, but it helps only if the two paths do not fall together. Two «redundant» links that run through the same duct, the same device, or the same power feed share a fate: a single event turns both off, and redundancy exists on paper but not in fact. The right question is not «do I have a second path?» but «is the second path truly independent of the first?». The same holds for power (separate supplies and feeds) and for devices (a spare that is really available and, above all, validated: an untested spare is a hypothesis, not a defense).'
+          },
+          {
+            it: 'C’è una ridondanza che si dimentica sempre e che conta più delle altre quando le cose vanno male: l’accesso. Se la gestione è in-band e il guasto è sul piano dati, l’amministratore non raggiunge i dispositivi proprio nel momento in cui deve ripristinarli. L’accesso out-of-band (OOB), indipendente dal percorso dati, è ciò che trasforma un’interruzione in un ripristino: senza di esso, un guasto diventa un intervento fisico sul posto. Per questo l’OOB, già visto come controllo di gestione, è anche un controllo di resilienza: è la via che resta aperta quando tutte le altre si chiudono.',
+            en: 'There is a redundancy that is always forgotten and that matters more than the others when things go wrong: access. If management is in-band and the failure is on the data plane, the administrator cannot reach the devices exactly when they must be restored. Out-of-band (OOB) access, independent of the data path, is what turns an outage into a recovery: without it, a failure becomes a physical on-site intervention. This is why OOB, already seen as a management control, is also a resilience control: it is the path that stays open when all the others close.'
+          },
+          {
+            it: 'Il principio è che la ridondanza va provata, non dichiarata. Un percorso alternativo va verificato davvero, facendo cadere il primario in una finestra controllata e osservando che il secondario regga senza errori né saturazione; uno spare va installato e configurato almeno una volta; l’OOB va usato prima dell’emergenza. È la stessa disciplina di verifica vista per il routing e la telemetria, applicata alla continuità: ciò che non è stato provato non si può dare per funzionante, e scoprire che una ridondanza era solo sulla carta durante un guasto reale è il modo più costoso di impararlo.',
+            en: 'The principle is that redundancy must be proven, not declared. An alternate path must actually be verified, by failing the primary in a controlled window and observing that the secondary holds without errors or saturation; a spare must be installed and configured at least once; OOB must be used before the emergency. It is the same verification discipline seen for routing and telemetry, applied to continuity: what has not been tested cannot be assumed working, and discovering that a redundancy was only on paper during a real failure is the most expensive way to learn it.'
+          }
+        ],
+        example: {
+          it: 'Due uplink verso 192.0.2.0/24 sono «ridondati» ma passano per lo stesso apparato: un suo guasto li spegne entrambi. La ridondanza vera richiede un percorso fisicamente separato, alimentazione indipendente, uno spare validato e l’accesso OOB per intervenire quando il piano dati è giù.',
+          en: 'Two uplinks toward 192.0.2.0/24 are «redundant» but run through the same device: a failure of it turns both off. True redundancy requires a physically separate path, independent power, a validated spare, and OOB access to intervene when the data plane is down.'
+        },
+        commonMistakes: [
+          {
+            it: 'Chiamare ridondanza due vie con destino condiviso: stesso cavidotto, apparato o alimentazione cadono insieme.',
+            en: 'Calling two paths with a shared fate redundancy: the same duct, device, or power feed fall together.'
+          },
+          {
+            it: 'Contare su uno spare mai provato: uno spare non validato è un’ipotesi, non una difesa.',
+            en: 'Counting on an untested spare: an unvalidated spare is a hypothesis, not a defense.'
+          },
+          {
+            it: 'Gestire in-band senza OOB: quando il piano dati cade, l’accesso per ripristinare cade con lui.',
+            en: 'Managing in-band without OOB: when the data plane falls, the access to recover falls with it.'
+          }
+        ],
+        lab: 'recovery',
+        references: [{ kind: 'nist', id: 'SP 800-34 Rev. 1' }],
+        guidedLabs: [
+          {
+            id: 'gl-recovery-independence',
+            title: {
+              it: 'Prova che la ridondanza è indipendente',
+              en: 'Prove the redundancy is independent'
+            },
+            difficulty: 'core',
+            lab: 'recovery',
+            scenario: {
+              it: 'Il laboratorio «Resilienza e ripristino» mostra percorsi alternativi, alimentazione ridondata e accesso OOB.',
+              en: 'The “Resilience and recovery” lab shows alternate paths, redundant power, and OOB access.'
+            },
+            task: {
+              it: 'Verifica se un percorso alternativo è davvero indipendente dal primario e indica cosa serve per ripristinare.',
+              en: 'Verify whether an alternate path is truly independent of the primary and state what is needed to recover.'
+            },
+            steps: [
+              {
+                it: 'Apri «Resilienza e ripristino» e osserva il percorso alternativo rispetto al primario.',
+                en: 'Open “Resilience and recovery” and observe the alternate path against the primary.'
+              },
+              {
+                it: 'Cerca un destino condiviso (stesso apparato, cavidotto o alimentazione).',
+                en: 'Look for a shared fate (the same device, duct, or power feed).'
+              },
+              {
+                it: 'Indica come l’accesso OOB e uno spare validato rendono possibile il ripristino.',
+                en: 'State how OOB access and a validated spare make recovery possible.'
+              }
+            ],
+            challenge: {
+              it: 'Il secondario «c’è» ma durante un guasto cade con il primario: quale destino condiviso te lo avrebbe rivelato prima?',
+              en: 'The secondary «is there» but during a failure it falls with the primary: which shared fate would have revealed it earlier?'
+            },
+            solution: [
+              {
+                it: 'La ridondanza aiuta solo se le due vie non cadono insieme: un percorso alternativo che condivide cavidotto, apparato o alimentazione ha un destino condiviso e un solo evento li spegne entrambi. Si prova facendo cadere il primario in una finestra controllata e osservando che il secondario regga; l’accesso OOB e uno spare validato rendono possibile intervenire quando il piano dati è giù.',
+                en: 'Redundancy helps only if the two paths do not fall together: an alternate path sharing a duct, a device, or power has a shared fate and a single event turns both off. You prove it by failing the primary in a controlled window and observing that the secondary holds; OOB access and a validated spare make it possible to intervene when the data plane is down.'
+              },
+              {
+                it: 'Sfida: se il secondario cade con il primario, il destino condiviso era un elemento comune — lo stesso apparato di aggregazione, lo stesso cavidotto o la stessa alimentazione; lo avrebbe rivelato prima una prova di failover controllata, non la sola presenza del secondo percorso in configurazione.',
+                en: 'Challenge: if the secondary falls with the primary, the shared fate was a common element — the same aggregation device, the same duct, or the same power; a controlled failover test would have revealed it earlier, not the mere presence of the second path in the configuration.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So distinguere la ridondanza configurata dall’indipendenza reale senza destino condiviso.',
+                en: 'I can distinguish configured redundancy from real independence with no shared fate.'
+              },
+              {
+                it: 'So spiegare perché OOB e spare validato rendono possibile il ripristino.',
+                en: 'I can explain why OOB and a validated spare make recovery possible.'
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'recovery-procedure-continuity',
+        title: {
+          it: 'La procedura: dipendenze, continuità minima e stop condition',
+          en: 'The procedure: dependencies, minimum continuity, and stop conditions'
+        },
+        objectives: [
+          {
+            it: 'Ordinare un ripristino secondo le dipendenze e la continuità minima da garantire.',
+            en: 'Order a recovery by dependencies and the minimum continuity to guarantee.'
+          },
+          {
+            it: 'Definire condizioni di arresto che evitano di peggiorare la situazione durante il ripristino.',
+            en: 'Define stop conditions that avoid making the situation worse during recovery.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere routing, servizi IP e il ripristino L2 (capitoli su routing, servizi IP e VLAN/STP).',
+            en: 'Know routing, IP services, and L2 recovery (the routing, IP services, and VLAN/STP chapters).'
+          }
+        ],
+        theory: [
+          {
+            it: 'Un ripristino non è un atto unico ma una procedura ordinata, e l’ordine conta perché i servizi dipendono l’uno dall’altro. Ripristinare un servizio prima di ciò da cui dipende lo fa ripartire rotto: il DNS prima della connettività, un’applicazione prima del gateway, il routing dinamico prima che le adiacenze siano autenticate. La procedura parte quindi dalle dipendenze — cosa deve essere in piedi perché il passo successivo abbia senso — e punta prima alla continuità minima: non «tutto come prima», ma «il servizio essenziale di nuovo disponibile», lasciando il ripristino completo ai passi seguenti.',
+            en: 'A recovery is not a single act but an ordered procedure, and the order matters because services depend on one another. Restoring a service before what it depends on brings it back broken: DNS before connectivity, an application before the gateway, dynamic routing before the adjacencies are authenticated. The procedure therefore starts from the dependencies — what must be up for the next step to make sense — and aims first at minimum continuity: not «everything as before», but «the essential service available again», leaving the full recovery to the following steps.'
+          },
+          {
+            it: 'Ogni procedura di ripristino ha bisogno di condizioni di arresto, perché insistere può peggiorare le cose. Se un passo non produce il risultato atteso — un’adiacenza che non si forma, una rotta che non appare, un servizio che riparte e ricade — bisogna fermarsi e capire, non ripetere con più forza. Senza stop condition, un ripristino maldestro può propagare il guasto: riportare in servizio un apparato ancora compromesso, reintrodurre un loop, ripristinare una configurazione che conteneva proprio l’errore. La stop condition è ciò che distingue un ripristino disciplinato da un «proviamo e vediamo» che allunga il disservizio.',
+            en: 'Every recovery procedure needs stop conditions, because pressing on can make things worse. If a step does not produce the expected result — an adjacency that does not form, a route that does not appear, a service that restarts and falls again — you must stop and understand, not repeat harder. Without stop conditions, a clumsy recovery can propagate the failure: bringing back a still-compromised device, reintroducing a loop, restoring a configuration that contained the very error. The stop condition is what distinguishes a disciplined recovery from a «let’s try and see» that lengthens the outage.'
+          },
+          {
+            it: 'Il quadro è coerente con l’intero track difensivo: anche nell’emergenza, non si agisce senza verifica. Si ripristina per dipendenze, si garantisce prima la continuità minima, si verifica ogni passo prima del successivo e ci si ferma quando l’esito non è quello atteso. È la differenza tra un piano di ripristino e un’improvvisazione sotto pressione: il piano conosce in anticipo l’ordine, la continuità minima accettabile e i segnali per fermarsi, così la persona che ripristina non deve inventarli mentre l’orologio corre.',
+            en: 'The picture is consistent with the whole defensive track: even in an emergency, you do not act without verification. You recover by dependencies, you guarantee minimum continuity first, you verify each step before the next, and you stop when the outcome is not the expected one. It is the difference between a recovery plan and improvisation under pressure: the plan knows in advance the order, the acceptable minimum continuity, and the signals to stop, so the person recovering does not have to invent them while the clock runs.'
+          }
+        ],
+        example: {
+          it: 'Dopo un guasto, si ripristina prima la connettività di base e il gateway, poi DNS e DHCP, infine le applicazioni testate per nome; se un’adiacenza di routing non si forma come previsto, la stop condition impone di fermarsi e verificare l’autenticazione invece di forzare.',
+          en: 'After a failure, you restore basic connectivity and the gateway first, then DNS and DHCP, finally the applications tested by name; if a routing adjacency does not form as expected, the stop condition requires stopping and checking authentication instead of forcing.'
+        },
+        commonMistakes: [
+          {
+            it: 'Ripristinare senza rispettare le dipendenze: un servizio riparte rotto se manca ciò da cui dipende.',
+            en: 'Recovering without respecting dependencies: a service comes back broken if what it depends on is missing.'
+          },
+          {
+            it: 'Puntare subito a «tutto come prima»: prima la continuità minima, poi il ripristino completo.',
+            en: 'Aiming straight for «everything as before»: minimum continuity first, then full recovery.'
+          },
+          {
+            it: 'Insistere senza stop condition: ripetere un passo che fallisce può propagare il guasto.',
+            en: 'Pressing on without a stop condition: repeating a failing step can propagate the failure.'
+          }
+        ],
+        lab: 'recovery',
+        references: [{ kind: 'nist', id: 'SP 800-53 Rev. 5' }],
+        guidedLabs: [
+          {
+            id: 'gl-recovery-order',
+            title: {
+              it: 'Ordina il ripristino e sappi quando fermarti',
+              en: 'Order the recovery and know when to stop'
+            },
+            difficulty: 'advanced',
+            lab: 'recovery',
+            scenario: {
+              it: 'Il laboratorio «Resilienza e ripristino» mostra procedure con dipendenze, continuità minima e condizioni di arresto.',
+              en: 'The “Resilience and recovery” lab shows procedures with dependencies, minimum continuity, and stop conditions.'
+            },
+            task: {
+              it: 'Metti in ordine un ripristino per dipendenze e indica una stop condition che evita di peggiorare la situazione.',
+              en: 'Put a recovery in order by dependencies and state a stop condition that avoids making things worse.'
+            },
+            steps: [
+              {
+                it: 'Apri «Resilienza e ripristino» e scegli uno scenario con più servizi dipendenti.',
+                en: 'Open “Resilience and recovery” and pick a scenario with several dependent services.'
+              },
+              {
+                it: 'Ordina i passi per dipendenze e individua la continuità minima da garantire prima.',
+                en: 'Order the steps by dependencies and identify the minimum continuity to guarantee first.'
+              },
+              {
+                it: 'Definisci una stop condition per un passo che non dà l’esito atteso.',
+                en: 'Define a stop condition for a step that does not give the expected outcome.'
+              }
+            ],
+            challenge: {
+              it: 'Ripristinare un apparato lo riporta in servizio ma reintroduce il problema: quale verifica mancava prima di riattivarlo?',
+              en: 'Recovering a device brings it back but reintroduces the problem: which check was missing before reactivating it?'
+            },
+            solution: [
+              {
+                it: 'Il ripristino segue le dipendenze — connettività e gateway prima di DNS/DHCP, questi prima delle applicazioni — e punta prima alla continuità minima, non a «tutto come prima». Ogni passo si verifica prima del successivo, e una stop condition impone di fermarsi quando l’esito non è quello atteso, per non propagare il guasto reintroducendo un loop o un apparato ancora compromesso.',
+                en: 'Recovery follows the dependencies — connectivity and gateway before DNS/DHCP, these before applications — and aims first at minimum continuity, not «everything as before». Each step is verified before the next, and a stop condition requires stopping when the outcome is not the expected one, to avoid propagating the failure by reintroducing a loop or a still-compromised device.'
+              },
+              {
+                it: 'Sfida: se riattivare un apparato reintroduce il problema, mancava la verifica del suo stato prima di rimetterlo in servizio — una configurazione nota-buona e il controllo che non fosse ancora compromesso; la stop condition l’avrebbe fermato finché la verifica non dava esito.',
+                en: 'Challenge: if reactivating a device reintroduces the problem, the check of its state before returning it to service was missing — a known-good configuration and the verification that it was not still compromised; the stop condition would have held it until the check passed.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So ordinare un ripristino per dipendenze e garantire prima la continuità minima.',
+                en: 'I can order a recovery by dependencies and guarantee minimum continuity first.'
+              },
+              {
+                it: 'So definire condizioni di arresto che evitano di peggiorare durante il ripristino.',
+                en: 'I can define stop conditions that avoid making things worse during recovery.'
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'recovery-validation-rto-rpo',
+        title: {
+          it: 'Validare il ripristino: RTO/RPO, test per nome e backup verificati',
+          en: 'Validating recovery: RTO/RPO, testing by name, and verified backups'
+        },
+        objectives: [
+          {
+            it: 'Definire RTO e RPO come obiettivi misurabili del ripristino e del dato recuperabile.',
+            en: 'Define RTO and RPO as measurable targets of the recovery and of the recoverable data.'
+          },
+          {
+            it: 'Spiegare perché un ripristino vale solo se validato per nome, con backup che si ripristinano.',
+            en: 'Explain why a recovery counts only if validated by name, with backups that actually restore.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere DNS, i backup di configurazione e la telemetria (capitoli su servizi IP e gestione).',
+            en: 'Know DNS, configuration backups, and telemetry (the IP services and management chapters).'
+          }
+        ],
+        theory: [
+          {
+            it: 'Un ripristino ha due obiettivi misurabili, ed entrambi vanno decisi prima del guasto. Il RTO (Recovery Time Objective) è quanto tempo il servizio può restare giù prima che il danno diventi inaccettabile; il RPO (Recovery Point Objective) è quanto dato si può perdere, cioè quanto indietro può essere l’ultimo stato recuperabile. Insieme dicono «entro quanto» e «da quale punto» si deve tornare in servizio, e guidano le scelte: un RPO stretto richiede backup frequenti, un RTO stretto richiede ridondanza calda e procedure provate. Senza RTO/RPO, «ripristinato» non ha una misura e il piano non si può valutare.',
+            en: 'A recovery has two measurable targets, and both must be decided before the failure. The RTO (Recovery Time Objective) is how long the service can stay down before the damage becomes unacceptable; the RPO (Recovery Point Objective) is how much data can be lost, that is, how far back the last recoverable state can be. Together they say «within how long» and «from which point» service must be restored, and they drive the choices: a tight RPO requires frequent backups, a tight RTO requires hot redundancy and tested procedures. Without RTO/RPO, «recovered» has no measure and the plan cannot be evaluated.'
+          },
+          {
+            it: 'La validazione è il passo che molti saltano, ed è quello che decide se il ripristino è reale. Un backup conta solo se si ripristina davvero: un backup mai testato in restore è una speranza, non una copia, e si scopre inutilizzabile proprio quando serve. E il servizio va provato come lo usa un utente, non come lo vede un amministratore: testare per nome — aprire l’applicazione, risolvere il nome, completare una transazione — non limitarsi a un ping verso un IP, perché il DNS, l’autenticazione e la catena applicativa possono essere rotti mentre la connettività di base funziona. Il ripristino non è finito quando «risponde», ma quando l’utente può lavorare.',
+            en: 'Validation is the step many skip, and it is the one that decides whether the recovery is real. A backup counts only if it actually restores: a backup never tested in restore is a hope, not a copy, and is found unusable exactly when it is needed. And the service must be tested the way a user uses it, not the way an administrator sees it: test by name — open the application, resolve the name, complete a transaction — not just a ping to an IP, because DNS, authentication, and the application chain can be broken while basic connectivity works. Recovery is not done when it «responds», but when the user can work.'
+          },
+          {
+            it: 'Il capitolo chiude la faccia «ripristino» della disponibilità: la «A» della triade non è solo evitare il guasto (capitolo sulla disponibilità) ma anche riprendersi in tempo e per intero quando accade. Ridondanza davvero indipendente, una procedura ordinata con continuità minima e stop condition, e una validazione misurata da RTO/RPO e provata per nome: è questo che rende la resilienza una proprietà verificata e non una speranza. Come per tutto il resto, ciò che non è stato provato non si può dare per funzionante — e un ripristino lo si prova prima, non durante l’emergenza.',
+            en: 'The chapter closes the «recovery» face of availability: the «A» of the triad is not only avoiding the failure (the availability chapter) but also recovering in time and in full when it happens. Truly independent redundancy, an ordered procedure with minimum continuity and stop conditions, and a validation measured by RTO/RPO and proven by name: this is what makes resilience a verified property and not a hope. As with everything else, what has not been tested cannot be assumed working — and a recovery is tested before, not during, the emergency.'
+          }
+        ],
+        example: {
+          it: 'Dopo un ripristino, un ping verso un IP in 192.0.2.0/24 risponde ma l’applicazione resta inutilizzabile perché il DNS non risolve: il test per nome lo rivela, mentre RTO e RPO, decisi prima, dicono se il ripristino è avvenuto in tempo e con quanta perdita di dato.',
+          en: 'After a recovery, a ping to an IP in 192.0.2.0/24 responds but the application stays unusable because DNS does not resolve: testing by name reveals it, while RTO and RPO, decided beforehand, say whether the recovery happened in time and with how much data loss.'
+        },
+        commonMistakes: [
+          {
+            it: 'Non definire RTO/RPO: senza obiettivi misurabili «ripristinato» non si può valutare né dimensionare.',
+            en: 'Not defining RTO/RPO: without measurable targets «recovered» cannot be evaluated or sized.'
+          },
+          {
+            it: 'Fidarsi di backup non testati: un backup mai ripristinato è una speranza, non una copia.',
+            en: 'Trusting untested backups: a backup never restored is a hope, not a copy.'
+          },
+          {
+            it: 'Validare con un ping verso un IP: il test per nome scopre DNS, autenticazione e catena applicativa rotte.',
+            en: 'Validating with a ping to an IP: testing by name uncovers broken DNS, authentication, and the application chain.'
+          }
+        ],
+        lab: 'recovery',
+        references: [{ kind: 'nist', id: 'SP 800-184' }],
+        guidedLabs: [
+          {
+            id: 'gl-recovery-validate-by-name',
+            title: {
+              it: 'Valida il ripristino per nome, non per IP',
+              en: 'Validate the recovery by name, not by IP'
+            },
+            difficulty: 'core',
+            lab: 'recovery',
+            scenario: {
+              it: 'Il laboratorio «Resilienza e ripristino» mostra la validazione con test per nome, DNS/DHCP coordinati e obiettivi RTO/RPO.',
+              en: 'The “Resilience and recovery” lab shows validation with testing by name, coordinated DNS/DHCP, and RTO/RPO targets.'
+            },
+            task: {
+              it: 'Spiega perché un ping non basta a validare un ripristino e come RTO/RPO misurano l’esito.',
+              en: 'Explain why a ping is not enough to validate a recovery and how RTO/RPO measure the outcome.'
+            },
+            steps: [
+              {
+                it: 'Apri «Resilienza e ripristino» e scegli lo scenario di ripristino DNS/DHCP coordinato.',
+                en: 'Open “Resilience and recovery” and pick the coordinated DNS/DHCP recovery scenario.'
+              },
+              {
+                it: 'Valida il servizio per nome (applicazione e risoluzione), non solo con un ping verso un IP.',
+                en: 'Validate the service by name (application and resolution), not only with a ping to an IP.'
+              },
+              {
+                it: 'Confronta l’esito con RTO/RPO e verifica che il backup usato si ripristini davvero.',
+                en: 'Compare the outcome with RTO/RPO and verify that the backup used actually restores.'
+              }
+            ],
+            challenge: {
+              it: 'Il ping risponde ma gli utenti non lavorano: cosa può essere rotto che un test per IP non vede?',
+              en: 'The ping responds but users cannot work: what can be broken that an IP test does not see?'
+            },
+            solution: [
+              {
+                it: 'RTO e RPO, decisi prima del guasto, misurano entro quanto tornare in servizio e quanto dato si può perdere, e guidano backup e ridondanza. La validazione decide se il ripristino è reale: un backup conta solo se si ripristina davvero, e il servizio va provato per nome — applicazione, risoluzione DNS, transazione — perché connettività di base funzionante non significa servizio utilizzabile.',
+                en: 'RTO and RPO, decided before the failure, measure within how long to restore service and how much data can be lost, and they drive backups and redundancy. Validation decides whether the recovery is real: a backup counts only if it actually restores, and the service must be tested by name — application, DNS resolution, transaction — because working basic connectivity does not mean a usable service.'
+              },
+              {
+                it: 'Sfida: se il ping risponde ma gli utenti non lavorano, può essere rotta la catena applicativa che un test per IP non tocca — il DNS non risolve, l’autenticazione fallisce, o un servizio dipendente non è ancora su; il test per nome lo rivela perché segue lo stesso percorso dell’utente.',
+                en: 'Challenge: if the ping responds but users cannot work, the application chain an IP test does not touch may be broken — DNS does not resolve, authentication fails, or a dependent service is not up yet; testing by name reveals it because it follows the same path as the user.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So definire RTO e RPO e dire come guidano backup e ridondanza.',
+                en: 'I can define RTO and RPO and say how they drive backups and redundancy.'
+              },
+              {
+                it: 'So spiegare perché si valida per nome e perché un backup va provato in restore.',
+                en: 'I can explain why you validate by name and why a backup must be tested in restore.'
+              }
+            ]
+          }
+        ]
+      }
+    ]
   }
 ];
