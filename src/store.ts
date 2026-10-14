@@ -47,6 +47,7 @@ export type AppView =
   | 'attacklab'
   | 'ports'
   | 'security'
+  | 'scanstates'
   | 'glossary';
 
 export interface PreferencesSlice {

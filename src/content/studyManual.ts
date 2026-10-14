@@ -5838,7 +5838,7 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
             en: 'Reporting a state with no date or method: the snapshot of the ports expires as soon as the defense changes.'
           }
         ],
-        lab: 'inspection',
+        lab: 'scanstates',
         references: [{ kind: 'attack', id: 'T1046' }],
         guidedLabs: [
           {
@@ -5848,23 +5848,23 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
               en: 'Read open, closed, and filtered'
             },
             difficulty: 'advanced',
-            lab: 'inspection',
+            lab: 'scanstates',
             scenario: {
-              it: 'Il laboratorio «Firewall e ispezione» mostra come una regola decide il destino di un flusso: lo stesso meccanismo che fa apparire una porta filtrata a chi scansiona.',
-              en: 'The “Firewall and inspection” lab shows how a rule decides a flow’s fate: the same mechanism that makes a port look filtered to whoever scans.'
+              it: 'Il laboratorio «Stati di porta (scanning)» decodifica come una scansione deduce lo stato da sonda e risposta, su TCP e UDP.',
+              en: 'The “Port states (scanning)” lab decodes how a scan deduces the state from probe and response, on TCP and UDP.'
             },
             task: {
-              it: 'Collega gli stati aperto, chiuso e filtrato alla decisione del firewall e spiega come un difensore riconosce una scansione.',
-              en: 'Link the open, closed, and filtered states to the firewall decision and explain how a defender recognizes a scan.'
+              it: 'Collega gli stati aperto, chiuso e filtrato alla risposta ricevuta e spiega come un difensore riconosce una scansione.',
+              en: 'Link the open, closed, and filtered states to the response received and explain how a defender recognizes a scan.'
             },
             steps: [
               {
-                it: 'Apri «Firewall e ispezione» e segui un flusso permesso e uno scartato.',
-                en: 'Open “Firewall and inspection” and follow an allowed flow and a dropped one.'
+                it: 'Apri «Stati di porta (scanning)» e confronta i tre casi su TCP.',
+                en: 'Open “Port states (scanning)” and compare the three cases on TCP.'
               },
               {
-                it: 'Associa il flusso scartato alla porta «filtrata» e quello respinto alla porta «chiusa».',
-                en: 'Associate the dropped flow with the «filtered» port and the rejected one with the «closed» port.'
+                it: 'Passa a UDP e nota perché il silenzio rende aperto e filtrato ambigui.',
+                en: 'Switch to UDP and note why silence makes open and filtered ambiguous.'
               },
               {
                 it: 'Indica quale evidenza (molti tentativi, molti RST) rivelerebbe la scansione nei log.',

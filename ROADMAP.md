@@ -36,13 +36,19 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
 
 ## 💻 Senior Software Developer — architettura, nuovi laboratori, manutenibilità
 
-- [ ] **LAB-01 (P1) — Nuovo laboratorio interattivo per la metodologia eJPT.** Una vista costruita
+- [x] **LAB-01 (P1) — Nuovo laboratorio interattivo per la metodologia eJPT.** Una vista costruita
       su misura (nuovo `AppView`, registrata in `viewRegistry`, lazy-loaded) che renda interattiva
-      una fase del penetration test — p. es. un «decodificatore di stato delle porte»
-      (aperto/chiuso/filtrato da sonda e risposta) o un classificatore ricognizione→scanning→
-      enumerazione — con logica pura testata, i18n IT/EN, accessibilità WCAG 2.2 AA ed E2E.
-      **Completato quando:** la vista è registrata, collegata da un laboratorio guidato del capitolo
-      eJPT pertinente, e supera unit/componente/E2E e Axe; soli target di documentazione.
+      una fase del penetration test. **Esito (14/10/2026):** nuovo laboratorio **«Stati di porta
+      (scanning)»** (`AppView` `scanstates`, gruppo «Laboratori interattivi», icona radar),
+      un **decodificatore** che, scelto il protocollo (TCP/UDP), confronta i tre casi
+      aperto/chiuso/filtrato mostrando sonda, risposta, stato dedotto (con la sua certezza o
+      ambiguità) e cosa osserva la difesa — un esploratore, non un quiz, con soli numeri di porta
+      noti ed etichette di protocollo inerti. Dati bilingui in `src/content/scanStates.ts`
+      (parità IT/EN), logica pura testata in `src/lib/scanStates.ts` (+ test), componente
+      accessibile `ScanStatesLab.tsx`. Collegato dal capitolo eJPT di scanning (il lab guidato
+      `gl-pentest-scan-states` e il link del topic puntano ora al nuovo lab). Coperto da E2E
+      (`e2e/scan-states-lab.spec.ts`: apertura, toggle TCP/UDP, Axe WCAG 2.2 AA). `npm run verify`
+      verde (84 file di test), E2E Chromium verdi. Report: `docs/verify/2026-10-14-lab01-scanstates.md`.
 - [ ] **ENG-30 (P2) — Selettori di dominio-cert per il manuale.** Esporre nel modello contenuti la
       distinzione CCNA/eJPT/estensione così che indice e filtri possano raggruppare per percorso di
       certificazione senza logica ad hoc nella vista.

@@ -37,6 +37,7 @@ const ALL_APP_VIEWS: AppView[] = [
   'attacklab',
   'ports',
   'security',
+  'scanstates',
   'glossary'
 ];
 

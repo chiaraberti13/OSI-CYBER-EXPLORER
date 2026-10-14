@@ -21,9 +21,9 @@ export default function Header() {
               (the cyber accent). Identical to the favicon so tab and header match. */}
           <svg viewBox="0 0 32 32" aria-hidden="true" className="h-6 w-6">
             <rect x="1" y="1" width="30" height="30" rx="7.5" fill="#4f46e5" />
-            <rect x="8.5" y="9.4" width="15" height="3.1" rx="1.55" fill="#22d3ee" />
-            <rect x="8.5" y="14.45" width="15" height="3.1" rx="1.55" fill="#ffffff" />
-            <rect x="8.5" y="19.5" width="15" height="3.1" rx="1.55" fill="#ffffff" opacity="0.7" />
+            <rect x="7.5" y="8.5" width="17" height="4.2" rx="2.1" fill="#22d3ee" />
+            <rect x="7.5" y="13.9" width="17" height="4.2" rx="2.1" fill="#ffffff" />
+            <rect x="7.5" y="19.3" width="17" height="4.2" rx="2.1" fill="#ffffff" opacity="0.72" />
           </svg>
           <span className="font-medium text-slate-900 text-sm tracking-tight">
             <span className="hidden min-[360px]:inline">OSI Cyber Explorer</span>

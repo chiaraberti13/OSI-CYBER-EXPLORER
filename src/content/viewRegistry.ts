@@ -260,6 +260,16 @@ export const VIEW_REGISTRY: Record<AppView, ViewDefinition> = {
       'About 25 attacks across the seven layers as kill chains, with the exact point where the defense intervenes.',
     keywords: 'kill chain arp poisoning mac flooding syn flood spoofing xss sql injection mitm scenario'
   },
+  scanstates: {
+    group: 'interactive',
+    icon: Radar,
+    component: view(() => import('../components/ScanStatesLab')),
+    it: 'Stati di porta (scanning)',
+    en: 'Port states (scanning)',
+    hintIt: 'Decodifica come una scansione deduce porta aperta, chiusa o filtrata su TCP e UDP, e cosa vede la difesa.',
+    hintEn: 'Decode how a scan deduces an open, closed, or filtered port on TCP and UDP, and what the defense sees.',
+    keywords: 'scanning porta stato aperto chiuso filtrato syn ack rst icmp tcp udp ejpt nmap enumerazione'
+  },
   ports: {
     group: 'interactive',
     icon: Hash,
