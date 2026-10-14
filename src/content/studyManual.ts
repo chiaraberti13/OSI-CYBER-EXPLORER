@@ -7689,5 +7689,363 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
         ]
       }
     ]
+  },
+  {
+    id: 'routing-control-plane-security',
+    cert: 'securityplus',
+    order: 25,
+    track: 'extension',
+    title: {
+      it: 'Sicurezza del routing e del control plane',
+      en: 'Routing and control-plane security'
+    },
+    summary: {
+      it: 'L’estensione su ciò di cui una rete si fida per decidere dove mandare i pacchetti: le informazioni di routing e il piano di controllo che le elabora. Come si autentica un’adiacenza e si protegge l’integrità del routing, come BGP, RPKI e l’anti-spoofing limitano le rotte false, e come CoPP e la coerenza RIB/FIB difendono il control plane. Un router esegue ciò che gli viene detto: la difesa è non fidarsi senza verifica.',
+      en: 'The extension on what a network trusts to decide where to send packets: the routing information and the control plane that processes it. How an adjacency is authenticated and routing integrity protected, how BGP, RPKI, and anti-spoofing limit false routes, and how CoPP and RIB/FIB consistency defend the control plane. A router does what it is told: the defense is to not trust without verification.'
+    },
+    topics: [
+      {
+        id: 'routing-trust-ospf-lsdb',
+        title: {
+          it: 'Fiducia del routing: adiacenze OSPF e integrità dell’LSDB',
+          en: 'Routing trust: OSPF adjacencies and LSDB integrity'
+        },
+        objectives: [
+          {
+            it: 'Spiegare perché un router esegue ciò che gli dice il routing e cosa autentica un’adiacenza.',
+            en: 'Explain why a router acts on what routing tells it and what authenticating an adjacency does.'
+          },
+          {
+            it: 'Riconoscere i rischi di redistribuzione e default-route injection sull’integrità del routing.',
+            en: 'Recognize the risks of redistribution and default-route injection to routing integrity.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere OSPF e le rotte statiche/di default (capitolo sul routing IP).',
+            en: 'Know OSPF and static/default routes (the IP routing chapter).'
+          }
+        ],
+        theory: [
+          {
+            it: 'Il routing è un sistema di fiducia: un router costruisce la sua tabella a partire da ciò che gli dicono i vicini, e poi inoltra i pacchetti di conseguenza. Se accetta informazioni false, inoltra verso la destinazione sbagliata — e lo fa con la stessa diligenza con cui inoltrerebbe quelle corrette. Per questo il primo controllo è autenticare le adiacenze: in OSPF, l’autenticazione del vicino fa sì che un router formi un’adiacenza solo con chi dimostra di condividere un segreto, impedendo a un host qualunque di iniettarsi come router e alterare l’LSDB (Link-State Database) condiviso.',
+            en: 'Routing is a trust system: a router builds its table from what its neighbors tell it, and then forwards packets accordingly. If it accepts false information, it forwards toward the wrong destination — and it does so with the same diligence it would use for correct information. This is why the first control is to authenticate adjacencies: in OSPF, neighbor authentication makes a router form an adjacency only with a peer that proves it shares a secret, preventing any host from injecting itself as a router and altering the shared LSDB (Link-State Database).'
+          },
+          {
+            it: 'L’integrità del routing non si gioca solo al confine dell’adiacenza, ma anche dentro: la redistribuzione tra protocolli è un punto delicato. Ridistribuire rotte da una fonte meno affidabile verso il dominio interno senza filtri è il modo più comune per far entrare informazioni sbagliate — comprese le default route. Una default-route injection non autorizzata attira verso di sé tutto il traffico senza una rotta più specifica, trasformando un singolo router manomesso in un buco nero o in un punto di intercettazione. La difesa è filtrare esplicitamente cosa si ridistribuisce, nei due sensi, invece di ridistribuire tutto e sperare.',
+            en: 'Routing integrity is not played only at the adjacency boundary, but also inside: redistribution between protocols is a delicate point. Redistributing routes from a less trusted source into the internal domain without filters is the most common way to let wrong information in — default routes included. An unauthorized default-route injection attracts to itself all traffic without a more specific route, turning a single tampered router into a black hole or an interception point. The defense is to explicitly filter what is redistributed, in both directions, instead of redistributing everything and hoping.'
+          },
+          {
+            it: 'Il filo conduttore è lo stesso della segmentazione e dell’identità: nessuna fiducia implicita. Un’adiacenza va autenticata come si autentica un utente; una rotta ridistribuita va filtrata come si filtra un flusso al confine; e l’integrità dell’LSDB va verificata, non assunta, confrontando ciò che un router crede con ciò che gli altri vedono. Dal lato del tester, il routing è un bersaglio proprio perché pochi lo trattano come superficie di attacco; dal lato della difesa, autenticare e filtrare il routing è tra i controlli a più alto rapporto tra impatto e sforzo.',
+            en: 'The thread is the same as segmentation and identity: no implicit trust. An adjacency must be authenticated as a user is; a redistributed route must be filtered as a flow is filtered at a boundary; and LSDB integrity must be verified, not assumed, comparing what one router believes with what the others see. On the tester’s side, routing is a target precisely because few treat it as an attack surface; on the defensive side, authenticating and filtering routing is among the controls with the highest impact-to-effort ratio.'
+          }
+        ],
+        example: {
+          it: 'Un host collegato a un segmento OSPF senza autenticazione del vicino può presentarsi come router e iniettare una default route verso 192.0.2.0/24: il traffico senza rotta più specifica lo segue. L’autenticazione delle adiacenze e il filtro sulla redistribuzione lo impediscono, e il confronto dell’LSDB rivela l’incoerenza.',
+          en: 'A host attached to an OSPF segment without neighbor authentication can present itself as a router and inject a default route toward 192.0.2.0/24: traffic without a more specific route follows it. Adjacency authentication and a redistribution filter prevent it, and comparing the LSDB reveals the inconsistency.'
+        },
+        commonMistakes: [
+          {
+            it: 'Lasciare le adiacenze senza autenticazione: un host qualunque può presentarsi come router e alterare l’LSDB.',
+            en: 'Leaving adjacencies without authentication: any host can present itself as a router and alter the LSDB.'
+          },
+          {
+            it: 'Ridistribuire senza filtri: è il modo più comune per far entrare rotte sbagliate, default comprese.',
+            en: 'Redistributing without filters: it is the most common way to let wrong routes in, defaults included.'
+          },
+          {
+            it: 'Assumere l’integrità del routing: va verificata confrontando ciò che i router vedono, non data per scontata.',
+            en: 'Assuming routing integrity: it must be verified by comparing what the routers see, not taken for granted.'
+          }
+        ],
+        lab: 'routingsecurity',
+        references: [{ kind: 'rfc', id: 'RFC 2328' }],
+        guidedLabs: [
+          {
+            id: 'gl-routing-ospf-trust',
+            title: {
+              it: 'Autentica l’adiacenza, filtra la redistribuzione',
+              en: 'Authenticate the adjacency, filter the redistribution'
+            },
+            difficulty: 'advanced',
+            lab: 'routingsecurity',
+            scenario: {
+              it: 'Il laboratorio «Routing e control plane» mostra il confine di adiacenza OSPF e l’integrità dell’LSDB.',
+              en: 'The “Routing and control plane” lab shows the OSPF adjacency boundary and LSDB integrity.'
+            },
+            task: {
+              it: 'Indica dove l’autenticazione del vicino e il filtro sulla redistribuzione fermano una rotta falsa, e come si verifica l’integrità dell’LSDB.',
+              en: 'Point out where neighbor authentication and the redistribution filter stop a false route, and how LSDB integrity is verified.'
+            },
+            steps: [
+              {
+                it: 'Apri «Routing e control plane» e osserva il confine di adiacenza OSPF.',
+                en: 'Open “Routing and control plane” and observe the OSPF adjacency boundary.'
+              },
+              {
+                it: 'Individua dove l’autenticazione impedisce a un host di formare un’adiacenza.',
+                en: 'Identify where authentication prevents a host from forming an adjacency.'
+              },
+              {
+                it: 'Segna il filtro che blocca una default-route injection in redistribuzione.',
+                en: 'Mark the filter that blocks a default-route injection on redistribution.'
+              }
+            ],
+            challenge: {
+              it: 'Un router accetta una default route che non dovrebbe esistere: quali due controlli mancavano e in quale ordine agiscono?',
+              en: 'A router accepts a default route that should not exist: which two controls were missing and in what order do they act?'
+            },
+            solution: [
+              {
+                it: 'Un router inoltra secondo ciò che il routing gli dice, quindi una rotta falsa reindirizza il traffico. L’autenticazione del vicino impedisce a un host di formare un’adiacenza e iniettare informazioni come router; il filtro sulla redistribuzione impedisce che rotte non autorizzate (una default compresa) entrino nel dominio. L’integrità dell’LSDB si verifica confrontando ciò che i router vedono, non assumendola.',
+                en: 'A router forwards according to what routing tells it, so a false route redirects traffic. Neighbor authentication prevents a host from forming an adjacency and injecting information as a router; the redistribution filter prevents unauthorized routes (a default included) from entering the domain. LSDB integrity is verified by comparing what the routers see, not assumed.'
+              },
+              {
+                it: 'Sfida: mancavano l’autenticazione delle adiacenze (per impedire l’ingresso come router) e il filtro sulla redistribuzione (per bloccare la default); agiscono in ordine — prima si nega l’adiacenza non fidata, poi si filtra ciò che comunque entrerebbe da una fonte ridistribuita.',
+                en: 'Challenge: adjacency authentication (to prevent entry as a router) and the redistribution filter (to block the default) were missing; they act in order — first the untrusted adjacency is denied, then what would still enter from a redistributed source is filtered.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So dire cosa autentica un’adiacenza e perché un router esegue ciò che il routing gli dice.',
+                en: 'I can say what authenticating an adjacency does and why a router acts on what routing tells it.'
+              },
+              {
+                it: 'So riconoscere i rischi di redistribuzione e default-route injection e come filtrarli.',
+                en: 'I can recognize the risks of redistribution and default-route injection and how to filter them.'
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'routing-bgp-rpki-antispoofing',
+        title: {
+          it: 'BGP, RPKI e anti-spoofing (uRPF e BCP 38)',
+          en: 'BGP, RPKI, and anti-spoofing (uRPF and BCP 38)'
+        },
+        objectives: [
+          {
+            it: 'Descrivere come policy BGP, RPKI e maximum-prefix limitano l’accettazione di rotte false.',
+            en: 'Describe how BGP policy, RPKI, and maximum-prefix limit accepting false routes.'
+          },
+          {
+            it: 'Spiegare l’anti-spoofing di origine con uRPF e il filtraggio in ingresso di BCP 38.',
+            en: 'Explain source anti-spoofing with uRPF and the ingress filtering of BCP 38.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere il routing tra domini e l’indirizzamento (capitoli su routing e su IPv4).',
+            en: 'Know interdomain routing and addressing (the routing and IPv4 chapters).'
+          }
+        ],
+        theory: [
+          {
+            it: 'Tra domini amministrativi diversi, la fiducia è ancora più scarsa, e BGP la gestisce con la policy. Accettare qualunque annuncio espone al route hijacking — un vicino che annuncia prefissi che non gli appartengono attira traffico altrui. Tre controlli lo limitano: la policy di importazione filtra ciò che si accetta per prefisso e per vicino; RPKI (Resource Public Key Infrastructure) permette di validare che l’origine di un prefisso sia autorizzata a annunciarlo, scartando gli annunci con origine non valida; e il maximum-prefix chiude la sessione se un vicino annuncia molti più prefissi del previsto, un segnale di errore o di leak.',
+            en: 'Between different administrative domains, trust is even scarcer, and BGP manages it with policy. Accepting any announcement exposes you to route hijacking — a neighbor announcing prefixes that are not theirs attracts others’ traffic. Three controls limit it: the import policy filters what you accept by prefix and by neighbor; RPKI (Resource Public Key Infrastructure) lets you validate that a prefix’s origin is authorized to announce it, dropping announcements with an invalid origin; and maximum-prefix closes the session if a neighbor announces many more prefixes than expected, a sign of an error or a leak.'
+          },
+          {
+            it: 'La fiducia manca anche sugli indirizzi di origine dei pacchetti, non solo sulle rotte. L’IP spoofing falsifica l’indirizzo di origine per nascondersi o per riflettere un attacco su una vittima. L’anti-spoofing lo contrasta alla sorgente: uRPF (unicast Reverse Path Forwarding) scarta un pacchetto se la sua origine non è raggiungibile dall’interfaccia su cui è arrivato, cioè se la rotta di ritorno non combacia. È l’applicazione pratica del BCP 38, il filtraggio in ingresso che impedisce a una rete di immettere nel resto di Internet pacchetti con origini che non le appartengono. Attenzione però al routing asimmetrico, che può far scartare a uRPF traffico legittimo: va calibrato sulla topologia.',
+            en: 'Trust is also missing on the packets’ source addresses, not only on the routes. IP spoofing forges the source address to hide or to reflect an attack onto a victim. Anti-spoofing counters it at the source: uRPF (unicast Reverse Path Forwarding) drops a packet if its source is not reachable from the interface it arrived on, that is, if the return route does not match. It is the practical application of BCP 38, the ingress filtering that prevents a network from injecting into the rest of the Internet packets with sources that are not its own. Beware of asymmetric routing, though, which can make uRPF drop legitimate traffic: it must be tuned to the topology.'
+          },
+          {
+            it: 'La logica è coerente con il resto del capitolo: non accettare un’affermazione — una rotta, un indirizzo di origine — solo perché è arrivata. BGP con policy e RPKI non accetta rotte la cui origine non è provata; uRPF e BCP 38 non accettano pacchetti la cui origine non regge alla verifica del percorso di ritorno. Nessuno di questi controlli è perfetto da solo, ma insieme alzano molto il costo di iniettare rotte false o indirizzi falsificati, che è l’obiettivo realistico della difesa del routing tra domini.',
+            en: 'The logic is consistent with the rest of the chapter: do not accept a claim — a route, a source address — just because it arrived. BGP with policy and RPKI does not accept routes whose origin is not proven; uRPF and BCP 38 do not accept packets whose source does not hold up to the return-path check. None of these controls is perfect alone, but together they raise a lot the cost of injecting false routes or forged addresses, which is the realistic goal of interdomain routing defense.'
+          }
+        ],
+        example: {
+          it: 'Un vicino BGP che annuncia un prefisso non suo viene scartato dalla validazione RPKI dell’origine; un pacchetto con indirizzo di origine falsificato in 192.0.2.0/24 viene scartato da uRPF perché la rotta di ritorno non combacia con l’interfaccia d’ingresso.',
+          en: 'A BGP neighbor announcing a prefix that is not theirs is dropped by RPKI origin validation; a packet with a forged source address in 192.0.2.0/24 is dropped by uRPF because the return route does not match the ingress interface.'
+        },
+        commonMistakes: [
+          {
+            it: 'Accettare gli annunci BGP senza policy né validazione dell’origine: apre al route hijacking.',
+            en: 'Accepting BGP announcements without policy or origin validation: it opens the door to route hijacking.'
+          },
+          {
+            it: 'Attivare uRPF stretto ignorando il routing asimmetrico: scarta traffico legittimo quando il ritorno diverge.',
+            en: 'Enabling strict uRPF while ignoring asymmetric routing: it drops legitimate traffic when the return diverges.'
+          },
+          {
+            it: 'Credere che un solo controllo basti: policy, RPKI, maximum-prefix e anti-spoofing lavorano insieme.',
+            en: 'Believing one control is enough: policy, RPKI, maximum-prefix, and anti-spoofing work together.'
+          }
+        ],
+        lab: 'routingsecurity',
+        references: [{ kind: 'rfc', id: 'RFC 7454' }],
+        guidedLabs: [
+          {
+            id: 'gl-routing-bgp-origin',
+            title: {
+              it: 'Rifiuta la rotta e l’origine non provate',
+              en: 'Reject the unproven route and source'
+            },
+            difficulty: 'advanced',
+            lab: 'routingsecurity',
+            scenario: {
+              it: 'Il laboratorio «Routing e control plane» mostra la policy BGP, RPKI e l’anti-spoofing con uRPF.',
+              en: 'The “Routing and control plane” lab shows BGP policy, RPKI, and anti-spoofing with uRPF.'
+            },
+            task: {
+              it: 'Associa route hijacking e IP spoofing ai controlli che li fermano, e spiega il limite del routing asimmetrico per uRPF.',
+              en: 'Match route hijacking and IP spoofing to the controls that stop them, and explain the asymmetric-routing limit for uRPF.'
+            },
+            steps: [
+              {
+                it: 'Apri «Routing e control plane» e scegli lo scenario su BGP e RPKI.',
+                en: 'Open “Routing and control plane” and pick the BGP and RPKI scenario.'
+              },
+              {
+                it: 'Individua come policy, RPKI e maximum-prefix limitano le rotte accettate.',
+                en: 'Identify how policy, RPKI, and maximum-prefix limit the accepted routes.'
+              },
+              {
+                it: 'Segna dove uRPF scarta un’origine falsificata e dove il routing asimmetrico lo complica.',
+                en: 'Mark where uRPF drops a forged source and where asymmetric routing complicates it.'
+              }
+            ],
+            challenge: {
+              it: 'uRPF scarta traffico legittimo: è un attacco o una configurazione, e come lo risolvi senza disattivare l’anti-spoofing?',
+              en: 'uRPF drops legitimate traffic: is it an attack or a configuration, and how do you fix it without disabling anti-spoofing?'
+            },
+            solution: [
+              {
+                it: 'Il route hijacking si ferma con la policy di importazione, la validazione RPKI dell’origine e il maximum-prefix, che insieme non accettano rotte la cui origine non è provata. L’IP spoofing si ferma con uRPF e il BCP 38, che scartano i pacchetti la cui origine non regge alla verifica del percorso di ritorno. Nessuno dei due basta da solo: lavorano a strati.',
+                en: 'Route hijacking is stopped by the import policy, RPKI origin validation, and maximum-prefix, which together do not accept routes whose origin is not proven. IP spoofing is stopped by uRPF and BCP 38, which drop packets whose source does not hold up to the return-path check. Neither is enough alone: they work in layers.'
+              },
+              {
+                it: 'Sfida: uRPF che scarta traffico legittimo è spesso una configurazione, non un attacco — il routing asimmetrico fa divergere andata e ritorno; si risolve passando a una modalità uRPF che accetta più percorsi di ritorno (loose) sulle interfacce asimmetriche, senza spegnere l’anti-spoofing dove la topologia è simmetrica.',
+                en: 'Challenge: uRPF dropping legitimate traffic is often a configuration, not an attack — asymmetric routing makes outbound and return diverge; you fix it by moving to a uRPF mode that accepts more return paths (loose) on the asymmetric interfaces, without disabling anti-spoofing where the topology is symmetric.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So associare route hijacking e IP spoofing ai controlli che li fermano.',
+                en: 'I can match route hijacking and IP spoofing to the controls that stop them.'
+              },
+              {
+                it: 'So spiegare perché il routing asimmetrico complica uRPF e come calibrarlo.',
+                en: 'I can explain why asymmetric routing complicates uRPF and how to tune it.'
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'control-plane-copp-consistency',
+        title: {
+          it: 'Protezione del control plane: CoPP e coerenza RIB/FIB',
+          en: 'Control-plane protection: CoPP and RIB/FIB consistency'
+        },
+        objectives: [
+          {
+            it: 'Spiegare perché il control plane è un bersaglio e come CoPP ne protegge la CPU.',
+            en: 'Explain why the control plane is a target and how CoPP protects its CPU.'
+          },
+          {
+            it: 'Verificare la coerenza tra RIB, FIB e adiacenza invece di fidarsi di un solo stato.',
+            en: 'Verify consistency among RIB, FIB, and adjacency instead of trusting a single state.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere piani di controllo/dati e la tabella di routing (capitoli su componenti di rete e routing).',
+            en: 'Know the control/data planes and the routing table (the network components and routing chapters).'
+          }
+        ],
+        theory: [
+          {
+            it: 'Il control plane — i processi che calcolano le rotte e gestiscono i protocolli — gira sulla CPU del dispositivo, ed è un bersaglio proprio perché esaurirlo degrada tutta la rete senza toccare un singolo host. Un’ondata di pacchetti destinati al router stesso (richieste di protocollo, ICMP, gestione) può saturare la CPU e far cadere le adiacenze, con un effetto a cascata. CoPP (Control Plane Policing) difende classificando il traffico diretto al control plane e applicando un policing per classe: il traffico legittimo dei protocolli ha la sua quota garantita, il resto viene limitato, così un picco non travolge la CPU.',
+            en: 'The control plane — the processes that compute routes and run the protocols — runs on the device’s CPU, and it is a target precisely because exhausting it degrades the whole network without touching a single host. A surge of packets destined to the router itself (protocol requests, ICMP, management) can saturate the CPU and bring adjacencies down, with a cascading effect. CoPP (Control Plane Policing) defends by classifying the traffic directed at the control plane and applying per-class policing: the legitimate protocol traffic has its guaranteed share, the rest is rate-limited, so a spike does not overwhelm the CPU.'
+          },
+          {
+            it: 'Un altro rischio sottile è l’incoerenza tra i piani. La RIB (Routing Information Base) è ciò che il control plane crede; la FIB (Forwarding Information Base) è ciò con cui il data plane inoltra davvero. In condizioni normali coincidono, ma un bug, un’ottimizzazione o un attacco possono farle divergere: il router «dice» di inoltrare in un modo e inoltra in un altro. Per questo lo stato di un solo piano non basta come prova — una adiacenza UP non garantisce che la FIB inoltri come la RIB prevede. La verifica confronta RIB, FIB e adiacenza, e usa test sintetici end-to-end e telemetria indipendente per vedere il forwarding reale, non quello dichiarato.',
+            en: 'Another subtle risk is inconsistency between the planes. The RIB (Routing Information Base) is what the control plane believes; the FIB (Forwarding Information Base) is what the data plane actually forwards with. Under normal conditions they match, but a bug, an optimization, or an attack can make them diverge: the router «says» it forwards one way and forwards another. This is why the state of a single plane is not enough as proof — an adjacency being UP does not guarantee the FIB forwards as the RIB intends. Verification compares RIB, FIB, and adjacency, and uses end-to-end synthetic tests and independent telemetry to see the real forwarding, not the declared one.'
+          },
+          {
+            it: 'Il capitolo si chiude sul suo principio: nel routing nulla va creduto senza verifica — né un vicino, né una rotta, né un’origine, né lo stato di un piano. CoPP protegge la capacità del control plane di continuare a decidere sotto pressione; il confronto RIB/FIB protegge dall’illusione che decidere bene basti a inoltrare bene. Dal lato del tester, control plane e incoerenze sono bersagli a basso rumore e alto impatto; dal lato della difesa, proteggere e verificare il piano di controllo è ciò che tiene in piedi tutto il resto.',
+            en: 'The chapter closes on its principle: in routing nothing is to be believed without verification — not a neighbor, not a route, not an origin, not a plane’s state. CoPP protects the control plane’s ability to keep deciding under pressure; the RIB/FIB comparison protects from the illusion that deciding well is enough to forward well. On the tester’s side, the control plane and inconsistencies are low-noise, high-impact targets; on the defensive side, protecting and verifying the control plane is what holds up everything else.'
+          }
+        ],
+        example: {
+          it: 'Un picco di pacchetti verso il router satura la CPU e fa cadere le adiacenze; CoPP garantisce una quota al traffico dei protocolli e limita il resto. Se un’adiacenza è UP ma il traffico non passa, il confronto tra RIB e FIB e un test end-to-end rivelano l’incoerenza che lo stato del solo control plane nascondeva.',
+          en: 'A spike of packets toward the router saturates the CPU and brings adjacencies down; CoPP guarantees a share to protocol traffic and rate-limits the rest. If an adjacency is UP but traffic does not pass, comparing RIB and FIB and an end-to-end test reveal the inconsistency that the control plane’s state alone hid.'
+        },
+        commonMistakes: [
+          {
+            it: 'Trascurare il control plane: saturarne la CPU degrada tutta la rete senza toccare un host.',
+            en: 'Neglecting the control plane: saturating its CPU degrades the whole network without touching a host.'
+          },
+          {
+            it: 'Fidarsi di un’adiacenza UP come prova di forwarding: RIB e FIB possono divergere.',
+            en: 'Trusting an UP adjacency as proof of forwarding: the RIB and FIB can diverge.'
+          },
+          {
+            it: 'Verificare un solo piano: serve confrontare RIB, FIB e adiacenza con test end-to-end.',
+            en: 'Verifying a single plane: you must compare RIB, FIB, and adjacency with end-to-end tests.'
+          }
+        ],
+        lab: 'routingsecurity',
+        references: [{ kind: 'nist', id: 'SP 800-189' }],
+        guidedLabs: [
+          {
+            id: 'gl-control-plane-verify',
+            title: {
+              it: 'Proteggi la CPU, verifica il forwarding',
+              en: 'Protect the CPU, verify the forwarding'
+            },
+            difficulty: 'advanced',
+            lab: 'routingsecurity',
+            scenario: {
+              it: 'Il laboratorio «Routing e control plane» mostra il policing CoPP e la coerenza tra RIB, FIB e adiacenza.',
+              en: 'The “Routing and control plane” lab shows CoPP policing and the consistency among RIB, FIB, and adjacency.'
+            },
+            task: {
+              it: 'Spiega come CoPP protegge la CPU sotto un picco e come verifichi che la FIB inoltri come la RIB prevede.',
+              en: 'Explain how CoPP protects the CPU under a spike and how you verify the FIB forwards as the RIB intends.'
+            },
+            steps: [
+              {
+                it: 'Apri «Routing e control plane» e scegli lo scenario su CoPP.',
+                en: 'Open “Routing and control plane” and pick the CoPP scenario.'
+              },
+              {
+                it: 'Osserva come il policing per classe garantisce quota ai protocolli e limita il resto.',
+                en: 'Observe how per-class policing guarantees a share to the protocols and rate-limits the rest.'
+              },
+              {
+                it: 'Confronta RIB, FIB e adiacenza e indica un test end-to-end che prova il forwarding reale.',
+                en: 'Compare RIB, FIB, and adjacency and point out an end-to-end test that proves the real forwarding.'
+              }
+            ],
+            challenge: {
+              it: 'L’adiacenza è UP ma il traffico non passa: dove guardi per distinguere un problema di control plane da uno di data plane?',
+              en: 'The adjacency is UP but traffic does not pass: where do you look to tell a control-plane problem from a data-plane one?'
+            },
+            solution: [
+              {
+                it: 'CoPP classifica il traffico diretto al router e applica un policing per classe: i protocolli hanno una quota garantita, un picco viene limitato e la CPU continua a decidere. La coerenza si verifica confrontando RIB (ciò che il control plane crede), FIB (ciò con cui il data plane inoltra) e adiacenza, perché un’adiacenza UP non prova il forwarding; un test end-to-end e la telemetria indipendente mostrano il percorso reale.',
+                en: 'CoPP classifies the traffic directed at the router and applies per-class policing: the protocols have a guaranteed share, a spike is rate-limited, and the CPU keeps deciding. Consistency is verified by comparing the RIB (what the control plane believes), the FIB (what the data plane forwards with), and the adjacency, because an UP adjacency does not prove forwarding; an end-to-end test and independent telemetry show the real path.'
+              },
+              {
+                it: 'Sfida: con adiacenza UP ma traffico assente si guarda alla FIB rispetto alla RIB — se la FIB non riflette la RIB il problema è nel data plane (programmazione del forwarding); se anche la RIB è errata il problema è nel control plane (la rotta scelta), e il test end-to-end distingue i due casi.',
+                en: 'Challenge: with the adjacency UP but no traffic you look at the FIB against the RIB — if the FIB does not reflect the RIB the problem is in the data plane (forwarding programming); if the RIB itself is wrong the problem is in the control plane (the chosen route), and the end-to-end test tells the two cases apart.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So spiegare perché il control plane è un bersaglio e come CoPP ne protegge la CPU.',
+                en: 'I can explain why the control plane is a target and how CoPP protects its CPU.'
+              },
+              {
+                it: 'So verificare la coerenza RIB/FIB/adiacenza invece di fidarmi di un solo stato.',
+                en: 'I can verify RIB/FIB/adjacency consistency instead of trusting a single state.'
+              }
+            ]
+          }
+        ]
+      }
+    ]
   }
 ];

@@ -66,9 +66,19 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
       errori comuni, riferimenti (NIST SP 800-41 Rev. 1, SP 800-207, RFC 4364) e un laboratorio
       guidato su `segmentation`; complemento difensivo del movimento laterale eJPT. Manuale a **24
       capitoli / 73 argomenti / 59 laboratori guidati**. Report: `docs/verify/2026-10-14-content01-segmentation.md`.
-- [ ] **CONTENT-02 (P2) — Laboratori difensivi ancora non in guida (uno per incremento).** Insegnare
-      `routingsecurity`, `availability`, `recovery`, `managementsecurity`, `layer2security` con
-      capitoli/argomenti dedicati, chiudendo del tutto il divario guida↔laboratori.
+- [~] **CONTENT-02 (P2) — Laboratori difensivi ancora non in guida (uno per incremento).** Insegnare
+  `routingsecurity`, `availability`, `recovery`, `managementsecurity`, `layer2security` con
+  capitoli/argomenti dedicati, chiudendo del tutto il divario guida↔laboratori. **In corso — 1
+  di 5 (14/10/2026):** aggiunto il capitolo estensione «Sicurezza del routing e del control
+  plane» (ordine 25, cert Security+) che insegna `routingsecurity`, con tre argomenti — fiducia
+  del routing (adiacenze OSPF, integrità LSDB, redistribuzione/default-route injection), BGP/RPKI
+  e anti-spoofing (uRPF, BCP 38), protezione del control plane (CoPP, coerenza RIB/FIB) —
+  ciascuno con obiettivi, teoria progressiva, esempio su `192.0.2.0/24`, errori comuni,
+  riferimenti (RFC 2328, RFC 7454, NIST SP 800-189) e un laboratorio guidato su `routingsecurity`.
+  Manuale a **25 capitoli / 76 argomenti / 62 laboratori guidati**; aggiornate le asserzioni di
+  conteggio (progresso `x/25`, 25 opzioni, optgroup «Estensione · 0/11»). Restano da insegnare:
+  `availability`, `recovery`, `managementsecurity`, `layer2security`. Report:
+  `docs/verify/2026-10-14-content02-routing.md`.
 - [ ] **EDU-31 (P2) — Collegamenti incrociati guida↔lab.** Verificare che ogni laboratorio insegnato
       esponga il back-link alla teoria (EDU-STRUCT-05) via la mappa inversa, anche per i nuovi
       capitoli.
