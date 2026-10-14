@@ -127,9 +127,15 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
 
 ## 📝 Technical Writer — documentazione
 
-- [ ] **DOC-21 (P2) — README allineato ai due obiettivi e ai capitoli attuali.** Aggiornare le
+- [x] **DOC-21 (P2) — README allineato ai due obiettivi e ai capitoli attuali.** Aggiornare le
       feature del manuale (oggi ferme ai primi capitoli) perché riflettano i 24 capitoli e il
-      percorso eJPT, e dichiarare entrambi gli obiettivi CCNA 200-301 + eJPT.
+      percorso eJPT, e dichiarare entrambi gli obiettivi CCNA 200-301 + eJPT. **Esito (14/10/2026):**
+      aggiornati entrambi i README (`README.md` / `README.it.md`): tagline che dichiara i percorsi
+      **CCNA 200-301 + eJPT**; descrizione del manuale riscritta per riflettere l'intera dorsale
+      CCNA, l'**estensione Security+/avanzata** e la **traccia eJPT** (metodologia, web, exploitation/
+      post-exploitation), con rimando al percorso di studio (`docs/STUDY_PATH.md`); aggiunto il nuovo
+      laboratorio «Stati di porta (scanning)» all'elenco. Parità IT/EN mantenuta; `format:check`
+      verde. Report: `docs/verify/2026-10-14-doc21-readme.md`.
 
 ## 📅 Ordine consigliato
 
