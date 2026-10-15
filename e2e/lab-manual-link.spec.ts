@@ -35,4 +35,19 @@ test.describe('lab → manual back-link (EDU-STRUCT-05)', () => {
     await expect(page.getByRole('heading', { name: 'Manuale di studio' })).toBeVisible();
     await expect(page.locator('aside', { hasText: 'Teoria nel manuale' })).toHaveCount(0);
   });
+
+  // EDU-31 — a newly taught lab surfaces the same back-link in the real app, proving the
+  // central mount (App.tsx, from the active view id) covers new chapters, not just the
+  // ones wired by hand. `layer2security` gained its chapter with CONTENT-02 (5/5).
+  test('a newly taught lab links back to its new chapter', async ({ page }) => {
+    await page.goto('/#/layer2security');
+    const callout = page.locator('aside', { hasText: 'Teoria nel manuale' });
+    await expect(callout).toBeVisible();
+    const chapterLink = callout.getByRole('link', { name: /access layer/i });
+    await expect(chapterLink).toHaveAttribute('href', '#/manual/access-layer-security');
+
+    await chapterLink.click();
+    await expect(page).toHaveURL(/#\/manual\/access-layer-security$/);
+    await expect(page.getByRole('heading', { level: 2, name: /access layer/i })).toBeVisible();
+  });
 });

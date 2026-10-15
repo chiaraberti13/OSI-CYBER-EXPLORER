@@ -124,9 +124,19 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
   asserzioni (progresso `x/29`, 29 opzioni, optgroup «Estensione · 0/15»). Divario guida↔laboratori
   chiuso: ogni laboratorio difensivo ha ora la sua controparte teorica nel manuale.
 
-- [ ] **EDU-31 (P2) — Collegamenti incrociati guida↔lab.** Verificare che ogni laboratorio insegnato
+- [x] **EDU-31 (P2) — Collegamenti incrociati guida↔lab.** Verificare che ogni laboratorio insegnato
       esponga il back-link alla teoria (EDU-STRUCT-05) via la mappa inversa, anche per i nuovi
-      capitoli.
+      capitoli. **Esito (15/10/2026):** il back-link è montato una sola volta dalla vista attiva
+      (`App.tsx`, non per-lab), quindi ogni lab citato da un capitolo lo espone già; verificato che
+      tutti i **30** lab insegnati risolvono a ≥1 capitolo (inclusi i nuovi difensivi `segmentation`,
+      `routingsecurity`, `availability`, `managementsecurity`, `recovery`, `layer2security`). Aggiunto
+      un **guard sistematico** che deriva l'insieme dei lab insegnati da `STUDY_MANUAL` (unica fonte
+      di verità) e prova, per ciascuno, che `LabManualLink` renda i deep-link esatti dei capitoli
+      citanti in ordine di studio — così un nuovo capitolo o un nuovo laboratorio guidato entra nel
+      guard senza liste da mantenere a mano. Esteso l'E2E con un lab appena insegnato
+      (`layer2security` → `access-layer-security`) per provare la catena completa nell'app reale.
+      Solo codice di test: nessun cambio a prodotto o contenuti. Report:
+      `docs/verify/2026-10-15-edu31-guide-lab-backlinks.md`.
 
 ## 🎨 Visual Designer — identità e diagrammi
 
