@@ -1,11 +1,11 @@
 import { test, expect, type Page } from '@playwright/test';
 import { VIEW_ORDER } from '../src/content/viewRegistry';
-import { chaptersByDomain, manualStats } from '../src/lib/studyManual';
+import { chaptersForCertificationTrack, manualStats } from '../src/lib/studyManual';
 
 // ENG-31 — derive chapter-count expectations from the manual dataset so a new chapter
 // never forces a hand-edit here.
 const TOTAL_CHAPTERS = manualStats().chapters;
-const FIRST_DOMAIN_CHAPTERS = chaptersByDomain()[0].chapters.length;
+const CCNA_CHAPTERS = chaptersForCertificationTrack('ccna').length;
 
 /**
  * ENG-12 smoke tests for the application shell: first load, the language toggle,
@@ -143,12 +143,12 @@ test.describe('application shell', () => {
     await expect(page).toHaveURL(/#\/(osi|ports)$/);
   });
 
-  test('the study manual navigation is grouped by CCNA domain (EDU-STRUCT-02)', async ({ page }) => {
+  test('the study manual navigation is grouped by the two study routes (EDU-STRUCT-02)', async ({ page }) => {
     await page.goto('/#/manual');
     const nav = page.getByRole('navigation', { name: 'Capitoli del manuale' });
-    await expect(nav.getByRole('group', { name: 'CCNA 1.0 · Fondamenti di rete' })).toBeVisible();
-    await expect(nav.getByRole('group', { name: 'CCNA 3.0 · Connettività IP' })).toBeVisible();
-    await expect(nav.getByRole('group', { name: 'Estensione' })).toBeVisible();
+    await expect(nav.getByRole('group', { name: 'Percorso CCNA' })).toBeVisible();
+    await expect(nav.getByRole('group', { name: 'eJPT' })).toBeVisible();
+    await expect(nav.getByRole('group', { name: 'Estensione' })).toHaveCount(0);
   });
 
   test('the manual keeps domain and chapter context below the sticky navigation (UX-20)', async ({ page }) => {
@@ -184,7 +184,7 @@ test.describe('application shell', () => {
     await expect(context).toContainText('Ethernet, switching e tabella CAM');
   });
 
-  test('chapter completion persists locally, aggregates by domain, and resets (UX-21)', async ({ page }) => {
+  test('chapter completion persists locally, aggregates by route, and resets (UX-21)', async ({ page }) => {
     await page.goto('/#/manual');
     await expect(page.getByLabel(`Progresso capitoli: 0/${TOTAL_CHAPTERS}`, { exact: true })).toBeVisible();
 
@@ -196,10 +196,13 @@ test.describe('application shell', () => {
       'true'
     );
 
-    // Per-domain aggregation lives in the manual's own chapter navigation (IA-01a); the
-    // overview no longer duplicates the chapter index (IA-01b).
+    // Per-route aggregation lives in the manual's own chapter navigation: the CCNA route
+    // group header shows one completed chapter (scoped to the tree so it is not confused
+    // with the per-route progress summary in the header).
     await expect(
-      page.getByLabel(`CCNA 1.0 · Fondamenti di rete · Progresso capitoli: 1/${FIRST_DOMAIN_CHAPTERS}`)
+      page
+        .getByRole('navigation', { name: 'Capitoli del manuale' })
+        .getByLabel(`Percorso CCNA · Progresso capitoli: 1/${CCNA_CHAPTERS}`)
     ).toBeVisible();
 
     await page.getByRole('button', { name: 'Azzera progresso' }).click();

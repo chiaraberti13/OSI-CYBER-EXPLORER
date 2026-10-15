@@ -26,17 +26,22 @@ export type ManualDifficulty = 'intro' | 'core' | 'advanced';
 /** `both` means CCNA + Security+, not CCNA + eJPT. */
 export type ManualCert = 'ccna' | 'securityplus' | 'both' | 'ejpt';
 
-/** Primary study route, separate from certification overlap and CCNA domain alignment. */
-export type ManualCertificationTrack = 'ccna' | 'ejpt' | 'extension';
+/**
+ * The two learner-facing study routes. The CCNA route carries the CCNA 200-301 backbone
+ * together with the Security+/advanced defensive extension (both are the "blue" study
+ * path); eJPT is the dedicated offensive route. This is deliberately binary — the two
+ * certification objectives — and is separate from the CCNA-blueprint alignment on a
+ * chapter (`track: 'ccna' | 'extension'`), which still drives domain mapping.
+ */
+export type ManualCertificationTrack = 'ccna' | 'ejpt';
 
 /** Stable route order and shared bilingual labels for indexes, filters and progress. */
 export const MANUAL_CERTIFICATION_TRACKS: readonly {
   id: ManualCertificationTrack;
   title: Bilingual;
 }[] = [
-  { id: 'ccna', title: { it: 'CCNA', en: 'CCNA' } },
-  { id: 'ejpt', title: { it: 'eJPT', en: 'eJPT' } },
-  { id: 'extension', title: { it: 'Estensione', en: 'Extension' } }
+  { id: 'ccna', title: { it: 'Percorso CCNA', en: 'CCNA path' } },
+  { id: 'ejpt', title: { it: 'eJPT', en: 'eJPT' } }
 ];
 
 /** A guided lab exercise: a task that opens an interactive lab, with a worked solution. */

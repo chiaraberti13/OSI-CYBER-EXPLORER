@@ -19,9 +19,6 @@ test.describe('manual dark theme (UX-28)', () => {
     // Opt into the dark theme (attribute-driven; the app ships light by default).
     await page.evaluate(() => document.documentElement.setAttribute('data-theme', 'dark'));
 
-    // Focus the learning content: dismiss the first-visit onboarding (UX-22).
-    await page.getByRole('button', { name: 'Chiudi le istruzioni' }).click();
-
     // Wait for the view's entrance animation (motion opacity 0 -> 1) to settle, so the
     // contrast scan sees the opaque dark surfaces rather than a half-faded blend.
     await expect

@@ -24,7 +24,6 @@ test.describe('manual chapter deep links (EDU-STRUCT-04)', () => {
   test('keeps the URL in sync with chapter selection and Back', async ({ page }) => {
     await page.goto('/#/manual');
     await expect(page.getByRole('heading', { level: 1, name: 'Manuale di studio' })).toBeVisible();
-    await page.getByRole('button', { name: 'Chiudi le istruzioni' }).click();
 
     // Select the Ethernet chapter from the desktop chip navigation.
     await page

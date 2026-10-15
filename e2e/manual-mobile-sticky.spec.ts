@@ -1,14 +1,14 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
-import { chaptersByDomain, manualStats } from '../src/lib/studyManual';
+import { chaptersByCertificationTrack, chaptersForCertificationTrack, manualStats } from '../src/lib/studyManual';
 
 // ENG-31 — derive the chapter-count expectations from the manual dataset so a new
 // chapter never forces a hand-edit here, and so these assertions prove the rendered
 // navigation mirrors the data rather than a literal matching itself.
 const TOTAL_CHAPTERS = manualStats().chapters;
-const CHAPTER_GROUPS = chaptersByDomain();
-const DOMAIN_GROUP_COUNT = CHAPTER_GROUPS.length;
-const FIRST_DOMAIN_CHAPTERS = CHAPTER_GROUPS[0].chapters.length;
+// Two-route IA: the index groups by study route (Percorso CCNA, eJPT).
+const ROUTE_GROUP_COUNT = chaptersByCertificationTrack().length;
+const CCNA_CHAPTERS = chaptersForCertificationTrack('ccna').length;
 // Progress label after exactly one completed chapter, mirroring the view's rounding.
 const ONE_OF_ALL_PERCENT = Math.round((1 / TOTAL_CHAPTERS) * 100);
 
@@ -20,8 +20,6 @@ test.describe('manual mobile navigation (UX-25)', () => {
 
   test('keeps chapter, progress and topic navigation compact and reachable', async ({ page }) => {
     await page.goto('/#/manual');
-    const closeHelp = page.getByRole('button', { name: 'Chiudi le istruzioni' });
-    if (await closeHelp.count()) await closeHelp.click();
 
     const desktopNav = page.getByRole('navigation', { name: 'Capitoli del manuale' });
     const mobileNav = page.getByRole('navigation', { name: 'Navigazione mobile del manuale' });
@@ -31,7 +29,7 @@ test.describe('manual mobile navigation (UX-25)', () => {
     await expect(desktopNav).toBeHidden();
     await expect(mobileNav).toBeVisible();
     await expect(chapterSelect.locator('option')).toHaveCount(TOTAL_CHAPTERS);
-    await expect(chapterSelect.locator('optgroup')).toHaveCount(DOMAIN_GROUP_COUNT);
+    await expect(chapterSelect.locator('optgroup')).toHaveCount(ROUTE_GROUP_COUNT);
     expect((await mobileNav.boundingBox())?.height).toBeLessThanOrEqual(112);
 
     const indexOverflow = await topicIndex.evaluate((index) => ({
@@ -105,9 +103,7 @@ test.describe('manual mobile navigation (UX-25)', () => {
     await page.getByRole('button', { name: 'English', exact: true }).click();
     const mobileNav = page.getByRole('navigation', { name: 'Mobile manual navigation' });
     const selector = mobileNav.getByRole('combobox', { name: 'Jump to a chapter' });
-    await expect(
-      selector.locator(`optgroup[label="CCNA 1.0 · Network Fundamentals · 0/${FIRST_DOMAIN_CHAPTERS}"]`)
-    ).toHaveCount(1);
+    await expect(selector.locator(`optgroup[label="CCNA path · 0/${CCNA_CHAPTERS}"]`)).toHaveCount(1);
     const targets = await mobileNav.locator('button, select').evaluateAll((controls) =>
       controls.map((control) => {
         const box = control.getBoundingClientRect();

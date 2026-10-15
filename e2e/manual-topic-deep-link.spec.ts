@@ -22,7 +22,6 @@ test.describe('manual topic deep links (UX-29)', () => {
 
   test('gives each topic a shareable anchor on selection', async ({ page }) => {
     await page.goto('/#/manual/osi-model');
-    await page.getByRole('button', { name: 'Chiudi le istruzioni' }).click();
 
     const rail = page.getByRole('navigation', { name: 'In questa pagina' });
     await rail.getByRole('button', { name: /sette livelli/ }).click();

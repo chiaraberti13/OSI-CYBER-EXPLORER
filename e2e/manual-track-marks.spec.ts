@@ -2,29 +2,24 @@ import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 
 /**
- * VIS-10 — a coherent, non-textual sign for each chapter's certification route (CCNA,
- * eJPT, extension) in the chapter tree and the chapter header. The icon shape carries
- * the distinction (not colour alone); the route name stays available as text.
+ * VIS-10 — a coherent, non-textual sign for each of the two study routes (Percorso CCNA,
+ * eJPT) on the route group headers and the chapter header. The icon shape carries the
+ * distinction (not colour alone); the route name stays available as text.
  */
-test.describe('certification-route marks (VIS-10)', () => {
+test.describe('certification-route marks (VIS-10, two-route IA)', () => {
   test.use({ viewport: { width: 1280, height: 900 } });
 
-  test('distinguishes CCNA, eJPT and extension chapters in the tree and header', async ({ page }) => {
+  test('marks each route group in the tree and the eJPT chapter header', async ({ page }) => {
     await page.goto('/#/manual');
     const nav = page.getByRole('navigation', { name: 'Capitoli del manuale' });
 
-    // All three routes are marked in the tree…
-    await expect(nav.locator('[data-track="ccna"]').first()).toBeVisible();
-    await expect(nav.locator('[data-track="ejpt"]').first()).toBeVisible();
-    await expect(nav.locator('[data-track="extension"]').first()).toBeVisible();
+    // Each route group header carries its route icon…
+    await expect(nav.getByRole('group', { name: 'Percorso CCNA' }).locator('[data-track="ccna"]')).toBeVisible();
+    await expect(nav.getByRole('group', { name: 'eJPT' }).locator('[data-track="ejpt"]')).toBeVisible();
+    // …and there is no third "Estensione" group any more.
+    await expect(nav.getByRole('group', { name: 'Estensione' })).toHaveCount(0);
 
-    // …and eJPT rows sit inside the extension domain group yet stay distinctly marked,
-    // so eJPT is no longer visually merged with the Security+ extension.
-    const extensionGroup = nav.getByRole('group', { name: 'Estensione' });
-    await expect(extensionGroup.locator('[data-track="ejpt"]').first()).toBeVisible();
-    await expect(extensionGroup.locator('[data-track="extension"]').first()).toBeVisible();
-
-    // Opening an eJPT chapter shows the eJPT route chip in the header, not the generic one.
+    // Opening an eJPT chapter shows the eJPT route chip in the header.
     await page.goto('/#/manual/pentest-methodology');
     await expect(page.getByText('eJPT', { exact: true }).first()).toBeVisible();
   });
@@ -35,7 +30,6 @@ test.describe('certification-route marks (VIS-10)', () => {
 
     // Opt into the dark theme (attribute-driven; the app ships light by default).
     await page.evaluate(() => document.documentElement.setAttribute('data-theme', 'dark'));
-    await page.getByRole('button', { name: 'Chiudi le istruzioni' }).click();
 
     // Wait for the entrance animation (opacity 0 -> 1) to settle, so the contrast scan
     // reads the opaque dark surfaces rather than a half-faded blend.

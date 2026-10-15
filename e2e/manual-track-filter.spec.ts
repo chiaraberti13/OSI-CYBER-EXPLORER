@@ -2,11 +2,11 @@ import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 
 /**
- * UX-32 — the manual's chapter index can be filtered by certification route (CCNA /
- * eJPT / extension). The filter is view state: it narrows the tree without navigating,
- * so routing, deep links and the open chapter are preserved, and it stays WCAG 2.2 AA.
+ * UX-32 — the manual's chapter index can be filtered by study route (Percorso CCNA /
+ * eJPT). The filter is view state: it narrows the tree without navigating, so routing,
+ * deep links and the open chapter are preserved, and it stays WCAG 2.2 AA.
  */
-test.describe('certification-route filter (UX-32)', () => {
+test.describe('certification-route filter (UX-32, two-route IA)', () => {
   test.use({ viewport: { width: 1280, height: 900 } });
 
   test('narrows the tree to a route and leaves routing untouched', async ({ page }) => {
@@ -17,17 +17,15 @@ test.describe('certification-route filter (UX-32)', () => {
     const filter = page.getByRole('group', { name: 'Filtra per percorso' }).first();
     await expect(filter).toBeVisible();
 
-    // Every route is present before filtering.
-    await expect(nav.locator('[data-track="ccna"]').first()).toBeVisible();
-    await expect(nav.locator('[data-track="ejpt"]').first()).toBeVisible();
+    // Both route groups are present before filtering.
+    await expect(nav.getByRole('group', { name: 'Percorso CCNA' })).toBeVisible();
+    await expect(nav.getByRole('group', { name: 'eJPT' })).toBeVisible();
 
-    // Filter to eJPT: only eJPT rows remain, the CCNA domain groups drop out.
+    // Filter to eJPT: only the eJPT route group remains.
     await filter.getByRole('button', { name: 'eJPT' }).click();
     await expect(filter.getByRole('button', { name: 'eJPT' })).toHaveAttribute('aria-pressed', 'true');
-    await expect(nav.locator('[data-track="ejpt"]').first()).toBeVisible();
-    await expect(nav.locator('[data-track="ccna"]')).toHaveCount(0);
-    await expect(nav.locator('[data-track="extension"]')).toHaveCount(0);
-    await expect(nav.getByRole('group', { name: 'CCNA 1.0 · Fondamenti di rete' })).toHaveCount(0);
+    await expect(nav.getByRole('group', { name: 'eJPT' })).toBeVisible();
+    await expect(nav.getByRole('group', { name: 'Percorso CCNA' })).toHaveCount(0);
 
     // Filtering did not navigate: still the bare manual route.
     await expect(page).toHaveURL(/#\/manual$/);

@@ -4,8 +4,8 @@ import { expect, test } from '@playwright/test';
 /**
  * QA-20 — end-to-end coverage of the eJPT study track (PENTEST-01/02/03).
  *
- * The three eJPT extension chapters are deep-linked, and each is checked for the
- * cert label (`Estensione · eJPT (INE/eLearnSecurity)`), the three-topic "On this
+ * The three eJPT chapters are deep-linked, and each is checked for the
+ * cert label (`eJPT (INE/eLearnSecurity)`), the three-topic "On this
  * page" rail, and the primary guided-exercise action that sends the student into
  * the reused interactive lab. Every chapter is also scanned for WCAG 2.2 AA
  * violations, so the new offensive content stays accessible like the rest.
@@ -13,7 +13,7 @@ import { expect, test } from '@playwright/test';
 
 const WCAG_TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'];
 
-const EJPT_CERT_LABEL = 'Estensione · eJPT (INE/eLearnSecurity)';
+const EJPT_CERT_LABEL = 'eJPT (INE/eLearnSecurity)';
 
 const EJPT_CHAPTERS = [
   { id: 'pentest-methodology', title: 'Metodologia di penetration testing (eJPT)' },

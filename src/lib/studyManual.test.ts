@@ -219,19 +219,21 @@ describe('study manual selectors', () => {
   });
 });
 
-describe('manual certification routes (ENG-30)', () => {
-  it('provides stable, unique routes and bilingual labels', () => {
-    expect(MANUAL_CERTIFICATION_TRACKS.map((track) => track.id)).toEqual(['ccna', 'ejpt', 'extension']);
+describe('manual certification routes (ENG-30, two-route IA)', () => {
+  it('provides exactly the two study routes with bilingual labels', () => {
+    expect(MANUAL_CERTIFICATION_TRACKS.map((track) => track.id)).toEqual(['ccna', 'ejpt']);
     assertBilingualParity(MANUAL_CERTIFICATION_TRACKS, 'MANUAL_CERTIFICATION_TRACKS');
   });
 
   it.each([
     ['ccna', 'ccna', 'ccna'],
     ['both', 'ccna', 'ccna'],
-    ['both', 'extension', 'extension'],
-    ['securityplus', 'extension', 'extension'],
+    // The Security+/advanced extension studies as part of the CCNA (blue) route.
+    ['both', 'extension', 'ccna'],
+    ['securityplus', 'extension', 'ccna'],
+    // Only eJPT chapters form the offensive route.
     ['ejpt', 'extension', 'ejpt']
-  ] as const)('classifies cert=%s / blueprint=%s as %s', (cert, track, expected) => {
+  ] as const)('classifies cert=%s / blueprint=%s as the %s route', (cert, track, expected) => {
     const chapter: ManualChapter = { ...STUDY_MANUAL[0], cert, track };
     expect(certificationTrackForChapter(chapter)).toBe(expected);
   });
@@ -248,10 +250,10 @@ describe('manual certification routes (ENG-30)', () => {
     }
   });
 
-  it('partitions every chapter exactly once without reordering or mutating the source', () => {
+  it('partitions every chapter into the two routes, once, without mutating the source', () => {
     const originalIds = STUDY_MANUAL.map((chapter) => chapter.id);
     const groups = chaptersByCertificationTrack();
-    expect(groups.map((group) => group.key)).toEqual(['ccna', 'ejpt', 'extension']);
+    expect(groups.map((group) => group.key)).toEqual(['ccna', 'ejpt']);
     const chapters = groups.flatMap((group) => group.chapters);
     expect(chapters.map((chapter) => chapter.id).sort()).toEqual([...originalIds].sort());
     expect(new Set(chapters.map((chapter) => chapter.id)).size).toBe(STUDY_MANUAL.length);
@@ -266,33 +268,36 @@ describe('manual certification routes (ENG-30)', () => {
     chaptersForCertificationTrack('ccna').pop();
     groups[0].chapters.reverse();
     expect(chaptersForCertificationTrack('ccna').map((chapter) => chapter.order)).toEqual(
-      STUDY_MANUAL.filter((chapter) => chapter.track === 'ccna')
+      STUDY_MANUAL.filter((chapter) => chapter.cert !== 'ejpt')
         .map((chapter) => chapter.order)
         .sort((a, b) => a - b)
     );
   });
 
-  it('separates eJPT from extensions and retains shared CCNA/Security+ foundations', () => {
+  it('puts only eJPT on the offensive route and folds the defensive extension into CCNA', () => {
     expect(chaptersForCertificationTrack('ejpt').map((chapter) => chapter.id)).toEqual([
       'pentest-methodology',
       'web-app-pentest',
       'exploitation-post-exploitation'
     ]);
-    expect(chaptersForCertificationTrack('ccna').map((chapter) => chapter.id)).toContain('osi-model');
-    expect(chaptersForCertificationTrack('extension').map((chapter) => chapter.id)).toContain('attacks-osi-killchain');
-    expect(chaptersForCertificationTrack('extension').every((chapter) => chapter.cert !== 'ejpt')).toBe(true);
+    // The CCNA route carries both the backbone and the Security+/advanced extension.
+    const ccnaIds = chaptersForCertificationTrack('ccna').map((chapter) => chapter.id);
+    expect(ccnaIds).toContain('osi-model');
+    expect(ccnaIds).toContain('attacks-osi-killchain');
+    expect(ccnaIds).toContain('access-layer-security');
+    expect(chaptersForCertificationTrack('ejpt').every((chapter) => chapter.cert === 'ejpt')).toBe(true);
+    expect(chaptersForCertificationTrack('ccna').every((chapter) => chapter.cert !== 'ejpt')).toBe(true);
   });
 
-  it.each(['ccna', 'ejpt', 'extension'] as const)(
-    'narrows domain navigation to %s without losing chapters',
-    (track) => {
-      const groups = chaptersByDomain(track);
-      const ids = groups.flatMap((group) => group.chapters.map((chapter) => chapter.id));
-      const expected = chaptersForCertificationTrack(track).map((chapter) => chapter.id);
-      expect(ids.sort()).toEqual(expected.sort());
-      expect(groups.every((group) => group.chapters.length > 0)).toBe(true);
-      if (track === 'ccna') expect(groups.every((group) => group.domain !== undefined)).toBe(true);
-      else expect(groups.map((group) => group.key)).toEqual(['extension']);
-    }
-  );
+  it.each(['ccna', 'ejpt'] as const)('narrows domain navigation to %s without losing chapters', (track) => {
+    const groups = chaptersByDomain(track);
+    const ids = groups.flatMap((group) => group.chapters.map((chapter) => chapter.id));
+    const expected = chaptersForCertificationTrack(track).map((chapter) => chapter.id);
+    expect(ids.sort()).toEqual(expected.sort());
+    expect(groups.every((group) => group.chapters.length > 0)).toBe(true);
+    // eJPT is all beyond-blueprint, so it collapses to the single extension bucket; the
+    // CCNA route keeps its official domain groups (plus the advanced-extension bucket).
+    if (track === 'ejpt') expect(groups.map((group) => group.key)).toEqual(['extension']);
+    else expect(groups.some((group) => group.domain !== undefined)).toBe(true);
+  });
 });

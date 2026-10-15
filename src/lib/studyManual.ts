@@ -50,8 +50,9 @@ export function ccnaDomainForChapter(chapter: ManualChapter): CcnaDomain | undef
  * its own study route. `both` remains CCNA + Security+, never CCNA + eJPT.
  */
 export function certificationTrackForChapter(chapter: ManualChapter): ManualCertificationTrack {
-  if (chapter.cert === 'ejpt') return 'ejpt';
-  return chapter.track === 'ccna' ? 'ccna' : 'extension';
+  // Binary routes: the offensive eJPT chapters, or the CCNA route (its 200-301 backbone
+  // plus the Security+/advanced defensive extension, which study together as one path).
+  return chapter.cert === 'ejpt' ? 'ejpt' : 'ccna';
 }
 
 /** Chapters in one primary certification route, in study order. */

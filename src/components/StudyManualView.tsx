@@ -11,7 +11,6 @@ import {
   BookOpen,
   Check,
   CircleCheck,
-  CircleHelp,
   Crosshair,
   ExternalLink,
   FlaskConical,
@@ -19,7 +18,6 @@ import {
   RotateCcw,
   Route,
   Scale,
-  ShieldHalf,
   Target
 } from 'lucide-react';
 import { useStore } from '../store';
@@ -28,20 +26,14 @@ import {
   ccnaDomainForChapter,
   certificationTrackForChapter,
   chapterCompletion,
-  chaptersByDomain,
+  chaptersByCertificationTrack,
   chaptersForCertificationTrack,
   findChapter,
   manualStats,
   orderedChapters
 } from '../lib/studyManual';
 import { MANUAL_CERTIFICATION_TRACKS } from '../content/studyManual';
-import type {
-  GuidedLab,
-  ManualCert,
-  ManualCertificationTrack,
-  ManualChapter,
-  ManualDifficulty
-} from '../content/studyManual';
+import type { GuidedLab, ManualCert, ManualCertificationTrack, ManualDifficulty } from '../content/studyManual';
 import { securityReferenceUrl } from '../content/securityReferences';
 import { preferredScrollBehavior } from '../lib/motion';
 import CcnaHubTabs from './CcnaHubTabs';
@@ -57,13 +49,11 @@ import ViewLink from './ViewLink';
  */
 const TRACK_ICON: Record<ManualCertificationTrack, typeof Route> = {
   ccna: Route,
-  ejpt: Crosshair,
-  extension: ShieldHalf
+  ejpt: Crosshair
 };
 const TRACK_ICON_CLASS: Record<ManualCertificationTrack, string> = {
   ccna: 'text-indigo-700',
-  ejpt: 'text-rose-700',
-  extension: 'text-amber-700'
+  ejpt: 'text-rose-700'
 };
 
 function TrackMark({
@@ -110,8 +100,7 @@ function TrackFilter({
   const options: { id: ManualCertificationTrack | 'all'; label: string; track?: ManualCertificationTrack }[] = [
     { id: 'all', label: allLabel },
     { id: 'ccna', label: trackLabels.ccna, track: 'ccna' },
-    { id: 'ejpt', label: trackLabels.ejpt, track: 'ejpt' },
-    { id: 'extension', label: trackLabels.extension, track: 'extension' }
+    { id: 'ejpt', label: trackLabels.ejpt, track: 'ejpt' }
   ];
   return (
     <div role="group" aria-label={groupLabel} data-testid="manual-track-filter" className="flex flex-wrap gap-1.5">
@@ -144,12 +133,6 @@ export default function StudyManualView() {
   const completedChapterIds = useStore((state) => state.completedChapterIds);
   const toggleChapterCompleted = useStore((state) => state.toggleChapterCompleted);
   const resetChapterProgress = useStore((state) => state.resetChapterProgress);
-  const hasDismissedManualHelp = useStore((state) => state.hasDismissedManualHelp);
-  const setHasDismissedManualHelp = useStore((state) => state.setHasDismissedManualHelp);
-  const [isHelpOpen, setIsHelpOpen] = useState(!hasDismissedManualHelp);
-  const helpTriggerRef = useRef<HTMLButtonElement>(null);
-  const helpPanelId = useId();
-  const helpTitleId = useId();
   const t = uiMessages(language).manual;
   const chapters = orderedChapters();
   // UX-32 — a certification-route filter that narrows the chapter index (tree + mobile
@@ -157,7 +140,12 @@ export default function StudyManualView() {
   // links, Back/Forward and the open chapter are untouched. The linear previous/next
   // flow and overall progress stay over the full chapter set.
   const [trackFilter, setTrackFilter] = useState<ManualCertificationTrack | 'all'>('all');
-  const chapterGroups = chaptersByDomain(trackFilter === 'all' ? undefined : trackFilter);
+  // The index is grouped by the two study routes (Percorso CCNA, eJPT); the filter narrows
+  // to one route. Grouping and filtering share the same binary model, so there is no third
+  // "extension" bucket to reason about.
+  const chapterGroups = chaptersByCertificationTrack().filter(
+    (group) => trackFilter === 'all' || group.key === trackFilter
+  );
   // The active chapter is addressable via the URL (`#/manual/<id>`, EDU-STRUCT-04): it
   // lives in the store so deep links, Back/Forward and in-page selection stay in sync.
   // A null id (the bare `#/manual` route) opens the first chapter.
@@ -169,8 +157,8 @@ export default function StudyManualView() {
   const chapter = (activeChapterId ? findChapter(activeChapterId) : undefined) ?? chapters[0];
   const stats = manualStats();
   const overallCompletion = chapterCompletion(chapters, completedChapterIds);
-  // UX-33 — progress broken out per certification route (CCNA, eJPT, extension) beside
-  // the overall total, so a learner on a single objective sees that objective advance.
+  // UX-33 — progress broken out per certification route (Percorso CCNA, eJPT) beside the
+  // overall total, so a learner on a single objective sees that objective advance.
   const routeProgress = MANUAL_CERTIFICATION_TRACKS.map((route) => ({
     id: route.id,
     title: route.title,
@@ -183,13 +171,6 @@ export default function StudyManualView() {
   const focusChapterTitleAfterChange = useRef(false);
   const mobileChapterSelectId = useId();
 
-  const dismissHelp = () => {
-    setHasDismissedManualHelp(true);
-    setIsHelpOpen(false);
-    // Closing removes the focused control from view; return to the disclosure.
-    helpTriggerRef.current?.focus();
-  };
-
   const difficultyLabel: Record<ManualDifficulty, string> = {
     intro: t.difficultyIntro,
     core: t.difficultyCore,
@@ -201,20 +182,20 @@ export default function StudyManualView() {
     both: t.certBoth,
     ejpt: t.certEjpt
   };
-  // VIS-10 — short, stable route names for the track marks (tree sr-only labels, the
-  // eJPT/extension header chip) and the accessible-name prefix for a chapter row.
+  // VIS-10 — short, stable route names for the track marks (sr-only labels, the header
+  // chip) and the accessible-name prefix for a chapter row.
   const trackShort: Record<ManualCertificationTrack, string> = {
     ccna: t.trackCcnaShort,
-    ejpt: t.trackEjptShort,
-    extension: t.trackExtension
+    ejpt: t.trackEjptShort
   };
-  const trackSrLabel = (entry: ManualChapter) => `${t.trackAria} ${trackShort[certificationTrackForChapter(entry)]}`;
   const chapterTrack = certificationTrackForChapter(chapter);
   const chapterDomain = ccnaDomainForChapter(chapter);
+  // The context line names where the chapter sits: its CCNA domain for a backbone chapter,
+  // otherwise its certification source (Security+ or eJPT) — no separate "extension" label.
   const chapterAlignment =
     chapter.track === 'ccna' && chapterDomain
       ? `CCNA ${chapterDomain.number}.0 · ${chapterDomain.title[language]}`
-      : `${t.trackExtension} · ${certLabel[chapter.cert]}`;
+      : certLabel[chapter.cert];
   const currentChapterCompleted = completedChapterIds.includes(chapter.id);
 
   // Linear study flow: the chapters immediately before and after the active one.
@@ -410,22 +391,9 @@ export default function StudyManualView() {
     <div data-manual-root className="mx-auto max-w-7xl">
       <CcnaHubTabs />
       <header className="mb-6">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <h1 id={headingId} className="text-xl font-semibold tracking-tight text-slate-900">
-            {t.heading}
-          </h1>
-          <button
-            ref={helpTriggerRef}
-            type="button"
-            aria-expanded={isHelpOpen}
-            aria-controls={helpPanelId}
-            onClick={() => (isHelpOpen ? dismissHelp() : setIsHelpOpen(true))}
-            className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
-          >
-            <CircleHelp aria-hidden="true" className="h-4 w-4 shrink-0" />
-            {t.helpTitle}
-          </button>
-        </div>
+        <h1 id={headingId} className="text-xl font-semibold tracking-tight text-slate-900">
+          {t.heading}
+        </h1>
         <p className="mt-1 text-sm text-slate-500">{t.intro}</p>
         <p className="mt-2 text-[12px] font-mono text-slate-400">
           {stats.chapters} {t.chapters} · {stats.topics} {t.topics} · {stats.guidedLabs} {t.guidedLabs}
@@ -464,39 +432,6 @@ export default function StudyManualView() {
         </ul>
       </header>
 
-      <section
-        id={helpPanelId}
-        aria-labelledby={helpTitleId}
-        hidden={!isHelpOpen}
-        className="mb-6 rounded-xl border border-indigo-200 bg-indigo-50/50 p-4 md:p-5"
-      >
-        <h2 id={helpTitleId} className="text-base font-semibold text-indigo-900">
-          {t.helpTitle}
-        </h2>
-        <ol className="mt-3 grid gap-4 md:grid-cols-3">
-          {[
-            { icon: ListChecks, title: t.helpNavigationTitle, body: t.helpNavigationBody },
-            { icon: FlaskConical, title: t.helpLabsTitle, body: t.helpLabsBody },
-            { icon: ArrowRight, title: t.helpChaptersTitle, body: t.helpChaptersBody }
-          ].map(({ icon: Icon, title, body }) => (
-            <li key={title} className="min-w-0 text-sm leading-relaxed text-slate-700">
-              <p className="mb-1 flex items-center gap-2 font-semibold text-indigo-900">
-                <Icon aria-hidden="true" className="h-4 w-4 shrink-0" />
-                {title}
-              </p>
-              <p>{body}</p>
-            </li>
-          ))}
-        </ol>
-        <button
-          type="button"
-          onClick={dismissHelp}
-          className="mt-4 inline-flex min-h-11 items-center rounded-lg bg-indigo-700 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2"
-        >
-          {t.dismissHelp}
-        </button>
-      </section>
-
       {/* Desktop study layout: a persistent chapter sidebar + the reading pane, the
           two-pane docs structure a study app is expected to have. Below lg the sidebar
           collapses and the sticky chapter selector (in the toolbar) takes over. */}
@@ -515,9 +450,7 @@ export default function StudyManualView() {
             />
             <nav aria-label={t.chapterNav} className="space-y-5">
               {chapterGroups.map((group) => {
-                const groupLabel = group.domain
-                  ? `CCNA ${group.domain.number}.0 · ${group.domain.title[language]}`
-                  : t.trackExtension;
+                const groupLabel = group.title[language];
                 const groupCompletion = chapterCompletion(group.chapters, completedChapterIds);
                 return (
                   <div
@@ -526,31 +459,13 @@ export default function StudyManualView() {
                     aria-label={groupLabel}
                     className="border-l-2 border-slate-200 pl-3"
                   >
-                    {/* Domain header: an exam-weight badge and bold title give each CCNA domain a
-                    clear rank, with its chapter progress on the right — the hierarchy the flat
-                    eyebrow label lacked (IA track). The weight badge is labelled (icon + title +
-                    accessible name) so its percentage is never mistaken for completion progress. */}
+                    {/* Route header (VIS-10 / two-group IA): the route mark and name, with its
+                    chapter progress on the right. The two groups are the study objectives —
+                    Percorso CCNA and eJPT — not a flat domain list. */}
                     <div className="mb-2 flex items-center justify-between gap-3">
-                      <div className="flex min-w-0 items-center gap-2">
-                        {group.domain ? (
-                          <span
-                            className="inline-flex shrink-0 items-center gap-1 rounded-md bg-slate-900 px-1.5 py-0.5 text-[11px] font-semibold text-white"
-                            title={`${t.examWeight}: ${group.domain.weight}%`}
-                            aria-label={`${t.examWeight}: ${group.domain.weight}%`}
-                          >
-                            <Scale className="h-3 w-3" aria-hidden="true" />
-                            {group.domain.weight}%
-                          </span>
-                        ) : (
-                          <span className="shrink-0 rounded-md bg-amber-100 px-1.5 py-0.5 text-[11px] font-semibold text-amber-800">
-                            {t.trackExtension}
-                          </span>
-                        )}
-                        <span className="truncate text-[13px] font-semibold text-slate-800">
-                          {group.domain
-                            ? `CCNA ${group.domain.number}.0 · ${group.domain.title[language]}`
-                            : t.trackExtension}
-                        </span>
+                      <div className="flex min-w-0 items-center gap-1.5">
+                        <TrackMark track={group.key} className="h-4 w-4" />
+                        <span className="truncate text-[13px] font-semibold text-slate-800">{groupLabel}</span>
                       </div>
                       <span
                         className="shrink-0 font-mono text-[11px] text-slate-500"
@@ -578,9 +493,6 @@ export default function StudyManualView() {
                                 : 'font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-900'
                             }`}
                           >
-                            {/* VIS-10: the chapter's certification route (icon + colour),
-                            with its name as an sr-only label so the row names the route. */}
-                            <TrackMark track={certificationTrackForChapter(entry)} srLabel={trackSrLabel(entry)} />
                             <span
                               aria-hidden="true"
                               className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold ${
@@ -664,9 +576,7 @@ export default function StudyManualView() {
                     </option>
                   ) : null}
                   {chapterGroups.map((group) => {
-                    const groupLabel = group.domain
-                      ? `CCNA ${group.domain.number}.0 · ${group.domain.title[language]}`
-                      : t.trackExtension;
+                    const groupLabel = group.title[language];
                     const groupCompletion = chapterCompletion(group.chapters, completedChapterIds);
                     return (
                       <optgroup
@@ -799,16 +709,16 @@ export default function StudyManualView() {
                         {chapterDomain.weight}%
                       </span>
                     ) : chapterTrack === 'ejpt' ? (
-                      // VIS-10: eJPT is a distinct route, not a generic extension — a rose
-                      // chip with the offensive crosshair sets it apart from Security+.
+                      // eJPT is a distinct route — a rose chip with the offensive crosshair.
                       <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-rose-100 px-3 py-1 text-xs font-semibold text-rose-800">
                         <Crosshair className="h-3.5 w-3.5" aria-hidden="true" />
                         {t.trackEjptShort}
                       </span>
                     ) : (
-                      <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-800">
-                        <ShieldHalf className="h-3.5 w-3.5" aria-hidden="true" />
-                        {t.trackExtension}
+                      // A CCNA-route advanced chapter (no single exam domain): the route chip.
+                      <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-indigo-100 px-3 py-1 text-xs font-semibold text-indigo-800">
+                        <Route className="h-3.5 w-3.5" aria-hidden="true" />
+                        {t.trackCcnaShort}
                       </span>
                     );
                   })()}

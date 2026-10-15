@@ -201,6 +201,11 @@ body {
   background-color: var(--color-dark-track-ejpt-bg);
   border-color: var(--color-dark-track-ejpt-border);
 }
+/* The CCNA-route chip (indigo) in the chapter header, dark-mapped like the indigo tile. */
+:root[data-theme='dark'] [data-manual-root] .bg-indigo-100 {
+  background-color: var(--color-dark-tile-objectives-bg);
+  border-color: var(--color-dark-tile-objectives-border);
+}
 :root[data-theme='dark'] [data-manual-root] .text-rose-700,
 :root[data-theme='dark'] [data-manual-root] .text-rose-800 {
   color: var(--color-dark-track-ejpt-ink);

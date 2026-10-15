@@ -187,6 +187,25 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
       capitolo CCNA completato avanza solo CCNA; le altre route restano a 0; il totale conta) ed E2E
       dedicato (`manual-route-progress.spec.ts`). Report: `docs/verify/2026-10-15-ux33-per-route-progress.md`.
 
+## 🧭 Riorganizzazione IA (richiesta utente, 15/10/2026)
+
+- [x] **IA-10 (P1) — Due soli percorsi e guida unica.** Il manuale confondeva con un terzo gruppo
+      «Estensione» e con una guida in pagina duplicata rispetto alla «Guida» globale. **Esito:** il
+      modello delle tracce è ora binario — **Percorso CCNA** (dorsale CCNA + estensione difensiva
+      Security+/avanzata) ed **eJPT** (offensiva); `ManualCertificationTrack` e
+      `MANUAL_CERTIFICATION_TRACKS` hanno due sole voci, `certificationTrackForChapter` classifica
+      eJPT↔CCNA. L'indice del manuale (albero desktop e select mobile), il filtro (UX-32) e il
+      progresso per percorso (UX-33) raggruppano per queste due tracce; sparisce l'etichetta
+      «Estensione» dall'interfaccia (chip di percorso CCNA/eJPT al posto di «Estensione»). Rimossa la
+      guida in pagina del manuale («Come usare questa guida»): resta solo la «Guida» globale in testata.
+      Aggiornati tutti i test unit/E2E; `npm run verify` verde, Playwright 65/65. Report:
+      `docs/verify/2026-10-15-ia10-two-routes-single-guide.md`.
+- [ ] **IA-11 (P1) — Un solo percorso (Manuale) e menu a due voci.** Unificare lo hub: via le schede
+      «Panoramica/Capitoli» e la voce separata «Mappa CCNA»; il Manuale è il percorso unico (atterraggio
+      predefinito), con i laboratori collegati dai capitoli. Menu in alto a **due voci**: **Manuale**
+      e **Laboratori** (tutti i laboratori in un unico elenco con sottotitoli per area), più la ricerca
+      ⌘K. Preservare routing/deep-link e WCAG 2.2 AA.
+
 ## 🌍 Traduttore/Revisore inglese — parità e naturalezza
 
 - [ ] **I18N-10 (P1, ricorrente) — Revisione IT/EN dei nuovi contenuti.** Ogni nuovo capitolo e
