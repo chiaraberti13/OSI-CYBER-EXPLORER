@@ -144,7 +144,7 @@ const createNavigationSlice: Slice<NavigationSlice> = (set) => ({
   setViewMode: (viewMode) => set({ viewMode }),
   detailTab: 'overview',
   setDetailTab: (detailTab) => set({ detailTab }),
-  activeView: 'curriculum',
+  activeView: 'manual',
   setActiveView: (activeView) => set({ activeView }),
   activeChapterId: null,
   // Unknown ids collapse to null so a tampered URL can never select a missing chapter.

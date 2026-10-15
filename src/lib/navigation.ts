@@ -1,6 +1,6 @@
 import type { LucideIcon } from 'lucide-react';
 import type { AppView } from '../store';
-import { VIEW_GROUPS, VIEW_ORDER, VIEW_REGISTRY, type ViewGroupId } from '../content/viewRegistry';
+import { VIEW_GROUPS, VIEW_ORDER, VIEW_REGISTRY, type LabCategoryId, type ViewGroupId } from '../content/viewRegistry';
 
 /**
  * Navigation model for the lab.
@@ -25,6 +25,8 @@ export interface NavEntry {
   keywords: string;
   /** Icon representing the view in menus and search, from the registry. */
   icon: LucideIcon;
+  /** For `labs` entries, the subheading area it belongs under (IA-11). */
+  category?: LabCategoryId;
 }
 
 export interface NavGroup {
@@ -57,7 +59,8 @@ export const NAV_GROUPS: NavGroup[] = VIEW_GROUPS.map((group) => ({
         hintIt: definition.hintIt,
         hintEn: definition.hintEn,
         keywords: definition.keywords,
-        icon: definition.icon
+        icon: definition.icon,
+        category: definition.category
       };
     }
   )

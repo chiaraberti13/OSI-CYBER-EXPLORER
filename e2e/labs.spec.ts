@@ -85,9 +85,10 @@ test.describe('interactive labs', () => {
     await page.goto('/#/osi');
     await expect(page.getByRole('heading', { level: 1, name: 'Pila OSI' })).toBeVisible();
 
-    await page.getByRole('button', { name: /Percorso CCNA/ }).click();
+    // IA-11: labs live under the single "Laboratori" group (CCNA area subheading).
+    await page.getByRole('button', { name: /Laboratori/ }).click();
     await page
-      .locator('#nav-panel-ccna')
+      .locator('#nav-panel-labs')
       .getByRole('link', { name: /Connettività IP/ })
       .click();
 

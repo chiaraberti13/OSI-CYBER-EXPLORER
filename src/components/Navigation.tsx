@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState, type KeyboardEvent as ReactKeyboa
 import { AnimatePresence, motion } from 'motion/react';
 import { Check, ChevronDown, ChevronLeft, ChevronRight, Link2, Search, X } from 'lucide-react';
 import { NAV_GROUPS, navGroupOf, navOverflow, searchNav } from '../lib/navigation';
+import { LAB_CATEGORIES } from '../content/viewRegistry';
 import { useStore } from '../store';
 import { useShallow } from 'zustand/react/shallow';
 import ViewLink from './ViewLink';
@@ -213,8 +214,41 @@ export default function Navigation() {
             )}
             <div ref={tabScrollRef} className="flex items-center gap-1 overflow-x-auto no-scrollbar">
               {NAV_GROUPS.map((group) => {
-                const isOpen = openGroupId === group.id;
                 const holdsActiveView = activeGroup?.id === group.id;
+                const activeDot = holdsActiveView ? (
+                  <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-500" aria-hidden="true" />
+                ) : null;
+                const groupName = (
+                  <>
+                    <span className="hidden sm:inline">{group[language]}</span>
+                    <span className="sm:hidden">{language === 'it' ? group.itShort : group.enShort}</span>
+                  </>
+                );
+                // A single-entry group (the Manuale) is a direct link, not a dropdown: IA-11
+                // keeps the top bar to two destinations without an empty-feeling menu.
+                const soleEntry = group.entries.length === 1 ? group.entries[0] : null;
+                if (soleEntry) {
+                  return (
+                    <ViewLink
+                      key={group.id}
+                      view={soleEntry.view}
+                      onClick={() => {
+                        setOpenGroupId(null);
+                        setIsSearchOpen(false);
+                      }}
+                      aria-current={holdsActiveView ? 'page' : undefined}
+                      className={`flex min-h-11 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-md border px-3 text-[13px] font-medium transition-colors ${
+                        holdsActiveView
+                          ? 'border-slate-200/70 bg-white text-slate-900'
+                          : 'border-transparent text-slate-500 hover:bg-white/70 hover:text-slate-800'
+                      }`}
+                    >
+                      {activeDot}
+                      {groupName}
+                    </ViewLink>
+                  );
+                }
+                const isOpen = openGroupId === group.id;
                 return (
                   <button
                     type="button"
@@ -235,11 +269,8 @@ export default function Navigation() {
                           : 'border-transparent text-slate-500 hover:bg-white/70 hover:text-slate-800'
                     }`}
                   >
-                    {holdsActiveView ? (
-                      <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-500" aria-hidden="true" />
-                    ) : null}
-                    <span className="hidden sm:inline">{group[language]}</span>
-                    <span className="sm:hidden">{language === 'it' ? group.itShort : group.enShort}</span>
+                    {activeDot}
+                    {groupName}
                     <span className="hidden text-[10px] font-normal text-slate-400 sm:inline">
                       {group.entries.length}
                     </span>
@@ -302,42 +333,57 @@ export default function Navigation() {
               transition={{ duration: 0.14 }}
               className="absolute inset-x-3 sm:inset-x-6 top-full z-50 mt-1 max-h-[70vh] overflow-y-auto rounded-xl border border-slate-200 bg-white p-3 shadow-lg custom-scrollbar"
             >
-              <p className="eyebrow px-1 pb-2">{openGroup[language]}</p>
-              <ul className="grid gap-1 sm:grid-cols-2 xl:grid-cols-3">
-                {openGroup.entries.map((entry) => {
-                  const Icon = entry.icon;
-                  const isActive = activeView === entry.view;
-                  return (
-                    <li key={entry.view}>
-                      <ViewLink
-                        view={entry.view}
-                        onClick={() => setOpenGroupId(null)}
-                        aria-current={isActive ? 'page' : undefined}
-                        className={`flex min-h-11 w-full items-start gap-2.5 rounded-lg border p-2.5 text-left transition-colors ${
-                          isActive
-                            ? 'border-indigo-200 bg-indigo-50/60'
-                            : 'border-transparent hover:border-slate-200 hover:bg-slate-50'
-                        }`}
-                      >
-                        <Icon
-                          className={`mt-0.5 h-4 w-4 shrink-0 ${isActive ? 'text-indigo-600' : 'text-slate-400'}`}
-                          aria-hidden="true"
-                        />
-                        <span className="min-w-0">
-                          <span
-                            className={`block text-[13px] font-medium ${isActive ? 'text-indigo-900' : 'text-slate-800'}`}
-                          >
-                            {entry[language]}
-                          </span>
-                          <span className="mt-0.5 block text-[11px] leading-snug text-slate-500">
-                            {language === 'it' ? entry.hintIt : entry.hintEn}
-                          </span>
-                        </span>
-                      </ViewLink>
-                    </li>
-                  );
-                })}
-              </ul>
+              <p className="sr-only">{openGroup[language]}</p>
+              {/* IA-11: the single "Laboratori" group lists every lab, organised under
+                area subheadings so a long list stays scannable. */}
+              {LAB_CATEGORIES.map((category) => {
+                const entries = openGroup.entries.filter((entry) => entry.category === category.id);
+                if (entries.length === 0) return null;
+                return (
+                  <section
+                    key={category.id}
+                    aria-label={language === 'it' ? category.it : category.en}
+                    className="pb-3 last:pb-0"
+                  >
+                    <p className="eyebrow px-1 pb-1.5">{language === 'it' ? category.it : category.en}</p>
+                    <ul className="grid gap-1 sm:grid-cols-2 xl:grid-cols-3">
+                      {entries.map((entry) => {
+                        const Icon = entry.icon;
+                        const isActive = activeView === entry.view;
+                        return (
+                          <li key={entry.view}>
+                            <ViewLink
+                              view={entry.view}
+                              onClick={() => setOpenGroupId(null)}
+                              aria-current={isActive ? 'page' : undefined}
+                              className={`flex min-h-11 w-full items-start gap-2.5 rounded-lg border p-2.5 text-left transition-colors ${
+                                isActive
+                                  ? 'border-indigo-200 bg-indigo-50/60'
+                                  : 'border-transparent hover:border-slate-200 hover:bg-slate-50'
+                              }`}
+                            >
+                              <Icon
+                                className={`mt-0.5 h-4 w-4 shrink-0 ${isActive ? 'text-indigo-600' : 'text-slate-400'}`}
+                                aria-hidden="true"
+                              />
+                              <span className="min-w-0">
+                                <span
+                                  className={`block text-[13px] font-medium ${isActive ? 'text-indigo-900' : 'text-slate-800'}`}
+                                >
+                                  {entry[language]}
+                                </span>
+                                <span className="mt-0.5 block text-[11px] leading-snug text-slate-500">
+                                  {language === 'it' ? entry.hintIt : entry.hintEn}
+                                </span>
+                              </span>
+                            </ViewLink>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </section>
+                );
+              })}
             </motion.div>
           ) : null}
 

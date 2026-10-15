@@ -36,7 +36,6 @@ import { MANUAL_CERTIFICATION_TRACKS } from '../content/studyManual';
 import type { GuidedLab, ManualCert, ManualCertificationTrack, ManualDifficulty } from '../content/studyManual';
 import { securityReferenceUrl } from '../content/securityReferences';
 import { preferredScrollBehavior } from '../lib/motion';
-import CcnaHubTabs from './CcnaHubTabs';
 import ViewLink from './ViewLink';
 
 /**
@@ -389,7 +388,6 @@ export default function StudyManualView() {
 
   return (
     <div data-manual-root className="mx-auto max-w-7xl">
-      <CcnaHubTabs />
       <header className="mb-6">
         <h1 id={headingId} className="text-xl font-semibold tracking-tight text-slate-900">
           {t.heading}

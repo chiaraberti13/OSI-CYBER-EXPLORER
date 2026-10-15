@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { NAV_ENTRIES, NAV_GROUPS, navEntryOf, navGroupOf, navOverflow, searchNav } from './navigation';
+import { LAB_CATEGORIES } from '../content/viewRegistry';
 import type { AppView } from '../store';
 
 /** Every view the app can render, mirrored from the AppView union in the store. */
@@ -53,12 +54,20 @@ describe('navigation model', () => {
     expect([...views].sort()).toEqual([...expected].sort());
   });
 
-  it('keeps every group small enough to scan', () => {
+  it('keeps the groups few and every lab area small enough to scan', () => {
     expect(NAV_GROUPS.length).toBeLessThanOrEqual(5);
     for (const group of NAV_GROUPS) {
       expect(group.entries.length, `${group.id} is empty`).toBeGreaterThan(0);
-      expect(group.entries.length, `${group.id} has too many entries to scan`).toBeLessThanOrEqual(12);
     }
+    // The single Labs group is long but organised into area subheadings (IA-11); each
+    // area stays scannable, and every lab belongs to exactly one declared area.
+    const labs = NAV_GROUPS.find((group) => group.id === 'labs');
+    expect(labs, 'labs group').toBeDefined();
+    for (const category of LAB_CATEGORIES) {
+      const count = labs!.entries.filter((entry) => entry.category === category.id).length;
+      expect(count, `${category.id} has too many entries to scan`).toBeLessThanOrEqual(12);
+    }
+    expect(labs!.entries.every((entry) => entry.category !== undefined)).toBe(true);
   });
 
   it('labels and hints every entry in both languages', () => {
@@ -78,8 +87,8 @@ describe('navigation model', () => {
   });
 
   it('resolves the group and entry of a view', () => {
-    expect(navGroupOf('routing')?.id).toBe('ccna');
-    expect(navGroupOf('emailsecurity')?.id).toBe('domains');
+    expect(navGroupOf('routing')?.id).toBe('labs');
+    expect(navGroupOf('emailsecurity')?.id).toBe('labs');
     expect(navEntryOf('glossary')?.en).toBe('Glossary');
   });
 

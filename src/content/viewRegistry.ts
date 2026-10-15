@@ -65,8 +65,15 @@ export type ViewProps = { inline?: boolean };
 /** Entrance/exit animation presets, resolved to concrete values in `App.tsx`. */
 export type MotionPreset = 'subtle' | 'pronounced';
 
-/** The navigation groups, in menu order. */
-export type ViewGroupId = 'ccna' | 'interactive' | 'domains' | 'operations';
+/**
+ * The two top-level navigation groups, in menu order (IA-11). `manual` is the single
+ * study path (the Study Manual); `labs` gathers every interactive lab in one place,
+ * organised into areas via {@link LabCategoryId} subheadings.
+ */
+export type ViewGroupId = 'manual' | 'labs';
+
+/** Subheading areas inside the single "Laboratori" group. */
+export type LabCategoryId = 'ccna' | 'interactive' | 'area' | 'operations';
 
 export interface ViewGroupMeta {
   id: ViewGroupId;
@@ -78,27 +85,29 @@ export interface ViewGroupMeta {
 
 /** Group display metadata and the order groups appear in the navigation bar. */
 export const VIEW_GROUPS: readonly ViewGroupMeta[] = [
-  { id: 'ccna', it: 'Percorso CCNA', en: 'CCNA path', itShort: 'CCNA', enShort: 'CCNA' },
-  {
-    id: 'interactive',
-    it: 'Laboratori interattivi',
-    en: 'Interactive labs',
-    itShort: 'Interattivi',
-    enShort: 'Interactive'
-  },
-  { id: 'domains', it: 'Sicurezza per area', en: 'Security by area', itShort: 'Per area', enShort: 'By area' },
-  {
-    id: 'operations',
-    it: 'Operazioni e difesa',
-    en: 'Operations and defense',
-    itShort: 'Operazioni',
-    enShort: 'Operations'
-  }
+  { id: 'manual', it: 'Manuale', en: 'Manual', itShort: 'Manuale', enShort: 'Manual' },
+  { id: 'labs', it: 'Laboratori', en: 'Labs', itShort: 'Laboratori', enShort: 'Labs' }
+];
+
+export interface LabCategoryMeta {
+  id: LabCategoryId;
+  it: string;
+  en: string;
+}
+
+/** Subheadings for the "Laboratori" group, in display order. */
+export const LAB_CATEGORIES: readonly LabCategoryMeta[] = [
+  { id: 'ccna', it: 'Percorso CCNA', en: 'CCNA path' },
+  { id: 'interactive', it: 'Laboratori interattivi', en: 'Interactive labs' },
+  { id: 'area', it: 'Sicurezza per area', en: 'Security by area' },
+  { id: 'operations', it: 'Operazioni e difesa', en: 'Operations and defense' }
 ];
 
 export interface ViewDefinition {
-  /** The navigation group this view belongs to. */
+  /** The top-level navigation group this view belongs to. */
   group: ViewGroupId;
+  /** For `labs` group views, the subheading area it appears under in the Labs menu. */
+  category?: LabCategoryId;
   /** Icon shown in the navigation menus and quick search. */
   icon: LucideIcon;
   /** Lazy-loaded component rendered in the main area. */
@@ -139,7 +148,7 @@ function view(
 export const VIEW_REGISTRY: Record<AppView, ViewDefinition> = {
   // --- CCNA path --------------------------------------------------------------
   manual: {
-    group: 'ccna',
+    group: 'manual',
     icon: GraduationCap,
     component: view(() => import('../components/StudyManualView')),
     it: 'Manuale di studio',
@@ -150,7 +159,7 @@ export const VIEW_REGISTRY: Record<AppView, ViewDefinition> = {
       'manuale manual guida teoria studio capitoli argomenti spiegazione esercitazioni laboratori guidati osi incapsulamento handbook theory study chapters'
   },
   curriculum: {
-    group: 'ccna',
+    group: 'manual',
     hideFromNav: true,
     icon: Map,
     component: view(() => import('../components/CurriculumView')),
@@ -161,7 +170,8 @@ export const VIEW_REGISTRY: Record<AppView, ViewDefinition> = {
     keywords: '200-301 domini domains percorso syllabus blueprint obiettivi'
   },
   fundamentals: {
-    group: 'ccna',
+    group: 'labs',
+    category: 'ccna',
     icon: Calculator,
     component: view(() => import('../components/NetworkFundamentalsLab')),
     it: 'Fondamenti di rete',
@@ -172,7 +182,8 @@ export const VIEW_REGISTRY: Record<AppView, ViewDefinition> = {
       'subnet mask wildcard cidr binario eui-64 slaac mtu duplex collisione broadcast container vrf ipconfig vlsm pianificatore planner frammentazione fragmentation df pmtud mss adjust-mss gre tunnel overhead 1500 1476 802.1q baby giant'
   },
   access: {
-    group: 'ccna',
+    group: 'labs',
+    category: 'ccna',
     icon: Cable,
     component: view(() => import('../components/NetworkAccessLab')),
     it: 'Accesso alla rete',
@@ -183,7 +194,8 @@ export const VIEW_REGISTRY: Record<AppView, ViewDefinition> = {
       'vlan trunk native stp rstp bpdu portfast lacp pagp etherchannel wlc capwap ssid csma cam table mac address-table flooding filtering aging learning unknown unicast port-security sticky violation protect restrict shutdown err-disable psecure bridge id discarding pvst'
   },
   routing: {
-    group: 'ccna',
+    group: 'labs',
+    category: 'ccna',
     icon: Route,
     component: view(() => import('../components/IpConnectivityLab')),
     it: 'Connettività IP',
@@ -194,7 +206,8 @@ export const VIEW_REGISTRY: Record<AppView, ViewDefinition> = {
       'routing table rotte statiche floating ospf costo router-id dr bdr hsrp vrrp fhrp rib fib cef spf dijkstra shortest path ecmp maximum-paths reference-bandwidth auto-cost area lsa riconvergenza'
   },
   services: {
-    group: 'ccna',
+    group: 'labs',
+    category: 'ccna',
     icon: ServerCog,
     component: view(() => import('../components/IpServicesLab')),
     it: 'Servizi IP',
@@ -205,7 +218,8 @@ export const VIEW_REGISTRY: Record<AppView, ViewDefinition> = {
       'dhcp dora discover offer request ack nak relay helper-address giaddr option 82 snooping trusted lease t1 t2 apipa 169.254 dns nat pat overload ntp stratum snmp syslog severity qos dscp ssh tftp'
   },
   securitycore: {
-    group: 'ccna',
+    group: 'labs',
+    category: 'ccna',
     icon: LockKeyhole,
     component: view(() => import('../components/SecurityFundamentalsLab')),
     it: 'Sicurezza CCNA',
@@ -216,7 +230,8 @@ export const VIEW_REGISTRY: Record<AppView, ViewDefinition> = {
       'acl standard extended established first match implicit deny shadowing riga morta ordine sequenza access-group access-list wildcard aaa tacacs radius ipsec ikev2 pki crl ocsp wpa2 psk wpa3 sae mfa'
   },
   automation: {
-    group: 'ccna',
+    group: 'labs',
+    category: 'ccna',
     icon: Workflow,
     component: view(() => import('../components/AutomationLab')),
     it: 'Automazione',
@@ -229,7 +244,8 @@ export const VIEW_REGISTRY: Record<AppView, ViewDefinition> = {
 
   // --- Interactive labs -------------------------------------------------------
   pathtrace: {
-    group: 'interactive',
+    group: 'labs',
+    category: 'interactive',
     icon: Split,
     component: view(() => import('../components/PathTraceLab')),
     it: 'Tracciatore di percorso',
@@ -239,7 +255,8 @@ export const VIEW_REGISTRY: Record<AppView, ViewDefinition> = {
     keywords: 'percorso path trace pacchetto hop gateway svi acl nat ritorno asimmetria troubleshooting end-to-end'
   },
   osi: {
-    group: 'interactive',
+    group: 'labs',
+    category: 'interactive',
     icon: Layers,
     component: view(() => import('../components/OsiLabView')),
     it: 'Pila OSI',
@@ -249,7 +266,8 @@ export const VIEW_REGISTRY: Record<AppView, ViewDefinition> = {
     keywords: 'sette livelli layer incapsulamento encapsulation pdu header simulazione pacchetto http dns bgp'
   },
   attacklab: {
-    group: 'interactive',
+    group: 'labs',
+    category: 'interactive',
     icon: Swords,
     component: view(() => import('../components/AttackLab')),
     motion: 'pronounced',
@@ -261,7 +279,8 @@ export const VIEW_REGISTRY: Record<AppView, ViewDefinition> = {
     keywords: 'kill chain arp poisoning mac flooding syn flood spoofing xss sql injection mitm scenario'
   },
   scanstates: {
-    group: 'interactive',
+    group: 'labs',
+    category: 'interactive',
     icon: Radar,
     component: view(() => import('../components/ScanStatesLab')),
     it: 'Stati di porta (scanning)',
@@ -271,7 +290,8 @@ export const VIEW_REGISTRY: Record<AppView, ViewDefinition> = {
     keywords: 'scanning porta stato aperto chiuso filtrato syn ack rst icmp tcp udp ejpt nmap enumerazione'
   },
   ports: {
-    group: 'interactive',
+    group: 'labs',
+    category: 'interactive',
     icon: Hash,
     component: view(() => import('../components/PortsExplorer')),
     inline: true,
@@ -283,7 +303,8 @@ export const VIEW_REGISTRY: Record<AppView, ViewDefinition> = {
     keywords: 'porte ports iana well-known registered tcp udp router switch firewall bridge hub gateway nids'
   },
   security: {
-    group: 'interactive',
+    group: 'labs',
+    category: 'interactive',
     icon: Shield,
     component: view(() => import('../components/SecurityDashboard')),
     motion: 'pronounced',
@@ -294,7 +315,8 @@ export const VIEW_REGISTRY: Record<AppView, ViewDefinition> = {
     keywords: 'ids ips nids nips hids hips wids wips edr inline out-of-band firme signature'
   },
   glossary: {
-    group: 'interactive',
+    group: 'labs',
+    category: 'interactive',
     icon: BookOpen,
     component: view(() => import('../components/GlossaryModal')),
     inline: true,
@@ -308,7 +330,8 @@ export const VIEW_REGISTRY: Record<AppView, ViewDefinition> = {
 
   // --- Security by area -------------------------------------------------------
   layer2security: {
-    group: 'domains',
+    group: 'labs',
+    category: 'area',
     icon: Cable,
     component: view(() => import('../components/Layer2SecurityLab')),
     it: 'Layer 2 e first hop',
@@ -318,7 +341,8 @@ export const VIEW_REGISTRY: Record<AppView, ViewDefinition> = {
     keywords: 'port security cam dhcp snooping dai ip source guard bpdu guard root guard native vlan'
   },
   wirelesssecurity: {
-    group: 'domains',
+    group: 'labs',
+    category: 'area',
     icon: Radio,
     component: view(() => import('../components/WirelessSecurityLab')),
     it: 'Wireless e RF',
@@ -328,7 +352,8 @@ export const VIEW_REGISTRY: Record<AppView, ViewDefinition> = {
     keywords: 'wifi rf jamming rogue evil twin pmf 802.11w wpa3 capwap guest deautenticazione'
   },
   routingsecurity: {
-    group: 'domains',
+    group: 'labs',
+    category: 'area',
     icon: Router,
     component: view(() => import('../components/RoutingSecurityLab')),
     it: 'Routing e control plane',
@@ -338,7 +363,8 @@ export const VIEW_REGISTRY: Record<AppView, ViewDefinition> = {
     keywords: 'ospf autenticazione bgp hijacking rpki urpf copp control plane redistribuzione fhrp'
   },
   ipv6security: {
-    group: 'domains',
+    group: 'labs',
+    category: 'area',
     icon: Network,
     component: view(() => import('../components/Ipv6SecurityLab')),
     it: 'IPv6 e dual-stack',
@@ -348,7 +374,8 @@ export const VIEW_REGISTRY: Record<AppView, ViewDefinition> = {
     keywords: 'ipv6 ra guard nd slaac dhcpv6 neighbor icmpv6 pmtud extension header tunnel dual stack'
   },
   segmentation: {
-    group: 'domains',
+    group: 'labs',
+    category: 'area',
     icon: Layers3,
     component: view(() => import('../components/SegmentationLab')),
     it: 'Segmentazione',
@@ -358,7 +385,8 @@ export const VIEW_REGISTRY: Record<AppView, ViewDefinition> = {
     keywords: 'segmentazione zone confini trust boundary vlan svi acl vrf east-west guest iot overlay'
   },
   identitytrust: {
-    group: 'domains',
+    group: 'labs',
+    category: 'area',
     icon: Fingerprint,
     component: view(() => import('../components/IdentityTrustLab')),
     it: 'Identità e AAA',
@@ -368,7 +396,8 @@ export const VIEW_REGISTRY: Record<AppView, ViewDefinition> = {
     keywords: 'identita aaa tacacs radius 802.1x eap-tls mab fallback privilegi revoca lifecycle'
   },
   vpnsecurity: {
-    group: 'domains',
+    group: 'labs',
+    category: 'area',
     icon: KeyRound,
     component: view(() => import('../components/VpnPkiSecurityLab')),
     it: 'VPN, IPsec e PKI',
@@ -378,7 +407,8 @@ export const VIEW_REGISTRY: Record<AppView, ViewDefinition> = {
     keywords: 'vpn ipsec ike ikev2 esp ah child sa spi nat-t traffic selector rekey pki certificati'
   },
   inspection: {
-    group: 'domains',
+    group: 'labs',
+    category: 'area',
     icon: ShieldAlert,
     component: view(() => import('../components/InspectionSecurityLab')),
     it: 'Firewall e ispezione',
@@ -388,7 +418,8 @@ export const VIEW_REGISTRY: Record<AppView, ViewDefinition> = {
     keywords: 'firewall stateful ispezione ids ips inline firme tls evasione ha logging policy'
   },
   managementsecurity: {
-    group: 'domains',
+    group: 'labs',
+    category: 'area',
     icon: ServerCog,
     component: view(() => import('../components/ManagementTelemetryLab')),
     it: 'Management e telemetria',
@@ -398,7 +429,8 @@ export const VIEW_REGISTRY: Record<AppView, ViewDefinition> = {
     keywords: 'management oob vrf ssh snmpv3 syslog ntp netconf restconf cdp lldp backup collector'
   },
   endpointsecurity: {
-    group: 'domains',
+    group: 'labs',
+    category: 'area',
     icon: Laptop,
     component: view(() => import('../components/EndpointSecurityLab')),
     it: 'Endpoint e postura',
@@ -408,7 +440,8 @@ export const VIEW_REGISTRY: Record<AppView, ViewDefinition> = {
     keywords: 'endpoint postura inventario baseline patch edr host firewall application control nac isolamento'
   },
   applicationsecurity: {
-    group: 'domains',
+    group: 'labs',
+    category: 'area',
     icon: GlobeLock,
     component: view(() => import('../components/ApplicationSecurityLab')),
     it: 'DNS, web e applicazioni',
@@ -418,7 +451,8 @@ export const VIEW_REGISTRY: Record<AppView, ViewDefinition> = {
     keywords: 'dns dnssec doh rebinding tunneling tls http proxy injection sessione api autorizzazione'
   },
   emailsecurity: {
-    group: 'domains',
+    group: 'labs',
+    category: 'area',
     icon: MailWarning,
     component: view(() => import('../components/EmailHumanSecurityLab')),
     it: 'Email e phishing',
@@ -430,7 +464,8 @@ export const VIEW_REGISTRY: Record<AppView, ViewDefinition> = {
 
   // --- Operations and defense -------------------------------------------------
   coverage: {
-    group: 'operations',
+    group: 'labs',
+    category: 'operations',
     icon: Activity,
     component: view(() => import('../components/SecurityCoverageView')),
     it: 'Catalogo Attacco–Difesa',
@@ -440,7 +475,8 @@ export const VIEW_REGISTRY: Record<AppView, ViewDefinition> = {
     keywords: 'catalogo copertura matrice tecniche famiglie piani playbook coverage'
   },
   attackpaths: {
-    group: 'operations',
+    group: 'labs',
+    category: 'operations',
     icon: GitBranch,
     component: view(() => import('../components/AttackPathsLab')),
     it: 'Percorsi d’attacco',
@@ -450,7 +486,8 @@ export const VIEW_REGISTRY: Record<AppView, ViewDefinition> = {
     keywords: 'percorsi attack path ricognizione accesso propagazione impatto segnali validazione'
   },
   detection: {
-    group: 'operations',
+    group: 'labs',
+    category: 'operations',
     icon: Radar,
     component: view(() => import('../components/DetectionEngineeringLab')),
     it: 'Detection engineering',
@@ -460,7 +497,8 @@ export const VIEW_REGISTRY: Record<AppView, ViewDefinition> = {
     keywords: 'detection telemetria correlazione alert falsi positivi baseline siem validazione'
   },
   hardening: {
-    group: 'operations',
+    group: 'labs',
+    category: 'operations',
     icon: FileCode2,
     component: view(() => import('../components/ConfigurationHardeningLab')),
     it: 'Hardening delle config',
@@ -470,7 +508,8 @@ export const VIEW_REGISTRY: Record<AppView, ViewDefinition> = {
     keywords: 'hardening configurazione ios baseline insicuro sicuro rollback show change'
   },
   availability: {
-    group: 'operations',
+    group: 'labs',
+    category: 'operations',
     icon: Gauge,
     component: view(() => import('../components/AvailabilitySecurityLab')),
     it: 'Disponibilità e DoS',
@@ -480,7 +519,8 @@ export const VIEW_REGISTRY: Record<AppView, ViewDefinition> = {
     keywords: 'disponibilita dos ddos saturazione capacita backlog syn reflection amplification coda qos'
   },
   recovery: {
-    group: 'operations',
+    group: 'labs',
+    category: 'operations',
     icon: HeartPulse,
     component: view(() => import('../components/ResilienceRecoveryLab')),
     it: 'Resilienza e ripristino',
@@ -490,7 +530,8 @@ export const VIEW_REGISTRY: Record<AppView, ViewDefinition> = {
     keywords: 'resilienza recovery ripristino continuita dipendenze rto ransomware validazione rischio residuo'
   },
   evidence: {
-    group: 'operations',
+    group: 'labs',
+    category: 'operations',
     icon: FileSearch,
     component: view(() => import('../components/SecurityEvidenceLab')),
     it: 'Evidenze operative',
@@ -500,7 +541,8 @@ export const VIEW_REGISTRY: Record<AppView, ViewDefinition> = {
     keywords: 'evidenze evidence log output show audit interpretazione correlazione artefatto'
   },
   defense: {
-    group: 'operations',
+    group: 'labs',
+    category: 'operations',
     icon: Shield,
     component: view(() => import('../components/DefenseControlsLab')),
     it: 'Controlli difensivi',

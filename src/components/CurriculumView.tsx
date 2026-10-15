@@ -6,7 +6,6 @@ import { ATTACK_FAMILIES } from '../content/securityTaxonomy';
 import { VIEW_REGISTRY } from '../content/viewRegistry';
 import { chaptersByDomain } from '../lib/studyManual';
 import { useStore } from '../store';
-import CcnaHubTabs from './CcnaHubTabs';
 import ViewLink from './ViewLink';
 
 const CHECKLIST_BY_DOMAIN = new Map<string, (typeof DOMAIN_CHECKLISTS)[number]>(
@@ -39,7 +38,6 @@ export default function CurriculumView() {
 
   return (
     <div className="space-y-8">
-      <CcnaHubTabs />
       <header className="bg-white border border-slate-200 rounded-xl p-6 md:p-8">
         <div className="flex items-start gap-4">
           <div className="rounded-xl bg-indigo-50 p-3 text-indigo-600">

@@ -124,8 +124,8 @@ describe('browser/store connection', () => {
     const length = window.history.length;
     useStore.setState({ activeView: 'routing' });
     disconnect = connectViewRouting(useStore, window);
-    expect(useStore.getState().activeView).toBe('curriculum');
-    expect(window.location.hash).toBe('#/curriculum');
+    expect(useStore.getState().activeView).toBe('manual');
+    expect(window.location.hash).toBe('#/manual');
     expect(window.history.length).toBe(length);
   });
 
@@ -135,7 +135,7 @@ describe('browser/store connection', () => {
     disconnect = connectViewRouting(useStore, window);
     expect(window.location.pathname).toBe('/study/');
     expect(window.location.search).toBe('?mode=demo');
-    expect(window.location.hash).toBe('#/curriculum');
+    expect(window.location.hash).toBe('#/manual');
     expect(window.history.state).toEqual({ external: true });
     expect(window.history.length).toBe(length);
   });
@@ -166,7 +166,7 @@ describe('browser/store connection', () => {
     await vi.waitFor(() => expect(useStore.getState().activeView).toBe('routing'));
     expect(window.location.hash).toBe('#/routing');
     window.history.back();
-    await vi.waitFor(() => expect(useStore.getState().activeView).toBe('curriculum'));
+    await vi.waitFor(() => expect(useStore.getState().activeView).toBe('manual'));
     window.history.forward();
     await vi.waitFor(() => expect(useStore.getState().activeView).toBe('routing'));
     window.history.forward();
@@ -188,8 +188,8 @@ describe('browser/store connection', () => {
     const length = window.history.length;
     window.dispatchEvent(new PopStateEvent('popstate'));
     window.dispatchEvent(new HashChangeEvent('hashchange'));
-    expect(useStore.getState().activeView).toBe('curriculum');
-    expect(window.location.hash).toBe('#/curriculum');
+    expect(useStore.getState().activeView).toBe('manual');
+    expect(window.location.hash).toBe('#/manual');
     expect(window.history.length).toBe(length);
   });
 
@@ -286,7 +286,7 @@ describe('browser/store connection', () => {
     disconnect = connectViewRouting(useStore, window);
     disconnect();
     useStore.getState().setActiveView('routing');
-    expect(window.location.hash).toBe('#/curriculum');
+    expect(window.location.hash).toBe('#/manual');
     window.history.replaceState(null, '', '#/glossary');
     window.dispatchEvent(new PopStateEvent('popstate'));
     window.dispatchEvent(new HashChangeEvent('hashchange'));

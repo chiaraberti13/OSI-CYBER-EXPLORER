@@ -25,7 +25,7 @@ describe('Navigation', () => {
     const user = userEvent.setup();
     render(<Navigation />);
 
-    const group = screen.getByRole('button', { name: /Percorso CCNA/ });
+    const group = screen.getByRole('button', { name: /Laboratori/ });
     expect(group.getAttribute('aria-expanded')).toBe('false');
     await user.click(group);
     expect(group.getAttribute('aria-expanded')).toBe('true');
@@ -37,7 +37,7 @@ describe('Navigation', () => {
     expect(useStore.getState().activeView).toBe('routing');
     expect(window.location.hash).toBe('#/routing');
     // Reaching the destination closes the chrome.
-    expect(screen.getByRole('button', { name: /Percorso CCNA/ }).getAttribute('aria-expanded')).toBe('false');
+    expect(screen.getByRole('button', { name: /Laboratori/ }).getAttribute('aria-expanded')).toBe('false');
   });
 
   it('filters every lab with the quick search and opens the chosen one', async () => {
@@ -109,13 +109,16 @@ describe('Navigation', () => {
     // only group button marked aria-current, so assistive tech still reports where you are.
     const current = screen.getAllByRole('button').filter((button) => button.getAttribute('aria-current') === 'true');
     expect(current).toHaveLength(1);
-    expect(current[0].textContent).toMatch(/Sicurezza per area/);
+    // emailsecurity lives under the single Labs group (IA-11).
+    expect(current[0].textContent).toMatch(/Laboratori/);
   });
 
   it('renders every label in English when the language changes', () => {
     useStore.setState({ language: 'en' });
     render(<Navigation />);
-    expect(screen.getByRole('button', { name: /CCNA path/ })).toBeTruthy();
+    // The two destinations: Manual (a direct link) and Labs (a dropdown).
+    expect(screen.getByRole('link', { name: /Manual/ })).toBeTruthy();
+    expect(screen.getByRole('button', { name: /Labs/ })).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Search for a lab' })).toBeTruthy();
   });
 

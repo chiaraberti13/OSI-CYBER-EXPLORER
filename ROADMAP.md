@@ -200,11 +200,17 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
       guida in pagina del manuale («Come usare questa guida»): resta solo la «Guida» globale in testata.
       Aggiornati tutti i test unit/E2E; `npm run verify` verde, Playwright 65/65. Report:
       `docs/verify/2026-10-15-ia10-two-routes-single-guide.md`.
-- [ ] **IA-11 (P1) — Un solo percorso (Manuale) e menu a due voci.** Unificare lo hub: via le schede
-      «Panoramica/Capitoli» e la voce separata «Mappa CCNA»; il Manuale è il percorso unico (atterraggio
-      predefinito), con i laboratori collegati dai capitoli. Menu in alto a **due voci**: **Manuale**
-      e **Laboratori** (tutti i laboratori in un unico elenco con sottotitoli per area), più la ricerca
-      ⌘K. Preservare routing/deep-link e WCAG 2.2 AA.
+- [x] **IA-11 (P1) — Un solo percorso (Manuale) e menu a due voci.** **Esito (15/10/2026):** rimosso
+      lo switcher a schede «Panoramica/Capitoli» (`CcnaHubTabs` eliminato da manuale e Mappa CCNA); il
+      **Manuale è il percorso unico** ed è l'atterraggio predefinito (`DEFAULT_VIEW = 'manual'`, stato
+      iniziale dello store allineato). La «Mappa CCNA» (`curriculum`) resta raggiungibile via deep-link
+      ma non è più una voce di menu. Menu in alto ridotto a **due voci**: **Manuale** (link diretto) e
+      **Laboratori** (dropdown con TUTTI i laboratori in un unico elenco, organizzati per sottotitoli
+      d'area — Percorso CCNA, Laboratori interattivi, Sicurezza per area, Operazioni e difesa), più la
+      ricerca ⌘K. `ViewGroupId` passa a `manual | labs` con `LabCategoryId` per i sottotitoli; i gruppi
+      di vista e il modello di navigazione derivano dal registro. Routing, deep-link e WCAG 2.2 AA
+      preservati. Aggiornati i test di registro/navigazione/routing e gli E2E; `npm run verify` verde,
+      Playwright 64/64. Report: `docs/verify/2026-10-15-ia11-single-path-two-item-menu.md`.
 
 ## 🌍 Traduttore/Revisore inglese — parità e naturalezza
 

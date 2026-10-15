@@ -4,7 +4,7 @@ import { findChapter } from './studyManual';
 import type { AppState, AppView } from '../store';
 import type { Language } from '../types';
 
-export const DEFAULT_VIEW: AppView = 'curriculum';
+export const DEFAULT_VIEW: AppView = 'manual';
 
 /** Routes are a projection of the registry, never a second list of view ids. */
 const VIEW_BY_HASH = new Map(VIEW_ORDER.map((view) => [viewHash(view), view]));
