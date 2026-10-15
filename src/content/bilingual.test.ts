@@ -9,6 +9,7 @@ import { DOMAIN_CHECKLISTS } from './domainChecklists';
 import { ATTACK_PATHS } from './attackPaths';
 import { SECURITY_EVIDENCE_CASES } from './securityEvidence';
 import { CCNA_DOMAINS } from './ccna';
+import { PROTOCOL_REGISTRY } from './protocolRegistry';
 import { APPLICATION_SECURITY_SCENARIOS } from './applicationSecurityScenarios';
 import { AVAILABILITY_SCENARIOS } from './availabilityScenarios';
 import { EMAIL_HUMAN_SECURITY_SCENARIOS } from './emailHumanSecurityScenarios';
@@ -42,11 +43,12 @@ const CONTENT_DIR = 'src/content';
 
 /**
  * Datasets extracted from PortsExplorer.tsx (ENG-04). They were never under this guard
- * while they lived inside the component, and carry ~60 pre-existing it/en asymmetries
+ * while they lived inside the component, and still carry pre-existing it/en asymmetries
  * (mostly acronyms used in one language only). They are excluded until the translations
  * are reviewed; remove a file from this list once its findings are fixed.
+ * protocolRegistry.ts was fully reviewed in I18N-10 (2026-10-15) and is now included.
  */
-const PENDING_TRANSLATION_REVIEW = new Set(['deviceRegistry.ts', 'portContent.ts', 'protocolRegistry.ts']);
+const PENDING_TRANSLATION_REVIEW = new Set(['deviceRegistry.ts', 'portContent.ts']);
 
 interface Pair {
   file: string;
@@ -153,7 +155,7 @@ describe('bilingual content', () => {
  * empty string — the "una traduzione mancante fallisce in CI" half of ENG-13.
  */
 
-const SECURITY_DATASETS: ReadonlyArray<readonly [string, unknown]> = [
+const BILINGUAL_DATASETS: ReadonlyArray<readonly [string, unknown]> = [
   ['ATTACK_FAMILIES', ATTACK_FAMILIES],
   ['SECURITY_TECHNIQUES', SECURITY_TECHNIQUES],
   ['DEFENSE_CONTROLS', DEFENSE_CONTROLS],
@@ -163,6 +165,7 @@ const SECURITY_DATASETS: ReadonlyArray<readonly [string, unknown]> = [
   ['ATTACK_PATHS', ATTACK_PATHS],
   ['SECURITY_EVIDENCE_CASES', SECURITY_EVIDENCE_CASES],
   ['CCNA_DOMAINS', CCNA_DOMAINS],
+  ['PROTOCOL_REGISTRY', PROTOCOL_REGISTRY],
   ['APPLICATION_SECURITY_SCENARIOS', APPLICATION_SECURITY_SCENARIOS],
   ['AVAILABILITY_SCENARIOS', AVAILABILITY_SCENARIOS],
   ['EMAIL_HUMAN_SECURITY_SCENARIOS', EMAIL_HUMAN_SECURITY_SCENARIOS],
@@ -179,14 +182,9 @@ const SECURITY_DATASETS: ReadonlyArray<readonly [string, unknown]> = [
   ['WIRELESS_SECURITY_SCENARIOS', WIRELESS_SECURITY_SCENARIOS]
 ];
 
-/** An object is a translation pair when it carries both `it` and `en` as strings. */
+/** A language key identifies a pair even when the other side is absent or malformed. */
 function isBilingualPair(value: Record<string, unknown>): boolean {
-  return (
-    'it' in value &&
-    'en' in value &&
-    (typeof value.it === 'string' || typeof value.it === 'undefined') &&
-    (typeof value.en === 'string' || typeof value.en === 'undefined')
-  );
+  return 'it' in value || 'en' in value;
 }
 
 /** Walks a value and records every `{ it, en }` pair whose sides are missing or empty. */
@@ -213,10 +211,37 @@ function collectEmptyTranslations(value: unknown, path: string, offenders: strin
   for (const key of Object.keys(record)) collectEmptyTranslations(record[key], `${path}.${key}`, offenders);
 }
 
-describe('bilingual security datasets', () => {
+describe('structured bilingual datasets', () => {
+  it.each([
+    [{ it: 'solo italiano' }, ['root.en']],
+    [{ en: 'English only' }, ['root.it']],
+    [{ it: '', en: 'English' }, ['root.it']],
+    [{ it: 'Italiano', en: '   ' }, ['root.en']],
+    [{ it: 42, en: 'English' }, ['root.it']],
+    [{ it: 'Italiano', en: null }, ['root.en']],
+    [{ nested: [{ it: 'Italiano' }] }, ['root.nested[0].en']],
+    [{ it: 'Italiano', en: 'English' }, []]
+  ])('rejects missing, blank or non-string translations: %j', (value, expected) => {
+    const offenders: string[] = [];
+    collectEmptyTranslations(value, 'root', offenders);
+    expect(offenders).toEqual(expected);
+  });
+
+  it('checks every protocol field without relying on source-text length heuristics', () => {
+    const offenders: string[] = [];
+    for (const protocol of PROTOCOL_REGISTRY) {
+      for (const field of ['description', 'useCase', 'security'] as const) {
+        expect(protocol[field]).toHaveProperty('it');
+        expect(protocol[field]).toHaveProperty('en');
+        collectEmptyTranslations(protocol[field], `${protocol.name}.${field}`, offenders);
+      }
+    }
+    expect(offenders).toEqual([]);
+  });
+
   it('fills both languages of every translation pair', () => {
     const offenders: string[] = [];
-    for (const [name, dataset] of SECURITY_DATASETS) {
+    for (const [name, dataset] of BILINGUAL_DATASETS) {
       collectEmptyTranslations(dataset, name, offenders);
     }
     expect(offenders, 'a translation pair is missing a language or is empty').toEqual([]);
@@ -235,7 +260,7 @@ describe('bilingual security datasets', () => {
         count(record[key]);
       }
     };
-    for (const [, dataset] of SECURITY_DATASETS) count(dataset);
+    for (const [, dataset] of BILINGUAL_DATASETS) count(dataset);
     expect(seen.n).toBeGreaterThan(500);
   });
 });

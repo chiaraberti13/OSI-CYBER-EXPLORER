@@ -237,6 +237,15 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
       acronimi e cifre imposta dai test. **Incremento VIS-12 (15/10/2026):** rivisti diagrammi,
       alternative testuali e correzioni DMARC in entrambe le lingue; guard bilingue superato.
       Il task resta aperto perché ricorrente; non implica revisione integrale dei dataset storici.
+  - [x] **Incremento catalogo protocolli (15/10/2026).** Revisionate tutte le 20 schede
+        (`description`, `useCase`, `security`: 60 coppie IT/EN), corrette le imprecisioni
+        tecniche e rimossa `protocolRegistry.ts` dalle esclusioni del guard bilingue.
+        Il guard strutturale ora rileva anche chiavi lingua assenti e valori non stringa;
+        pannello localizzato, ricerca nominata e badge senza garanzie assolute di sicurezza.
+        Criteri: parità automatica, rendering IT/EN completo, ricerca, Axe e reflow a 320/1280 px.
+        Report: `docs/verify/2026-10-15-i18n10-protocol-catalogue.md`.
+        Restano da revisionare `deviceRegistry.ts` e `portContent.ts`, ancora esclusi dal
+        confronto euristico; il punto ricorrente I18N-10 non viene chiuso globalmente.
 
 ## 📝 Technical Writer — documentazione
 

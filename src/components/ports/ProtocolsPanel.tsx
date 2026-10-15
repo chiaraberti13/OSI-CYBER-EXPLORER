@@ -4,6 +4,15 @@ import { Search, ShieldAlert, ShieldCheck, Layers } from 'lucide-react';
 import type { ProtocolInfo } from '../../content/portsExplorerTypes';
 import type { Language } from '../../lib/portsFilter';
 
+const PROTOCOL_TYPE_IT: Record<string, string> = {
+  Application: 'Applicazione',
+  Transport: 'Trasporto',
+  Network: 'Rete',
+  'Data Link': 'Collegamento dati',
+  Presentation: 'Presentazione',
+  'Data Link / Physical': 'Collegamento dati / Fisico'
+};
+
 export interface ProtocolsPanelProps {
   language: Language;
   searchTerm: string;
@@ -23,31 +32,51 @@ export default function ProtocolsPanel({
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 p-6 bg-slate-50/70 border-b border-slate-100">
         <div className="p-3 bg-white rounded-xl border border-slate-100 flex flex-col justify-between">
           <div>
-            <span className="text-[9px] font-bold text-rose-600 uppercase tracking-wider block">Layer 7</span>
-            <span className="text-xs font-semibold text-slate-800">Application</span>
+            <span className="text-[9px] font-bold text-rose-600 uppercase tracking-wider block">
+              {language === 'it' ? 'Livello 7' : 'Layer 7'}
+            </span>
+            <span className="text-xs font-semibold text-slate-800">
+              {language === 'it' ? 'Applicazione' : 'Application'}
+            </span>
           </div>
           <p className="text-[10px] text-slate-400 mt-2 leading-tight">HTTP, DNS, SSH, SMTP, SNMP</p>
         </div>
         <div className="p-3 bg-white rounded-xl border border-slate-100 flex flex-col justify-between">
           <div>
-            <span className="text-[9px] font-bold text-indigo-600 uppercase tracking-wider block">Layer 4</span>
-            <span className="text-xs font-semibold text-slate-800">Transport</span>
+            <span className="text-[9px] font-bold text-indigo-600 uppercase tracking-wider block">
+              {language === 'it' ? 'Livello 4' : 'Layer 4'}
+            </span>
+            <span className="text-xs font-semibold text-slate-800">
+              {language === 'it' ? 'Trasporto' : 'Transport'}
+            </span>
           </div>
-          <p className="text-[10px] text-slate-400 mt-2 leading-tight">TCP (Reliable), UDP (Fast)</p>
+          <p className="text-[10px] text-slate-400 mt-2 leading-tight">
+            {language === 'it' ? 'TCP: flusso di byte · UDP: datagrammi' : 'TCP: byte stream · UDP: datagrams'}
+          </p>
         </div>
         <div className="p-3 bg-white rounded-xl border border-slate-100 flex flex-col justify-between">
           <div>
-            <span className="text-[9px] font-bold text-emerald-600 uppercase tracking-wider block">Layer 3</span>
-            <span className="text-xs font-semibold text-slate-800">Network</span>
+            <span className="text-[9px] font-bold text-emerald-600 uppercase tracking-wider block">
+              {language === 'it' ? 'Livello 3' : 'Layer 3'}
+            </span>
+            <span className="text-xs font-semibold text-slate-800">{language === 'it' ? 'Rete' : 'Network'}</span>
           </div>
-          <p className="text-[10px] text-slate-400 mt-2 leading-tight">IP (Routing), ICMP (Ping)</p>
+          <p className="text-[10px] text-slate-400 mt-2 leading-tight">
+            {language === 'it' ? 'IP: instradamento · ICMP: controllo' : 'IP: routing · ICMP: control'}
+          </p>
         </div>
         <div className="p-3 bg-white rounded-xl border border-slate-100 flex flex-col justify-between">
           <div>
-            <span className="text-[9px] font-bold text-amber-600 uppercase tracking-wider block">Layer 2</span>
-            <span className="text-xs font-semibold text-slate-800">Data Link</span>
+            <span className="text-[9px] font-bold text-amber-600 uppercase tracking-wider block">
+              {language === 'it' ? 'Livello 2' : 'Layer 2'}
+            </span>
+            <span className="text-xs font-semibold text-slate-800">
+              {language === 'it' ? 'Collegamento dati' : 'Data Link'}
+            </span>
           </div>
-          <p className="text-[10px] text-slate-400 mt-2 leading-tight">ARP (Local Resolution)</p>
+          <p className="text-[10px] text-slate-400 mt-2 leading-tight">
+            {language === 'it' ? 'ARP: risoluzione locale IPv4' : 'ARP: local IPv4 resolution'}
+          </p>
         </div>
       </div>
 
@@ -57,6 +86,7 @@ export default function ProtocolsPanel({
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
           <input
             type="text"
+            aria-label={language === 'it' ? 'Cerca protocolli' : 'Search protocols'}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder={
@@ -70,9 +100,9 @@ export default function ProtocolsPanel({
         {searchTerm && (
           <button
             onClick={() => setSearchTerm('')}
-            className="px-3.5 py-1.5 rounded-lg text-[10px] font-bold uppercase border bg-white border-slate-200 text-slate-500 hover:border-slate-300 transition-all shrink-0 font-mono"
+            className="min-h-11 px-3.5 py-1.5 rounded-lg text-[10px] font-bold uppercase border bg-white border-slate-200 text-slate-500 hover:border-slate-300 transition-all shrink-0 font-mono"
           >
-            {language === 'en' ? 'Reset' : 'Reset'}
+            {language === 'en' ? 'Reset' : 'Azzera'}
           </button>
         )}
       </div>
@@ -90,27 +120,29 @@ export default function ProtocolsPanel({
 
               return (
                 <motion.div
-                  key={idx}
+                  key={item.name}
+                  data-protocol={item.name}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: Math.min(idx * 0.02, 0.2) }}
                   className="bg-white border border-slate-100 rounded-lg p-4 hover:shadow-md hover:border-indigo-100 transition-all group flex flex-col justify-between"
                 >
                   <div>
-                    <div className="flex justify-between items-start gap-2 mb-2">
-                      <span className="flex items-center gap-1.5">
+                    <div className="flex flex-wrap justify-between items-start gap-2 mb-2">
+                      <span className="flex flex-wrap items-center gap-1.5">
                         <span className="px-2.5 py-1 bg-indigo-600 text-white font-semibold text-xs rounded-lg select-all font-mono">
                           {item.name}
                         </span>
                         <span
                           className={`text-[9.5px] font-mono font-semibold px-2 py-0.5 rounded-lg border uppercase ${layerColor}`}
                         >
-                          Layer {item.layer} ({item.type})
+                          {language === 'it' ? 'Livello' : 'Layer'} {item.layer} (
+                          {language === 'it' ? (PROTOCOL_TYPE_IT[item.type] ?? item.type) : item.type})
                         </span>
                       </span>
                       {item.isSecure ? (
                         <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-lg uppercase">
-                          {language === 'en' ? 'Secure' : 'Sicuro'}
+                          {language === 'en' ? 'Configurable protection' : 'Protezione configurabile'}
                         </span>
                       ) : null}
                     </div>
