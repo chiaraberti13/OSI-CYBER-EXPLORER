@@ -98,6 +98,7 @@ export const it = {
     trackEjptShort: 'eJPT',
     trackFilterLabel: 'Filtra per percorso',
     trackFilterAll: 'Tutti',
+    progressByRoute: 'Progresso per percorso',
     examWeight: 'Peso d’esame'
   },
   error: {

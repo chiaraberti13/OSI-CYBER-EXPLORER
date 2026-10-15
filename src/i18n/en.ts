@@ -97,6 +97,7 @@ export const en = {
     trackEjptShort: 'eJPT',
     trackFilterLabel: 'Filter by route',
     trackFilterAll: 'All',
+    progressByRoute: 'Progress by route',
     examWeight: 'Exam weight'
   },
   error: {

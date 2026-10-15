@@ -175,8 +175,17 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
       unit (restringe l'albero, `aria-pressed`, nessuna navigazione) ed E2E dedicato
       (`manual-track-filter.spec.ts`: restringimento, routing/deep-link invariati, Axe WCAG 2.2 AA
       sullo stato filtrato). Report: `docs/verify/2026-10-15-ux32-certification-track-filter.md`.
-- [ ] **UX-33 (P3) — Progresso per percorso.** Mostrare il progresso separato per i due obiettivi di
-      certificazione, oltre al totale.
+- [x] **UX-33 (P3) — Progresso per percorso.** Mostrare il progresso separato per i due obiettivi di
+      certificazione, oltre al totale. **Esito (15/10/2026):** nel header del manuale, accanto al
+      progresso complessivo, una lista «Progresso per percorso» mostra il completamento separato per
+      ciascun percorso (CCNA, eJPT, Estensione) — i due obiettivi di certificazione più l'estensione
+      Security+, coerente con il filtro UX-32 e i segni VIS-10. Ogni voce ha l'icona di percorso
+      (`TrackMark`) a rinforzo del nome scritto e un'etichetta accessibile completa
+      («&lt;percorso&gt; · Progresso capitoli: x/n (p%)»). Derivato dai selettori puri
+      `chaptersForCertificationTrack` + `chapterCompletion`, senza stato aggiuntivo: completare un
+      capitolo avanza solo il suo percorso, mentre il totale conta tutti. Guard: test unit (un
+      capitolo CCNA completato avanza solo CCNA; le altre route restano a 0; il totale conta) ed E2E
+      dedicato (`manual-route-progress.spec.ts`). Report: `docs/verify/2026-10-15-ux33-per-route-progress.md`.
 
 ## 🌍 Traduttore/Revisore inglese — parità e naturalezza
 

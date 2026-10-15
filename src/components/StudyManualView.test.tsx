@@ -408,6 +408,29 @@ describe('certification-route marks (VIS-10)', () => {
     expect(nav.querySelectorAll('[data-track="ejpt"]')).toHaveLength(0);
   });
 
+  it('breaks progress out per certification route beside the total (UX-33)', () => {
+    // One completed chapter on the CCNA route (osi-model) must advance CCNA only.
+    useStore.setState({ completedChapterIds: ['osi-model'] });
+    render(<StudyManualView />);
+
+    const routeList = screen.getByRole('list', { name: 'Progresso per percorso' });
+    const items = within(routeList).getAllByRole('listitem');
+    // One row per certification route, in catalog order.
+    expect(items).toHaveLength(3);
+
+    const ccnaTotal = chaptersForCertificationTrack('ccna').length;
+    const ejptTotal = chaptersForCertificationTrack('ejpt').length;
+    const extensionTotal = chaptersForCertificationTrack('extension').length;
+
+    // CCNA shows 1 completed; the other routes stay at 0 — progress is per route, not shared.
+    expect(within(routeList).getByText(`CCNA 1/${ccnaTotal}`)).toBeTruthy();
+    expect(within(routeList).getByText(`eJPT 0/${ejptTotal}`)).toBeTruthy();
+    expect(within(routeList).getByText(`Estensione 0/${extensionTotal}`)).toBeTruthy();
+
+    // The total still counts every route together.
+    expect(screen.getByText(new RegExp(`Progresso capitoli: 1/${TOTAL_CHAPTERS}`))).toBeTruthy();
+  });
+
   it('sets an eJPT chapter apart from a Security+ extension chapter in the header', () => {
     act(() => useStore.setState({ activeChapterId: 'pentest-methodology' }));
     const { container } = render(<StudyManualView />);

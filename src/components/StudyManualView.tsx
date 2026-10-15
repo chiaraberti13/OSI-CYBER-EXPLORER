@@ -29,10 +29,12 @@ import {
   certificationTrackForChapter,
   chapterCompletion,
   chaptersByDomain,
+  chaptersForCertificationTrack,
   findChapter,
   manualStats,
   orderedChapters
 } from '../lib/studyManual';
+import { MANUAL_CERTIFICATION_TRACKS } from '../content/studyManual';
 import type {
   GuidedLab,
   ManualCert,
@@ -167,6 +169,13 @@ export default function StudyManualView() {
   const chapter = (activeChapterId ? findChapter(activeChapterId) : undefined) ?? chapters[0];
   const stats = manualStats();
   const overallCompletion = chapterCompletion(chapters, completedChapterIds);
+  // UX-33 — progress broken out per certification route (CCNA, eJPT, extension) beside
+  // the overall total, so a learner on a single objective sees that objective advance.
+  const routeProgress = MANUAL_CERTIFICATION_TRACKS.map((route) => ({
+    id: route.id,
+    title: route.title,
+    completion: chapterCompletion(chaptersForCertificationTrack(route.id), completedChapterIds)
+  }));
   const headingId = useId();
   const chapterTitleId = useId();
   const chapterTitleRef = useRef<HTMLHeadingElement>(null);
@@ -437,6 +446,22 @@ export default function StudyManualView() {
           ) : null}
           <span className="basis-full text-[11px] text-slate-500">{t.progressStoredLocally}</span>
         </div>
+        {/* UX-33: per-route progress beside the total. The route icon (VIS-10) reinforces
+          the written route name, and each item carries a full accessible label. */}
+        <ul aria-label={t.progressByRoute} className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-600">
+          {routeProgress.map((route) => (
+            <li
+              key={route.id}
+              className="inline-flex items-center gap-1.5"
+              aria-label={`${route.title[language]} · ${t.chapterProgress}: ${route.completion.completed}/${route.completion.total} (${route.completion.percent}%)`}
+            >
+              <TrackMark track={route.id} className="h-3.5 w-3.5" />
+              <span aria-hidden="true">
+                {route.title[language]} {route.completion.completed}/{route.completion.total}
+              </span>
+            </li>
+          ))}
+        </ul>
       </header>
 
       <section
