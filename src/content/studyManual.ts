@@ -9135,5 +9135,369 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
         ]
       }
     ]
+  },
+  {
+    id: 'access-layer-security',
+    cert: 'securityplus',
+    order: 29,
+    track: 'extension',
+    title: {
+      it: 'Sicurezza dell’access layer: il confine della porta',
+      en: 'Access-layer security: the port as the trust boundary'
+    },
+    summary: {
+      it: 'L’estensione che insegna il laboratorio «Sicurezza Layer 2»: l’access layer è il punto in cui un host non fidato incontra il dominio commutato, e lì ogni difesa nasce da un modello di fiducia esplicito. Il ruolo della porta e la Port Security come controllo del primo hop, l’integrità del first-hop costruita su una binding table attendibile (DHCP Snooping, DAI, IP Source Guard) con trunk e native VLAN in ordine, e la protezione della topologia commutata (guardie STP, coerenza EtherChannel) con contenimento e recovery. Complemento difensivo, orientato al modello e al perché, dei comandi di hardening Layer 2 già visti nel capitolo di sicurezza CCNA.',
+      en: 'The extension that teaches the “Layer 2 security” lab: the access layer is where an untrusted host meets the switched domain, and there every defense starts from an explicit trust model. The port role and Port Security as first-hop control, first-hop integrity built on a trustworthy binding table (DHCP Snooping, DAI, IP Source Guard) with trunks and native VLAN in order, and protection of the switched topology (STP guards, EtherChannel consistency) with containment and recovery. A defensive complement — focused on the model and the why — to the Layer 2 hardening commands already seen in the CCNA security chapter.'
+    },
+    topics: [
+      {
+        id: 'l2-port-trust-boundary',
+        title: {
+          it: 'La porta di accesso come confine di fiducia: ruolo, VLAN e Port Security',
+          en: 'The access port as a trust boundary: role, VLANs, and Port Security'
+        },
+        objectives: [
+          {
+            it: 'Spiegare perché la porta di accesso è il confine di fiducia e dichiararne il ruolo (access, voce) invece di lasciarlo negoziare.',
+            en: 'Explain why the access port is the trust boundary and declare its role (access, voice) instead of letting it be negotiated.'
+          },
+          {
+            it: 'Usare CAM table e Port Security come controllo di identità del primo hop senza rompere l’host legittimo.',
+            en: 'Use the CAM table and Port Security as first-hop identity control without breaking the legitimate host.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere switching Ethernet, CAM table e VLAN/802.1Q (capitoli su Ethernet/switching e su VLAN/trunk/STP).',
+            en: 'Know Ethernet switching, the CAM table, and VLAN/802.1Q (the Ethernet/switching and VLAN/trunk/STP chapters).'
+          }
+        ],
+        theory: [
+          {
+            it: 'L’access layer è il bordo fisico in cui un dispositivo non fidato si collega al dominio commutato, e lo switch impara gli indirizzi MAC nella CAM table per inoltrare le trame. Ma imparare è fidarsi: chi invia trame definisce la tabella, e nessuno autentica quell’apprendimento. Per questo la porta di accesso deve dichiarare il proprio ruolo in modo esplicito — porta di accesso con la sua data VLAN e, se serve, una voice VLAN — invece di lasciarlo negoziare: un endpoint che può negoziare un trunk raggiunge altre VLAN e il confine salta. La disciplina del ruolo (niente negoziazione dinamica del trunk sulle porte verso gli host, modalità di accesso esplicita) è il primo confine, prima ancora dei controlli specifici.',
+            en: 'The access layer is the physical edge where an untrusted device plugs into the switched domain, and the switch learns MAC addresses into the CAM table to forward frames. But learning is trusting: whoever sends frames defines the table, and nothing authenticates that learning. This is why the access port must declare its role explicitly — an access port with its data VLAN and, if needed, a voice VLAN — instead of letting it be negotiated: an endpoint that can negotiate a trunk reaches other VLANs and the boundary is gone. Role discipline (no dynamic trunk negotiation on host-facing ports, an explicit access mode) is the first boundary, even before the specific controls.'
+          },
+          {
+            it: 'Sulla porta così delimitata, CAM table e Port Security danno il controllo di identità del primo hop: si limita quanti e quali MAC la porta accetta, così un flood non trabocca la tabella facendola degradare a flooding fail-open, e un MAC «spostato» non dirotta in silenzio il traffico. Ma le tre violation mode non sono equivalenti — protect scarta in silenzio assoluto senza nemmeno contare, restrict scarta e conta/segnala, shutdown porta la porta in err-disable — e un limite troppo stretto rompe la convivenza di telefono e PC o il normale ricambio di MAC (DHCP, roaming). Port Security va quindi dimensionata sull’endpoint reale, non sul «rischio zero».',
+            en: 'On the port thus bounded, the CAM table and Port Security give first-hop identity control: you limit how many and which MACs the port accepts, so a flood does not overflow the table into fail-open flooding, and a «moved» MAC does not silently hijack traffic. But the three violation modes are not equivalent — protect drops in absolute silence without even counting, restrict drops and counts/alerts, shutdown puts the port into err-disable — and a limit that is too tight breaks a phone and PC sharing a port or the normal churn of MACs (DHCP, roaming). Port Security must therefore be sized to the real endpoint, not to «zero risk».'
+          },
+          {
+            it: 'Il principio è coerente con tutto il track difensivo: l’access layer è dove la policy costa meno ed è più efficace, perché è il punto più vicino alla sorgente; ma ogni controllo lì è a doppio taglio — troppo lasco e viene aggirato, troppo stretto e abbatte l’host legittimo (la voice VLAN che non sale, il DHCP che non rinnova). La difesa non si dichiara, si prova: un limite di Port Security va validato contro il mix reale di dispositivi, e un ruolo di porta va verificato osservando che un endpoint non riesca davvero a negoziare nulla di più del previsto.',
+            en: 'The principle is consistent with the whole defensive track: the access layer is where policy is cheapest and most effective, because it is the closest point to the source; but every control there is double-edged — too loose and it is bypassed, too tight and it takes down the legitimate host (the voice VLAN that does not come up, the DHCP that does not renew). The defense is not declared, it is proven: a Port Security limit must be validated against the real device mix, and a port role must be verified by observing that an endpoint genuinely cannot negotiate anything beyond what is intended.'
+          }
+        ],
+        example: {
+          it: 'Una porta di accesso in 192.0.2.0/24 serve un telefono con un PC a valle: il ruolo è access con data e voice VLAN, mai trunk negoziabile, e Port Security ammette i pochi MAC attesi (telefono più PC) con violation restrict, così un flood non degrada la CAM table ma il telefono non finisce in err-disable per un MAC in più.',
+          en: 'An access port in 192.0.2.0/24 serves a phone with a PC behind it: the role is access with a data and a voice VLAN, never a negotiable trunk, and Port Security admits the few expected MACs (phone plus PC) with violation restrict, so a flood does not degrade the CAM table yet the phone is not pushed into err-disable for one extra MAC.'
+        },
+        commonMistakes: [
+          {
+            it: 'Lasciare la negoziazione dinamica del trunk sulle porte verso gli host: un endpoint può negoziare un trunk e uscire dalla sua VLAN.',
+            en: 'Leaving dynamic trunk negotiation on host-facing ports: an endpoint can negotiate a trunk and leave its VLAN.'
+          },
+          {
+            it: 'Impostare il limite a un solo MAC dove convivono telefono e PC: si rompe la voce o il PC a valle.',
+            en: 'Setting the limit to a single MAC where a phone and a PC coexist: the voice or the downstream PC breaks.'
+          },
+          {
+            it: 'Credere che protect sia la scelta «sicura»: scarta in silenzio e senza contatore, quindi una violazione resta invisibile.',
+            en: 'Believing protect is the «safe» choice: it drops silently and without a counter, so a violation stays invisible.'
+          }
+        ],
+        lab: 'layer2security',
+        references: [{ kind: 'ieee', id: 'IEEE 802.1Q' }],
+        guidedLabs: [
+          {
+            id: 'gl-layer2-access-boundary',
+            title: {
+              it: 'Dichiara il ruolo della porta e dimensiona Port Security',
+              en: 'Declare the port role and size Port Security'
+            },
+            difficulty: 'core',
+            lab: 'layer2security',
+            scenario: {
+              it: 'Il laboratorio «Sicurezza Layer 2» mostra il confine fisico della porta, i ruoli access/voce/trunk e il controllo MAC del primo hop.',
+              en: 'The “Layer 2 security” lab shows the port’s physical boundary, the access/voice/trunk roles, and first-hop MAC control.'
+            },
+            task: {
+              it: 'Stabilisci il ruolo corretto di una porta di accesso e indica un limite di Port Security che regga il mix reale di dispositivi.',
+              en: 'Set the correct role for an access port and state a Port Security limit that holds the real device mix.'
+            },
+            steps: [
+              {
+                it: 'Apri «Sicurezza Layer 2» e osserva il ruolo della porta e la data/voice VLAN.',
+                en: 'Open “Layer 2 security” and observe the port role and the data/voice VLAN.'
+              },
+              {
+                it: 'Disattiva la negoziazione dinamica del trunk e verifica che l’endpoint non possa negoziarlo.',
+                en: 'Disable dynamic trunk negotiation and verify the endpoint cannot negotiate it.'
+              },
+              {
+                it: 'Scegli il limite di Port Security e la violation mode in base al mix reale (telefono più PC), non al rischio zero.',
+                en: 'Choose the Port Security limit and violation mode from the real mix (phone plus PC), not from zero risk.'
+              }
+            ],
+            challenge: {
+              it: 'Dopo aver messo il limite a un solo MAC la porta va in err-disable: quale assunzione sul mix di dispositivi era sbagliata?',
+              en: 'After setting the limit to a single MAC the port goes err-disable: which assumption about the device mix was wrong?'
+            },
+            solution: [
+              {
+                it: 'La porta di accesso è il confine di fiducia: va dichiarata access con la sua VLAN (ed eventuale voice VLAN), senza negoziazione dinamica del trunk, così un endpoint non può raggiungere altre VLAN. Port Security poi limita i MAC per impedire l’overflow della CAM table e il dirottamento, ma il limite si dimensiona sull’endpoint reale e la violation mode si sceglie per visibilità (restrict conta e segnala; protect scarta in silenzio).',
+                en: 'The access port is the trust boundary: it must be declared access with its VLAN (and an optional voice VLAN), with no dynamic trunk negotiation, so an endpoint cannot reach other VLANs. Port Security then limits MACs to prevent CAM-table overflow and hijacking, but the limit is sized to the real endpoint and the violation mode is chosen for visibility (restrict counts and alerts; protect drops silently).'
+              },
+              {
+                it: 'Sfida: se con un solo MAC la porta va in err-disable, l’assunzione sbagliata era che l’host fosse uno solo — un telefono con un PC a valle presenta almeno due MAC, quindi il limite va alzato al mix reale invece di forzare lo «zero rischio».',
+                en: 'Challenge: if one MAC pushes the port to err-disable, the wrong assumption was a single host — a phone with a PC behind it presents at least two MACs, so the limit must be raised to the real mix instead of forcing «zero risk».'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So spiegare perché l’access port è il confine di fiducia e come dichiararne il ruolo.',
+                en: 'I can explain why the access port is the trust boundary and how to declare its role.'
+              },
+              {
+                it: 'So dimensionare Port Security sul mix reale e scegliere la violation mode per visibilità.',
+                en: 'I can size Port Security to the real mix and choose the violation mode for visibility.'
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'l2-first-hop-integrity',
+        title: {
+          it: 'Integrità del first-hop: DHCP Snooping, DAI, IP Source Guard e igiene dei trunk',
+          en: 'First-hop integrity: DHCP Snooping, DAI, IP Source Guard, and trunk hygiene'
+        },
+        objectives: [
+          {
+            it: 'Costruire una binding table attendibile con DHCP Snooping e usarla per DAI e IP Source Guard.',
+            en: 'Build a trustworthy binding table with DHCP Snooping and use it for DAI and IP Source Guard.'
+          },
+          {
+            it: 'Mettere in ordine trunk e native VLAN per chiudere il VLAN hopping.',
+            en: 'Put trunks and the native VLAN in order to close VLAN hopping.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere DHCP, ARP e trunk/802.1Q (capitoli su servizi IP e su VLAN/trunk/STP).',
+            en: 'Know DHCP, ARP, and trunks/802.1Q (the IP services and VLAN/trunk/STP chapters).'
+          }
+        ],
+        theory: [
+          {
+            it: 'Molti attacchi di livello 2 sono l’assenza di una fonte di verità: ARP non autentica chi risponde, DHCP non autentica il server. DHCP Snooping introduce quella fonte costruendo una binding table attendibile — associazioni MAC/IP/porta/VLAN osservate dal traffico DHCP — distinguendo porte fidate (solo gli uplink verso il server DHCP reale) da porte non fidate (gli host). Un’offerta DHCP che arriva da una porta non fidata è un server abusivo e viene scartata. Quella tabella diventa la base su cui si appoggiano i controlli successivi: senza di essa, DAI e IP Source Guard non avrebbero nulla contro cui verificare.',
+            en: 'Many Layer 2 attacks are the absence of a source of truth: ARP does not authenticate who answers, DHCP does not authenticate the server. DHCP Snooping introduces that source by building a trustworthy binding table — MAC/IP/port/VLAN associations observed from DHCP traffic — distinguishing trusted ports (only the uplinks toward the real DHCP server) from untrusted ports (the hosts). A DHCP offer arriving from an untrusted port is a rogue server and is dropped. That table becomes the base the later controls lean on: without it, DAI and IP Source Guard would have nothing to verify against.'
+          },
+          {
+            it: 'Su quella base, DAI (Dynamic ARP Inspection) valida ogni ARP contro la binding table e scarta un ARP gratuito che rivendica un IP che non gli appartiene — è così che si ferma l’ARP poisoning e il MITM che ne consegue; IP Source Guard filtra il traffico IP ammettendo solo la coppia IP/MAC legata alla porta, fermando lo spoofing dell’IP sorgente. Entrambi valgono esattamente quanto la binding table su cui si basano: una porta fidata sbagliata, o host statici senza un binding manuale, trasformano la difesa in un bypass (se troppo permissiva) o in un’interruzione (se scarta traffico legittimo). È il principio «garbage in, garbage enforced»: la qualità della fonte di verità decide la qualità della difesa.',
+            en: 'On that base, DAI (Dynamic ARP Inspection) validates every ARP against the binding table and drops a gratuitous ARP that claims an IP it does not own — this is how ARP poisoning and the MITM that follows are stopped; IP Source Guard filters IP traffic, admitting only the IP/MAC pair bound to the port, stopping source-IP spoofing. Both are worth exactly as much as the binding table they rely on: a wrong trusted port, or static hosts without a manual binding, turn the defense into a bypass (if too permissive) or an outage (if it drops legitimate traffic). It is the «garbage in, garbage enforced» principle: the quality of the source of truth decides the quality of the defense.'
+          },
+          {
+            it: 'L’igiene dei trunk chiude l’altra via d’ingresso, il VLAN hopping: si disattiva la negoziazione dinamica (niente trunk che si forma da solo verso un host), si pota la allowed list alle sole VLAN necessarie, e si imposta la native VLAN su una VLAN inutilizzata e dedicata, taggandola, così il double-tagging e lo switch-spoofing non attraversano il confine di VLAN. Il filo conduttore è unico: il confine è reale solo se sono attendibili insieme la binding table (chi è chi al primo hop) e la configurazione del trunk (cosa può attraversare tra switch); basta che una delle due non sia provata perché il confine esista solo sulla carta.',
+            en: 'Trunk hygiene closes the other way in, VLAN hopping: you disable dynamic negotiation (no trunk forming by itself toward a host), you prune the allowed list to only the needed VLANs, and you set the native VLAN to an unused, dedicated VLAN and tag it, so double-tagging and switch-spoofing do not cross the VLAN boundary. The thread is single: the boundary is real only if the binding table (who is who at the first hop) and the trunk configuration (what may cross between switches) are trustworthy together; it is enough for one of the two to be unproven for the boundary to exist only on paper.'
+          }
+        ],
+        example: {
+          it: 'In 192.0.2.0/24 un server con indirizzo statico non ha un binding manuale: con IP Source Guard attivo il suo traffico viene scartato, perché la binding table — alimentata dal solo DHCP — non lo conosce; la correzione è aggiungere il binding statico, non disattivare il controllo.',
+          en: 'In 192.0.2.0/24 a server with a static address has no manual binding: with IP Source Guard active its traffic is dropped, because the binding table — fed only by DHCP — does not know it; the fix is to add the static binding, not to disable the control.'
+        },
+        commonMistakes: [
+          {
+            it: 'Marcare come fidata una porta verso gli host: un server DHCP abusivo su quella porta vanifica lo snooping.',
+            en: 'Marking a host-facing port as trusted: a rogue DHCP server on that port defeats snooping.'
+          },
+          {
+            it: 'Attivare DAI o IP Source Guard senza binding per gli host statici: il traffico legittimo viene scartato.',
+            en: 'Enabling DAI or IP Source Guard without bindings for static hosts: legitimate traffic is dropped.'
+          },
+          {
+            it: 'Lasciare la native VLAN predefinita e non taggata: apre la porta al double-tagging.',
+            en: 'Leaving the native VLAN default and untagged: it opens the door to double-tagging.'
+          }
+        ],
+        lab: 'layer2security',
+        references: [
+          { kind: 'rfc', id: 'RFC 2131' },
+          { kind: 'ieee', id: 'IEEE 802.1Q' }
+        ],
+        guidedLabs: [
+          {
+            id: 'gl-layer2-binding-table',
+            title: {
+              it: 'Costruisci la binding table e falla rispettare',
+              en: 'Build the binding table and enforce it'
+            },
+            difficulty: 'core',
+            lab: 'layer2security',
+            scenario: {
+              it: 'Il laboratorio «Sicurezza Layer 2» mostra porte fidate/non fidate, la binding table di DHCP Snooping e l’enforcement di DAI e IP Source Guard.',
+              en: 'The “Layer 2 security” lab shows trusted/untrusted ports, the DHCP Snooping binding table, and the enforcement of DAI and IP Source Guard.'
+            },
+            task: {
+              it: 'Indica quali porte sono fidate, come si popola la binding table e perché un host statico richiede un binding manuale.',
+              en: 'State which ports are trusted, how the binding table is populated, and why a static host needs a manual binding.'
+            },
+            steps: [
+              {
+                it: 'Apri «Sicurezza Layer 2» e marca come fidate solo le porte verso il server DHCP reale.',
+                en: 'Open “Layer 2 security” and mark as trusted only the ports toward the real DHCP server.'
+              },
+              {
+                it: 'Osserva come il traffico DHCP popola la binding table (MAC/IP/porta/VLAN).',
+                en: 'Observe how DHCP traffic populates the binding table (MAC/IP/port/VLAN).'
+              },
+              {
+                it: 'Attiva DAI e IP Source Guard e aggiungi un binding statico per l’host a indirizzo fisso.',
+                en: 'Enable DAI and IP Source Guard and add a static binding for the fixed-address host.'
+              }
+            ],
+            challenge: {
+              it: 'Un server statico legittimo smette di comunicare appena attivi IP Source Guard: cosa manca nella fonte di verità?',
+              en: 'A legitimate static server stops communicating as soon as you enable IP Source Guard: what is missing from the source of truth?'
+            },
+            solution: [
+              {
+                it: 'DHCP Snooping costruisce la binding table distinguendo porte fidate (solo gli uplink verso il server reale) da non fidate (gli host), e scarta le offerte DHCP abusive. Su quella tabella, DAI valida gli ARP (ferma l’ARP poisoning e il MITM) e IP Source Guard filtra il traffico IP sulla coppia IP/MAC legata alla porta (ferma lo spoofing). Entrambi valgono quanto la binding table: trunk in ordine e native VLAN dedicata chiudono poi il VLAN hopping.',
+                en: 'DHCP Snooping builds the binding table by distinguishing trusted ports (only the uplinks toward the real server) from untrusted ones (the hosts), and drops rogue DHCP offers. On that table, DAI validates ARP (stops ARP poisoning and MITM) and IP Source Guard filters IP traffic on the IP/MAC pair bound to the port (stops spoofing). Both are worth as much as the binding table: trunks in order and a dedicated native VLAN then close VLAN hopping.'
+              },
+              {
+                it: 'Sfida: un host a indirizzo statico non passa dal DHCP, quindi non entra nella binding table; manca il binding manuale, ed è quello che va aggiunto — disattivare il controllo riaprirebbe lo spoofing invece di correggere la fonte di verità.',
+                en: 'Challenge: a static-address host does not go through DHCP, so it never enters the binding table; the manual binding is missing, and that is what must be added — disabling the control would reopen spoofing instead of fixing the source of truth.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So spiegare come DHCP Snooping costruisce la binding table e su cosa si appoggiano DAI e IP Source Guard.',
+                en: 'I can explain how DHCP Snooping builds the binding table and what DAI and IP Source Guard rely on.'
+              },
+              {
+                it: 'So mettere in ordine trunk e native VLAN per chiudere il VLAN hopping.',
+                en: 'I can put trunks and the native VLAN in order to close VLAN hopping.'
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'l2-topology-containment',
+        title: {
+          it: 'Proteggere la topologia commutata: guardie STP, coerenza EtherChannel e contenimento',
+          en: 'Protecting the switched topology: STP guards, EtherChannel consistency, and containment'
+        },
+        objectives: [
+          {
+            it: 'Proteggere lo spanning tree da una root abusiva o cambiata con BPDU Guard, Root Guard e Loop Guard.',
+            en: 'Protect the spanning tree from a rogue or changed root with BPDU Guard, Root Guard, and Loop Guard.'
+          },
+          {
+            it: 'Mantenere coerenti i membri EtherChannel e contenere e ripristinare un incidente di livello 2.',
+            en: 'Keep EtherChannel members consistent and contain and recover a Layer 2 incident.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere STP/RSTP ed EtherChannel (capitoli su VLAN/trunk/STP e su accesso/EtherChannel/wireless) e il capitolo su resilienza e ripristino.',
+            en: 'Know STP/RSTP and EtherChannel (the VLAN/trunk/STP and access/EtherChannel/wireless chapters) and the resilience and recovery chapter.'
+          }
+        ],
+        theory: [
+          {
+            it: 'Lo spanning tree si fida delle BPDU: chi invia la BPDU migliore diventa root e l’intera topologia di livello 2 si riorganizza attorno a lui. È una fiducia che va protetta in tre punti. BPDU Guard porta in err-disable una porta di accesso che riceve una BPDU — un endpoint non dovrebbe mai inviarne, quindi riceverla è il segnale di uno switch non previsto; Root Guard impedisce a una porta designated di accettare una BPDU superiore, così uno switch a valle non può diventare root e spostare il traffico; Loop Guard protegge dal link unidirezionale che smetterebbe di ricevere BPDU e rimuoverebbe in silenzio uno stato di blocco, creando un loop. Ogni guardia difende un’assunzione precisa dello spanning tree.',
+            en: 'The spanning tree trusts BPDUs: whoever sends the best BPDU becomes root and the whole Layer 2 topology reorganizes around it. It is a trust that must be protected at three points. BPDU Guard puts an access port into err-disable when it receives a BPDU — an endpoint should never send one, so receiving one is the signal of an unexpected switch; Root Guard prevents a designated port from accepting a superior BPDU, so a downstream switch cannot become root and move the traffic; Loop Guard protects against a unidirectional link that would stop receiving BPDUs and silently remove a blocking state, creating a loop. Each guard defends a specific assumption of the spanning tree.'
+          },
+          {
+            it: 'La ridondanza di link si aggrega solo se i membri concordano: EtherChannel bundla più collegamenti in uno logico, ma solo se velocità, duplex, VLAN ammesse e modalità coincidono; un membro incoerente viene escluso o, peggio, forma un collegamento non previsto che lo spanning tree deve poi gestire. LACP con i suoi controlli di coerenza evita il bundle formato a metà. La lezione è la stessa già vista per il routing: una ridondanza incoerente non è ridondanza — è una complicazione che si attiva nel momento sbagliato, quando ci si aspetta che regga.',
+            en: 'Link redundancy aggregates only if the members agree: EtherChannel bundles several links into one logical link, but only if speed, duplex, allowed VLANs, and mode match; an inconsistent member is excluded or, worse, forms an unintended link that the spanning tree then has to handle. LACP with its consistency checks avoids the half-formed bundle. The lesson is the same already seen for routing: an inconsistent redundancy is not redundancy — it is a complication that triggers at the wrong moment, when you expect it to hold.'
+          },
+          {
+            it: 'Quando l’incidente di livello 2 accade — un loop, uno switch abusivo, un flood — vale la stessa disciplina del capitolo su resilienza e ripristino, applicata all’access layer: prima si contiene al confine della porta (err-disable, shutdown, isolamento della VLAN) per fermare la propagazione, poi si cerca la causa, infine si ripristina in ordine con una condizione di arresto. Non si riabilita una porta in err-disable finché non si sa perché è scattata: rimetterla in servizio senza capire reintroduce il loop o lo switch non previsto. Contenere prima, capire poi, ripristinare per ultimo e per verifica: è ciò che distingue un incidente gestito da uno che si propaga.',
+            en: 'When the Layer 2 incident happens — a loop, a rogue switch, a flood — the same discipline as the resilience and recovery chapter applies, at the access layer: first you contain at the port boundary (err-disable, shutdown, VLAN isolation) to stop propagation, then you find the cause, and finally you recover in order with a stop condition. You do not re-enable an err-disabled port until you know why it tripped: returning it to service without understanding reintroduces the loop or the unexpected switch. Contain first, understand next, recover last and by verification: this is what distinguishes a managed incident from one that propagates.'
+          }
+        ],
+        example: {
+          it: 'Una porta di accesso in 192.0.2.0/24 riceve una BPDU: BPDU Guard la porta in err-disable perché un endpoint non dovrebbe inviarne, e la riabilitazione resta sospesa finché non si è individuato lo switch non previsto a monte — contenimento prima, causa poi.',
+          en: 'An access port in 192.0.2.0/24 receives a BPDU: BPDU Guard puts it into err-disable because an endpoint should never send one, and re-enabling it stays on hold until the unexpected upstream switch is found — containment first, cause next.'
+        },
+        commonMistakes: [
+          {
+            it: 'Abilitare BPDU Guard su un trunk o un uplink verso uno switch: abbatte un collegamento legittimo che le BPDU le invia per mestiere.',
+            en: 'Enabling BPDU Guard on a trunk or an uplink to a switch: it takes down a legitimate link that sends BPDUs by design.'
+          },
+          {
+            it: 'Confondere i ruoli delle guardie: Root Guard non ferma un endpoint che invia BPDU (è il lavoro di BPDU Guard) e viceversa.',
+            en: 'Confusing the guards’ roles: Root Guard does not stop an endpoint sending BPDUs (that is BPDU Guard’s job) and vice versa.'
+          },
+          {
+            it: 'Riabilitare una porta in err-disable senza trovare la causa: si reintroduce il loop o lo switch non previsto.',
+            en: 'Re-enabling an err-disabled port without finding the cause: the loop or the unexpected switch is reintroduced.'
+          }
+        ],
+        lab: 'layer2security',
+        references: [
+          { kind: 'ieee', id: 'IEEE 802.1D' },
+          { kind: 'ieee', id: 'IEEE 802.1AX' }
+        ],
+        guidedLabs: [
+          {
+            id: 'gl-layer2-topology-guard',
+            title: {
+              it: 'Scegli la guardia STP giusta e contieni prima di capire',
+              en: 'Choose the right STP guard and contain before understanding'
+            },
+            difficulty: 'advanced',
+            lab: 'layer2security',
+            scenario: {
+              it: 'Il laboratorio «Sicurezza Layer 2» mostra le guardie STP, la coerenza dei membri EtherChannel e il contenimento/recovery di livello 2.',
+              en: 'The “Layer 2 security” lab shows the STP guards, EtherChannel member consistency, and Layer 2 containment/recovery.'
+            },
+            task: {
+              it: 'Abbina ogni guardia STP all’assunzione che protegge e indica l’ordine corretto di contenimento e ripristino dopo un incidente.',
+              en: 'Match each STP guard to the assumption it protects and state the correct order of containment and recovery after an incident.'
+            },
+            steps: [
+              {
+                it: 'Apri «Sicurezza Layer 2» e individua su quali porte vanno BPDU Guard, Root Guard e Loop Guard.',
+                en: 'Open “Layer 2 security” and identify which ports take BPDU Guard, Root Guard, and Loop Guard.'
+              },
+              {
+                it: 'Verifica la coerenza dei membri EtherChannel (velocità, duplex, VLAN ammesse, modalità).',
+                en: 'Verify the consistency of the EtherChannel members (speed, duplex, allowed VLANs, mode).'
+              },
+              {
+                it: 'Davanti a un loop, contieni al confine della porta, poi cerca la causa, poi ripristina con una stop condition.',
+                en: 'Facing a loop, contain at the port boundary, then find the cause, then recover with a stop condition.'
+              }
+            ],
+            challenge: {
+              it: 'Dopo aver abilitato BPDU Guard «ovunque» cade un uplink verso un altro switch: su quale porta la guardia era sbagliata e quale andava usata?',
+              en: 'After enabling BPDU Guard «everywhere» an uplink to another switch goes down: on which port was the guard wrong and which one should have been used?'
+            },
+            solution: [
+              {
+                it: 'Ogni guardia difende un’assunzione di STP: BPDU Guard sulle porte di accesso (un endpoint non invia BPDU), Root Guard sulle designated verso valle (nessuno switch a valle diventa root), Loop Guard contro il link unidirezionale che rimuove in silenzio un blocco. EtherChannel aggrega solo con membri coerenti. All’incidente si contiene prima al confine della porta, poi si cerca la causa, poi si ripristina con una stop condition, senza riabilitare una porta finché non se ne conosce il motivo.',
+                en: 'Each guard defends an STP assumption: BPDU Guard on access ports (an endpoint does not send BPDUs), Root Guard on downstream-facing designated ports (no downstream switch becomes root), Loop Guard against the unidirectional link that silently removes a block. EtherChannel aggregates only with consistent members. At the incident you contain first at the port boundary, then find the cause, then recover with a stop condition, without re-enabling a port until its reason is known.'
+              },
+              {
+                it: 'Sfida: su un uplink verso uno switch le BPDU sono legittime, quindi BPDU Guard era la guardia sbagliata lì — l’avrebbe abbattuto; su quella porta serve semmai Root Guard, per impedire che lo switch a valle diventi root senza spegnere il collegamento.',
+                en: 'Challenge: on an uplink to a switch BPDUs are legitimate, so BPDU Guard was the wrong guard there — it would take it down; that port needs Root Guard instead, to prevent the downstream switch from becoming root without shutting the link.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So abbinare BPDU Guard, Root Guard e Loop Guard all’assunzione di STP che proteggono.',
+                en: 'I can match BPDU Guard, Root Guard, and Loop Guard to the STP assumption they protect.'
+              },
+              {
+                it: 'So contenere al confine della porta prima di cercare la causa e ripristinare con una stop condition.',
+                en: 'I can contain at the port boundary before finding the cause and recover with a stop condition.'
+              }
+            ]
+          }
+        ]
+      }
+    ]
   }
 ];

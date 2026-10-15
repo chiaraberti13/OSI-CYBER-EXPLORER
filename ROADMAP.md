@@ -5,7 +5,7 @@
 > **Apertura Fase 3:** 14 ottobre 2026.
 > **Obiettivi di certificazione:** **CCNA 200-301** e **eJPT — INE/eLearnSecurity Junior
 > Penetration Tester**, in chiave didattica e autorizzata.
-> **Stato del manuale:** 28 capitoli / 85 argomenti / 71 laboratori guidati, bilingue IT/EN,
+> **Stato del manuale:** 29 capitoli / 88 argomenti / 74 laboratori guidati, bilingue IT/EN,
 > con il percorso eJPT completo e una sequenza di studio a doppio binario documentata.
 > **Metodo:** incrementi verticali completi e verificati (`npm run verify`, E2E Chromium con
 > Axe WCAG 2.2 AA, audit), pubblicati su `main`; ogni intervento documentato in `docs/verify/`.
@@ -81,10 +81,10 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
       errori comuni, riferimenti (NIST SP 800-41 Rev. 1, SP 800-207, RFC 4364) e un laboratorio
       guidato su `segmentation`; complemento difensivo del movimento laterale eJPT. Manuale a **24
       capitoli / 73 argomenti / 59 laboratori guidati**. Report: `docs/verify/2026-10-14-content01-segmentation.md`.
-- [~] **CONTENT-02 (P2) — Laboratori difensivi ancora non in guida (uno per incremento).** Insegnare
-  `routingsecurity`, `availability`, `recovery`, `managementsecurity`, `layer2security` con
-  capitoli/argomenti dedicati, chiudendo del tutto il divario guida↔laboratori. **In corso — 4
-  di 5 (14/10/2026).**
+- [x] **CONTENT-02 (P2) — Laboratori difensivi ancora non in guida (uno per incremento).** Insegnare
+      `routingsecurity`, `availability`, `recovery`, `managementsecurity`, `layer2security` con
+      capitoli/argomenti dedicati, chiudendo del tutto il divario guida↔laboratori. **Completato — 5
+      di 5 (15/10/2026).**
   - **(1/5)** «Sicurezza del routing e del control plane» (ordine 25, cert Security+) che insegna
     `routingsecurity` — fiducia del routing (adiacenze OSPF, integrità LSDB, redistribuzione/
     default-route injection), BGP/RPKI e anti-spoofing (uRPF, BCP 38), protezione del control plane
@@ -109,10 +109,20 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
     per nome non per IP, backup verificati in restore). Chiude la faccia «ripristino» della
     disponibilità. Riferimenti NIST SP 800-34 Rev. 1, SP 800-53 Rev. 5, SP 800-184. Report:
     `docs/verify/2026-10-14-content02-recovery.md`.
+  - **(5/5)** «Sicurezza dell'access layer: il confine della porta» (ordine 29, cert Security+) che
+    insegna `layer2security` — la porta di accesso come confine di fiducia (ruolo, data/voice VLAN,
+    CAM table e Port Security dimensionata sull'endpoint reale), l'integrità del first-hop (binding
+    table di DHCP Snooping come fonte di verità per DAI e IP Source Guard, igiene di trunk e native
+    VLAN contro il VLAN hopping) e la protezione della topologia commutata (guardie STP — BPDU/Root/
+    Loop Guard — coerenza EtherChannel e contenimento/recovery di livello 2). Complemento difensivo,
+    orientato al modello, dei comandi di hardening L2 del capitolo di sicurezza CCNA (14). Riferimenti
+    IEEE 802.1Q, IEEE 802.1D, IEEE 802.1AX, RFC 2131. **Chiude del tutto il divario guida↔laboratori.**
+    Report: `docs/verify/2026-10-15-content02-layer2.md`.
 
-  Manuale a **28 capitoli / 85 argomenti / 71 laboratori guidati**; aggiornate le asserzioni di
-  conteggio (progresso `x/28`, 28 opzioni, optgroup «Estensione · 0/14»). Resta da insegnare:
-  `layer2security`.
+  Manuale a **29 capitoli / 88 argomenti / 74 laboratori guidati**; i conteggi di vista e test sono
+  derivati dal dataset (ENG-31), quindi il nuovo capitolo non ha richiesto modifiche manuali alle
+  asserzioni (progresso `x/29`, 29 opzioni, optgroup «Estensione · 0/15»). Divario guida↔laboratori
+  chiuso: ogni laboratorio difensivo ha ora la sua controparte teorica nel manuale.
 
 - [ ] **EDU-31 (P2) — Collegamenti incrociati guida↔lab.** Verificare che ogni laboratorio insegnato
       esponga il back-link alla teoria (EDU-STRUCT-05) via la mappa inversa, anche per i nuovi
