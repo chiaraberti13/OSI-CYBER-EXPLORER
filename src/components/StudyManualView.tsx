@@ -40,6 +40,7 @@ import type { GuidedLab, ManualCert, ManualCertificationTrack, ManualDifficulty 
 import { securityReferenceUrl } from '../content/securityReferences';
 import { preferredScrollBehavior } from '../lib/motion';
 import ViewLink from './ViewLink';
+import ManualConceptDiagram from './ManualConceptDiagram';
 
 /**
  * VIS-10 — a coherent, non-textual sign for a chapter's certification route. The icon
@@ -899,6 +900,8 @@ export default function StudyManualView() {
                       ))}
                     </div>
                   </div>
+
+                  {topic.diagram ? <ManualConceptDiagram id={topic.diagram} language={language} /> : null}
 
                   {topic.example ? (
                     <div

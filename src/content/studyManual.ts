@@ -5,6 +5,7 @@
 
 import type { AppView } from '../store';
 import type { Bilingual } from '../types';
+import type { ManualDiagramId } from './manualDiagrams';
 import type { SecurityReference } from './securityReferences';
 
 /**
@@ -66,6 +67,8 @@ export interface GuidedLab {
 }
 
 export interface ManualTopic {
+  /** Optional bilingual visual explanation, rendered after the theory. */
+  diagram?: ManualDiagramId;
   id: string;
   title: Bilingual;
   /** What the student will be able to do (Bloom-oriented, observable). */
@@ -5577,6 +5580,7 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
     topics: [
       {
         id: 'pentest-engagement-phases',
+        diagram: 'pentest',
         title: {
           it: 'Ingaggio, autorizzazione e fasi del test',
           en: 'Engagement, authorization, and the test phases'
@@ -6651,6 +6655,7 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
     topics: [
       {
         id: 'email-authentication-spf-dkim-dmarc',
+        diagram: 'email',
         title: {
           it: 'Autenticazione dell’email: SPF, DKIM e DMARC',
           en: 'Email authentication: SPF, DKIM, and DMARC'
@@ -6677,8 +6682,8 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
             en: 'Three mechanisms, published in DNS, authenticate an email and work together. SPF (Sender Policy Framework) lists in a record the hosts authorized to send for a domain: the receiver compares the sender’s IP with the list. DKIM (DomainKeys Identified Mail) adds a cryptographic signature to the email, verifiable with a public key in DNS: it proves the message was not altered and comes from the signing domain. DMARC (Domain-based Message Authentication, Reporting and Conformance) ties them into a policy and adds the alignment requirement: the domain verified by SPF or DKIM must match the one the user sees in the From field.'
           },
           {
-            it: 'L’allineamento è il punto che spesso sfugge. Senza DMARC, un attaccante può superare SPF o DKIM usando un dominio proprio e scrivere un From falso, perché SPF e DKIM da soli non guardano il From visibile. DMARC chiede invece che il dominio autenticato sia allineato al From: così un messaggio che finge un dominio altrui fallisce, anche se è tecnicamente firmato per un dominio diverso. La policy DMARC dice al ricevente cosa fare con i messaggi che falliscono: p=none (solo osserva e manda report), p=quarantine (in spam) o p=reject (rifiuta). Solo reject chiude davvero lo spoofing diretto del dominio.',
-            en: 'Alignment is the point that often escapes notice. Without DMARC, an attacker can pass SPF or DKIM using their own domain and write a fake From, because SPF and DKIM alone do not look at the visible From. DMARC instead requires that the authenticated domain be aligned with the From: so a message faking another’s domain fails, even if it is technically signed for a different domain. The DMARC policy tells the receiver what to do with messages that fail: p=none (only observe and send reports), p=quarantine (to spam), or p=reject (refuse). Only reject truly closes direct domain spoofing.'
+            it: 'L’allineamento è il punto che spesso sfugge. Senza DMARC, un attaccante può superare SPF o DKIM usando un dominio proprio e scrivere un From falso, perché SPF e DKIM da soli non guardano il From visibile. DMARC chiede invece che il dominio autenticato sia allineato al From: così un messaggio che finge un dominio altrui fallisce, anche se è tecnicamente firmato per un dominio diverso. La policy DMARC dice al ricevente cosa fare con i messaggi che falliscono: p=none (solo osserva e manda report), p=quarantine (in spam) o p=reject (rifiuta). La policy richiede un trattamento dei fallimenti, ma la decisione finale resta al ricevente: p=reject non è una garanzia assoluta contro lo spoofing.',
+            en: 'Alignment is the point that often escapes notice. Without DMARC, an attacker can pass SPF or DKIM using their own domain and write a fake From, because SPF and DKIM alone do not look at the visible From. DMARC instead requires that the authenticated domain be aligned with the From: so a message faking another’s domain fails, even if it is technically signed for a different domain. The DMARC policy tells the receiver what to do with messages that fail: p=none (only observe and send reports), p=quarantine (to spam), or p=reject (refuse). The policy requests handling of failures, but the final decision remains with the receiver: p=reject is not an absolute guarantee against spoofing.'
           },
           {
             it: 'Resta un limite importante da tenere a mente: DMARC protegge il dominio che l’utente vede nel From, non lo protegge da un dominio diverso ma somigliante. Un attaccante che registra un dominio lookalike supera SPF, DKIM e DMARC perfettamente, perché autentica il proprio dominio: l’autenticazione dell’email risolve lo spoofing esatto, non l’inganno visivo. Per questo l’autenticazione è la base necessaria ma non sufficiente, e va completata dai controlli sul phishing e dalla consapevolezza dell’utente trattati negli argomenti successivi.',
@@ -6686,8 +6691,8 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
           }
         ],
         example: {
-          it: 'Un messaggio che finge il dominio example.test con un From falso fallisce DMARC se la policy è p=reject, perché nessun dominio allineato lo autentica; ma un messaggio da un dominio lookalike registrato dall’attaccante supera SPF, DKIM e DMARC, perché autentica il proprio dominio, non quello imitato.',
-          en: 'A message faking the domain example.test with a forged From fails DMARC if the policy is p=reject, because no aligned domain authenticates it; but a message from a lookalike domain registered by the attacker passes SPF, DKIM, and DMARC, because it authenticates its own domain, not the imitated one.'
+          it: 'Un messaggio che finge il dominio example.test con un From falso fallisce DMARC quando nessun risultato SPF o DKIM valido è allineato al From, indipendentemente dalla policy p=none, p=quarantine o p=reject; ma un messaggio da un dominio lookalike registrato dall’attaccante supera SPF, DKIM e DMARC, perché autentica il proprio dominio, non quello imitato.',
+          en: 'A message faking the domain example.test with a forged From fails DMARC when no passing SPF or DKIM result aligns with From, regardless of the p=none, p=quarantine or p=reject policy; but a message from a lookalike domain registered by the attacker passes SPF, DKIM, and DMARC, because it authenticates its own domain, not the imitated one.'
         },
         commonMistakes: [
           {
@@ -7481,6 +7486,7 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
       },
       {
         id: 'segmentation-microseg-zero-trust',
+        diagram: 'segmentation',
         title: {
           it: 'Microsegmentazione, east–west e Zero Trust',
           en: 'Microsegmentation, east–west, and Zero Trust'

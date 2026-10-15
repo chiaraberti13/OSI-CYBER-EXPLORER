@@ -1,81 +1,66 @@
-# Study manual help · Istruzioni del manuale (UX-22)
+# Study manual help · Istruzioni del manuale
+
+Updated / aggiornato: 2026-10-15 (IA-10–12, VIS-12).
 
 ## English
 
-On screens below the desktop breakpoint, a compact sticky toolbar replaces the
-full chapter index. Its native chapter selector groups chapters by CCNA domain
-and declared extensions, displays completion marks, and stays available alongside
-the overall progress count. A horizontally scrollable topic index keeps every
-topic reachable while reading. Previous/next actions remain at the chapter end.
-The toolbar and labels are localised; chapter changes preserve the heading focus
-behaviour and topic jumps account for the toolbar height.
+The **Manual** is the default entry point. The top menu contains Manual and one
+**Labs** dropdown, with area headings and a quick search (`Ctrl`/`⌘` + `K`).
+Application help is available from the global **Guide** button in the header;
+there is no separate inline manual-help panel (removed in IA-10).
 
-The first manual visit shows an inline **How to use this guide** panel. Its three
-steps explain the CCNA chapter index and topic navigation, how to attempt a guided
-lab before checking its solution, and previous/next chapter navigation with local
-completion tracking. The panel does not cover the theory or block other controls.
+The chapter index has two study routes: **CCNA** and **eJPT**. On desktop, CCNA
+chapters are organised into collapsible domain sections with progress counters.
+The active chapter's section opens automatically. The route filter only narrows
+the index: it does not change the open chapter or its deep link.
 
-**Close the instructions**, or the expanded help button, dismisses the panel.
-Focus returns to the help button, which can reopen it at any time. The disclosure
-exposes `aria-expanded` and `aria-controls`; its named region follows the manual
-heading in reading order. It adds no animation. Both controls are at least 44 px
-high, and the panel stacks its three steps on small screens.
+On mobile, a compact sticky toolbar provides a native chapter selector grouped by
+study route, progress and a horizontally scrollable topic index. Previous/next
+actions remain at the chapter end. Chapter changes focus the chapter heading.
 
-Dismissal is stored as the boolean `hasDismissedManualHelp` in the existing
-`osi-lab-preferences` allowlist, schema version **3**. Versions 0–2 migrate through
-the same sanitizer, preserving valid preferences and chapter progress. Missing or
-malformed flags default to `false`; unknown schema versions restore defaults.
-Reopening help does not clear the dismissal preference, and resetting chapter
-progress does not reset help. Clearing site storage restores first-visit help.
+Attempt each guided lab before revealing its solution; use its self-checks and
+mark the chapter complete when ready. Total progress and progress per route are
+stored locally. If browser storage is blocked, progress remains usable in memory
+for the current session. No progress is sent to a server. The legacy
+`hasDismissedManualHelp` preference remains compatible with saved data but no
+longer controls a visible panel.
 
-If Web Storage is unavailable, help and progress remain usable in memory while
-the app is open, including navigation to a lab and back. Reloading in that mode
-cannot preserve the preference. Nothing is sent to a server.
+Selected topics include bilingual concept diagrams with visible text alternatives:
+internal/perimeter traffic, email delivery and penetration-test phases. They are
+schematics, not live networks, and introduce no additional controls or tab stops.
 
-Regression evidence covers preference validation and migrations, actual store
-rehydration, the disclosure and focus return, live IT/EN switching, lab round trips,
-and blocked storage. `e2e/manual-help.spec.ts` also scans both languages with Axe
-at 320 px and checks page overflow and control dimensions. Automated accessibility
-checks cover detectable issues; the wider manual refinements remain in UX-23–UX-29.
+Regression coverage: `e2e/app-shell.spec.ts`, `e2e/manual-mobile-sticky.spec.ts`,
+`e2e/manual-track-filter.spec.ts`, `e2e/manual-concept-diagrams.spec.ts` and the
+manual component tests. Automated Axe checks do not replace a screen-reader audit.
 
 ## Italiano
 
-Sotto il breakpoint desktop una toolbar sticky compatta sostituisce l'indice
-esteso dei capitoli. Il selettore nativo raggruppa i capitoli per dominio CCNA ed
-estensioni dichiarate, mostra le spunte di completamento e resta disponibile
-insieme al conteggio del progresso complessivo. L'indice degli argomenti scorre
-orizzontalmente e rimane raggiungibile durante la lettura. Le azioni
-Precedente/Successivo restano a fine capitolo. Toolbar ed etichette sono
-localizzate; il cambio capitolo mantiene il focus sul titolo e i salti agli
-argomenti tengono conto dell'altezza della toolbar.
+Il **Manuale** è la vista iniziale. Il menu contiene Manuale e un unico dropdown
+**Laboratori**, con sottotitoli di area e ricerca rapida (`Ctrl`/`⌘` + `K`). Le
+istruzioni dell’applicazione si aprono dalla **Guida** globale in testata; non
+esiste più il pannello di istruzioni inline del manuale (rimosso con IA-10).
 
-Al primo accesso al manuale compare il pannello inline **Come usare questa guida**.
-I tre passi spiegano indice dei capitoli CCNA e navigazione agli argomenti, come
-provare un laboratorio guidato prima di consultare la soluzione, e navigazione tra
-capitoli con tracciamento locale del completamento. Il pannello lascia disponibili
-la teoria e gli altri controlli.
+L’indice ha due percorsi: **CCNA** ed **eJPT**. Su desktop, i capitoli CCNA sono
+organizzati in sezioni di dominio collassabili con contatori di progresso. La
+sezione del capitolo attivo si apre automaticamente. Il filtro per percorso
+restringe soltanto l’indice: non cambia il capitolo aperto o il suo deep-link.
 
-**Chiudi le istruzioni**, oppure il pulsante delle istruzioni già espanso, nasconde
-il pannello. Il focus torna al pulsante, che permette di riaprirlo in ogni momento.
-Il controllo espone `aria-expanded` e `aria-controls`; la regione con nome accessibile
-segue il titolo del manuale nell'ordine di lettura. Non introduce animazioni.
-Entrambi i controlli sono alti almeno 44 px e i tre passi si impilano sugli schermi
-piccoli.
+Su mobile, una toolbar sticky compatta offre il selettore nativo dei capitoli
+raggruppati per percorso, il progresso e l’indice degli argomenti scorrevole
+orizzontalmente. Precedente/Successivo restano a fine capitolo. Il cambio capitolo
+porta il focus sul titolo.
 
-La chiusura viene salvata nel booleano `hasDismissedManualHelp` dell'allowlist
-esistente `osi-lab-preferences`, schema **3**. Le versioni 0–2 migrano attraverso lo
-stesso sanitizer, conservando preferenze e progresso validi. Flag assenti o non
-validi assumono `false`; versioni sconosciute ripristinano i default. Riaprire le
-istruzioni non cancella la preferenza e azzerare il progresso non riattiva il
-pannello. Cancellare lo storage del sito ripristina le istruzioni al primo accesso.
+Prova ogni laboratorio guidato prima di rivelarne la soluzione; usa i criteri di
+autoverifica e segna il capitolo come completato quando sei pronta/o. Il progresso
+totale e per percorso viene salvato localmente. Se lo storage è bloccato, resta
+utilizzabile in memoria per la sessione corrente. Nessun progresso viene inviato
+a un server. La preferenza storica `hasDismissedManualHelp` resta compatibile con
+i dati salvati, ma non controlla più un pannello visibile.
 
-Se Web Storage non è disponibile, istruzioni e progresso restano utilizzabili in
-memoria mentre l'app è aperta, anche passando a un laboratorio e tornando al
-manuale. In questa modalità un reload non può conservare la preferenza. Nessun
-dato viene inviato a un server.
+Alcuni argomenti includono diagrammi concettuali bilingui con alternative testuali
+visibili: traffico interno/perimetrale, consegna email e fasi del penetration test.
+Sono schemi, non reti operative; non aggiungono controlli o tappe di tabulazione.
 
-Le regressioni coprono validazione e migrazioni, rehydration reale dello store,
-apertura/chiusura e ritorno del focus, cambio lingua IT/EN, andata/ritorno dai lab e
-storage bloccato. `e2e/manual-help.spec.ts` esegue anche Axe nelle due lingue a
-320 px e misura overflow e dimensioni dei controlli. I controlli automatici coprono
-i problemi rilevabili; le ulteriori rifiniture del manuale restano in UX-23–UX-29.
+Copertura delle regressioni: `e2e/app-shell.spec.ts`, `e2e/manual-mobile-sticky.spec.ts`,
+`e2e/manual-track-filter.spec.ts`, `e2e/manual-concept-diagrams.spec.ts` e test del
+componente manuale. I controlli Axe non sostituiscono un audit con screen reader.

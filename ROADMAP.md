@@ -156,9 +156,14 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
       eJPT↔estensione nell'intestazione) ed E2E dedicato (`manual-track-marks.spec.ts`: marcatura in
       albero/intestazione + scansione Axe `color-contrast` del manuale scuro su un capitolo eJPT).
       Report: `docs/verify/2026-10-15-vis10-certification-track-marks.md`.
-- [ ] **VIS-12 (P3) — Diagrammi dei nuovi concetti.** Micro-diagrammi SVG (coerenti con il sistema
+- [x] **VIS-12 (P3) — Diagrammi dei nuovi concetti.** Micro-diagrammi SVG (coerenti con il sistema
       di design, leggibili in tema chiaro e scuro) per i concetti che un disegno chiarisce meglio del
-      testo — p. es. east–west vs perimetro, catena di consegna dell'email, fasi del pentest.
+      testo — p. es. east–west vs perimetro, catena di consegna dell'email, fasi del pentest. **Esito
+      (15/10/2026):** tre diagrammi SVG bilingui nei rispettivi argomenti, modello tipizzato,
+      componente riusabile, alternative testuali visibili e riferimenti accessibili univoci.
+      Verificati geometria su mobile, contrasto SVG e Axe nei due temi e nelle due lingue;
+      68 E2E Chromium superati. Corretta la distinzione esito/policy DMARC e allineati README
+      e istruzioni alla navigazione IA-10–12. Report: `docs/verify/2026-10-15-vis12-concept-diagrams.md`.
 
 ## 🧭 UX/UI Designer — navigazione, filtri, accessibilità
 
@@ -229,7 +234,9 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
 
 - [ ] **I18N-10 (P1, ricorrente) — Revisione IT/EN dei nuovi contenuti.** Ogni nuovo capitolo e
       laboratorio passa la revisione di accuratezza tecnica e naturalezza, mantenendo la parità di
-      acronimi e cifre imposta dai test.
+      acronimi e cifre imposta dai test. **Incremento VIS-12 (15/10/2026):** rivisti diagrammi,
+      alternative testuali e correzioni DMARC in entrambe le lingue; guard bilingue superato.
+      Il task resta aperto perché ricorrente; non implica revisione integrale dei dataset storici.
 
 ## 📝 Technical Writer — documentazione
 
