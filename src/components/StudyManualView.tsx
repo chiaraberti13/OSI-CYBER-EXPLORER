@@ -86,6 +86,57 @@ function TrackMark({
   );
 }
 
+/**
+ * UX-32 — a certification-route filter for the chapter index. A group of toggle buttons
+ * (All / CCNA / eJPT / extension) with `aria-pressed`, each carrying the route icon in
+ * the current text colour (so it stays legible on both the selected and idle surfaces)
+ * and the route name as text. It reports the choice up; it never navigates.
+ */
+function TrackFilter({
+  value,
+  onChange,
+  groupLabel,
+  allLabel,
+  trackLabels
+}: {
+  value: ManualCertificationTrack | 'all';
+  onChange: (next: ManualCertificationTrack | 'all') => void;
+  groupLabel: string;
+  allLabel: string;
+  trackLabels: Record<ManualCertificationTrack, string>;
+}) {
+  const options: { id: ManualCertificationTrack | 'all'; label: string; track?: ManualCertificationTrack }[] = [
+    { id: 'all', label: allLabel },
+    { id: 'ccna', label: trackLabels.ccna, track: 'ccna' },
+    { id: 'ejpt', label: trackLabels.ejpt, track: 'ejpt' },
+    { id: 'extension', label: trackLabels.extension, track: 'extension' }
+  ];
+  return (
+    <div role="group" aria-label={groupLabel} data-testid="manual-track-filter" className="flex flex-wrap gap-1.5">
+      {options.map((option) => {
+        const selected = value === option.id;
+        const Icon = option.track ? TRACK_ICON[option.track] : undefined;
+        return (
+          <button
+            key={option.id}
+            type="button"
+            aria-pressed={selected}
+            onClick={() => onChange(option.id)}
+            className={`inline-flex min-h-11 items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-[12px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 ${
+              selected
+                ? 'border-indigo-600 bg-indigo-600 text-white'
+                : 'border-slate-300 bg-white text-slate-700 hover:bg-slate-100 hover:text-slate-900'
+            }`}
+          >
+            {Icon ? <Icon className="h-3.5 w-3.5 shrink-0" aria-hidden="true" /> : null}
+            {option.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 export default function StudyManualView() {
   const language = useStore((state) => state.language);
   const completedChapterIds = useStore((state) => state.completedChapterIds);
@@ -99,7 +150,12 @@ export default function StudyManualView() {
   const helpTitleId = useId();
   const t = uiMessages(language).manual;
   const chapters = orderedChapters();
-  const chapterGroups = chaptersByDomain();
+  // UX-32 — a certification-route filter that narrows the chapter index (tree + mobile
+  // selector) without changing routing: it is view state, never a navigation, so deep
+  // links, Back/Forward and the open chapter are untouched. The linear previous/next
+  // flow and overall progress stay over the full chapter set.
+  const [trackFilter, setTrackFilter] = useState<ManualCertificationTrack | 'all'>('all');
+  const chapterGroups = chaptersByDomain(trackFilter === 'all' ? undefined : trackFilter);
   // The active chapter is addressable via the URL (`#/manual/<id>`, EDU-STRUCT-04): it
   // lives in the store so deep links, Back/Forward and in-page selection stay in sync.
   // A null id (the bare `#/manual` route) opens the first chapter.
@@ -421,97 +477,125 @@ export default function StudyManualView() {
           collapses and the sticky chapter selector (in the toolbar) takes over. */}
       <div className="lg:grid lg:grid-cols-[15rem_minmax(0,1fr)] lg:items-start lg:gap-6">
         {chapters.length > 1 ? (
-          <nav
-            aria-label={t.chapterNav}
-            className="mb-6 hidden lg:sticky lg:top-[6.5rem] lg:col-start-1 lg:row-start-1 lg:mb-0 lg:block lg:max-h-[calc(100dvh-7.75rem)] lg:space-y-5 lg:self-start lg:overflow-y-auto lg:pr-1"
-          >
-            {chapterGroups.map((group) => {
-              const groupLabel = group.domain
-                ? `CCNA ${group.domain.number}.0 · ${group.domain.title[language]}`
-                : t.trackExtension;
-              const groupCompletion = chapterCompletion(group.chapters, completedChapterIds);
-              return (
-                <div key={group.key} role="group" aria-label={groupLabel} className="border-l-2 border-slate-200 pl-3">
-                  {/* Domain header: an exam-weight badge and bold title give each CCNA domain a
+          // UX-32: the route filter sits above the chapter navigation (not inside it), so
+          // the labelled chapter tree stays a list of chapters only, and the filter + tree
+          // scroll together within the sticky sidebar.
+          <div className="mb-6 hidden lg:sticky lg:top-[6.5rem] lg:col-start-1 lg:row-start-1 lg:mb-0 lg:flex lg:max-h-[calc(100dvh-7.75rem)] lg:flex-col lg:gap-4 lg:self-start lg:overflow-y-auto lg:pr-1">
+            <TrackFilter
+              value={trackFilter}
+              onChange={setTrackFilter}
+              groupLabel={t.trackFilterLabel}
+              allLabel={t.trackFilterAll}
+              trackLabels={trackShort}
+            />
+            <nav aria-label={t.chapterNav} className="space-y-5">
+              {chapterGroups.map((group) => {
+                const groupLabel = group.domain
+                  ? `CCNA ${group.domain.number}.0 · ${group.domain.title[language]}`
+                  : t.trackExtension;
+                const groupCompletion = chapterCompletion(group.chapters, completedChapterIds);
+                return (
+                  <div
+                    key={group.key}
+                    role="group"
+                    aria-label={groupLabel}
+                    className="border-l-2 border-slate-200 pl-3"
+                  >
+                    {/* Domain header: an exam-weight badge and bold title give each CCNA domain a
                     clear rank, with its chapter progress on the right — the hierarchy the flat
                     eyebrow label lacked (IA track). The weight badge is labelled (icon + title +
                     accessible name) so its percentage is never mistaken for completion progress. */}
-                  <div className="mb-2 flex items-center justify-between gap-3">
-                    <div className="flex min-w-0 items-center gap-2">
-                      {group.domain ? (
-                        <span
-                          className="inline-flex shrink-0 items-center gap-1 rounded-md bg-slate-900 px-1.5 py-0.5 text-[11px] font-semibold text-white"
-                          title={`${t.examWeight}: ${group.domain.weight}%`}
-                          aria-label={`${t.examWeight}: ${group.domain.weight}%`}
-                        >
-                          <Scale className="h-3 w-3" aria-hidden="true" />
-                          {group.domain.weight}%
+                    <div className="mb-2 flex items-center justify-between gap-3">
+                      <div className="flex min-w-0 items-center gap-2">
+                        {group.domain ? (
+                          <span
+                            className="inline-flex shrink-0 items-center gap-1 rounded-md bg-slate-900 px-1.5 py-0.5 text-[11px] font-semibold text-white"
+                            title={`${t.examWeight}: ${group.domain.weight}%`}
+                            aria-label={`${t.examWeight}: ${group.domain.weight}%`}
+                          >
+                            <Scale className="h-3 w-3" aria-hidden="true" />
+                            {group.domain.weight}%
+                          </span>
+                        ) : (
+                          <span className="shrink-0 rounded-md bg-amber-100 px-1.5 py-0.5 text-[11px] font-semibold text-amber-800">
+                            {t.trackExtension}
+                          </span>
+                        )}
+                        <span className="truncate text-[13px] font-semibold text-slate-800">
+                          {group.domain
+                            ? `CCNA ${group.domain.number}.0 · ${group.domain.title[language]}`
+                            : t.trackExtension}
                         </span>
-                      ) : (
-                        <span className="shrink-0 rounded-md bg-amber-100 px-1.5 py-0.5 text-[11px] font-semibold text-amber-800">
-                          {t.trackExtension}
-                        </span>
-                      )}
-                      <span className="truncate text-[13px] font-semibold text-slate-800">
-                        {group.domain
-                          ? `CCNA ${group.domain.number}.0 · ${group.domain.title[language]}`
-                          : t.trackExtension}
+                      </div>
+                      <span
+                        className="shrink-0 font-mono text-[11px] text-slate-500"
+                        aria-label={`${groupLabel} · ${t.chapterProgress}: ${groupCompletion.completed}/${groupCompletion.total}`}
+                      >
+                        {groupCompletion.completed}/{groupCompletion.total}
                       </span>
                     </div>
-                    <span
-                      className="shrink-0 font-mono text-[11px] text-slate-500"
-                      aria-label={`${groupLabel} · ${t.chapterProgress}: ${groupCompletion.completed}/${groupCompletion.total}`}
-                    >
-                      {groupCompletion.completed}/{groupCompletion.total}
-                    </span>
-                  </div>
-                  {/* Each chapter is a distinct, interactive sidebar row with a numbered badge
+                    {/* Each chapter is a distinct, interactive sidebar row with a numbered badge
                     and clear active/completed/default states, so chapters read as a chapter
                     tree rather than interchangeable plain-text links (IA-04). */}
-                  <div className="flex flex-col gap-0.5">
-                    {group.chapters.map((entry) => {
-                      const isActive = entry.id === chapter.id;
-                      const isCompleted = completedChapterIds.includes(entry.id);
-                      return (
-                        <button
-                          key={entry.id}
-                          type="button"
-                          onClick={() => selectChapter(entry.id)}
-                          aria-current={isActive ? 'page' : undefined}
-                          className={`group flex w-full min-h-11 items-center gap-2 rounded-lg px-2.5 py-2 text-left text-[13px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 ${
-                            isActive
-                              ? 'bg-indigo-50 font-semibold text-indigo-800'
-                              : 'font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-900'
-                          }`}
-                        >
-                          {/* VIS-10: the chapter's certification route (icon + colour),
-                            with its name as an sr-only label so the row names the route. */}
-                          <TrackMark track={certificationTrackForChapter(entry)} srLabel={trackSrLabel(entry)} />
-                          <span
-                            aria-hidden="true"
-                            className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold ${
-                              isCompleted
-                                ? 'bg-emerald-600 text-white'
-                                : isActive
-                                  ? 'bg-indigo-600 text-white'
-                                  : 'border border-slate-300 text-slate-500 group-hover:border-slate-400'
+                    <div className="flex flex-col gap-0.5">
+                      {group.chapters.map((entry) => {
+                        const isActive = entry.id === chapter.id;
+                        const isCompleted = completedChapterIds.includes(entry.id);
+                        return (
+                          <button
+                            key={entry.id}
+                            type="button"
+                            onClick={() => selectChapter(entry.id)}
+                            aria-current={isActive ? 'page' : undefined}
+                            className={`group flex w-full min-h-11 items-center gap-2 rounded-lg px-2.5 py-2 text-left text-[13px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 ${
+                              isActive
+                                ? 'bg-indigo-50 font-semibold text-indigo-800'
+                                : 'font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-900'
                             }`}
                           >
-                            {isCompleted ? <Check className="h-3 w-3" /> : entry.order}
-                          </span>
-                          <span className="leading-snug">{entry.title[language]}</span>
-                          {isCompleted ? <span className="sr-only"> — {t.completedChapter}</span> : null}
-                        </button>
-                      );
-                    })}
+                            {/* VIS-10: the chapter's certification route (icon + colour),
+                            with its name as an sr-only label so the row names the route. */}
+                            <TrackMark track={certificationTrackForChapter(entry)} srLabel={trackSrLabel(entry)} />
+                            <span
+                              aria-hidden="true"
+                              className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold ${
+                                isCompleted
+                                  ? 'bg-emerald-600 text-white'
+                                  : isActive
+                                    ? 'bg-indigo-600 text-white'
+                                    : 'border border-slate-300 text-slate-500 group-hover:border-slate-400'
+                              }`}
+                            >
+                              {isCompleted ? <Check className="h-3 w-3" /> : entry.order}
+                            </span>
+                            <span className="leading-snug">{entry.title[language]}</span>
+                            {isCompleted ? <span className="sr-only"> — {t.completedChapter}</span> : null}
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
-                </div>
-              );
-            })}
-          </nav>
+                );
+              })}
+            </nav>
+          </div>
         ) : null}
 
         <div className="min-w-0 lg:col-start-2 lg:row-start-1">
+          {/* UX-32 (mobile): the route filter sits above the sticky toolbar and outside
+            it, in normal flow, so the compact sticky chapter/topic navigation keeps its
+            height budget. It shares the filter state with the desktop sidebar control. */}
+          {chapters.length > 1 ? (
+            <div className="mb-4 lg:hidden">
+              <TrackFilter
+                value={trackFilter}
+                onChange={setTrackFilter}
+                groupLabel={t.trackFilterLabel}
+                allLabel={t.trackFilterAll}
+                trackLabels={trackShort}
+              />
+            </div>
+          ) : null}
           {/* Persistent context for long chapters. It deliberately uses plain text,
           not headings, so the document outline remains one h1 followed by the
           chapter h2 and topic h3 elements. 6.5rem equals the fixed 3.5rem app
@@ -547,6 +631,13 @@ export default function StudyManualView() {
                   onChange={(event) => selectChapter(event.target.value)}
                   className="min-h-11 min-w-0 flex-1 truncate rounded-lg border border-slate-300 bg-white px-3 pr-8 text-[13px] font-semibold text-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
                 >
+                  {/* UX-32: when a filter hides the open chapter, keep a matching (hidden)
+                    option so the controlled select stays valid and routing is preserved. */}
+                  {chapterGroups.every((group) => group.chapters.every((entry) => entry.id !== chapter.id)) ? (
+                    <option value={chapter.id} hidden>
+                      {chapter.order}. {chapter.title[language]}
+                    </option>
+                  ) : null}
                   {chapterGroups.map((group) => {
                     const groupLabel = group.domain
                       ? `CCNA ${group.domain.number}.0 · ${group.domain.title[language]}`

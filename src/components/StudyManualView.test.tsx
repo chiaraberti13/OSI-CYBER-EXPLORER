@@ -193,7 +193,8 @@ describe('StudyManualView (EDU-01)', () => {
     const rail = screen.getByRole('navigation', { name: 'In questa pagina' });
     const mobileContents = screen.getByRole('navigation', { name: 'Navigazione mobile del manuale' });
     const railButtons = within(rail).getAllByRole('button');
-    const mobileButtons = within(mobileContents).getAllByRole('button');
+    // Scope to the topic index: the toolbar also holds the UX-32 route-filter buttons.
+    const mobileButtons = within(within(mobileContents).getByTestId('mobile-topic-index')).getAllByRole('button');
 
     expect(railButtons[0].getAttribute('aria-current')).toBe('location');
     expect(mobileButtons[0].getAttribute('aria-current')).toBe('location');
@@ -215,13 +216,16 @@ describe('StudyManualView (EDU-01)', () => {
       chapterSelect.querySelector(`optgroup[label="CCNA 1.0 · Fondamenti di rete · 0/${FIRST_DOMAIN_CHAPTERS}"]`)
     ).not.toBeNull();
     expect(chapterSelect.querySelector(`optgroup[label="Estensione · 0/${EXTENSION_CHAPTERS}"]`)).not.toBeNull();
-    expect(within(mobileNav).getAllByRole('button')).toHaveLength(4);
+    // The persistent topic index holds one button per topic of the open chapter (the
+    // toolbar also carries the UX-32 route filter, so scope the count to the index).
+    const topicIndex = () => within(within(mobileNav).getByTestId('mobile-topic-index')).getAllByRole('button');
+    expect(topicIndex()).toHaveLength(4);
 
     await user.selectOptions(chapterSelect, 'ethernet-switching');
     const chapterHeading = screen.getByRole('heading', { level: 2, name: /Ethernet/ });
     expect((chapterSelect as HTMLSelectElement).value).toBe('ethernet-switching');
     expect(document.activeElement).toBe(chapterHeading);
-    expect(within(mobileNav).getAllByRole('button')).toHaveLength(3);
+    expect(topicIndex()).toHaveLength(3);
   });
 
   it('respects the reduced-motion preference for manual scrolling', () => {
@@ -371,6 +375,37 @@ describe('certification-route marks (VIS-10)', () => {
     // The route is also exposed as text (not colour/icon only, WCAG 1.4.1): one
     // sr-only "Percorso <route>" label per chapter row.
     expect(within(nav).getAllByText(/^Percorso (CCNA|eJPT|Estensione)$/).length).toBe(TOTAL_CHAPTERS);
+  });
+
+  it('filters the chapter index by certification route without navigating (UX-32)', async () => {
+    const user = userEvent.setup();
+    render(<StudyManualView />);
+    const nav = screen.getByRole('navigation', { name: 'Capitoli del manuale' });
+    // The filter sits outside the chapter nav (the tree stays chapters-only); jsdom renders
+    // both the desktop and mobile instances, so drive the first and assert on the tree.
+    const filter = screen.getAllByRole('group', { name: 'Filtra per percorso' })[0];
+
+    // Starts on "Tutti": every chapter row is present and the control reflects it.
+    expect(within(filter).getByRole('button', { name: 'Tutti' }).getAttribute('aria-pressed')).toBe('true');
+    expect(nav.querySelectorAll('[data-track]')).toHaveLength(TOTAL_CHAPTERS);
+
+    // Filtering to eJPT narrows the tree to just the eJPT rows…
+    await user.click(within(filter).getByRole('button', { name: 'eJPT' }));
+    expect(nav.querySelectorAll('[data-track="ejpt"]')).toHaveLength(chaptersForCertificationTrack('ejpt').length);
+    expect(nav.querySelectorAll('[data-track="ccna"]')).toHaveLength(0);
+    expect(nav.querySelectorAll('[data-track="extension"]')).toHaveLength(0);
+    expect(within(filter).getByRole('button', { name: 'eJPT' }).getAttribute('aria-pressed')).toBe('true');
+    expect(within(filter).getByRole('button', { name: 'Tutti' }).getAttribute('aria-pressed')).toBe('false');
+
+    // …and it is view state only: no navigation happened and the open chapter still renders.
+    expect(useStore.getState().activeChapterId).toBeNull();
+    expect(screen.getByRole('heading', { level: 2, name: /Il modello OSI/ })).toBeTruthy();
+
+    // Filtering to CCNA drops the extension bucket and keeps the CCNA domain groups.
+    await user.click(within(filter).getByRole('button', { name: 'CCNA' }));
+    expect(within(nav).queryByRole('group', { name: 'Estensione' })).toBeNull();
+    expect(within(nav).getByRole('group', { name: 'CCNA 1.0 · Fondamenti di rete' })).toBeTruthy();
+    expect(nav.querySelectorAll('[data-track="ejpt"]')).toHaveLength(0);
   });
 
   it('sets an eJPT chapter apart from a Security+ extension chapter in the header', () => {

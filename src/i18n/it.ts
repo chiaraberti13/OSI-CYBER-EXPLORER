@@ -96,6 +96,8 @@ export const it = {
     trackAria: 'Percorso',
     trackCcnaShort: 'CCNA',
     trackEjptShort: 'eJPT',
+    trackFilterLabel: 'Filtra per percorso',
+    trackFilterAll: 'Tutti',
     examWeight: 'Peso d’esame'
   },
   error: {

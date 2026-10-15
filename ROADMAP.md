@@ -162,8 +162,19 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
 
 ## 🧭 UX/UI Designer — navigazione, filtri, accessibilità
 
-- [ ] **UX-32 (P2) — Filtro per percorso di certificazione.** Filtrare l'indice del manuale per
-      CCNA / eJPT / estensione, preservando routing, deep-link e WCAG 2.2 AA.
+- [x] **UX-32 (P2) — Filtro per percorso di certificazione.** Filtrare l'indice del manuale per
+      CCNA / eJPT / estensione, preservando routing, deep-link e WCAG 2.2 AA. **Esito (15/10/2026):**
+      controllo `TrackFilter` (gruppo di toggle con `aria-pressed`, icona di percorso + testo, Tutti/
+      CCNA/eJPT/Estensione) che restringe l'indice via il selettore puro `chaptersByDomain(track)`
+      (ENG-30). È **stato di vista, non navigazione**: non tocca URL, Back/Forward né il capitolo
+      aperto (deep-link preservati); il flusso precedente/successivo e il progresso restano sull'intero
+      insieme. Posizionato **fuori** dalla navigazione capitoli (l'albero resta solo-capitoli) e, su
+      mobile, **fuori** dalla toolbar sticky (che mantiene il suo budget d'altezza), con la stessa
+      sorgente di stato condivisa tra desktop e mobile. La select mobile conserva un'opzione nascosta
+      per il capitolo aperto quando il filtro lo esclude, così il controllo resta valido. Guard: test
+      unit (restringe l'albero, `aria-pressed`, nessuna navigazione) ed E2E dedicato
+      (`manual-track-filter.spec.ts`: restringimento, routing/deep-link invariati, Axe WCAG 2.2 AA
+      sullo stato filtrato). Report: `docs/verify/2026-10-15-ux32-certification-track-filter.md`.
 - [ ] **UX-33 (P3) — Progresso per percorso.** Mostrare il progresso separato per i due obiettivi di
       certificazione, oltre al totale.
 

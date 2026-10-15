@@ -95,6 +95,8 @@ export const en = {
     trackAria: 'Track',
     trackCcnaShort: 'CCNA',
     trackEjptShort: 'eJPT',
+    trackFilterLabel: 'Filter by route',
+    trackFilterAll: 'All',
     examWeight: 'Exam weight'
   },
   error: {
