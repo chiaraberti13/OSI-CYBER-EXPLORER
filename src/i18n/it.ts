@@ -99,7 +99,8 @@ export const it = {
     trackFilterLabel: 'Filtra per percorso',
     trackFilterAll: 'Tutti',
     progressByRoute: 'Progresso per percorso',
-    examWeight: 'Peso d’esame'
+    examWeight: 'Peso d’esame',
+    sectionAdvanced: 'Approfondimenti e Security+'
   },
   error: {
     chunkTitle: 'Impossibile caricare questa sezione',

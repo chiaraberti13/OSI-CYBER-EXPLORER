@@ -355,6 +355,42 @@ describe('certification-route marks (VIS-10, two-route IA)', () => {
     expect(screen.getByText(new RegExp(`Progresso capitoli: 1/${TOTAL_CHAPTERS}`))).toBeTruthy();
   });
 
+  it('organises the CCNA route into collapsible domain sections (IA-12)', async () => {
+    const user = userEvent.setup();
+    vi.spyOn(window, 'scrollTo').mockImplementation(() => undefined);
+    render(<StudyManualView />);
+    const nav = screen.getByRole('navigation', { name: 'Capitoli del manuale' });
+
+    // The section holding the open chapter (OSI → CCNA 1.0) is expanded by default, so its
+    // chapters are visible; a different domain section starts collapsed and its chapter hidden.
+    const fundamentals = within(nav).getByRole('button', { name: /1\.0 · Fondamenti di rete/ });
+    expect(fundamentals.getAttribute('aria-expanded')).toBe('true');
+    expect(within(nav).getByRole('button', { name: /Il modello OSI/ })).toBeTruthy();
+
+    const ipConnectivity = within(nav).getByRole('button', { name: /3\.0 · Connettività IP/ });
+    expect(ipConnectivity.getAttribute('aria-expanded')).toBe('false');
+    expect(within(nav).queryByRole('button', { name: /OSPF/ })).toBeNull();
+
+    // Expanding the collapsed section reveals its chapters without navigating.
+    await user.click(ipConnectivity);
+    expect(ipConnectivity.getAttribute('aria-expanded')).toBe('true');
+    expect(within(nav).getByRole('button', { name: /OSPF/ })).toBeTruthy();
+    expect(useStore.getState().activeChapterId).toBeNull();
+
+    // The two route groups are still the only landmark groups — sections are disclosures.
+    expect(within(nav).getAllByRole('group')).toHaveLength(2);
+  });
+
+  it('auto-expands the section of a chapter opened from elsewhere (IA-12)', () => {
+    // Open an eJPT-adjacent CCNA extension chapter: its "Approfondimenti" section must be
+    // expanded so the active chapter is visible in the tree.
+    act(() => useStore.setState({ activeChapterId: 'segmentation-trust-boundaries' }));
+    render(<StudyManualView />);
+    const nav = screen.getByRole('navigation', { name: 'Capitoli del manuale' });
+    const advanced = within(nav).getByRole('button', { name: /Approfondimenti e Security\+/ });
+    expect(advanced.getAttribute('aria-expanded')).toBe('true');
+  });
+
   it('shows the route chip in the header: rose eJPT vs indigo CCNA (no "Estensione")', () => {
     act(() => useStore.setState({ activeChapterId: 'pentest-methodology' }));
     const { container } = render(<StudyManualView />);

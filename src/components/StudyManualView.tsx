@@ -10,10 +10,12 @@ import {
   ArrowRight,
   BookOpen,
   Check,
+  ChevronRight,
   CircleCheck,
   Crosshair,
   ExternalLink,
   FlaskConical,
+  Layers,
   ListChecks,
   RotateCcw,
   Route,
@@ -27,6 +29,7 @@ import {
   certificationTrackForChapter,
   chapterCompletion,
   chaptersByCertificationTrack,
+  chaptersByDomain,
   chaptersForCertificationTrack,
   findChapter,
   manualStats,
@@ -169,6 +172,7 @@ export default function StudyManualView() {
   const chapterContextRef = useRef<HTMLDivElement>(null);
   const focusChapterTitleAfterChange = useRef(false);
   const mobileChapterSelectId = useId();
+  const sectionBaseId = useId();
 
   const difficultyLabel: Record<ManualDifficulty, string> = {
     intro: t.difficultyIntro,
@@ -189,6 +193,33 @@ export default function StudyManualView() {
   };
   const chapterTrack = certificationTrackForChapter(chapter);
   const chapterDomain = ccnaDomainForChapter(chapter);
+  // IA-12 — the CCNA route is deep (26 chapters), so its sidebar index is organised into
+  // collapsible CCNA-domain sections (plus a final "Approfondimenti" bucket). The section
+  // holding the open chapter is expanded; the rest start collapsed so the tree stays short
+  // and scannable. The eJPT route is shallow (one section) and renders flat. Only the CCNA
+  // route uses sections, so a section key never collides between routes.
+  const activeSectionKey = chapterTrack === 'ccna' ? (chapterDomain ? chapterDomain.id : 'extension') : null;
+  const [expandedSections, setExpandedSections] = useState<Set<string>>(() =>
+    activeSectionKey ? new Set([activeSectionKey]) : new Set()
+  );
+  // Navigating into a collapsed section (mobile selector, previous/next, a deep link) opens
+  // it, so the active chapter is always visible in the tree; manual toggles are preserved.
+  // This adjusts state while rendering when the active chapter changes — React's endorsed
+  // "store information from previous renders" pattern — rather than in an effect.
+  const [lastActiveSectionKey, setLastActiveSectionKey] = useState(activeSectionKey);
+  if (activeSectionKey !== lastActiveSectionKey) {
+    setLastActiveSectionKey(activeSectionKey);
+    if (activeSectionKey && !expandedSections.has(activeSectionKey)) {
+      setExpandedSections((prev) => new Set(prev).add(activeSectionKey));
+    }
+  }
+  const toggleSection = (key: string) =>
+    setExpandedSections((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
   // The context line names where the chapter sits: its CCNA domain for a backbone chapter,
   // otherwise its certification source (Security+ or eJPT) — no separate "extension" label.
   const chapterAlignment =
@@ -312,6 +343,44 @@ export default function StudyManualView() {
     } catch {
       // window.scrollTo is unimplemented in some environments (e.g. jsdom); ignore.
     }
+  };
+
+  // A single chapter row in the desktop tree: a numbered badge with clear
+  // active/completed/default states, so chapters read as a chapter tree rather than
+  // interchangeable plain-text links (IA-04). The stable test id lets specs target the
+  // chapter links without matching the section-toggle buttons (IA-12).
+  const renderChapterButton = (entry: (typeof chapters)[number]) => {
+    const isActive = entry.id === chapter.id;
+    const isCompleted = completedChapterIds.includes(entry.id);
+    return (
+      <button
+        key={entry.id}
+        type="button"
+        data-testid="manual-chapter-link"
+        onClick={() => selectChapter(entry.id)}
+        aria-current={isActive ? 'page' : undefined}
+        className={`group flex w-full min-h-11 items-center gap-2 rounded-lg px-2.5 py-2 text-left text-[13px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 ${
+          isActive
+            ? 'bg-indigo-50 font-semibold text-indigo-800'
+            : 'font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-900'
+        }`}
+      >
+        <span
+          aria-hidden="true"
+          className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold ${
+            isCompleted
+              ? 'bg-emerald-600 text-white'
+              : isActive
+                ? 'bg-indigo-600 text-white'
+                : 'border border-slate-300 text-slate-500 group-hover:border-slate-400'
+          }`}
+        >
+          {isCompleted ? <Check className="h-3 w-3" /> : entry.order}
+        </span>
+        <span className="leading-snug">{entry.title[language]}</span>
+        {isCompleted ? <span className="sr-only"> — {t.completedChapter}</span> : null}
+      </button>
+    );
   };
 
   const renderGuidedLab = (lab: GuidedLab) => (
@@ -450,6 +519,10 @@ export default function StudyManualView() {
               {chapterGroups.map((group) => {
                 const groupLabel = group.title[language];
                 const groupCompletion = chapterCompletion(group.chapters, completedChapterIds);
+                // CCNA splits into its domain sections (+ an "Approfondimenti" bucket); eJPT
+                // is a single section, so it stays a flat chapter list under its route header.
+                const sections = chaptersByDomain(group.key);
+                const collapsible = sections.length > 1;
                 return (
                   <div
                     key={group.key}
@@ -472,43 +545,83 @@ export default function StudyManualView() {
                         {groupCompletion.completed}/{groupCompletion.total}
                       </span>
                     </div>
-                    {/* Each chapter is a distinct, interactive sidebar row with a numbered badge
-                    and clear active/completed/default states, so chapters read as a chapter
-                    tree rather than interchangeable plain-text links (IA-04). */}
-                    <div className="flex flex-col gap-0.5">
-                      {group.chapters.map((entry) => {
-                        const isActive = entry.id === chapter.id;
-                        const isCompleted = completedChapterIds.includes(entry.id);
-                        return (
-                          <button
-                            key={entry.id}
-                            type="button"
-                            onClick={() => selectChapter(entry.id)}
-                            aria-current={isActive ? 'page' : undefined}
-                            className={`group flex w-full min-h-11 items-center gap-2 rounded-lg px-2.5 py-2 text-left text-[13px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 ${
-                              isActive
-                                ? 'bg-indigo-50 font-semibold text-indigo-800'
-                                : 'font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-900'
-                            }`}
-                          >
-                            <span
-                              aria-hidden="true"
-                              className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold ${
-                                isCompleted
-                                  ? 'bg-emerald-600 text-white'
-                                  : isActive
-                                    ? 'bg-indigo-600 text-white'
-                                    : 'border border-slate-300 text-slate-500 group-hover:border-slate-400'
-                              }`}
-                            >
-                              {isCompleted ? <Check className="h-3 w-3" /> : entry.order}
-                            </span>
-                            <span className="leading-snug">{entry.title[language]}</span>
-                            {isCompleted ? <span className="sr-only"> — {t.completedChapter}</span> : null}
-                          </button>
-                        );
-                      })}
-                    </div>
+                    {collapsible ? (
+                      // IA-12 — collapsible CCNA-domain sections. Each section is a disclosure
+                      // (a button with aria-expanded controlling its chapter panel), so the
+                      // long index collapses to a short, scannable outline. The sections are
+                      // not landmark groups, so the route groups stay the only `role="group"`.
+                      <ul className="flex flex-col gap-0.5">
+                        {sections.map((section) => {
+                          const sectionTitle = section.domain
+                            ? `${section.domain.number}.0 · ${section.domain.title[language]}`
+                            : t.sectionAdvanced;
+                          const sectionCompletion = chapterCompletion(section.chapters, completedChapterIds);
+                          const expanded = expandedSections.has(section.key);
+                          const panelId = `${sectionBaseId}-${group.key}-${section.key}`;
+                          return (
+                            <li key={section.key}>
+                              <button
+                                type="button"
+                                data-testid="manual-chapter-section"
+                                onClick={() => toggleSection(section.key)}
+                                aria-expanded={expanded}
+                                aria-controls={panelId}
+                                aria-label={`${sectionTitle} · ${t.chapterProgress}: ${sectionCompletion.completed}/${sectionCompletion.total}`}
+                                className="group flex w-full min-h-11 items-center gap-2 rounded-lg px-2 py-2 text-left transition-colors hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
+                              >
+                                <ChevronRight
+                                  aria-hidden="true"
+                                  className={`h-4 w-4 shrink-0 text-slate-400 transition-transform group-hover:text-slate-600 ${
+                                    expanded ? 'rotate-90' : ''
+                                  }`}
+                                />
+                                <span
+                                  aria-hidden="true"
+                                  className="flex h-5 min-w-[1.9rem] shrink-0 items-center justify-center rounded-md bg-indigo-50 px-1 text-[10px] font-bold tabular-nums text-indigo-700"
+                                >
+                                  {section.domain ? `${section.domain.number}.0` : <Layers className="h-3 w-3" />}
+                                </span>
+                                <span className="min-w-0 flex-1 truncate text-[12.5px] font-semibold text-slate-700">
+                                  {section.domain ? section.domain.title[language] : t.sectionAdvanced}
+                                </span>
+                                <span
+                                  aria-hidden="true"
+                                  className={`shrink-0 font-mono text-[10px] ${
+                                    sectionCompletion.total > 0 &&
+                                    sectionCompletion.completed === sectionCompletion.total
+                                      ? 'text-emerald-700'
+                                      : 'text-slate-400'
+                                  }`}
+                                >
+                                  {sectionCompletion.completed}/{sectionCompletion.total}
+                                </span>
+                              </button>
+                              {/* Slim per-section progress bar — a decorative visual cue; the
+                              accessible count already lives in the toggle's aria-label. */}
+                              <div
+                                aria-hidden="true"
+                                className="mx-2 mb-1 h-0.5 overflow-hidden rounded-full bg-slate-400/20"
+                              >
+                                <div
+                                  className="h-full rounded-full bg-emerald-500/70 transition-all"
+                                  style={{ width: `${sectionCompletion.percent}%` }}
+                                />
+                              </div>
+                              {expanded ? (
+                                <div
+                                  id={panelId}
+                                  className="mb-1 ml-1 flex flex-col gap-0.5 border-l border-slate-100 pl-2"
+                                >
+                                  {section.chapters.map(renderChapterButton)}
+                                </div>
+                              ) : null}
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    ) : (
+                      <div className="flex flex-col gap-0.5">{group.chapters.map(renderChapterButton)}</div>
+                    )}
                   </div>
                 );
               })}

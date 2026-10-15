@@ -16,7 +16,17 @@ test.describe('manual guided exercise emphasis (UX-26)', () => {
     const chapterNav = page.getByRole('navigation', { name: 'Capitoli del manuale' });
     await expect(chapterNav).toBeVisible();
 
-    const chapterButtons = chapterNav.getByRole('button');
+    // IA-12 — the CCNA index is organised into collapsible domain sections. Expand every
+    // one so all chapter links are reachable, then iterate the chapter links only (not the
+    // section toggles).
+    const sectionToggles = chapterNav.locator('[data-testid="manual-chapter-section"]');
+    const sectionCount = await sectionToggles.count();
+    for (let s = 0; s < sectionCount; s++) {
+      const toggle = sectionToggles.nth(s);
+      if ((await toggle.getAttribute('aria-expanded')) === 'false') await toggle.click();
+    }
+
+    const chapterButtons = chapterNav.locator('[data-testid="manual-chapter-link"]');
     const chapterCount = await chapterButtons.count();
     expect(chapterCount).toBeGreaterThan(1);
 

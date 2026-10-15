@@ -98,7 +98,8 @@ export const en = {
     trackFilterLabel: 'Filter by route',
     trackFilterAll: 'All',
     progressByRoute: 'Progress by route',
-    examWeight: 'Exam weight'
+    examWeight: 'Exam weight',
+    sectionAdvanced: 'Deep dives & Security+'
   },
   error: {
     chunkTitle: 'This section could not be loaded',

@@ -211,6 +211,19 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
       di vista e il modello di navigazione derivano dal registro. Routing, deep-link e WCAG 2.2 AA
       preservati. Aggiornati i test di registro/navigazione/routing e gli E2E; `npm run verify` verde,
       Playwright 64/64. Report: `docs/verify/2026-10-15-ia11-single-path-two-item-menu.md`.
+- [x] **IA-12 (P1) — Menu laterale del manuale ad accordion per domini.** **Esito (15/10/2026):** la
+      lista piatta di 26 capitoli sotto «Percorso CCNA» diventa un **accordion a sezioni di dominio
+      CCNA** (1.0 Fondamenti di rete … 6.0 Automazione, più il bucket «Approfondimenti e Security+»),
+      ciascuna con **progresso per sezione** (contatore + barra sottile) e disclosure accessibile
+      (`aria-expanded`/`aria-controls`). Per impostazione predefinita è aperta **solo la sezione del
+      capitolo attivo**, così l'indice resta corto e scansionabile; navigando verso un capitolo in una
+      sezione chiusa (selettore mobile, precedente/successivo, deep-link) la sezione si apre da sola
+      (adeguamento dello stato in render, non in effetto). Il percorso **eJPT** (una sola sezione) resta
+      **flat**. Preservati i due `role="group"` di percorso e i marchi `data-track` (VIS-10); le sezioni
+      sono disclosure, non landmark. Su mobile resta il selettore nativo compatto (budget altezza ≤112px).
+      Contrasto AA verificato anche in tema scuro (chip indigo e barre adattate). Aggiornati gli unit test
+      (accordion, auto-espansione) e l'E2E `manual-guided-exercise`; `npm run verify` verde, Playwright
+      64/64. Report: `docs/verify/2026-10-15-ia12-manual-sidebar-accordion.md`.
 
 ## 🌍 Traduttore/Revisore inglese — parità e naturalezza
 
