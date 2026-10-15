@@ -4,7 +4,14 @@
  */
 
 import { CCNA_DOMAINS, type CcnaDomain } from '../content/ccna';
-import { STUDY_MANUAL, type GuidedLab, type ManualChapter } from '../content/studyManual';
+import {
+  MANUAL_CERTIFICATION_TRACKS,
+  STUDY_MANUAL,
+  type GuidedLab,
+  type ManualCertificationTrack,
+  type ManualChapter
+} from '../content/studyManual';
+import type { Bilingual } from '../types';
 import type { AppView } from '../store';
 
 /**
@@ -35,6 +42,36 @@ export function findChapter(id: string): ManualChapter | undefined {
  */
 export function ccnaDomainForChapter(chapter: ManualChapter): CcnaDomain | undefined {
   return chapter.domain ? CCNA_DOMAINS.find((domain) => domain.id === chapter.domain) : undefined;
+}
+
+/**
+ * Primary route derived from existing metadata, without a second field that can drift.
+ * `track` describes CCNA blueprint alignment; eJPT is outside that blueprint but is
+ * its own study route. `both` remains CCNA + Security+, never CCNA + eJPT.
+ */
+export function certificationTrackForChapter(chapter: ManualChapter): ManualCertificationTrack {
+  if (chapter.cert === 'ejpt') return 'ejpt';
+  return chapter.track === 'ccna' ? 'ccna' : 'extension';
+}
+
+/** Chapters in one primary certification route, in study order. */
+export function chaptersForCertificationTrack(track: ManualCertificationTrack): ManualChapter[] {
+  return orderedChapters().filter((chapter) => certificationTrackForChapter(chapter) === track);
+}
+
+export interface ManualCertificationGroup {
+  key: ManualCertificationTrack;
+  title: Bilingual;
+  chapters: ManualChapter[];
+}
+
+/** Disjoint primary routes in catalog order; empty groups are omitted. */
+export function chaptersByCertificationTrack(): ManualCertificationGroup[] {
+  return MANUAL_CERTIFICATION_TRACKS.map(({ id, title }) => ({
+    key: id,
+    title,
+    chapters: chaptersForCertificationTrack(id)
+  })).filter((group) => group.chapters.length > 0);
 }
 
 /** A navigation group: one CCNA domain (or the declared-extension bucket) with its chapters. */
@@ -68,9 +105,11 @@ export function chapterCompletion(
  * Chapters grouped by CCNA domain for the manual's domain → chapter navigation. CCNA
  * domains come first in official number order, each with its chapters in study order;
  * the declared extensions follow in a final `extension` group. Empty groups are dropped.
+ * An optional primary route narrows the index before grouping, without changing the
+ * existing no-argument navigation or confusing eJPT with an official CCNA domain.
  */
-export function chaptersByDomain(): ManualDomainGroup[] {
-  const ordered = orderedChapters();
+export function chaptersByDomain(certificationTrack?: ManualCertificationTrack): ManualDomainGroup[] {
+  const ordered = certificationTrack ? chaptersForCertificationTrack(certificationTrack) : orderedChapters();
   const groups: ManualDomainGroup[] = [];
   for (const domain of [...CCNA_DOMAINS].sort((a, b) => a.number - b.number)) {
     const chapters = ordered.filter((chapter) => chapter.track === 'ccna' && chapter.domain === domain.id);

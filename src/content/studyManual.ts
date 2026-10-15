@@ -23,7 +23,21 @@ import type { SecurityReference } from './securityReferences';
  */
 
 export type ManualDifficulty = 'intro' | 'core' | 'advanced';
+/** `both` means CCNA + Security+, not CCNA + eJPT. */
 export type ManualCert = 'ccna' | 'securityplus' | 'both' | 'ejpt';
+
+/** Primary study route, separate from certification overlap and CCNA domain alignment. */
+export type ManualCertificationTrack = 'ccna' | 'ejpt' | 'extension';
+
+/** Stable route order and shared bilingual labels for indexes, filters and progress. */
+export const MANUAL_CERTIFICATION_TRACKS: readonly {
+  id: ManualCertificationTrack;
+  title: Bilingual;
+}[] = [
+  { id: 'ccna', title: { it: 'CCNA', en: 'CCNA' } },
+  { id: 'ejpt', title: { it: 'eJPT', en: 'eJPT' } },
+  { id: 'extension', title: { it: 'Estensione', en: 'Extension' } }
+];
 
 /** A guided lab exercise: a task that opens an interactive lab, with a worked solution. */
 export interface GuidedLab {

@@ -4,7 +4,7 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { STUDY_MANUAL } from '../content/studyManual';
+import { MANUAL_CERTIFICATION_TRACKS, STUDY_MANUAL, type ManualChapter } from '../content/studyManual';
 import { CCNA_DOMAINS } from '../content/ccna';
 import { VIEW_REGISTRY } from '../content/viewRegistry';
 import { securityReferenceUrl } from '../content/securityReferences';
@@ -12,6 +12,9 @@ import {
   allGuidedLabs,
   byChapterOrder,
   ccnaDomainForChapter,
+  certificationTrackForChapter,
+  chaptersForCertificationTrack,
+  chaptersByCertificationTrack,
   chapterCompletion,
   chaptersByDomain,
   chaptersForLab,
@@ -214,4 +217,82 @@ describe('study manual selectors', () => {
     expect(chaptersForLab('manual')).toEqual([]);
     expect(chaptersForLab('curriculum')).toEqual([]);
   });
+});
+
+describe('manual certification routes (ENG-30)', () => {
+  it('provides stable, unique routes and bilingual labels', () => {
+    expect(MANUAL_CERTIFICATION_TRACKS.map((track) => track.id)).toEqual(['ccna', 'ejpt', 'extension']);
+    assertBilingualParity(MANUAL_CERTIFICATION_TRACKS, 'MANUAL_CERTIFICATION_TRACKS');
+  });
+
+  it.each([
+    ['ccna', 'ccna', 'ccna'],
+    ['both', 'ccna', 'ccna'],
+    ['both', 'extension', 'extension'],
+    ['securityplus', 'extension', 'extension'],
+    ['ejpt', 'extension', 'ejpt']
+  ] as const)('classifies cert=%s / blueprint=%s as %s', (cert, track, expected) => {
+    const chapter: ManualChapter = { ...STUDY_MANUAL[0], cert, track };
+    expect(certificationTrackForChapter(chapter)).toBe(expected);
+  });
+
+  it('keeps certification and blueprint metadata compatible across the dataset', () => {
+    for (const chapter of STUDY_MANUAL) {
+      expect(['ccna', 'both', 'securityplus', 'ejpt']).toContain(chapter.cert);
+      if (chapter.track === 'ccna') expect(['ccna', 'both']).toContain(chapter.cert);
+      if (chapter.cert === 'ccna') expect(chapter.track).toBe('ccna');
+      if (chapter.cert === 'ejpt') {
+        expect(chapter.track).toBe('extension');
+        expect(chapter.domain).toBeUndefined();
+      }
+    }
+  });
+
+  it('partitions every chapter exactly once without reordering or mutating the source', () => {
+    const originalIds = STUDY_MANUAL.map((chapter) => chapter.id);
+    const groups = chaptersByCertificationTrack();
+    expect(groups.map((group) => group.key)).toEqual(['ccna', 'ejpt', 'extension']);
+    const chapters = groups.flatMap((group) => group.chapters);
+    expect(chapters.map((chapter) => chapter.id).sort()).toEqual([...originalIds].sort());
+    expect(new Set(chapters.map((chapter) => chapter.id)).size).toBe(STUDY_MANUAL.length);
+    for (const group of groups) {
+      expect(group.chapters.length).toBeGreaterThan(0);
+      expect(group.title).toEqual(MANUAL_CERTIFICATION_TRACKS.find((track) => track.id === group.key)?.title);
+      const orders = group.chapters.map((chapter) => chapter.order);
+      expect(orders).toEqual([...orders].sort((a, b) => a - b));
+    }
+    expect(STUDY_MANUAL.map((chapter) => chapter.id)).toEqual(originalIds);
+    // Returned arrays can be manipulated by callers without mutating the dataset.
+    chaptersForCertificationTrack('ccna').pop();
+    groups[0].chapters.reverse();
+    expect(chaptersForCertificationTrack('ccna').map((chapter) => chapter.order)).toEqual(
+      STUDY_MANUAL.filter((chapter) => chapter.track === 'ccna')
+        .map((chapter) => chapter.order)
+        .sort((a, b) => a - b)
+    );
+  });
+
+  it('separates eJPT from extensions and retains shared CCNA/Security+ foundations', () => {
+    expect(chaptersForCertificationTrack('ejpt').map((chapter) => chapter.id)).toEqual([
+      'pentest-methodology',
+      'web-app-pentest',
+      'exploitation-post-exploitation'
+    ]);
+    expect(chaptersForCertificationTrack('ccna').map((chapter) => chapter.id)).toContain('osi-model');
+    expect(chaptersForCertificationTrack('extension').map((chapter) => chapter.id)).toContain('attacks-osi-killchain');
+    expect(chaptersForCertificationTrack('extension').every((chapter) => chapter.cert !== 'ejpt')).toBe(true);
+  });
+
+  it.each(['ccna', 'ejpt', 'extension'] as const)(
+    'narrows domain navigation to %s without losing chapters',
+    (track) => {
+      const groups = chaptersByDomain(track);
+      const ids = groups.flatMap((group) => group.chapters.map((chapter) => chapter.id));
+      const expected = chaptersForCertificationTrack(track).map((chapter) => chapter.id);
+      expect(ids.sort()).toEqual(expected.sort());
+      expect(groups.every((group) => group.chapters.length > 0)).toBe(true);
+      if (track === 'ccna') expect(groups.every((group) => group.domain !== undefined)).toBe(true);
+      else expect(groups.map((group) => group.key)).toEqual(['extension']);
+    }
+  );
 });

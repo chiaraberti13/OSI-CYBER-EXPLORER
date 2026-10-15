@@ -5,7 +5,7 @@
 > **Apertura Fase 3:** 14 ottobre 2026.
 > **Obiettivi di certificazione:** **CCNA 200-301** e **eJPT — INE/eLearnSecurity Junior
 > Penetration Tester**, in chiave didattica e autorizzata.
-> **Stato del manuale:** 24 capitoli / 73 argomenti / 59 laboratori guidati, bilingue IT/EN,
+> **Stato del manuale:** 28 capitoli / 85 argomenti / 71 laboratori guidati, bilingue IT/EN,
 > con il percorso eJPT completo e una sequenza di studio a doppio binario documentata.
 > **Metodo:** incrementi verticali completi e verificati (`npm run verify`, E2E Chromium con
 > Axe WCAG 2.2 AA, audit), pubblicati su `main`; ogni intervento documentato in `docs/verify/`.
@@ -49,9 +49,15 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
       `gl-pentest-scan-states` e il link del topic puntano ora al nuovo lab). Coperto da E2E
       (`e2e/scan-states-lab.spec.ts`: apertura, toggle TCP/UDP, Axe WCAG 2.2 AA). `npm run verify`
       verde (84 file di test), E2E Chromium verdi. Report: `docs/verify/2026-10-14-lab01-scanstates.md`.
-- [ ] **ENG-30 (P2) — Selettori di dominio-cert per il manuale.** Esporre nel modello contenuti la
+- [x] **ENG-30 (P2) — Selettori di dominio-cert per il manuale.** Esporre nel modello contenuti la
       distinzione CCNA/eJPT/estensione così che indice e filtri possano raggruppare per percorso di
-      certificazione senza logica ad hoc nella vista.
+      certificazione senza logica ad hoc nella vista. **Esito (15/10/2026):** catalogo tipizzato
+      dei percorsi e delle etichette IT/EN; selettori puri per classificare, filtrare e raggruppare
+      i capitoli; filtro opzionale nei gruppi per dominio, compatibile con la navigazione attuale.
+      eJPT è distinto dalle estensioni; `both` resta CCNA + Security+. Nessuna duplicazione dei
+      metadati dei capitoli. 12 test aggiuntivi, verifica completa e 64 E2E Chromium superati.
+      Contratto: `docs/manual-certification-selectors.md`.
+      Report: `docs/verify/2026-10-15-eng30-certification-selectors.md`.
 - [x] **ENG-31 (P2) — Guard di conteggio dei capitoli.** Derivare dal dataset i numeri `x/N` oggi
       fissati nei test E2E/unit (progresso, opzioni del selettore, optgroup), per azzerare il costo
       di manutenzione a ogni nuovo capitolo. **Esito (14/10/2026):** i conteggi di capitoli nei test
