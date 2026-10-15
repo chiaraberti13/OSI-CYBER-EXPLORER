@@ -9,7 +9,7 @@ import { act, cleanup, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import StudyManualView from './StudyManualView';
 import { scrollBehaviorForReducedMotion } from '../lib/motion';
-import { chaptersByDomain, manualStats } from '../lib/studyManual';
+import { chaptersByDomain, chaptersForCertificationTrack, manualStats } from '../lib/studyManual';
 import { useStore } from '../store';
 
 // ENG-31 — derive the chapter-count expectations from the manual dataset (the single
@@ -350,5 +350,44 @@ describe('StudyManualView (EDU-01)', () => {
     expect((details as HTMLDetailsElement).open).toBe(false);
     const solutionHeading = within(details as HTMLElement).getByText('Soluzione commentata');
     expect(solutionHeading).toBeTruthy();
+  });
+});
+
+describe('certification-route marks (VIS-10)', () => {
+  it('marks every chapter row in the tree with its route and names the route for AT', () => {
+    render(<StudyManualView />);
+    const nav = screen.getByRole('navigation', { name: 'Capitoli del manuale' });
+
+    // Each row carries its route icon (a non-textual channel) via data-track, in the
+    // exact per-route counts the dataset implies — eJPT included, even though its
+    // chapters sit inside the extension domain group.
+    for (const track of ['ccna', 'ejpt', 'extension'] as const) {
+      expect(nav.querySelectorAll(`[data-track="${track}"]`).length, track).toBe(
+        chaptersForCertificationTrack(track).length
+      );
+    }
+    expect(chaptersForCertificationTrack('ejpt').length).toBeGreaterThan(0);
+
+    // The route is also exposed as text (not colour/icon only, WCAG 1.4.1): one
+    // sr-only "Percorso <route>" label per chapter row.
+    expect(within(nav).getAllByText(/^Percorso (CCNA|eJPT|Estensione)$/).length).toBe(TOTAL_CHAPTERS);
+  });
+
+  it('sets an eJPT chapter apart from a Security+ extension chapter in the header', () => {
+    act(() => useStore.setState({ activeChapterId: 'pentest-methodology' }));
+    const { container } = render(<StudyManualView />);
+    // The header route chip reads eJPT (rose) instead of the generic "Estensione".
+    const chip = container.querySelector('.bg-rose-100');
+    expect(chip).not.toBeNull();
+    expect(chip!.textContent).toContain('eJPT');
+    // The active chapter's header carries the eJPT route mark.
+    expect(container.querySelector('[data-testid="chapter-context"] [data-track="ejpt"]')).not.toBeNull();
+
+    cleanup();
+    act(() => useStore.setState({ activeChapterId: 'segmentation-trust-boundaries' }));
+    const second = render(<StudyManualView />);
+    // A Security+ extension chapter keeps the amber "Estensione" chip, not a rose eJPT one.
+    expect(second.container.querySelector('.bg-rose-100')).toBeNull();
+    expect(second.container.querySelector('.bg-amber-100')?.textContent).toContain('Estensione');
   });
 });

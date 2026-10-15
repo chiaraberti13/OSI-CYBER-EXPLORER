@@ -92,6 +92,9 @@ export const en = {
     certBoth: 'CCNA 200-301 · Security+ SY0-701',
     certEjpt: 'eJPT (INE/eLearnSecurity)',
     trackExtension: 'Extension',
+    trackAria: 'Track',
+    trackCcnaShort: 'CCNA',
+    trackEjptShort: 'eJPT',
     examWeight: 'Exam weight'
   },
   error: {

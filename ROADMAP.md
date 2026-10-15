@@ -140,9 +140,22 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
 
 ## 🎨 Visual Designer — identità e diagrammi
 
-- [ ] **VIS-10 (P2) — Segno visivo del percorso di certificazione.** Un indicatore coerente (non
+- [x] **VIS-10 (P2) — Segno visivo del percorso di certificazione.** Un indicatore coerente (non
       solo testuale) che distingua capitoli CCNA, eJPT ed estensione nell'albero e nell'intestazione,
-      rispettando contrasto AA e tema scuro.
+      rispettando contrasto AA e tema scuro. **Esito (15/10/2026):** introdotto un `TrackMark`
+      riusabile — icona + colore per percorso (CCNA `Route`/indigo, eJPT `Crosshair`/rosa, estensione
+      `ShieldHalf`/ambra), con la forma dell'icona come canale non cromatico (WCAG 1.4.1) e il nome
+      del percorso sempre disponibile come testo (etichetta sr-only «Percorso …» su ogni riga
+      dell'albero, copy di allineamento visibile nell'intestazione). Reso nell'albero dei capitoli
+      (ogni riga), nel breadcrumb sticky e nell'eyebrow della card panoramica; il badge destro della
+      panoramica ora distingue **eJPT** (chip rosa) dall'**estensione** Security+ (chip ambra), colmando
+      il caso in cui eJPT — che vive nel gruppo «Estensione» — era indistinguibile. Palette riusate dal
+      tema scuro del manuale (indigo/ambra già mappate) più un accento **rosa** aggiunto in `index.css`
+      con token dedicati e mappature AA-verificate (chip eJPT 8.3:1 su sfondo scuro, 6.7:1 chiaro).
+      Guard: test unit (conteggi `data-track` per percorso = dataset, etichette testuali, distinzione
+      eJPT↔estensione nell'intestazione) ed E2E dedicato (`manual-track-marks.spec.ts`: marcatura in
+      albero/intestazione + scansione Axe `color-contrast` del manuale scuro su un capitolo eJPT).
+      Report: `docs/verify/2026-10-15-vis10-certification-track-marks.md`.
 - [ ] **VIS-12 (P3) — Diagrammi dei nuovi concetti.** Micro-diagrammi SVG (coerenti con il sistema
       di design, leggibili in tema chiaro e scuro) per i concetti che un disegno chiarisce meglio del
       testo — p. es. east–west vs perimetro, catena di consegna dell'email, fasi del pentest.

@@ -12,28 +12,79 @@ import {
   Check,
   CircleCheck,
   CircleHelp,
+  Crosshair,
   ExternalLink,
   FlaskConical,
   ListChecks,
   RotateCcw,
+  Route,
   Scale,
+  ShieldHalf,
   Target
 } from 'lucide-react';
 import { useStore } from '../store';
 import { uiMessages } from '../i18n';
 import {
   ccnaDomainForChapter,
+  certificationTrackForChapter,
   chapterCompletion,
   chaptersByDomain,
   findChapter,
   manualStats,
   orderedChapters
 } from '../lib/studyManual';
-import type { GuidedLab, ManualCert, ManualDifficulty } from '../content/studyManual';
+import type {
+  GuidedLab,
+  ManualCert,
+  ManualCertificationTrack,
+  ManualChapter,
+  ManualDifficulty
+} from '../content/studyManual';
 import { securityReferenceUrl } from '../content/securityReferences';
 import { preferredScrollBehavior } from '../lib/motion';
 import CcnaHubTabs from './CcnaHubTabs';
 import ViewLink from './ViewLink';
+
+/**
+ * VIS-10 — a coherent, non-textual sign for a chapter's certification route. The icon
+ * shape distinguishes the three routes (not colour alone, WCAG 1.4.1); the colour reuses
+ * the manual's AA-verified palettes (indigo for CCNA, amber for the Security+/advanced
+ * extension) plus a rose accent added for eJPT, each remapped for the dark theme in
+ * index.css. The route name is always exposed as text (an sr-only label in the tree, the
+ * visible alignment copy in the header), so the mark is never colour- or icon-only.
+ */
+const TRACK_ICON: Record<ManualCertificationTrack, typeof Route> = {
+  ccna: Route,
+  ejpt: Crosshair,
+  extension: ShieldHalf
+};
+const TRACK_ICON_CLASS: Record<ManualCertificationTrack, string> = {
+  ccna: 'text-indigo-700',
+  ejpt: 'text-rose-700',
+  extension: 'text-amber-700'
+};
+
+function TrackMark({
+  track,
+  srLabel,
+  className
+}: {
+  track: ManualCertificationTrack;
+  srLabel?: string;
+  className?: string;
+}) {
+  const Icon = TRACK_ICON[track];
+  return (
+    <>
+      <Icon
+        data-track={track}
+        className={`shrink-0 ${className ?? 'h-3.5 w-3.5'} ${TRACK_ICON_CLASS[track]}`}
+        aria-hidden="true"
+      />
+      {srLabel ? <span className="sr-only">{srLabel}</span> : null}
+    </>
+  );
+}
 
 export default function StudyManualView() {
   const language = useStore((state) => state.language);
@@ -85,6 +136,15 @@ export default function StudyManualView() {
     both: t.certBoth,
     ejpt: t.certEjpt
   };
+  // VIS-10 — short, stable route names for the track marks (tree sr-only labels, the
+  // eJPT/extension header chip) and the accessible-name prefix for a chapter row.
+  const trackShort: Record<ManualCertificationTrack, string> = {
+    ccna: t.trackCcnaShort,
+    ejpt: t.trackEjptShort,
+    extension: t.trackExtension
+  };
+  const trackSrLabel = (entry: ManualChapter) => `${t.trackAria} ${trackShort[certificationTrackForChapter(entry)]}`;
+  const chapterTrack = certificationTrackForChapter(chapter);
   const chapterDomain = ccnaDomainForChapter(chapter);
   const chapterAlignment =
     chapter.track === 'ccna' && chapterDomain
@@ -418,12 +478,15 @@ export default function StudyManualView() {
                           type="button"
                           onClick={() => selectChapter(entry.id)}
                           aria-current={isActive ? 'page' : undefined}
-                          className={`group flex w-full min-h-11 items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-[13px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 ${
+                          className={`group flex w-full min-h-11 items-center gap-2 rounded-lg px-2.5 py-2 text-left text-[13px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 ${
                             isActive
                               ? 'bg-indigo-50 font-semibold text-indigo-800'
                               : 'font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-900'
                           }`}
                         >
+                          {/* VIS-10: the chapter's certification route (icon + colour),
+                            with its name as an sr-only label so the row names the route. */}
+                          <TrackMark track={certificationTrackForChapter(entry)} srLabel={trackSrLabel(entry)} />
                           <span
                             aria-hidden="true"
                             className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold ${
@@ -460,7 +523,8 @@ export default function StudyManualView() {
             data-testid="chapter-context"
             className="sticky top-[6.5rem] z-30 -mx-4 mb-5 border-y border-slate-200/80 bg-canvas/95 px-4 py-2 shadow-sm backdrop-blur-md md:-mx-6 md:px-6 lg:mx-0 lg:rounded-lg lg:border"
           >
-            <div className="hidden min-w-0 lg:flex lg:items-baseline lg:gap-2">
+            <div className="hidden min-w-0 lg:flex lg:items-center lg:gap-2">
+              <TrackMark track={chapterTrack} className="h-3.5 w-3.5" />
               <span className="shrink-0 text-[10px] font-semibold uppercase tracking-wider text-indigo-700">
                 {chapterAlignment}
               </span>
@@ -588,7 +652,10 @@ export default function StudyManualView() {
               <div className="rounded-xl border border-slate-200 bg-white p-5 md:p-6">
                 <div className="flex flex-col items-start justify-between gap-4 sm:flex-row">
                   <div className="min-w-0">
-                    <span className="eyebrow text-indigo-700">{chapterAlignment}</span>
+                    <span className="flex items-center gap-1.5">
+                      <TrackMark track={chapterTrack} className="h-3.5 w-3.5" />
+                      <span className="eyebrow text-indigo-700">{chapterAlignment}</span>
+                    </span>
                     <h2
                       ref={chapterTitleRef}
                       id={chapterTitleId}
@@ -615,8 +682,16 @@ export default function StudyManualView() {
                         <Scale className="h-3.5 w-3.5" aria-hidden="true" />
                         {chapterDomain.weight}%
                       </span>
+                    ) : chapterTrack === 'ejpt' ? (
+                      // VIS-10: eJPT is a distinct route, not a generic extension — a rose
+                      // chip with the offensive crosshair sets it apart from Security+.
+                      <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-rose-100 px-3 py-1 text-xs font-semibold text-rose-800">
+                        <Crosshair className="h-3.5 w-3.5" aria-hidden="true" />
+                        {t.trackEjptShort}
+                      </span>
                     ) : (
-                      <span className="shrink-0 rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-800">
+                      <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-800">
+                        <ShieldHalf className="h-3.5 w-3.5" aria-hidden="true" />
                         {t.trackExtension}
                       </span>
                     );

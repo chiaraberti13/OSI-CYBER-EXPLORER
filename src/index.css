@@ -79,6 +79,11 @@ body {
   --color-dark-tile-mistakes-border: #92400e;
   --color-dark-tile-mistakes-ink: #fcd34d;
   --color-dark-tile-mistakes-body: #fde68a;
+  /* VIS-10: the eJPT certification route's rose accent for the dark manual. The ink
+     reaches 8.3:1 on the chip background and 9+:1 on the dark surfaces (AA verified). */
+  --color-dark-track-ejpt-bg: #4c0519;
+  --color-dark-track-ejpt-border: #9f1239;
+  --color-dark-track-ejpt-ink: #fda4af;
 }
 
 /* Scope every dark override to the manual region so nothing else is affected even
@@ -189,6 +194,16 @@ body {
 :root[data-theme='dark'] [data-manual-root] .text-amber-700,
 :root[data-theme='dark'] [data-manual-root] .text-amber-800 {
   color: var(--color-dark-tile-mistakes-ink);
+}
+/* VIS-10: the eJPT route's rose accent — the header chip background and its icon/text
+   ink — remapped so the distinct eJPT marker stays AA in the dark manual. */
+:root[data-theme='dark'] [data-manual-root] .bg-rose-100 {
+  background-color: var(--color-dark-track-ejpt-bg);
+  border-color: var(--color-dark-track-ejpt-border);
+}
+:root[data-theme='dark'] [data-manual-root] .text-rose-700,
+:root[data-theme='dark'] [data-manual-root] .text-rose-800 {
+  color: var(--color-dark-track-ejpt-ink);
 }
 /* The domain-weight badge inverts to a legible chip on the dark surface. */
 :root[data-theme='dark'] [data-manual-root] .bg-slate-900 {
