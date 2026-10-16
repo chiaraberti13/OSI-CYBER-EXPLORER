@@ -138,7 +138,7 @@ export const SCENARIO_FEEDBACK: Record<
   'l6-oracle': {
     attack: {
       it: 'PADDING ORACLE RIUSCITO: Il testo cifrato è stato decifrato byte-per-byte sfruttando le risposte differenziate di errore sul padding CBC.',
-      en: 'PADDING ORACLE SUCCESSFUL: The attacker reconstructed ciphertexts by analyzing temporal and descriptive CBC padding-exception delays.'
+      en: "PADDING ORACLE SUCCESSFUL: The attacker decrypted the ciphertext byte by byte by exploiting the server's distinguishable error responses to CBC padding."
     },
     defense: {
       it: "CRITTOGRAFIA AUTENTICATA: L'adozione di modalità cifrate AEAD come AES-GCM impedisce la manipolazione del padding lanciando eccezioni generiche identiche.",

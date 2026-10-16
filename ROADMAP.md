@@ -293,6 +293,17 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
         campi sono presenti e paralleli. Criteri verificati: `verify` completo verde (781 test
         unitari), 74/74 E2E Chromium, 0 vulnerabilità.
         Report: `docs/verify/2026-10-16-i18n10-osi-layers.md`.
+  - [x] **Correzione padding oracle nei feedback di scenario (16/10/2026).** Revisionato
+        `scenarioFeedback.ts` (i banner attacco/difesa del laboratorio OSI). Corretto un
+        errore tecnico reale nel feedback `l6-oracle`: l'inglese affermava che l'attaccante
+        «reconstructed ciphertexts», mentre un attacco _padding oracle_ **recupera il
+        plaintext** (decifra byte per byte), come diceva già correttamente l'italiano. L'EN
+        ora rispecchia l'IT («decrypted the ciphertext byte by byte by exploiting the
+        server's distinguishable error responses to CBC padding»), ripristinando la parità
+        di significato e la correttezza. Primo difetto di contenuto trovato in questa
+        ricognizione I18N-10 (non un'aggiunta di guard). Criteri verificati: guard bilingue
+        verde, `verify` completo (781 test), 74/74 E2E Chromium.
+        Report: `docs/verify/2026-10-16-i18n10-scenario-feedback.md`.
 
 ## 📝 Technical Writer — documentazione
 
