@@ -116,6 +116,10 @@ export interface SimulationSlice {
 export interface UiSlice {
   isGuideOpen: boolean;
   setIsGuideOpen: (open: boolean) => void;
+  /** Whether the mobile primary-navigation drawer is open (closed on desktop, where
+      the sidebar is persistent). Transient session state, never persisted. */
+  isNavOpen: boolean;
+  setIsNavOpen: (open: boolean) => void;
 }
 
 export type AppState = PreferencesSlice & ProgressSlice & NavigationSlice & SimulationSlice & UiSlice;
@@ -218,7 +222,9 @@ const createSimulationSlice: Slice<SimulationSlice> = (set) => ({
 
 const createUiSlice: Slice<UiSlice> = (set) => ({
   isGuideOpen: false,
-  setIsGuideOpen: (isGuideOpen) => set({ isGuideOpen })
+  setIsGuideOpen: (isGuideOpen) => set({ isGuideOpen }),
+  isNavOpen: false,
+  setIsNavOpen: (isNavOpen) => set({ isNavOpen })
 });
 
 // Some privacy modes, embedded browsers and test environments expose Storage but

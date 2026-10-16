@@ -2,14 +2,14 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { cleanup, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import Navigation from './Navigation';
+import Topbar from './Topbar';
 import { useStore } from '../store';
 import { connectViewRouting } from '../lib/viewRouting';
 
 let disconnect: (() => void) | undefined;
 
 beforeEach(() => {
-  window.history.replaceState(null, '', '#/osi');
+  window.history.replaceState(null, '', '#/manual');
   disconnect = connectViewRouting(useStore, window);
 });
 
@@ -17,32 +17,13 @@ afterEach(() => {
   cleanup();
   disconnect?.();
   window.history.replaceState(null, '', '/');
-  useStore.setState({ activeView: 'osi', language: 'it' });
+  useStore.setState({ activeView: 'manual', language: 'it' });
 });
 
-describe('Navigation', () => {
-  it('opens a group and switches view when an entry is chosen', async () => {
-    const user = userEvent.setup();
-    render(<Navigation />);
-
-    const group = screen.getByRole('button', { name: /Laboratori/ });
-    expect(group.getAttribute('aria-expanded')).toBe('false');
-    await user.click(group);
-    expect(group.getAttribute('aria-expanded')).toBe('true');
-
-    const panel = screen.getByRole('link', { name: /^Connettività IP/ });
-    expect(panel.getAttribute('href')).toBe('#/routing');
-    await user.click(panel);
-
-    expect(useStore.getState().activeView).toBe('routing');
-    expect(window.location.hash).toBe('#/routing');
-    // Reaching the destination closes the chrome.
-    expect(screen.getByRole('button', { name: /Laboratori/ }).getAttribute('aria-expanded')).toBe('false');
-  });
-
+describe('Topbar quick search', () => {
   it('filters every lab with the quick search and opens the chosen one', async () => {
     const user = userEvent.setup();
-    render(<Navigation />);
+    render(<Topbar />);
 
     await user.click(screen.getByRole('button', { name: 'Cerca un laboratorio' }));
     const input = screen.getByRole('combobox', { name: 'Cerca un laboratorio' });
@@ -60,12 +41,11 @@ describe('Navigation', () => {
 
   it('exposes the combobox ARIA pattern and tracks the active option with the arrows', async () => {
     const user = userEvent.setup();
-    render(<Navigation />);
+    render(<Topbar />);
 
     await user.click(screen.getByRole('button', { name: 'Cerca un laboratorio' }));
     const input = screen.getByRole('combobox', { name: 'Cerca un laboratorio' });
 
-    // An empty query lists every lab, so the combobox is expanded on open.
     expect(input.getAttribute('aria-autocomplete')).toBe('list');
     expect(input.getAttribute('aria-expanded')).toBe('true');
     const listbox = screen.getByRole('listbox', { name: 'Risultati della ricerca' });
@@ -73,7 +53,6 @@ describe('Navigation', () => {
 
     const options = within(listbox).getAllByRole('option');
     expect(options.length).toBeGreaterThan(1);
-    // The first option is active; focus stays in the field (activedescendant, not focus).
     expect(options[0].getAttribute('aria-selected')).toBe('true');
     expect(input.getAttribute('aria-activedescendant')).toBe(options[0].id);
     expect(document.activeElement).toBe(input);
@@ -84,62 +63,50 @@ describe('Navigation', () => {
     expect(afterDown[0].getAttribute('aria-selected')).toBe('false');
     expect(input.getAttribute('aria-activedescendant')).toBe(afterDown[1].id);
 
-    // A live region inside the search dialog announces the count without moving focus.
     expect(within(screen.getByRole('dialog')).getByRole('status').textContent).toMatch(/\d+ risultat/);
   });
 
   it('says so when nothing matches instead of showing an empty list', async () => {
     const user = userEvent.setup();
-    render(<Navigation />);
+    render(<Topbar />);
     await user.click(screen.getByRole('button', { name: 'Cerca un laboratorio' }));
     const input = screen.getByRole('combobox', { name: 'Cerca un laboratorio' });
     await user.type(input, 'zzzznotathing');
-    // The visible panel and the off-screen live region both carry the message.
     expect(screen.getAllByText(/Nessun laboratorio corrisponde/).length).toBeGreaterThanOrEqual(1);
-    // With no options the listbox collapses and the live region says so.
     expect(input.getAttribute('aria-expanded')).toBe('false');
     expect(input.getAttribute('aria-activedescendant')).toBeNull();
     expect(within(screen.getByRole('dialog')).getByRole('status').textContent).toMatch(/Nessun laboratorio/);
   });
 
-  it('marks the group that holds the active view with aria-current (IA-02)', () => {
-    useStore.setState({ activeView: 'emailsecurity' });
-    render(<Navigation />);
-    // Wayfinding without a redundant breadcrumb: the group holding the active view is the
-    // only group button marked aria-current, so assistive tech still reports where you are.
-    const current = screen.getAllByRole('button').filter((button) => button.getAttribute('aria-current') === 'true');
-    expect(current).toHaveLength(1);
-    // emailsecurity lives under the single Labs group (IA-11).
-    expect(current[0].textContent).toMatch(/Laboratori/);
-  });
-
-  it('renders every label in English when the language changes', () => {
+  it('renders the search control in English when the language changes', () => {
     useStore.setState({ language: 'en' });
-    render(<Navigation />);
-    // The two destinations: Manual (a direct link) and Labs (a dropdown).
-    expect(screen.getByRole('link', { name: /Manual/ })).toBeTruthy();
-    expect(screen.getByRole('button', { name: /Labs/ })).toBeTruthy();
+    render(<Topbar />);
     expect(screen.getByRole('button', { name: 'Search for a lab' })).toBeTruthy();
   });
 
-  it('copies a shareable link to the current lab and confirms it (UX-06)', async () => {
+  it('copies a shareable link to the current view and confirms it (UX-06)', async () => {
     const user = userEvent.setup();
     useStore.setState({ activeView: 'routing' });
     window.history.replaceState(null, '', '#/routing');
-    render(<Navigation />);
+    render(<Topbar />);
 
     const copy = screen.getByRole('button', { name: 'Copia il link di questo laboratorio' });
     await user.click(copy);
 
-    // The copied URL points at the current view's hash route.
     expect(await navigator.clipboard.readText()).toMatch(/#\/routing$/);
-    // A live region confirms the copy without moving focus.
     expect(screen.getByRole('status').textContent).toBe('Link copiato');
   });
 
   it('localises the copy-link control to English', () => {
     useStore.setState({ language: 'en' });
-    render(<Navigation />);
+    render(<Topbar />);
     expect(screen.getByRole('button', { name: 'Copy link to this lab' })).toBeTruthy();
+  });
+
+  it('opens the navigation drawer from the menu button', async () => {
+    const user = userEvent.setup();
+    render(<Topbar />);
+    await user.click(screen.getByRole('button', { name: 'Apri il menu di navigazione' }));
+    expect(useStore.getState().isNavOpen).toBe(true);
   });
 });

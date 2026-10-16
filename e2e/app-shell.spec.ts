@@ -153,9 +153,9 @@ test.describe('application shell', () => {
     await expect(context.locator('h1, h2, h3, h4, h5, h6')).toHaveCount(0);
 
     // Scroll within a long chapter: the context bar stays immediately below the
-    // 56 px app header and 48 px lab navigation instead of leaving the viewport.
+    // single 56 px app top bar (IA-13) instead of leaving the viewport.
     await page.getByRole('heading', { level: 3 }).nth(2).scrollIntoViewIfNeeded();
-    await expect.poll(async () => Math.round((await context.boundingBox())?.y ?? -1)).toBe(104);
+    await expect.poll(async () => Math.round((await context.boundingBox())?.y ?? -1)).toBe(56);
 
     await page
       .getByRole('navigation', { name: 'In questa pagina' })
@@ -262,12 +262,14 @@ test.describe('navigation at phone width', () => {
   test('a lab is reachable from the compact menu', async ({ page }) => {
     await openApp(page);
 
-    // IA-11: every lab lives under the single "Laboratori" group, organised by area.
-    await page.getByRole('button', { name: /Laboratori/ }).click();
-    await page
-      .locator('#nav-panel-labs')
-      .getByRole('link', { name: /Attacco & Difesa/ })
-      .click();
+    // IA-13: on mobile the primary navigation is a drawer opened from the top bar.
+    await page.getByRole('button', { name: 'Apri il menu di navigazione' }).click();
+    const drawer = page.getByRole('dialog', { name: 'Navigazione principale' });
+    await expect(drawer).toBeVisible();
+
+    // Every lab lives under the single "Laboratori" disclosure, organised by area.
+    await drawer.getByRole('button', { name: /Laboratori/ }).click();
+    await drawer.getByRole('link', { name: /Attacco & Difesa/ }).click();
 
     await expect(page).toHaveURL(/#\/attacklab$/);
     await expect(page).toHaveTitle(/Attacco & Difesa — OSI Cyber Explorer/);
@@ -283,10 +285,21 @@ test.describe('WCAG reflow and touch targets', () => {
 
     // A 320 CSS-pixel viewport is also the WCAG 1.4.10 reference layout for a
     // 1280 px desktop viewport at 400% browser zoom (and is stricter than 200%).
-    const primaryControls = [
-      page.getByRole('button', { name: 'Apri la guida' }),
-      page.getByRole('button', { name: 'English' }),
-      page.getByRole('button', { name: 'Italiano' }),
+    // Chromium can expose a declared 44 px box as 43.99994 because of device-scale
+    // floating-point conversion; normalising to 0.01 CSS px absorbs that transport
+    // noise without accepting a genuine 43.99 px target.
+    const meetsTarget = async (control: ReturnType<Page['getByRole']>) => {
+      await expect(control).toBeVisible();
+      const box = await control.boundingBox();
+      expect(box, 'control must have a measurable box').not.toBeNull();
+      expect(Math.round(box!.width * 100) / 100).toBeGreaterThanOrEqual(44);
+      expect(Math.round(box!.height * 100) / 100).toBeGreaterThanOrEqual(44);
+    };
+
+    // IA-13: on mobile the top bar carries the menu, search and copy-link controls;
+    // the guide and language controls live in the navigation drawer (checked below).
+    const topBarControls = [
+      page.getByRole('button', { name: 'Apri il menu di navigazione' }),
       page.getByRole('button', { name: 'Copia il link di questo laboratorio' }),
       page.getByRole('button', { name: 'Cerca un laboratorio' }),
       page.getByRole('button', { name: 'Velocità 0.5x' }),
@@ -296,17 +309,7 @@ test.describe('WCAG reflow and touch targets', () => {
       page.getByRole('button', { name: 'Reset' }),
       page.getByLabel('Seleziona il protocollo da simulare')
     ];
-
-    for (const control of primaryControls) {
-      await expect(control).toBeVisible();
-      const box = await control.boundingBox();
-      expect(box, 'control must have a measurable box').not.toBeNull();
-      // Chromium can expose a declared 44 px box as 43.99994 because of
-      // device-scale floating-point conversion. Normalising to 0.01 CSS px
-      // avoids that transport noise without accepting a genuine 43.99 px target.
-      expect(Math.round(box!.width * 100) / 100).toBeGreaterThanOrEqual(44);
-      expect(Math.round(box!.height * 100) / 100).toBeGreaterThanOrEqual(44);
-    }
+    for (const control of topBarControls) await meetsTarget(control);
 
     const undersizedControls = await page
       .locator('button:visible, select:visible, textarea:visible, input:visible')
@@ -336,6 +339,21 @@ test.describe('WCAG reflow and touch targets', () => {
       content: document.documentElement.scrollWidth
     }));
     expect(reflow.content).toBeLessThanOrEqual(reflow.viewport);
+
+    // The guide and language controls live in the navigation drawer on mobile: open it
+    // and confirm they also meet the 44 px target without introducing horizontal overflow.
+    await page.getByRole('button', { name: 'Apri il menu di navigazione' }).click();
+    const drawer = page.getByRole('dialog', { name: 'Navigazione principale' });
+    await expect(drawer).toBeVisible();
+    await meetsTarget(drawer.getByRole('button', { name: 'Apri la guida' }));
+    await meetsTarget(drawer.getByRole('button', { name: 'English' }));
+    await meetsTarget(drawer.getByRole('button', { name: 'Italiano' }));
+
+    const reflowWithDrawer = await page.evaluate(() => ({
+      viewport: document.documentElement.clientWidth,
+      content: document.documentElement.scrollWidth
+    }));
+    expect(reflowWithDrawer.content).toBeLessThanOrEqual(reflowWithDrawer.viewport);
   });
 });
 

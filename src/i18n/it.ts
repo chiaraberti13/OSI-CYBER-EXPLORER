@@ -23,6 +23,8 @@ export const it = {
   },
   navigation: {
     label: 'Navigazione dei laboratori',
+    primary: 'Navigazione principale',
+    menu: 'Apri il menu di navigazione',
     search: 'Cerca un laboratorio',
     searchHint: 'Cerca per nome, protocollo o argomento…',
     close: 'Chiudi',
