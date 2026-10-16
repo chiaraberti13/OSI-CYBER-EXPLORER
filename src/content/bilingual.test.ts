@@ -9,6 +9,7 @@ import { DOMAIN_CHECKLISTS } from './domainChecklists';
 import { ATTACK_PATHS } from './attackPaths';
 import { SECURITY_EVIDENCE_CASES } from './securityEvidence';
 import { CCNA_DOMAINS } from './ccna';
+import { DEVICE_REGISTRY } from './deviceRegistry';
 import { PORT_CONTENT } from './portContent';
 import { PROTOCOL_REGISTRY } from './protocolRegistry';
 import { APPLICATION_SECURITY_SCENARIOS } from './applicationSecurityScenarios';
@@ -42,15 +43,7 @@ import { WIRELESS_SECURITY_SCENARIOS } from './wirelessSecurityScenarios';
 
 const CONTENT_DIR = 'src/content';
 
-/**
- * Datasets extracted from PortsExplorer.tsx (ENG-04). They were never under this guard
- * while they lived inside the component, and still carry pre-existing it/en asymmetries
- * (mostly acronyms used in one language only). They are excluded until the translations
- * are reviewed; remove a file from this list once its findings are fixed.
- * protocolRegistry.ts (2026-10-15) and portContent.ts (2026-10-16) were reviewed
- * in I18N-10 and are now included.
- */
-const PENDING_TRANSLATION_REVIEW = new Set(['deviceRegistry.ts']);
+// All extracted catalogues are reviewed and included (I18N-10, 2026-10-16).
 
 interface Pair {
   file: string;
@@ -62,9 +55,7 @@ interface Pair {
 /** Pairs each it:/en: string with its immediate sibling in the same object literal. */
 function bilingualPairs(): Pair[] {
   const pairs: Pair[] = [];
-  for (const file of readdirSync(CONTENT_DIR).filter(
-    (name) => name.endsWith('.ts') && !name.endsWith('.test.ts') && !PENDING_TRANSLATION_REVIEW.has(name)
-  )) {
+  for (const file of readdirSync(CONTENT_DIR).filter((name) => name.endsWith('.ts') && !name.endsWith('.test.ts'))) {
     const text = readFileSync(`${CONTENT_DIR}/${file}`, 'utf8');
     const matcher = /\b(it|en)\s*:\s*(['"`])((?:\\.|(?!\2)[^\\])*)\2/g;
     const hits = [...text.matchAll(matcher)].map((match) => ({
@@ -169,6 +160,7 @@ const BILINGUAL_DATASETS: ReadonlyArray<readonly [string, unknown]> = [
   ['CCNA_DOMAINS', CCNA_DOMAINS],
   ['PROTOCOL_REGISTRY', PROTOCOL_REGISTRY],
   ['PORT_CONTENT', PORT_CONTENT],
+  ['DEVICE_REGISTRY', DEVICE_REGISTRY],
   ['APPLICATION_SECURITY_SCENARIOS', APPLICATION_SECURITY_SCENARIOS],
   ['AVAILABILITY_SCENARIOS', AVAILABILITY_SCENARIOS],
   ['EMAIL_HUMAN_SECURITY_SCENARIOS', EMAIL_HUMAN_SECURITY_SCENARIOS],
@@ -249,6 +241,18 @@ describe('structured bilingual datasets', () => {
         expect(port[field]).toHaveProperty('it');
         expect(port[field]).toHaveProperty('en');
         collectEmptyTranslations(port[field], `${port.service}.${field}`, offenders);
+      }
+    }
+    expect(offenders).toEqual([]);
+  });
+
+  it('checks all device fields and both language keys', () => {
+    const offenders: string[] = [];
+    for (const device of DEVICE_REGISTRY) {
+      for (const field of ['role', 'howItWorks', 'securityAttacks', 'cannotStop', 'mitigation'] as const) {
+        expect(device[field]).toHaveProperty('it');
+        expect(device[field]).toHaveProperty('en');
+        collectEmptyTranslations(device[field], `${device.name}.${field}`, offenders);
       }
     }
     expect(offenders).toEqual([]);

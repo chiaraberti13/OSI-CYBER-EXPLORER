@@ -1,3 +1,4 @@
+import { deviceLayerLabel } from './deviceLabels';
 import type { DeviceInfo, PortInfo, ProtocolInfo } from '../content/portsExplorerTypes';
 
 export type Language = 'en' | 'it';
@@ -63,7 +64,7 @@ export function filterDevices(
       !searchTerm ||
       d.name.toLowerCase().includes(term) ||
       d.fullName.toLowerCase().includes(term) ||
-      d.layer.toLowerCase().includes(term) ||
+      deviceLayerLabel(d.layer, language).toLowerCase().includes(term) ||
       d.role[language].toLowerCase().includes(term) ||
       d.howItWorks[language].toLowerCase().includes(term) ||
       d.securityAttacks[language].toLowerCase().includes(term) ||

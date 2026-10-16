@@ -251,8 +251,16 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
         ed euristica, ricerca e filtri, rendering completo IT/EN, Axe e reflow
         a 320/1280 px. `verify` superato (774 test), 72/72 E2E Chromium e audit puliti.
         Report: `docs/verify/2026-10-16-i18n10-port-catalogue.md`.
-        Resta da revisionare `deviceRegistry.ts`, unico dataset escluso dal
-        confronto euristico; il punto ricorrente I18N-10 non viene chiuso globalmente.
+  - [x] **Incremento catalogo apparati (16/10/2026).** Revisionate 31 schede e 155
+        coppie IT/EN; corretti capacità e limiti di firewall, switching, sensori,
+        endpoint, accesso e infrastruttura. Rimossa l’ultima esclusione dal guard.
+        Localizzati pannello e livelli OSI, corretti ricerca, reset completo,
+        stato dei filtri e overflow dei badge. Criteri verificati: parità strutturale
+        ed euristica, tutti i testi e filtri IT/EN, Axe e reflow delle singole schede
+        a 320/1280 px; 777 test unitari e 74/74 E2E Chromium superati, audit puliti.
+        Report: `docs/verify/2026-10-16-i18n10-device-catalogue.md`.
+        Nessun catalogo resta escluso; I18N-10 rimane ricorrente per nuovi contenuti,
+        senza dichiarare revisionato ogni testo storico dell’applicazione.
 
 ## 📝 Technical Writer — documentazione
 

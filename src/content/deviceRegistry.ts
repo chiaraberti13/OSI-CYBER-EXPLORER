@@ -7,24 +7,24 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     layer: 'Layer 3, 4 (Network/Transport)',
     category: 'security',
     role: {
-      en: 'Inspects and filters individual packets statically based on IP addresses, ports, and protocols without tracking session context.',
-      it: 'Ispeziona staticamente i singoli pacchetti in base a IP, porte e protocollo, senza tenere traccia dello stato della sessione.'
+      en: 'Filters individual packets using addresses, ports and protocols, without connection tracking.',
+      it: 'Filtra i singoli pacchetti tramite indirizzi, porte e protocolli, senza tracciare le connessioni.'
     },
     howItWorks: {
-      en: 'Compares each incoming packet against access control lists (ACLs). It decides to permit or deny packets in total isolation from other packets.',
-      it: 'Confronta ogni singolo pacchetto in ingresso con le liste di controllo accessi (ACL) e decide se farlo passare disinteressandosi del contesto.'
+      en: 'Applies ordered ACL rules to each packet; the default action and rule order determine the result.',
+      it: 'Applica regole ACL ordinate a ogni pacchetto; l’azione predefinita e l’ordine delle regole determinano l’esito.'
     },
     securityAttacks: {
-      en: 'Fenders off IP addresses outside permitted subnets, blocks access to closed port ranges, and filters basic ICMP floods.',
-      it: "Respinge indirizzi IP non appartenenti a subnet autorizzate, blocca l'accesso a range di porte chiuse e filtra attacchi ICMP flood di base."
+      en: 'Configured rules restrict reachable services and source networks; filtering does not make an allowed service safe.',
+      it: 'Le regole configurate limitano servizi raggiungibili e reti sorgenti; il filtraggio non rende sicuro un servizio consentito.'
     },
     cannotStop: {
-      en: 'Session hijacking, ACK storms, or malformed protocol payloads. Because it is stateless, it cannot verify if an incoming packet is a legitimate, expected reply or an out-of-order spoof.',
-      it: 'Session Hijacking, ACK flood o exploit applicativi. Essendo privo di stato (stateless), non può verificare se un pacchetto in ingresso sia una risposta attesa o una falsificazione fuori sequenza.'
+      en: 'Cannot establish whether a packet belongs to an expected conversation or inspect application meaning by basic header rules alone.',
+      it: 'Le sole regole sulle intestazioni non stabiliscono se un pacchetto appartiene a una conversazione attesa né ne interpretano il contenuto applicativo.'
     },
     mitigation: {
-      en: 'Upgrade immediately to stateful inspection firewalls (Stateful FW) or next-generation firewalls (NGFW) to track TCP stream states.',
-      it: 'Migrare immediatamente a firewall stateful o next-generation (NGFW) in grado di tracciare le sessioni e verificare i flussi TCP.'
+      en: 'Keep least-privilege ACL policies; add stateful and application controls where the traffic and risk require them.',
+      it: 'Mantenere politiche ACL di minimo privilegio; aggiungere controlli stateful e applicativi dove traffico e rischio lo richiedono.'
     },
     iconName: 'Shield'
   },
@@ -34,24 +34,24 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     layer: 'Layer 3, 4 (Network/Transport)',
     category: 'security',
     role: {
-      en: 'Monitors the state of active network connections, allowing incoming traffic only if it matches a valid, established outbound request.',
-      it: "Rileva e traccia lo stato delle connessioni di rete attive, consentendo l'ingresso solo al traffico in risposta a flussi interni legittimi."
+      en: 'Tracks connections and applies policy to new and returning traffic; inbound services can be explicitly permitted.',
+      it: 'Traccia le connessioni e applica regole al traffico nuovo e di risposta; i servizi in ingresso possono essere autorizzati esplicitamente.'
     },
     howItWorks: {
-      en: 'Maintains an active State Table of all established connections (tracking source/destination IP, port numbers, and TCP sequence states).',
-      it: 'Mantiene una Tabella degli Stati attiva con tutte le connessioni in corso (abbinando IP di origine/destinazione, porte e numeri di sequenza TCP).'
+      en: 'Uses a state table with endpoint addresses, ports and protocol state; exact validation depends on the implementation.',
+      it: 'Usa una tabella di stato con indirizzi degli endpoint, porte e stato del protocollo; i controlli precisi dipendono dall’implementazione.'
     },
     securityAttacks: {
-      en: 'Blocks unsolicited inbound connection requests, unauthorized port scans, and out-of-sequence packet injection attempts.',
-      it: 'Blocca connessioni esterne impreviste non sollecitate, tentativi di port scanning e iniezioni di pacchetti fuori sequenza.'
+      en: 'Can reject unsolicited traffic and packets inconsistent with tracked state, subject to configured policy.',
+      it: 'Può rifiutare traffico non richiesto e pacchetti incoerenti con lo stato registrato, secondo la politica configurata.'
     },
     cannotStop: {
-      en: 'SQL Injections, Cross-Site Scripting (XSS), and content-based malware. Since it only checks protocol session compliance (Layer 4), it remains completely blind to malicious payloads wrapped inside valid connections.',
-      it: "SQL Injection, Cross-Site Scripting (XSS) e malware. Controllando solo la conformità della connessione di trasporto (Layer 4), ignora completamente il contenuto applicativo inserito all'interno del flusso autorizzato."
+      en: 'Connection state alone does not detect SQL injection or malicious files inside permitted application traffic; state tables can also be exhausted.',
+      it: 'Il solo stato delle connessioni non rileva SQL injection o file dannosi nel traffico applicativo consentito; anche le tabelle di stato possono esaurirsi.'
     },
     mitigation: {
-      en: 'Deploy in combination with Web Application Firewalls (WAF) to inspect Layer 7 web payloads, and IPS for signature-level malware detection.',
-      it: "Associare a dispositivi Web Application Firewall (WAF) per esaminare payload web al Layer 7 e sistemi IPS per rilevare codice dall'interno."
+      en: 'Apply connection limits and monitoring; combine with application security, WAF or IPS where appropriate.',
+      it: 'Applicare limiti alle connessioni e monitoraggio; integrare sicurezza applicativa, WAF o IPS dove opportuno.'
     },
     iconName: 'Shield'
   },
@@ -61,24 +61,24 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     layer: 'Layer 7 (Application)',
     category: 'security',
     role: {
-      en: 'Acts as an intermediary between client and server, establishing independent connections to fully isolate external hosts from the internal network.',
-      it: "Intermedia l'intera sessione tra client e server, aprendo due connessioni separate per isolare del tutto i server interni dalle minacce esterne."
+      en: 'Mediates application exchanges through separate client-side and server-side connections.',
+      it: 'Media gli scambi applicativi tramite connessioni separate verso il client e verso il server.'
     },
     howItWorks: {
-      en: 'Intercepts incoming application requests, performs thorough payload validation and validation of specific commands (e.g. HTTP, FTP), then establishes a new separate connection to the destination.',
-      it: 'Intercetta le richieste applicative esterne, esegue una validazione profonda e sintattica dei messaggi, e avvia una nuova connessione autonoma verso il server.'
+      en: 'An application-aware proxy validates supported commands and messages before relaying requests; unsupported protocols need separate handling.',
+      it: 'Un proxy applicativo valida comandi e messaggi supportati prima di inoltrare richieste; i protocolli non supportati richiedono gestione separata.'
     },
     securityAttacks: {
-      en: 'Prevents indirect network exploits, filters forbidden application commands, blocks malformed protocols, and hides internal IP addresses.',
-      it: 'Previene exploit indiretti a livello di rete, disabilita comandi applicativi non permessi, corregge anomalie e nasconde gli IP reali interni.'
+      en: 'Can reject forbidden commands and malformed messages covered by its rules; mediation alone does not prevent every exploit.',
+      it: 'Può rifiutare comandi vietati e messaggi malformati coperti dalle regole; la sola intermediazione non previene ogni exploit.'
     },
     cannotStop: {
-      en: 'Zero-day exploits targeted directly at vulnerabilities in the Proxy daemon/software itself, or high-volume DDoS attacks that overwhelm the CPU resource limits of the proxy host.',
-      it: 'Zero-day mirati a vulnerabilità specifiche presenti nello stesso applicativo software del Proxy, o attacchi DDoS massivi che ne esauriscono la CPU.'
+      en: 'Proxy vulnerabilities, permitted but harmful transactions, and traffic that bypasses the proxy remain risks.',
+      it: 'Restano rischi le vulnerabilità del proxy, le transazioni consentite ma dannose e il traffico che aggira il proxy.'
     },
     mitigation: {
-      en: 'Regularly patch proxy software, perform OS hardening, and configure load balancers to distribute high-volume traffic.',
-      it: "Aggiornare regolarmente il software del proxy, effettuare l'hardening del sistema operativo ed impostare bilanciatori a monte."
+      en: 'Patch and harden the proxy, restrict bypass paths, test rules and plan capacity and high availability.',
+      it: 'Aggiornare e proteggere il proxy, limitare i percorsi alternativi, collaudare le regole e pianificare capacità e alta disponibilità.'
     },
     iconName: 'Server'
   },
@@ -88,24 +88,24 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     layer: 'Layer 5, 6, 7 (Session/Presentation/Application)',
     category: 'security',
     role: {
-      en: 'Performs high-performance application-level proxy inspections directly within the operating system kernel, rather than slow user space.',
-      it: "Esegue un'ispezione proxy approfondita dei protocolli applicativi direttamente nello spazio del kernel del sistema operativo, massimizzando le performance."
+      en: 'Describes a proxy architecture with functions in the operating system kernel; it is not a universal security or performance standard.',
+      it: 'Descrive un’architettura proxy con funzioni nel kernel del sistema operativo; non è uno standard universale di sicurezza o prestazioni.'
     },
     howItWorks: {
-      en: 'Spawns dynamic virtual protocol stacks natively inside the kernel to validate application compliance at close to network interfaces line speeds.',
-      it: "Genera uno stack di protocollo virtuale direttamente nel kernel dell'OS, analizzando i dati applicativi quasi alla velocità dell'interfaccia fisica."
+      en: 'Protocol handling runs partly in kernel space. Supported inspection and throughput depend on the product and enabled features.',
+      it: 'La gestione dei protocolli avviene in parte nel kernel. Ispezione supportata e velocità dipendono dal prodotto e dalle funzioni abilitate.'
     },
     securityAttacks: {
-      en: 'Filters unauthorized high-speed application streams, drops complex application bypass tries, and blocks protocol parameter evasion.',
-      it: 'Scherma canali applicativi sospetti ad alta velocità, neutralizza deviazioni sofisticate e blocca tentativi di bypass dei parametri di protocollo.'
+      en: 'Only the implemented access and protocol checks mitigate attacks; running in the kernel adds no automatic detection capability.',
+      it: 'Solo i controlli di accesso e protocollo implementati mitigano gli attacchi; operare nel kernel non aggiunge rilevamento automatico.'
     },
     cannotStop: {
-      en: 'Credential theft (phishing) or insider corporate espionage. If an attacker possesses legitimate login keys, the kernel proxy has no way of recognizing malicious intent because the transaction perfectly aligns with standard protocol rules.',
-      it: 'Furto di credenziali (phishing) o spionaggio interno. Se un attaccante possiede chiavi o credenziali di login valide, il kernel proxy farà transitare il flusso poiché formalmente impeccabile e conforme al protocollo.'
+      en: 'Cannot infer malicious intent from valid credentials alone; a vulnerable kernel component can affect the entire host.',
+      it: 'Non può dedurre intenti dannosi dalle sole credenziali valide; un componente kernel vulnerabile può compromettere l’intero host.'
     },
     mitigation: {
-      en: 'Deploy robust Multi-Factor Authentication (MFA), role-based privilege checks, and implement behavioral system auditing.',
-      it: 'Abilitare robuste autenticazioni a più fattori (MFA), controlli granulari dei privilegi ed ispezionare i log dei comportamenti utente.'
+      en: 'Verify supported features, patch privileged components and combine access control with MFA and monitored administrative activity.',
+      it: 'Verificare le funzioni supportate, aggiornare i componenti privilegiati e integrare controlli di accesso, MFA e monitoraggio amministrativo.'
     },
     iconName: 'Cpu'
   },
@@ -115,51 +115,51 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     layer: 'Layer 7 (Application)',
     category: 'security',
     role: {
-      en: 'Monitors, filters, and blocks HTTP/HTTPS web traffic explicitly aimed at exploiting flaws in public-facing web applications.',
-      it: 'Monitora, filtra e blocca il traffico web HTTP/HTTPS diretto ai server aziendali, neutralizzando attacchi mirati ai portali web.'
+      en: 'Applies application security rules to HTTP traffic, including HTTPS where decrypted content is available for inspection.',
+      it: 'Applica regole di sicurezza applicativa al traffico HTTP, incluso HTTPS dove il contenuto decifrato è disponibile per l’ispezione.'
     },
     howItWorks: {
-      en: 'Analyzes HTTP request components (GET parameters, POST bodies, cookies, and headers) against signatures (OWASP Top 10) and anomaly templates.',
-      it: "Esamina le richieste web (parametri GET, messaggi POST, cookie e intestazioni) confrontandole con elenchi di firme d'attacco (OWASP Top 10)."
+      en: 'Inspects headers, parameters and bodies using configured rules. OWASP Top 10 is a risk awareness document, not a signature database.',
+      it: 'Ispeziona intestazioni, parametri e corpi con regole configurate. OWASP Top 10 è un documento sui rischi, non un database di firme.'
     },
     securityAttacks: {
-      en: 'Stops SQL Injection (SQLi), Cross-Site Scripting (XSS), Local/Remote File Inclusion (LFI/RFI), and credential stuffing.',
-      it: 'Arresta SQL Injection (SQLi), Cross-Site Scripting (XSS), inclusioni di file locali/remoti (LFI/RFI) e attacchi di credential stuffing.'
+      en: 'Can mitigate SQL injection and XSS patterns; credential abuse needs appropriate rate limits and additional identity controls.',
+      it: 'Può mitigare pattern di SQL injection e XSS; gli abusi delle credenziali richiedono limiti di frequenza e ulteriori controlli di identità.'
     },
     cannotStop: {
-      en: 'Layer 3/4 volumetric floods (like SYN flood or UDP/NTP reflection). Siting high up in the application layer, the WAF cannot stop lower-level floods from fully saturating the internet link before the web packets can even be received.',
-      it: 'Attacchi volumetrici di rete ai Layer 3/4 (es. SYN floods o riflessione UDP/NTP). Essendo posizionato al livello applicativo, non può impedire ad un flood massivo a valle di saturare la banda fisica del link internet a monte.'
+      en: 'Business-logic flaws, bypasses and false negatives remain possible. An on-site WAF cannot prevent upstream link saturation.',
+      it: 'Restano possibili errori di logica applicativa, aggiramenti e falsi negativi. Un WAF locale non impedisce la saturazione del collegamento a monte.'
     },
     mitigation: {
-      en: 'Partner with cloud-based Anycast DDoS mitigation engines (e.g. Cloudflare, Akamai) to filter network floods before they hit the perimeter.',
-      it: 'Adottare soluzioni cloud di mitigazione DDoS basate su Anycast (es. Cloudflare) per digerire i flood di rete a livello geografico.'
+      en: 'Fix application vulnerabilities, tune and test rules, monitor false positives and arrange upstream DDoS protection when needed.',
+      it: 'Correggere vulnerabilità applicative, calibrare e collaudare regole, monitorare falsi positivi e predisporre protezione DDoS a monte quando necessaria.'
     },
     iconName: 'Shield'
   },
   {
-    name: 'UTM - Unified Threat Security',
+    name: 'UTM - Unified Threat Management',
     fullName: 'Unified Threat Management',
     layer: 'Multi-Layer (Layers 3, 4, 5, 7)',
     category: 'security',
     role: {
-      en: 'Consolidates multiple network defense tools (firewall, network antivirus, IPS, content filtering) into a centralized, easy-to-manage device.',
-      it: 'Fonde diverse funzionalità defensive (firewall, antivirus di rete, prevenzione delle intrusioni, filtro web) in un unico apparato consolidato.'
+      en: 'Combines firewall, intrusion prevention and other security services in one management platform.',
+      it: 'Combina firewall, prevenzione delle intrusioni e altri servizi di sicurezza in un’unica piattaforma di gestione.'
     },
     howItWorks: {
-      en: 'Executes single-pass deep packet scanning, running incoming streams through a sequence of defense engines located in one hardware appliance.',
-      it: "Esegue un'ispezione multi-motore in un unico passaggio, canalizzando i pacchetti in motori sequenziali di controllo antivirus, firewall e IPS."
+      en: 'Enabled inspection engines process traffic that crosses the device; processing order and acceleration vary by product.',
+      it: 'I motori di ispezione abilitati elaborano il traffico che attraversa il dispositivo; ordine e accelerazione variano secondo il prodotto.'
     },
     securityAttacks: {
-      en: 'Blocks known network worms, malware file transfers, malicious active spam, and connections to known botnets.',
-      it: 'Neutralizza worm di rete conosciuti, download di malware firmati, spam e connessioni verso server di comando botnet.'
+      en: 'Configured engines can detect or block covered malware and prohibited traffic; licensing, updates and visibility affect coverage.',
+      it: 'I motori configurati possono rilevare o bloccare malware coperto dalle regole e traffico vietato; licenze, aggiornamenti e visibilità influenzano la copertura.'
     },
     cannotStop: {
-      en: 'Untracked zero-day attacks leveraging proprietary compression/obfuscation algorithms, or internal lateral attacks. If an office computer gets infected via USB, the perimeter UTM cannot stop it from infecting other LAN machines over physical switches.',
-      it: 'Attacchi zero-day cifrati con algoritmi proprietari fuori firma, o attacchi interni laterali. Se un PC in ufficio viene infettato da USB, la UTM perimetrale è cieca sui movimenti laterali che si propagano sullo switch locale.'
+      en: 'Cannot inspect traffic that bypasses it, including local lateral movement; encrypted content and overload can limit inspection.',
+      it: 'Non ispeziona traffico che lo aggira, inclusi movimenti laterali locali; contenuti cifrati e sovraccarico possono limitare l’ispezione.'
     },
     mitigation: {
-      en: 'Configure strict LAN micro-segmentation, and install Host Endpoint Detection and Response (EDR) software on all workstations.',
-      it: 'Abilitare la microsegmentazione locale sulla rete LAN locale e installare agenti EDR (Endpoint Detection and Response) sugli host.'
+      en: 'Size capacity with inspection enabled, segment internal traffic and combine with endpoint monitoring and response.',
+      it: 'Dimensionare la capacità con ispezione attiva, segmentare il traffico interno e integrare monitoraggio e risposta sugli endpoint.'
     },
     iconName: 'Cpu'
   },
@@ -169,24 +169,24 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     layer: 'Layer 3, 4, 7 (Application & Port Aware)',
     category: 'security',
     role: {
-      en: 'Provides deep control by combining a typical stateful firewall with integrated IPS, user identity checks, and application awareness.',
-      it: "Ottiene un controllo pervasivo integrando un tipico firewall stateful con ispezione IPS attiva e l'identificazione degli utenti e delle app."
+      en: 'Combines stateful policy with application identification and security inspection; capabilities vary by implementation.',
+      it: 'Combina politiche stateful con identificazione applicativa e ispezione di sicurezza; le capacità variano secondo l’implementazione.'
     },
     howItWorks: {
-      en: 'Conducts Deep Packet Inspection (DPI) to identify and classify the exact application (e.g. telling Facebook Chat apart from a file transfer) regardless of ports.',
-      it: "Esegue Deep Packet Inspection (DPI) per decrittare e identificare l'esatto servizio (es. distinguendo Facebook Chat da un trasferimento FTP) a prescindere dalle porte."
+      en: 'Uses protocol parsing and traffic metadata for application identification. DPI does not itself decrypt TLS.',
+      it: 'Usa analisi dei protocolli e metadati del traffico per identificare le applicazioni. La DPI non decifra automaticamente TLS.'
     },
     securityAttacks: {
-      en: 'Detects protocol evasions (dynamic ports), server exploits using malicious file attachments on standard ports, and anomalous flows.',
-      it: 'Rileva deviazioni di protocollo su porte dinamiche, exploit diretti ai server tramite allegati dannosi scambiati su porte standard.'
+      en: 'Can enforce application restrictions and detect covered exploit patterns when the relevant inspection is enabled.',
+      it: 'Può imporre restrizioni applicative e rilevare exploit coperti dalle regole quando l’ispezione pertinente è abilitata.'
     },
     cannotStop: {
-      en: 'Encrypted malicious traffic inside HTTPS/TLS streams unless active SSL decryption is deployed, and attacks capitalizing on unpatched client-side system configurations once inside.',
-      it: "Traffico malevolo crittografato all'interno di canali HTTPS se la decrittografia SSL (SSL Decrypt) è spenta, e attacchi focalizzati su configurazioni locali deboli."
+      en: 'Encrypted payloads may remain opaque; valid credentials, unknown attacks and bypass paths still create risk.',
+      it: 'I payload cifrati possono restare opachi; credenziali valide, attacchi sconosciuti e percorsi alternativi costituiscono ancora rischi.'
     },
     mitigation: {
-      en: 'Enable SSL/TLS inspection profiles on the NGFW, and mandate central security patches update cycles.',
-      it: 'Attivare i profili di ispezione SSL/TLS (SSL Decryption) sul firewall e velocizzare i cicli di installazione delle patch.'
+      en: 'Use authorized TLS inspection only where appropriate, validate certificates, handle exceptions and supplement with endpoint controls.',
+      it: 'Usare ispezione TLS autorizzata solo dove appropriata, validare i certificati, gestire le eccezioni e integrare controlli sugli endpoint.'
     },
     iconName: 'Shield'
   },
@@ -196,24 +196,24 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     layer: 'Layer 3 (Network)',
     category: 'networking',
     role: {
-      en: 'Interconnects different subnets and routes IP packet flows dynamically across global network boundaries.',
-      it: 'Interconnette reti e sottoreti diverse, calcolando i tragitti ottimali per instradare dinamicamente i pacchetti IP.'
+      en: 'Forwards IP packets between networks using connected, static or dynamically learned routes.',
+      it: 'Inoltra pacchetti IP tra reti tramite rotte connesse, statiche o apprese dinamicamente.'
     },
     howItWorks: {
-      en: 'Parses destination IP addresses from IP headers and references local routing tables (OSPF, BGP) to send packets to the correct next hop.',
-      it: "Analizza gli IP di destinazione inseriti nell'header dei pacchetti e interroga la tabella di instradamento locale (OSPF, BGP) per selezionare l'hop successivo."
+      en: 'Selects the most specific matching destination prefix in the forwarding table, then sends the packet toward the next hop.',
+      it: 'Seleziona nella tabella di inoltro il prefisso di destinazione corrispondente più specifico, poi invia il pacchetto verso il prossimo salto.'
     },
     securityAttacks: {
-      en: 'IP Directed Broadcast magnification, IP routing loops, basic IP spoofing (using Unicast RPF controls), and simple route failures.',
-      it: 'Scongiura attacchi ad amplificazione broadcast IP, loop infiniti di instradamento ed esegue controlli anti-spoofing via uRPF.'
+      en: 'ACL and uRPF can constrain unwanted or spoofed traffic when correctly configured; routing itself is not a security guarantee.',
+      it: 'ACL e uRPF possono limitare traffico indesiderato o falsificato se configurati correttamente; il routing da solo non garantisce sicurezza.'
     },
     cannotStop: {
-      en: 'Layer 2 local segment exploits (such as localized MAC Flooding or ARP Spoofing). Since routers deal strictly with IP addresses, they ignore frame activity exchange inside the local managed switch segment.',
-      it: 'Attacchi interni a livello Layer 2 (come ARP Poisoning o flooding della tabella CAM). Il router opera solo sugli indirizzi IP e non ha alcun controllo sul traffico diretto dei frame locali tra PC e switch.'
+      en: 'Traffic switched locally without crossing the router is outside its enforcement path; a router also processes link-layer frames on its interfaces.',
+      it: 'Il traffico commutato localmente senza attraversare il router non è soggetto ai suoi controlli; il router elabora anche frame sulle proprie interfacce.'
     },
     mitigation: {
-      en: 'Configure Dynamic ARP Inspection (DAI) and secure DHCP Binding tables on downstream LAN switches.',
-      it: 'Abilitare sui controlli degli switch adiacenti filtri quali Dynamic ARP Inspection (DAI) e DHCP Snooping.'
+      en: 'Protect routing and management access; configure switch protections such as DHCP snooping and DAI with valid bindings.',
+      it: 'Proteggere routing e accesso di gestione; configurare sugli switch DHCP snooping e DAI con associazioni valide.'
     },
     iconName: 'Shuffle'
   },
@@ -223,24 +223,24 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     layer: 'Layer 2 (Data Link)',
     category: 'networking',
     role: {
-      en: 'Directs digital communication frames locally within the same network segment, avoiding packet collisions.',
-      it: "Inoltra i frame dei dati in modo mirato e ad alta velocità tra le macchine collegate all'interno dello stesso segmento fisico."
+      en: 'Forwards Ethernet frames within a VLAN; full-duplex links avoid the shared collision domain of a hub.',
+      it: 'Inoltra frame Ethernet entro una VLAN; i collegamenti full-duplex evitano il dominio di collisione condiviso di un hub.'
     },
     howItWorks: {
-      en: 'Builds a dynamic Content Addressable Memory (CAM) table matching target MAC hardware addresses to physical switch interfaces.',
-      it: 'Compone una tabella di memoria associativa (tabella CAM) per abbinare ciascun indirizzo MAC fisico alla porta corretta.'
+      en: 'Learns source MAC addresses per VLAN and port; looks up destination MAC addresses, flooding unknown unicast and broadcast on eligible ports.',
+      it: 'Apprende MAC sorgenti per VLAN e porta; cerca il MAC destinatario e propaga unicast sconosciuti e broadcast sulle porte ammesse.'
     },
     securityAttacks: {
-      en: 'Intercepts simple physical cable sniffing, mitigates basic STP root bridges displacement attempts (BPDU Guard), and regulates VLAN access.',
-      it: "Attenua lo sniffing isolando i flussi sulle porte, contrasta furti del ruolo Root STP con filtri BPDU Guard e gestisce l'appartenenza alle VLAN."
+      en: 'Configured BPDU Guard protects edge ports; Root Guard prevents an unwanted root election on selected links. Neither is automatic.',
+      it: 'BPDU Guard configurato protegge le porte edge; Root Guard impedisce elezioni root indesiderate sui collegamenti scelti. Nessuno dei due è automatico.'
     },
     cannotStop: {
-      en: 'Layer 7 application exploits (SQL injection, malicious script payloads in files, or logic overflows). The switch processes physical frame headers in copper/silicon, meaning it is blind to what data travels inside the payload.',
-      it: "Attacchi applicativi del Layer 7 (SQL Injection, XSS, file infetti). Lo switch opera a livello di impulsi e indirizzi hardware, restando ignaro del significato dei file che transitano all'interno del payload."
+      en: 'Basic switching does not validate application content or encrypt frames; forwarding separation does not eliminate sniffing risks.',
+      it: 'La commutazione di base non valida contenuti applicativi né cifra frame; la separazione dei flussi non elimina i rischi di intercettazione.'
     },
     mitigation: {
-      en: 'Route segment transit traffic through a stateful firewall and enforce strict endpoint Antivirus software routines.',
-      it: 'Instradare il traffico critico verso un firewall perimetrale e installare antivirus aggiornati su tutti gli host della LAN.'
+      en: 'Restrict access and trunks, apply appropriate switching protections and inspect inter-segment traffic with dedicated security controls.',
+      it: 'Limitare accessi e trunk, applicare protezioni di switching appropriate e ispezionare il traffico tra segmenti con controlli dedicati.'
     },
     iconName: 'Network'
   },
@@ -250,24 +250,24 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     layer: 'Layer 2 (Data Link)',
     category: 'networking',
     role: {
-      en: 'Bridges radio-frequency wireless networks to the physical wired Ethernet infrastructures.',
-      it: "Funge da punto di raccordo isolando l'etere radio e traducendo i pacchetti wireless in frame cablati Ethernet."
+      en: 'Connects wireless clients to a distribution network, commonly bridging Wi-Fi and Ethernet traffic.',
+      it: 'Collega client wireless a una rete di distribuzione, comunemente facendo da bridge tra traffico Wi-Fi ed Ethernet.'
     },
     howItWorks: {
-      en: 'Establishes local encrypted radio links, coordinates client access, and wraps wireless frames into standard RJ45 cable structures.',
-      it: "Stabilisce collegamenti radio cifrati, organizza l'handshake d'accesso dei client wireless e ne incapsula il traffico sul cavo standard."
+      en: 'Manages client association and radio access; authentication and link encryption depend on the configured wireless security mode.',
+      it: 'Gestisce associazione dei client e accesso radio; autenticazione e cifratura del collegamento dipendono dalla modalità di sicurezza configurata.'
     },
     securityAttacks: {
-      en: 'Filters unauthorized over-the-air packet snooping with standard WPA3 encryption, and screens out rogue mac links.',
-      it: "Previene l'intercettazione passiva radio imponendo cifratura WPA3 e rifiuta connessioni basate su liste fisse di MAC nocivi."
+      en: 'Proper WPA3 configuration protects radio data and access; MAC filtering alone does not authenticate a device securely.',
+      it: 'Una configurazione WPA3 corretta protegge dati radio e accessi; il solo filtro MAC non autentica un dispositivo in modo sicuro.'
     },
     cannotStop: {
-      en: 'Physical Layer 1 Radio Frequency (RF) jamming. A nearby malicious radio transmitter broadcasting noise on the 2.4GHz/5GHz bands will block antennae reception completely, regardless of logical encryption strength.',
-      it: 'Disturbo fisico a radiofrequenza o Jamming del Layer 1. Se un trasmettitore posizionato nelle vicinanze inonda gli spettri 2.4GHz/5GHz di rumore bianco, renderà le antenne sorde a prescindere da qualunque cifratura logica WPA3.'
+      en: 'Encryption does not prevent radio jamming or endpoint compromise. Wireless protection is not end-to-end application encryption.',
+      it: 'La cifratura non previene disturbi radio intenzionali né compromissioni degli endpoint. La protezione wireless non è cifratura applicativa end-to-end.'
     },
     mitigation: {
-      en: 'Run active spectrum analyzers, implement shielded premises design, and use physical directional antennas to isolate interference sources.',
-      it: 'Impiegare analizzatori di spettro wireless per tracciare le emissioni di disturbo ed utilizzare antenne ad array direzionale.'
+      en: 'Use supported security modes, validate enterprise authentication servers, require protected management frames and monitor radio coverage.',
+      it: 'Usare modalità di sicurezza supportate, validare i server di autenticazione aziendale, richiedere frame di gestione protetti e monitorare la copertura radio.'
     },
     iconName: 'Radio'
   },
@@ -277,24 +277,24 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     layer: 'Layer 3 to 7 (Multi-Layer)',
     category: 'infrastructure',
     role: {
-      en: 'Connects and converts communication between completely dissimilar network environments, architectures, or interfaces.',
-      it: 'Interconnette e traduce comunicazioni provenienti da sistemi o interfacce del tutto discordi nel profondo.'
+      en: 'Translates between protocols or application interfaces so otherwise incompatible systems can exchange data.',
+      it: 'Traduce tra protocolli o interfacce applicative per consentire lo scambio di dati tra sistemi altrimenti incompatibili.'
     },
     howItWorks: {
-      en: 'Terminates connections from protocol A, extracts payload data, translates parameters, and repackages it according to protocol B.',
-      it: 'Interrompe la connessione percorsa con un protocollo A, estrae i dati per rimodularli e li riesprime conformandoli alle regole del protocollo B.'
+      en: 'Maps messages and fields between supported formats; preservation of identity, permissions and errors requires explicit design.',
+      it: 'Associa messaggi e campi tra formati supportati; conservare identità, permessi ed errori richiede una progettazione esplicita.'
     },
     securityAttacks: {
-      en: 'Resolves syntax incompatibilities, stops direct external-to-internal network command injection, and mitigates basic buffer bugs during rewrite.',
-      it: "Individua incompatibilità sintattiche strutturali, impedisce l'esecuzione diretta di comandi non filtrati e corregge errori minori."
+      en: 'Validation and authorization can reject prohibited messages if implemented; translation alone is not an attack prevention control.',
+      it: 'Validazione e autorizzazione possono rifiutare messaggi vietati se implementate; la sola traduzione non è un controllo di prevenzione degli attacchi.'
     },
     cannotStop: {
-      en: 'Logical or malicious instructions sent by authenticated, approved internal programs. If an approved script orders the deletion of database tables, the gateway will process the command anyway.',
-      it: 'Comandi dannosi lanciati da utenze o programmi interni già autenticati e abilitati. Se un demone autorizzato inoltra un comando distruttivo, il Gateway lo tradurrà ed eseguirà ritenendolo lecito per i privilegi posseduti.'
+      en: 'Malicious valid messages, parser flaws and loss of security context across protocols can still reach downstream systems.',
+      it: 'Messaggi validi ma dannosi, difetti dei parser e perdita del contesto di sicurezza tra protocolli possono ancora colpire i sistemi a valle.'
     },
     mitigation: {
-      en: 'Apply robust behavioral tracking, enforce granular API rate ceilings, and monitor complete activity logs.',
-      it: 'Applicare sistemi di tracciamento dei comportamenti, definire severe quote di utilizzo (rate limit) ed analizzare regolarmente i log.'
+      en: 'Validate schemas, preserve authorization boundaries, restrict supported operations and test failures and audit logs.',
+      it: 'Validare gli schemi, preservare i confini di autorizzazione, limitare le operazioni supportate e collaudare errori e log di audit.'
     },
     iconName: 'Cpu'
   },
@@ -308,47 +308,47 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
       it: "Unisce due segmenti LAN fisici separandone i domini di collisione, mentre i due segmenti restano un unico dominio di broadcast: è l'antenato storico dello switch, che non è altro che un bridge multiporta."
     },
     howItWorks: {
-      en: 'Tracks physical MAC addresses seen on interfaces and lets a frame cross only if the target MAC resides on the opposite segment.',
-      it: "Rileva e tiene traccia dei MAC address avvistati sulle porte, consentendo il transito da una tratta all'altra solo se il PC destinatario è realmente sull'altro lato."
+      en: 'Learns source MAC addresses and forwards by destination. Broadcast and unknown unicast frames are flooded on eligible ports within the same VLAN.',
+      it: 'Apprende MAC sorgenti e inoltra in base alla destinazione. Frame broadcast e unicast sconosciuti sono propagati sulle porte ammesse della stessa VLAN.'
     },
     securityAttacks: {
-      en: 'Keeps excessive localized cabling noise isolated and helps filter simple local network loop creations.',
-      it: 'Contiene e circoscrive la propagazione di tempeste elettriche e scherma anomalie di cablaggio minori.'
+      en: 'Separates forwarding paths for learned destinations; loop prevention requires a suitable topology or STP, not bridging alone.',
+      it: 'Separa i percorsi per destinazioni apprese; prevenire loop richiede una topologia adeguata o STP, non il solo bridging.'
     },
     cannotStop: {
-      en: 'Dynamic Routing Protocol injections (such as fake OSPF or RIP routing updates). Operating entirely at Layer 2, the bridge only reads MAC addresses and transparently forwards malicious route updates to routers downstream.',
-      it: 'Iniezioni di annunci di routing dinamico fasulli (es. pacchetti OSPF o RIP falsificati). Lavorando esclusivamente sul Layer 2 hardware, il bridge è cieco sulle informazioni IP e farà transitare indisturbati questi annunci venefici.'
+      en: 'Basic bridging does not authenticate routing messages or inspect application attacks carried inside frames.',
+      it: 'Il bridging di base non autentica i messaggi di routing né ispeziona gli attacchi applicativi trasportati nei frame.'
     },
     mitigation: {
-      en: 'Implement cryptographic authentication in downstream routing protocols (such as OSPF with MD5 keys).',
-      it: 'Configurare i router connessi con chiavi di autenticazione crittografica per i protocolli (es. OSPF protetto da MD5).'
+      en: 'Control physical access and loops; protect routing peers with supported authentication rather than relying on the bridge.',
+      it: 'Controllare accessi fisici e loop; proteggere i peer di routing con autenticazione supportata anziché affidarsi al bridge.'
     },
     iconName: 'Server'
   },
   {
     name: 'HUB - Network Hub',
-    fullName: 'Passive Ethernet Hub',
+    fullName: 'Ethernet Repeater Hub',
     layer: 'Layer 1 (Physical)',
     category: 'networking',
     role: {
-      en: 'A historic multiport repeater that extends local wiring lines by physically broadcasting received electrical signals across all interfaces.',
-      it: 'Dispositivo obsoleto che prolunga e ripartisce le tratte Ethernet rigenerando e sparando i segnali elettrici a tutte le porte.'
+      en: 'An Ethernet multiport repeater shares a collision domain and repeats received signals toward other ports.',
+      it: 'Un ripetitore Ethernet multiporta condivide un dominio di collisione e ripete i segnali ricevuti verso le altre porte.'
     },
     howItWorks: {
-      en: 'Lacks chips, memory tables, or state checking. Repeats any incoming electrical voltage wave to all connected target interfaces.',
-      it: 'Privo di processore intelligente o tabelle di memoria. Copia elettricamente qualsiasi onda di tensione ricevuta verso ogni altra porta.'
+      en: 'Regenerates physical signals without learning MAC addresses or choosing a destination port from a forwarding table.',
+      it: 'Rigenera segnali fisici senza apprendere indirizzi MAC né scegliere una porta destinataria da una tabella di inoltro.'
     },
     securityAttacks: {
-      en: 'Possesses zero intelligence or defensive mechanisms. It is incapable of identifying or stopping any style of attack.',
-      it: 'Nessuno. Totalmente sprovvisto di logica, non è fisicamente in grado di intercettare, arginare o isolare alcuna minaccia.'
+      en: 'Provides no packet filtering, identity checks or traffic confidentiality.',
+      it: 'Non offre filtraggio dei pacchetti, controlli di identità o riservatezza del traffico.'
     },
     cannotStop: {
-      en: 'ANY style of threat (packet sniffing, MAC spoofing, ARP poisoning, DDoS floods). Because it is a simple physical repeater, any laptop connected to a port can capture all network frames flowing between other hosts in cleartext using a sniffer (Wireshark).',
-      it: "Qualsiasi minaccia informatica (sniffing dei dati, MAC spoofing, ARP poisoning, attacchi DDoS). Essendo un semplice ripetitore fisico, chiunque si colleghi ad una spina dell'hub intercetta in tempo reale ed in chiaro tutte le comunicazioni degli altri host."
+      en: 'Connected hosts can observe shared traffic, but encrypted payloads remain encrypted; repetition does not decrypt TLS.',
+      it: 'Gli host collegati possono osservare il traffico condiviso, ma i payload cifrati restano cifrati; ripetere segnali non decifra TLS.'
     },
     mitigation: {
-      en: 'Decommission and replace all active hubs with secure modern managed switches immediately.',
-      it: "Dismettere e rimpiazzare all'istante ogni vecchio hub con moderni switch gestiti, e sigillare fisicamente le prese libere."
+      en: 'Replace obsolete shared hubs with managed switches, restrict physical access and retain end-to-end encryption.',
+      it: 'Sostituire gli hub condivisi obsoleti con switch gestiti, limitare l’accesso fisico e mantenere la cifratura end-to-end.'
     },
     iconName: 'Activity'
   },
@@ -358,24 +358,24 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     layer: 'Layer 3, 4, 7 (Network/Transport/Application)',
     category: 'security',
     role: {
-      en: 'Passively monitors network traffic copies (via port mirroring or TAPs) to detect suspicious patterns, active scans, or signature matches, generating real-time security alerts.',
-      it: "Monitora passivamente le copie del traffico di rete (tramite port mirroring o TAP fisici) per identificare pattern sospetti, scansioni ostili o corrispondenze di firme d'attacco, generando avvisi di sicurezza."
+      en: 'Analyzes copies of network traffic out of band and generates alerts for suspicious activity.',
+      it: 'Analizza copie del traffico di rete fuori banda e genera avvisi per attività sospette.'
     },
     howItWorks: {
-      en: 'Receives mirrored traffic out-of-band, meaning it does not sit directly in the network path. It inspects copies of frames against an extensive signature file database or behavioral baselines.',
-      it: "Riceve il traffico duplicato fuori banda (non si interpone nel tragitto reale dei pacchetti). Esamina le copie dei frame confrontandole con un database di firme d'attacco o comportamenti anomali."
+      en: 'Receives traffic through mirroring or a TAP; signatures and protocol analysis examine only traffic successfully captured.',
+      it: 'Riceve traffico tramite mirroring o TAP; firme e analisi dei protocolli esaminano solo il traffico acquisito correttamente.'
     },
     securityAttacks: {
-      en: 'Identifies slow port scanning sweeps, brute-force attempts, worm replication activities, and known software vulnerabilities exploits without impacting network performance.',
-      it: 'Individua scansioni di porte (port scanning) striscianti, attacchi brute-force, replicazioni di worm di rete e tentativi noti di exploit senza rallentare la velocità fisica della rete.'
+      en: 'Can detect scans and covered exploit patterns; detection depends on placement, rules, capacity and visibility.',
+      it: 'Può rilevare scansioni ed exploit coperti dalle regole; il rilevamento dipende da posizione, regole, capacità e visibilità.'
     },
     cannotStop: {
-      en: 'Any active attack in real time. Because it processes a copy of the traffic out-of-band (after packets have already reached their destination), it can ONLY log and alert, keeping the network running but unable to drop the malicious packets directly.',
-      it: 'Nessun attacco attivo in tempo reale. Poiché analizza una copia del traffico fuori banda (quando i pacchetti hanno già raggiunto la destinazione), può SOLO registrare e allertare, ma non ha il potere di bloccare il transito.'
+      en: 'A passive sensor cannot directly drop the original packet. Encrypted content, packet loss and evasions can limit detection.',
+      it: 'Un sensore passivo non può scartare direttamente il pacchetto originale. Contenuti cifrati, perdite ed evasioni possono limitare il rilevamento.'
     },
     mitigation: {
-      en: 'Feed NIDS alerts directly into a SIEM or active SOAR platform to trigger firewall block rules or script dynamic ACL changes on perimetral devices.',
-      it: 'Incanalare i log del NIDS in un SIEM o una piattaforma SOAR per attivare automaticamente script di blocco o variazioni dinamiche delle ACL sui firewall di perimetro.'
+      en: 'Monitor capture loss, tune rules and send alerts to analysts or controlled response integrations with rollback procedures.',
+      it: 'Monitorare perdite di acquisizione, calibrare le regole e inviare avvisi ad analisti o integrazioni di risposta controllate con procedure di ripristino.'
     },
     iconName: 'Activity'
   },
@@ -385,51 +385,51 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     layer: 'Layer 3, 4, 7 (Network/Transport/Application)',
     category: 'security',
     role: {
-      en: 'Deploys inline (directly in the network path) to actively inspect packets in real-time, instantly blocking, dropping, or sanitizing malicious connections.',
-      it: "Si posiziona in-linea (direttamente nel percorso attivo del traffico) per ispezionare i pacchetti in tempo reale, bloccando, scartando o sanificando all'istante le connessioni dannose."
+      en: 'Inspects traffic inline and can block traffic matching configured prevention policies.',
+      it: 'Ispeziona il traffico in linea e può bloccare quello corrispondente alle politiche di prevenzione configurate.'
     },
     howItWorks: {
-      en: 'Requires traffic to flow physically through the appliance. If a packet payload matches an exploit signature or anomaly threshold, the device discards the frame, resets the TCP session, or rewrites parameters before forwarding.',
-      it: "Richiede che il traffico fluisca fisicamente attraverso l'hardware. In caso di corrispondenza con firme nocive o anomalie, scarta istantaneamente il pacchetto, forza il reset TCP o ne modifica i parametri."
+      en: 'Traffic crosses an inspection engine that can drop packets or reset sessions; physical appliances and virtual deployments both exist.',
+      it: 'Il traffico attraversa un motore che può scartare pacchetti o interrompere sessioni; esistono apparati fisici e installazioni virtuali.'
     },
     securityAttacks: {
-      en: 'Halts remote code execution (RCE) attempts, command injections, active denial of service floods, and network-level buffer overflows before they reach targets.',
-      it: 'Arresta attacchi di Remote Code Execution (RCE), command injection, flood per Denial of Service (DoS) e buffer overflow di rete prima che colpiscano i server.'
+      en: 'Can block recognized exploit attempts before delivery, but signatures and anomaly rules do not cover every attack.',
+      it: 'Può bloccare tentativi di exploit riconosciuti prima della consegna, ma firme e regole sulle anomalie non coprono ogni attacco.'
     },
     cannotStop: {
-      en: 'Heavily encrypted traffic payloads (SSL/TLS) if not equipped with decryption modules, or zero-day zero-signature execution sequences. Also presents a single point of failure: if it crashes, it can sever the physical link.',
-      it: 'Traffico cifrato (SSL/TLS) se non provvisto di moduli di ispezione crittografica (SSL decryption), o minacce zero-day inedite. Inoltre, rappresenta un single point of failure: se va in crash o è sovraccarico, blocca fisicamente la linea.'
+      en: 'Encrypted payloads and unknown evasions can escape inspection. Capacity limits and false positives can disrupt legitimate traffic.',
+      it: 'Payload cifrati ed evasioni sconosciute possono sfuggire all’ispezione. Limiti di capacità e falsi positivi possono interrompere traffico legittimo.'
     },
     mitigation: {
-      en: 'Enable SSL/TLS decryption proxies, configure bypass network taps with fail-open hardware configurations, and ensure automated, daily signature updates.',
-      it: "Abilitare proxy di decrittografia SSL/TLS, dotare l'hardware di schede bypass fail-open per non interrompere il cavo in caso di guasto elettrico, e impostare aggiornamenti firme giornalieri."
+      en: 'Test rules and capacity; choose fail-open or fail-closed deliberately. Bypass preserves availability but removes inspection during failure.',
+      it: 'Collaudare regole e capacità; scegliere consapevolmente fail-open o fail-closed. Il bypass conserva disponibilità ma rimuove l’ispezione durante il guasto.'
     },
     iconName: 'Shield'
   },
   {
     name: 'NDR - Network Detection & Response',
-    fullName: 'Network Detection & Response (AI Network Monitor)',
+    fullName: 'Network Detection & Response',
     layer: 'Layer 3, 4, 7 (Network & Traffic Analytics)',
     category: 'security',
     role: {
-      en: 'Monitors raw network flows (NetFlow/IPFIX) and packets using machine learning to detect advanced network-wide anomalies, Command & Control (C2) channels, and user credential abuse.',
-      it: 'Rileva minacce latenti analizzando i flussi di rete (NetFlow/IPFIX) tramite algoritmi intelligenti per scovare canali di comando e controllo (C2), anomalie di traffico di massa ed abusi di credenziali.'
+      en: 'Analyzes network packets and flow metadata to identify suspicious communications and support investigation and response.',
+      it: 'Analizza pacchetti e metadati dei flussi di rete per identificare comunicazioni sospette e supportare indagini e risposta.'
     },
     howItWorks: {
-      en: 'Analyzes metadata of peer-to-peer conversations across the subnet to map normal behavior. When a host begins unexpected lateral database scanning or huge outbound packet bulk transfers, it isolates the network port.',
-      it: 'Analizza i metadati delle conversazioni di rete tra tutti gli host configurando una linea di normalità. Non appena un client effettua trasferimenti insoliti verso server esteri o scansioni interne, lo isola.'
+      en: 'Builds behavioral baselines and combines analytics with detections; isolation requires configured integrations and response policies.',
+      it: 'Costruisce profili comportamentali e combina analisi e rilevamenti; l’isolamento richiede integrazioni configurate e politiche di risposta.'
     },
     securityAttacks: {
-      en: 'Unveils highly hidden Command & Control beaconing, advanced persistent threats (APT) pivoting, covert DNS tunneling leaks, and large-scale data exfiltration.',
-      it: 'Svela traffici silenti verso server Command & Control (beaconing), spostamenti laterali di hacker, esfiltrazioni silenziose di database via DNS tunneling e anomalie massive.'
+      en: 'May reveal C2 beaconing, lateral scans and unusual data transfers; anomalies require contextual investigation.',
+      it: 'Può evidenziare beaconing C2, scansioni laterali e trasferimenti insoliti; le anomalie richiedono indagini contestualizzate.'
     },
     cannotStop: {
-      en: 'Malicious processes running locally on endpoints that generate zero network traffic, or highly fragmented traffic mimicking authentic web browsing patterns.',
-      it: 'Processi dannosi che agiscono solo in locale sul singolo PC senza fare alcuna chiamata di rete, o traffico cifrato spezzettato e sagomato per assomigliare esattamente ad una navigazione web lecita.'
+      en: 'Cannot observe purely local activity with no network evidence; normal-looking traffic and limited visibility can evade detection.',
+      it: 'Non osserva attività esclusivamente locali senza evidenze di rete; traffico apparentemente normale e visibilità limitata possono eludere il rilevamento.'
     },
     mitigation: {
-      en: 'Integrate NDR with inline NAC or core directory systems to revoke access of suspicious IPs automatically within seconds.',
-      it: "Agganciare l'NDR a sistemi di controllo dell'accesso alla rete (NAC) o al firewall core per tagliare immediatamente i permessi dell'IP sospetto alla prima anomalia."
+      en: 'Combine endpoint and identity telemetry, validate alerts and test authorized containment workflows before automation.',
+      it: 'Integrare telemetria degli endpoint e delle identità, validare gli avvisi e collaudare flussi di contenimento autorizzati prima di automatizzarli.'
     },
     iconName: 'Activity'
   },
@@ -439,24 +439,24 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     layer: 'Layer 1, 2 (Physical & Data Link - RF Spectrum)',
     category: 'security',
     role: {
-      en: 'Monitors the local radio frequency (RF) spectrum to identify unauthorized access points (rogue APs), packet injection attacks, and wireless jamming attempts.',
-      it: 'Monitora passivamente lo spettro delle frequenze radio (RF) alla ricerca di Access Point non autorizzati (Rogue AP), iniezioni di pacchetti wireless e tentativi di jamming (disturbo del segnale).'
+      en: 'Monitors wireless activity to identify suspicious access points, clients and management-frame patterns.',
+      it: 'Monitora l’attività wireless per identificare access point, client e sequenze di frame di gestione sospetti.'
     },
     howItWorks: {
-      en: 'Uses distributed sensor antennas to scan Wi-Fi bands, parsing 802.11 management frames (beacons, probe requests, dissociation frames) to flag MAC address anomalies and unlisted emitters.',
-      it: 'Utilizza sensori antenna distribuiti per scansionare le bande Wi-Fi, analizzando i frame di gestione 802.11 (beacon, probe, deauth) per scovare anomalie nei MAC address o emittenti estranei.'
+      en: 'Distributed sensors inspect supported channels and 802.11 frames; radio interference analysis depends on sensor capabilities.',
+      it: 'Sensori distribuiti ispezionano canali supportati e frame 802.11; l’analisi delle interferenze radio dipende dalle capacità dei sensori.'
     },
     securityAttacks: {
-      en: 'Detects Evil Twin attacks, deauthentication floods, MAC spoofing on the air interface, and active RF jamming/interference engines.',
-      it: 'Rileva attacchi Evil Twin, attacchi di deautenticazione (Deauth Flood), MAC spoofing via radio e generatori di interferenza RF dolosa (Jamming).'
+      en: 'Can flag rogue AP candidates and deauthentication anomalies; a neighboring AP is not automatically malicious.',
+      it: 'Può segnalare AP potenzialmente abusivi e anomalie di deautenticazione; un AP vicino non è automaticamente malevolo.'
     },
     cannotStop: {
-      en: 'The wireless transmission of frames. Since it operates as a passive observer, it cannot block clients physically from associating with a rogue AP or prevent raw physical radio noise from disrupting the airwaves.',
-      it: 'La trasmissione radio fisica dei frame. Essendo un sensore puramente passivo, non può fisicamente impedire ai client di associarsi ad un AP malevolo, né può bloccare il rumore radio di disturbo fisico nello spettro.'
+      en: 'Passive monitoring does not block association or eliminate radio interference; channel coverage gaps can hide activity.',
+      it: 'Il monitoraggio passivo non blocca associazioni né elimina interferenze radio; lacune di copertura dei canali possono nascondere attività.'
     },
     mitigation: {
-      en: 'Position wireless sensors uniformly to eliminate signal dead zones, integrate with wired switch catalogs for port containment (shutting down switch ports feeding rogue APs).',
-      it: "Posizionare sensori dislocati in modo uniforme per annullare i coni d'ombra di segnale, e integrare il sistema con switch cablati per disattivare la porta fisica che alimenta l'AP illegale."
+      en: 'Plan sensor coverage, correlate wireless and wired evidence and investigate ownership before authorized containment.',
+      it: 'Pianificare la copertura, correlare evidenze wireless e cablate e verificare la proprietà prima di un contenimento autorizzato.'
     },
     iconName: 'Radio'
   },
@@ -466,24 +466,24 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     layer: 'Layer 1, 2 (Physical & Data Link - RF Spectrum)',
     category: 'security',
     role: {
-      en: 'Actively interrupts unauthorized wireless connections and blocks client authentication to rogue APs over the air.',
-      it: 'Interrompe attivamente le connessioni wireless non autorizzate e blocca al volo i tentativi di associazione ad AP illegali o sospetti via radio.'
+      en: 'Adds policy-driven containment to wireless detection; supported actions depend on deployment and authorization.',
+      it: 'Aggiunge contenimento basato su politiche al rilevamento wireless; le azioni supportate dipendono da installazione e autorizzazione.'
     },
     howItWorks: {
-      en: 'Upon detecting a rogue client or AP, it spoofs deauthentication frames targeting the target MAC addresses, forcing continuous wireless disconnections.',
-      it: "All'invocazione di un AP o client illegale, genera e trasmette frame di deautenticazione (Deauth) falsificati diretti ai loro MAC address, forzando la disconnessione immediata."
+      en: 'May use wired-port controls or wireless containment. Spoofed deauthentication is not universally effective, particularly with PMF.',
+      it: 'Può usare controlli sulle porte cablate o contenimento wireless. La deautenticazione falsificata non è universalmente efficace, soprattutto con PMF.'
     },
     securityAttacks: {
-      en: 'Neutralizes Evil Twin connections, blocks rogue ad-hoc networks, and shuts down unapproved client-to-client Wi-Fi bridging.',
-      it: 'Sgretola sul nascere connessioni ad AP pirata (Evil Twin), inibisce reti wireless ad-hoc non consentite e interrompe ponti radio (bridging) wifi non registrati.'
+      en: 'Can restrict confirmed unauthorized connections where enforcement is supported; classification errors can disrupt legitimate users.',
+      it: 'Può limitare connessioni non autorizzate confermate dove il controllo è supportato; errori di classificazione possono interrompere utenti legittimi.'
     },
     cannotStop: {
-      en: 'Passive Wi-Fi frame sniffing or custom radio wave jamming that does not comply with 802.11 modulation structures.',
-      it: "Lo sniffing passivo delle onde radio (che avviene senza trasmettere nulla) o attacchi di jamming fisico di spettro che oscurano completamente l'antenna di ricezione."
+      en: 'Does not prevent passive listening or physical radio jamming; protected management frames limit some over-the-air containment methods.',
+      it: 'Non previene ascolto passivo o disturbi radio fisici; i frame di gestione protetti limitano alcuni metodi di contenimento via radio.'
     },
     mitigation: {
-      en: 'Configure proper classification rules to avoid target blacklisting of neighbor residential APs, and transition to Protected Management Frames (PMF / 802.11w) to secure management packets against spoofed deauth.',
-      it: 'Definire filtri di classificazione rigorosi per non attaccare gli AP residenziali vicini di casa, e migrare i propri AP standard a Protected Management Frames (PMF / 802.11w) per rendere inefficaci i finti deauth.'
+      en: 'Require PMF where supported, verify target ownership and prioritize authorized wired containment with explicit response procedures.',
+      it: 'Richiedere PMF dove supportato, verificare la proprietà dei bersagli e privilegiare contenimento cablato autorizzato con procedure esplicite.'
     },
     iconName: 'Shield'
   },
@@ -493,24 +493,24 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     layer: 'Layer 7 (Application & Operating System)',
     category: 'security',
     role: {
-      en: 'Monitors local system components, integrity databases, and application event logs directly on a specific server or endpoint for insider threats or breach indicators.',
-      it: 'Monitora le componenti di sistema locali, i database di integrità ed i log degli eventi direttamente su un server o computer specifico, identificando minacce interne o indicatori di violazione.'
+      en: 'Monitors host logs, configuration and file integrity to identify suspicious changes and activity.',
+      it: 'Monitora log, configurazione e integrità dei file dell’host per identificare modifiche e attività sospette.'
     },
     howItWorks: {
-      en: 'Runs as an agent or daemon inside the host. It tracks changes to system registry keys, monitors authentication logs, parses application activities, and checks system file hashes against gold standard baselines.',
-      it: 'Gira come un agente locale o demone dentro il sistema operativo. Monitora modifiche al registro di sistema, analizza log di login, controlla checksum dei file di sistema ed evidenzia manomissioni insolite.'
+      en: 'An agent collects local events and compares them with rules or trusted baselines; coverage depends on collected telemetry.',
+      it: 'Un agente raccoglie eventi locali e li confronta con regole o riferimenti fidati; la copertura dipende dalla telemetria raccolta.'
     },
     securityAttacks: {
-      en: 'Uncovers unauthorized configuration alterations, privilege escalation triggers, suspicious administrative logins, and rogue file writes (like rootkits or webshells).',
-      it: 'Svela modifiche non autorizzate ai registri, tentativi di scalata dei privilegi (privilege escalation), tentativi di login sospetti ed inserimento di file ostili (come rootkit o webshell).'
+      en: 'Can detect unexpected file changes, suspicious logins and privilege changes that produce observable evidence.',
+      it: 'Può rilevare modifiche inattese ai file, accessi sospetti e variazioni dei privilegi che producono evidenze osservabili.'
     },
     cannotStop: {
-      en: 'Active encryption or execution of ransomware if it does not contain blocking engines, and rapid memory-only fileless execution sequences. Moreover, if the attacker obtains high-level administrator root privileges, they can disable or corrupt the HIDS agent entirely.',
-      it: "La cifratura immediata di file o esecuzione rapida di ransomware se sprovvisto di moduli di blocco attivi, e malware fileless residenti solo in RAM. Inoltre, se l'attaccante ottiene privilegi di ROOT, può disattivare l'agente HIDS."
+      en: 'Detection alone does not block execution; privileged tampering, missing logs and memory-only activity may reduce visibility.',
+      it: 'Il solo rilevamento non blocca l’esecuzione; manomissioni privilegiate, log mancanti e attività solo in memoria possono ridurre la visibilità.'
     },
     mitigation: {
-      en: 'Protect client processes with tamper-protection settings, stream all host telemetry logs in real time to off-host write-only SIEM systems, and combine with integrity monitoring tools like Tripwire.',
-      it: 'Attivare difese anti-manomissione dell\'agente client, inoltrare tutta la telemetria in tempo reale a server SIEM esterni "write-only", e usare strumenti di integrity checking (es. Tripwire).'
+      en: 'Protect the agent, forward logs to a restricted external collector and establish tested response and integrity-baseline procedures.',
+      it: 'Proteggere l’agente, inoltrare log a un collettore esterno con accessi limitati e definire procedure collaudate di risposta e verifica dell’integrità.'
     },
     iconName: 'Activity'
   },
@@ -520,51 +520,51 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     layer: 'Layer 7 (Application & Operating System)',
     category: 'security',
     role: {
-      en: 'Actively prevents malicious software executions, rogue registry writes, and buffer overflows directly on endpoints, stopping attacks in memory or on the disk.',
-      it: "Impedisce attivamente l'esecuzione di software nocivi, scritture nei registri di sistema o buffer overflow direttamente sull'endpoint, bloccando attacchi in RAM o su disco."
+      en: 'Enforces endpoint prevention policies against prohibited or suspicious operations, subject to product capabilities.',
+      it: 'Applica politiche di prevenzione agli endpoint contro operazioni vietate o sospette, secondo le capacità del prodotto.'
     },
     howItWorks: {
-      en: 'Interposes directly between application processes and the operating system kernel. It intercepts system calls (syscalls) and dynamically blocks operations that violate local security postures.',
-      it: "Si interpone tra i processi applicativi e il kernel del sistema operativo. Intercetta le syscall (chiamate di sistema) bloccando le azioni che violano le policy locali dell'endpoint."
+      en: 'Uses operating-system instrumentation and rules to monitor or block activity; not every implementation intercepts all system calls.',
+      it: 'Usa strumenti del sistema operativo e regole per monitorare o bloccare attività; non ogni implementazione intercetta tutte le chiamate di sistema.'
     },
     securityAttacks: {
-      en: 'Intercepts zero-day exploitation attempts, isolates unknown ransomware executions, blocks writing to vital directory keys, and shuts down memory injection actions.',
-      it: 'Intercetta tentativi di exploit zero-day, blocca e isola ransomware, impedisce scritture su chiavi vitali del registro e inibisce iniezioni di codice in memoria (process hollowing).'
+      en: 'Can prevent covered exploit behavior and unauthorized writes; unknown threats are not guaranteed to be blocked.',
+      it: 'Può prevenire comportamenti di exploit coperti dalle regole e scritture non autorizzate; il blocco delle minacce sconosciute non è garantito.'
     },
     cannotStop: {
-      en: 'Exploitations that target vulnerable hardware firmware lines, or users manually bypassing prompts with high administrative rights. Can also trigger excessive false positives that crash vital legacy business databases.',
-      it: "Sfruttamento di falle hardware/firmware di basso livello, o azioni autorizzate incautamente dall'utente con massimi privilegi amministrativi. Inoltre, può generare falsi positivi bloccando database o tool aziendali storici."
+      en: 'Firmware compromise, agent tampering and policy exceptions remain risks; false positives can interrupt legitimate applications.',
+      it: 'Compromissioni firmware, manomissioni dell’agente ed eccezioni alle politiche restano rischi; falsi positivi possono interrompere applicazioni legittime.'
     },
     mitigation: {
-      en: 'Configure granular, host-specific exception profiles, implement strict change-management plans, and upgrade endpoint clients to modern EDR (Endpoint Detection & Response) engines.',
-      it: 'Configurare liste di esclusione granulari, avviare rigorosi test di compatibilità prima del deploy e aggiornare i client endpoint verso agenti moderni di EDR (Endpoint Detection & Response).'
+      en: 'Test prevention policies, minimize exceptions, protect the agent and combine patching, least privilege and recovery planning.',
+      it: 'Collaudare le politiche, ridurre le eccezioni, proteggere l’agente e integrare aggiornamenti, minimo privilegio e pianificazione del ripristino.'
     },
     iconName: 'Shield'
   },
   {
     name: 'EDR - Endpoint Detection & Response',
-    fullName: 'Endpoint Detection & Response (XDR-Ready)',
+    fullName: 'Endpoint Detection & Response',
     layer: 'Layer 7 (Application & Operating System)',
     category: 'security',
     role: {
-      en: 'Leverages behavior telemetry, AI anomaly detection, and automated isolation playbooks to protect endpoints against unknown, fileless, or advanced persistent threats (APT).',
-      it: 'Combina telemetria comportamentale, intelligenza artificiale per anomalie e playbook di isolamento immediato per salvare i computer aziendali da minacce sconosciute, malware fileless o APT.'
+      en: 'Collects endpoint telemetry to support threat detection, investigation and response; prevention and automation vary by product.',
+      it: 'Raccoglie telemetria degli endpoint per rilevamento, indagini e risposta; prevenzione e automazione variano secondo il prodotto.'
     },
     howItWorks: {
-      en: 'Streams entire host metadata (process lifecycles, network hooks, file reads) in real time. Rather than relying purely on static hashes, it analyzes active memory executions and shuts down compromised processes instantly.',
-      it: "Invia tutta la telemetria dell'host (processi avviati, porte aperte, file modificati) a motori di analisi istantanei. Invece di basarsi su firme statiche, analizza come si comportano i processi in RAM e li termina all'istante."
+      en: 'Correlates observable process, file and network events. Process termination or host isolation requires supported, configured response actions.',
+      it: 'Correla eventi osservabili di processi, file e rete. Terminazione dei processi o isolamento dell’host richiedono azioni supportate e configurate.'
     },
     securityAttacks: {
-      en: 'Stops fileless PowerShell memory injections, live ransomware encryption loops, DLL sideloading bypasses, and multi-stage APT lateral movement attempts.',
-      it: 'Arresta iniezioni distruttive di PowerShell in memoria (senza scrivere file su disco), cifrature ransomware repentine, caricamenti DLL malevoli ed evasioni sandbox.'
+      en: 'Can identify suspicious process chains, credential access and ransomware behavior without guaranteeing detection of every technique.',
+      it: 'Può identificare catene di processi sospette, accesso alle credenziali e comportamenti ransomware senza garantire il rilevamento di ogni tecnica.'
     },
     cannotStop: {
-      en: 'Hardware-level CPU cache vulnerabilities (Meltdown/Spectre) or physical removal/tampering of host drives prior to boot.',
-      it: 'Vulnerabilità a livello fisico della CPU o del silicio (es. microarchitettura, Spectre/Meltdown) o furto fisico del disco rigido privo di crittografia a riposo.'
+      en: 'Missing telemetry, disabled agents and evasions can conceal attacks. Physical theft and firmware risks need additional controls.',
+      it: 'Telemetria mancante, agenti disabilitati ed evasioni possono nascondere attacchi. Furto fisico e rischi firmware richiedono controlli aggiuntivi.'
     },
     mitigation: {
-      en: 'Maintain strict least-privilege configurations, disable remote command console execution protocols across endpoints, and combine with regular off-line immutable backup strategies.',
-      it: "Mantenere politiche rigorose di minimo privilegio, disabilitare ovunque l'accesso remoto a script amministrativi non autorizzati e predisporre backup offline (immutabili)."
+      en: 'Monitor agent health, validate response actions, limit privileges and maintain tested offline or immutable backups.',
+      it: 'Monitorare lo stato degli agenti, validare le risposte, limitare i privilegi e mantenere backup offline o immutabili collaudati.'
     },
     iconName: 'Cpu'
   },
@@ -574,51 +574,51 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     layer: 'Layer 4, 7 (Transport/Application)',
     category: 'networking',
     role: {
-      en: 'Distributes incoming client application traffic across multiple backend servers to maximize capacity, reliability, and service uptime.',
-      it: "Distribuisce in modo intelligente le richieste dei client tra più server di destinazione backend, ottimizzando l'uso delle risorse e scongiurando singoli punti di guasto."
+      en: 'Distributes client traffic across backend services to improve capacity and availability within configured limits.',
+      it: 'Distribuisce traffico dei client tra servizi backend per migliorare capacità e disponibilità entro i limiti configurati.'
     },
     howItWorks: {
-      en: 'Inspects TCP parameters (Layer 4) or URL queries, cookies, and HTTP headers (Layer 7), routing flows based on algorithms like Round-Robin, Least Connections, or Session Affinity.',
-      it: "Analizza i parametri TCP (Layer 4) o l'URI, i cookie e le intestazioni HTTP (Layer 7), indirizzando le richieste secondo algoritmi mirati (es. Round-Robin, Least Connections o affinità di sessione)."
+      en: 'Uses transport or application information and health checks to select backends; algorithms and session affinity vary.',
+      it: 'Usa informazioni di trasporto o applicative e controlli di salute per scegliere i backend; algoritmi e affinità di sessione variano.'
     },
     securityAttacks: {
-      en: 'Handles massive spikes of application traffic, shields direct server IP visibility, and mitigates single-target system stress floods.',
-      it: "Assorbe e sgonfia picchi improvvisi di traffico, scherma l'indirizzamento IP reale dei server backend ed evita il sovraccarico di un singolo server."
+      en: 'Can spread load and exclude unhealthy backends; it does not create unlimited capacity or automatically mitigate DDoS.',
+      it: 'Può distribuire il carico ed escludere backend non funzionanti; non crea capacità illimitata né mitiga automaticamente DDoS.'
     },
     cannotStop: {
-      en: 'Application logical exploits (like SQL Injection or broken authorization flows). Although it balances traffic, it faithfully duplicates and forwards malicious requests to the backends, treating them as normal users.',
-      it: 'Exploit logici applicativi (come SQL Injection o manipolazioni di privilegi). Il bilanciatore si limita a smistare le connessioni e, se non dotato di moduli WAF dedicati, inoltrerà fedelmente le richieste nocive ai server backend.'
+      en: 'Balancing alone does not detect application exploits; the balancer itself can fail or become overloaded.',
+      it: 'Il solo bilanciamento non rileva exploit applicativi; il bilanciatore stesso può guastarsi o sovraccaricarsi.'
     },
     mitigation: {
-      en: 'Integrate active WAF modules directly within the Application Delivery Controller (ADC) or run reverse proxy web application firewalls in front of the load balancer.',
-      it: "Attivare moduli integrati WAF all'interno dell'Application Delivery Controller (ADC) o posizionare Web Application Firewall dedicati a monte."
+      en: 'Plan redundancy and capacity, restrict origin access and combine application fixes with WAF and upstream protection as needed.',
+      it: 'Pianificare ridondanza e capacità, limitare l’accesso ai server di origine e integrare correzioni applicative, WAF e protezione a monte secondo necessità.'
     },
     iconName: 'Shuffle'
   },
   {
     name: 'VPN - VPN Concentrator',
     fullName: 'Virtual Private Network Gateway',
-    layer: 'Layer 3, 4 (IPsec / SSL-TLS)',
+    layer: 'Layer 3 / upper layers (IPsec / TLS)',
     category: 'security',
     role: {
-      en: 'Creates secure, encrypted tunnels over public networks to connect remote clients or branch locations safely to the private corporate LAN.',
-      it: 'Crea tunnel di comunicazione protetti e crittografati su reti pubbliche, consentendo a utenti remoti o sedi distaccate di connettersi in totale sicurezza alla intranet locale.'
+      en: 'Protects selected traffic between remote clients or sites and a gateway over untrusted networks.',
+      it: 'Protegge traffico selezionato tra client o sedi remote e un gateway attraverso reti non fidate.'
     },
     howItWorks: {
-      en: 'Performs initial cryptographic handshake, authenticates users, and wraps/encrypts cleartext packets into IPsec (Layer 3) or SSL/TLS (Layer 4) transport envelopes.',
-      it: "Esegue un handshake crittografico iniziale, autentica l'utente e incapsula/cifra tutti i pacchetti originari all'interno di un canale IPsec (Layer 3) o SSL/TLS (Layer 4)."
+      en: 'Negotiates keys and authenticates peers using IPsec or TLS-based mechanisms; tunnel routes decide which traffic is protected.',
+      it: 'Negozia chiavi e autentica i peer tramite IPsec o meccanismi basati su TLS; le rotte del tunnel determinano il traffico protetto.'
     },
     securityAttacks: {
-      en: 'Prevents passive internet eavesdropping, man-in-the-middle sniffing, and unauthorized interception of corporate transit traffic.',
-      it: 'Sventa intercettazioni di transito (sniffing), attacchi Man-in-the-Middle e la decodifica non autorizzata dei dati aziendali che viaggiano su reti pubbliche.'
+      en: 'Correct encryption and peer validation protect traffic within tunnel boundaries against interception and modification.',
+      it: 'Cifratura e validazione dei peer corrette proteggono il traffico entro i confini del tunnel da intercettazione e modifica.'
     },
     cannotStop: {
-      en: 'Phishing attacks, malware execution, or malicious traffic passing inside the tunnel once a connection is authenticated. If an infected endpoint connects via VPN, it can spread worms laterally directly into the internal network.',
-      it: "Attacchi phishing, esecuzione locale di malware o transito di minacce all'interno dello stesso tunnel una volta autenticato. Se un dipendente si collega con un PC infetto, propagherà virus direttamente sulla LAN interna."
+      en: 'A tunnel does not make an endpoint trustworthy or remove malicious payloads; excluded traffic follows other paths.',
+      it: 'Un tunnel non rende fidato un endpoint né rimuove payload dannosi; il traffico escluso segue altri percorsi.'
     },
     mitigation: {
-      en: 'Enforce Zero Trust Network Access (ZTNA), mandate continuous endpoint policy compliance scans (Host Checking), and require Multi-Factor Authentication.',
-      it: "Adottare logiche Zero Trust (ZTNA), imporre controlli di conformità e sicurezza dell'host prima dell'accesso (Host Checking) e richiedere la MFA."
+      en: 'Patch gateways, require strong authentication and MFA where applicable, restrict reachable services and check endpoint posture.',
+      it: 'Aggiornare i gateway, richiedere autenticazione robusta e MFA dove applicabile, limitare i servizi raggiungibili e controllare lo stato degli endpoint.'
     },
     iconName: 'Shield'
   },
@@ -628,24 +628,24 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     layer: 'Layer 1, 2 (Physical & Data Link)',
     category: 'infrastructure',
     role: {
-      en: 'Converts digital signals from localized router arrays into light waves (fiber) or analog frequencies (copper DSL/Coaxial) for external long-haul ISP lines.',
-      it: 'Converte i segnali digitali provenienti dal router locale in impulsi luminosi (fibra ottica) o frequenze analogiche (rame DSL/Coassiale) per viaggiare sulle linee WAN geografiche.'
+      en: 'Terminates an access link: modems handle carrier modulation; an ONT terminates an optical access network.',
+      it: 'Termina un collegamento di accesso: i modem gestiscono la modulazione della portante; un ONT termina una rete di accesso ottica.'
     },
     howItWorks: {
-      en: 'Performs modulation-demodulation (modem) or converts laser pulses (ONT) to frame Ethernet segments, syncing physical clocks with internal carrier exchange stations.',
-      it: 'Modula e demodula onde di portante analogica o converte impulsi laser (ONT) in frame Ethernet adatti ai dispositivi LAN, sincronizzando il clock con la centrale ISP.'
+      en: 'Converts between access-network signaling and customer interfaces such as Ethernet; integrated routing functions depend on the device.',
+      it: 'Converte tra segnali della rete di accesso e interfacce utente come Ethernet; le funzioni di routing integrate dipendono dal dispositivo.'
     },
     securityAttacks: {
-      en: 'Saves local setups from raw line surges and handles standard physical carrier synchronization errors.',
-      it: 'Preserva i router locali da sovratensioni sulla tratta telefonica esterna e scherma problemi hardware di allineamento del carrier.'
+      en: 'Link termination alone provides no general attack filtering and is not a guarantee of electrical surge protection.',
+      it: 'La sola terminazione del collegamento non filtra genericamente gli attacchi e non garantisce protezione dalle sovratensioni.'
     },
     cannotStop: {
-      en: 'Any network or application layer attacks (such as port scans, SQLi, malware, or DNS spoofing). Operating essentially at Layer 1/2 physical conversions, it passes all traffic dynamically and transparently to next stages without logical inspection.',
-      it: 'Qualsiasi attacco di rete o applicativo (come port scanning, SQL injection, malware o falsificazioni DNS). Lavorando unicamente sulla conversione elettrica/ottica dei segnali, fa transitare ogni dato in modo transparente senza alcuna ispezione logica.'
+      en: 'A basic modem or ONT does not inspect application exploits; combined gateway products may add separate security functions.',
+      it: 'Un modem o ONT di base non ispeziona exploit applicativi; prodotti gateway integrati possono aggiungere funzioni di sicurezza separate.'
     },
     mitigation: {
-      en: 'Always back the terminal/modem device immediately with a stateful firewall (FW-SI) or router to manage ACL policies.',
-      it: 'Collegare sempre il modem/ONT direttamente ad un firewall stateful o un router protetto adibito al controllo delle ACL.'
+      en: 'Secure management access, maintain supported firmware and place appropriate routing and firewall policies behind the access link.',
+      it: 'Proteggere l’accesso di gestione, mantenere firmware supportato e applicare politiche di routing e firewall adeguate dietro il collegamento di accesso.'
     },
     iconName: 'Radio'
   },
@@ -655,24 +655,24 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     layer: 'Layer 7 (Application)',
     category: 'security',
     role: {
-      en: 'Aggregates, correlates, and analyzes security logs from all network systems, firewalls, and servers to detect active indicators of compromise (IoC).',
-      it: 'Aggrega, correla e analizza i log di sicurezza generati da tutti gli apparati di rete, firewall e server per identificare indicatori di compromissione (IoC) attivi.'
+      en: 'Collects and correlates security events to help analysts investigate suspicious activity across systems.',
+      it: 'Raccoglie e correla eventi di sicurezza per aiutare gli analisti a indagare attività sospette su più sistemi.'
     },
     howItWorks: {
-      en: 'Ingests real-time syslog and event streams, normalizes raw text, and matches sequential patterns against pre-configured correlations rules or heuristic behavior baselines.',
-      it: 'Ingloba flussi di eventi e log Syslog in tempo reale, normalizza il testo grezzo e confronta sequenze di azioni sospette con regole di correlazione fisse o analisi euristica.'
+      en: 'Normalizes available logs and applies detection rules and analytics; missing sources and time errors weaken correlation.',
+      it: 'Normalizza i log disponibili e applica regole e analisi; sorgenti mancanti ed errori temporali indeboliscono la correlazione.'
     },
     securityAttacks: {
-      en: 'Detects slow, distributed brute-force attempts across different servers, unauthorized privilege elevations, and silent lateral movements across routers.',
-      it: 'Rileva tentativi di brute-force lenti distribuite su host diversi, escalation abusive di privilegi amministrativi e movimenti laterali silenziosi tra i vari router.'
+      en: 'Can reveal related authentication failures, privilege changes and lateral activity when the relevant evidence is collected.',
+      it: 'Può evidenziare errori di autenticazione correlati, variazioni dei privilegi e attività laterali quando sono raccolte evidenze pertinenti.'
     },
     cannotStop: {
-      en: 'Initial, ultra-fast exploits or zero-day script executions in real-time. Because SIEM is primarily a diagnostic analyzer (reactive/detective), it notes the breach but cannot block physical frames or connections by default unless explicitly integrated with active SOAR automation tools.',
-      it: "Exploit istantanei ad altissima velocità o esecuzioni di script zero-day. Essendo prevalentemente un analizzatore di tipo diagnostico (reattivo), registra l'avvenuta violazione ma non può bloccare fisicamente una connessione se sprovvisto di automazione SOAR."
+      en: 'A SIEM is not inherently inline and does not guarantee detection or blocking; response needs operators or configured integrations.',
+      it: 'Un SIEM non è intrinsecamente in linea e non garantisce rilevamento o blocco; la risposta richiede operatori o integrazioni configurate.'
     },
     mitigation: {
-      en: 'Pair the SIEM with active SOAR (Security Orchestration, Automation, and Response) networks to trigger automatic block execution on perimeter firewalls.',
-      it: 'Associare il SIEM a piattaforme SOAR (Security Orchestration, Automation, and Response) attive per iniettare regole di blocco automatiche sui firewall perimetrali.'
+      en: 'Validate log coverage and detections; test SOAR playbooks with scoped permissions, approval where needed and rollback.',
+      it: 'Validare copertura dei log e rilevamenti; collaudare playbook SOAR con permessi limitati, approvazione dove necessaria e ripristino.'
     },
     iconName: 'Cpu'
   },
@@ -682,24 +682,24 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     layer: 'Layer 2, 3 (Data Link & Network)',
     category: 'security',
     role: {
-      en: 'Restricts and monitors physical and wireless connections to the corporate network, validating endpoint compliance before granting LAN access.',
-      it: "Limita e monitora i collegamenti fisici e wireless alla rete aziendale, convalidando lo stato di conformità degli host prima di concederne l'ingresso."
+      en: 'Controls network admission and authorization based on identity and, where supported, device posture.',
+      it: 'Controlla ammissione e autorizzazione di rete in base all’identità e, dove supportato, allo stato del dispositivo.'
     },
     howItWorks: {
-      en: 'Leverages IEEE 802.1X protocols and local agents to verify credentials, computer certificates, and check host posture (current OS patches, active antivirus) before mapping to authorized VLANs.',
-      it: "Sfrutta il protocollo IEEE 802.1X e agenti locali per verificare credenziali, certificati digitali e salute dell'host (patch installate, antivirus attivo) prima di associarlo alla VLAN corretta."
+      en: 'Can use 802.1X authentication and assign VLAN or access policies. Posture assessment is an additional integration, not inherent to 802.1X.',
+      it: 'Può usare autenticazione 802.1X e assegnare VLAN o politiche di accesso. La verifica dello stato è un’integrazione aggiuntiva, non intrinseca a 802.1X.'
     },
     securityAttacks: {
-      en: 'Stops rogue laptop physical connections on open wall Ethernet jacks, isolates infected devices, and blocks unmanaged employee tablets.',
-      it: "Inibisce l'accesso di PC estranei collegati abusivamente a prese di rete a muro incustodite, isola i dispositivi compromessi e blocca tablet sprovvisti di profili."
+      en: 'Can restrict unauthorized devices and quarantine noncompliant hosts if enforcement and identity checks are configured.',
+      it: 'Può limitare dispositivi non autorizzati e isolare host non conformi se sono configurati controlli di identità e applicazione delle politiche.'
     },
     cannotStop: {
-      en: 'Advanced application exploits executed by an already authenticated, fully compliant corporate notebook that gets exploited client-side by malware *after* it has successfully joined the LAN segment.',
-      it: 'Exploit applicativi avanzati scatenati da un notebook aziendale regolarmente registrato e pienamente conforme che viene infettato a livello client *dopo* aver completato la procedura di login.'
+      en: 'Admission does not guarantee continuing trust; compromised compliant endpoints and weaker fallback authentication remain risks.',
+      it: 'L’ammissione non garantisce fiducia continua; endpoint conformi ma compromessi e autenticazioni alternative più deboli restano rischi.'
     },
     mitigation: {
-      en: 'Implement continuous host health scanning (periodic posture checks) and deploy micro-segmentation switches to restrict lateral movement paths.',
-      it: "Implementare analisi periodiche di conformità sull'host (posture check ricorrente) e configurare regole di micro-segmentazione locale."
+      en: 'Reassess posture, restrict fallback methods, segment authorized access and monitor policy enforcement failures.',
+      it: 'Rivalutare lo stato, limitare i metodi alternativi, segmentare gli accessi autorizzati e monitorare errori di applicazione delle politiche.'
     },
     iconName: 'Server'
   },
@@ -709,24 +709,24 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     layer: 'Layer 3, 4, 7 (Multi-Layer)',
     category: 'security',
     role: {
-      en: 'Deploys simulated, deliberately vulnerable services over the local network to attract, trap, and record the methods of active attackers in complete isolation.',
-      it: 'Distribuisce servizi simulati e vulnerabili in rete per attirare, intrappolare e registrare i comportamenti dei pirati informatici in assoluto isolamento.'
+      en: 'Provides monitored decoy services to collect evidence of suspicious interaction; isolation must be designed and maintained.',
+      it: 'Offre servizi esca monitorati per raccogliere evidenze di interazioni sospette; l’isolamento va progettato e mantenuto.'
     },
     howItWorks: {
-      en: 'Emulates standard production setups (like unpatched Unix databases, SSH daemons, or PLC units). Since the decoy has no true company activity, any interaction triggers an immediate high-priority alarm.',
-      it: 'Emula configurazioni reali (es. database obsoleti, porte SSH aperte o centraline industriali). Non ospitando reale traffico aziendale, qualunque tentativo di connessione genera allarmi ad alta priorità.'
+      en: 'Emulates services or uses controlled real systems. Alerts require tuning because legitimate scanning can also reach the decoy.',
+      it: 'Emula servizi o usa sistemi reali controllati. Gli avvisi richiedono calibrazione perché anche scansioni legittime possono raggiungere l’esca.'
     },
     securityAttacks: {
-      en: 'Detects early network scanning sweeps, logs stealthy internal lateral hops, and intercepts rogue brute force sweeps.',
-      it: "Rileva attività di ricognizione preventiva (network scanning) dell'attaccante, registra spostamenti laterali e intercetta robot di brute-force automatici."
+      en: 'Can reveal reconnaissance and credential guessing directed at the decoy, providing investigation evidence rather than general prevention.',
+      it: 'Può rivelare ricognizione e tentativi sulle credenziali diretti all’esca, fornendo evidenze per indagini anziché prevenzione generale.'
     },
     cannotStop: {
-      en: 'Direct exploits targeted against real, vital production systems. If the attacker ignores the decoy servers because they possess precise map blueprints, the honeypot remains completely bypassed.',
-      it: "Exploit diretti mirati esclusivamente a risorse e server vitali reali di produzione. Se l'attore ostile dispone di informazioni precise e ignora i server esca, l'honeypot non potrà intercettarlo."
+      en: 'Attackers can ignore or identify the decoy; a compromised high-interaction honeypot can become a pivot if containment fails.',
+      it: 'Gli attaccanti possono ignorare o riconoscere l’esca; un honeypot ad alta interazione compromesso può diventare un punto di transito se il contenimento fallisce.'
     },
     mitigation: {
-      en: 'Scatter fake admin credentials (honeytokens) and mock server listings inside real workstations to redirect scanning hackers to the honeypot.',
-      it: "Disseminare credenziali fasulle (honeytokens) e record di database virtuali all'interno dei PC reali per deviare le scansioni degli hacker verso l'esca."
+      en: 'Isolate decoys, restrict outbound connections, use nonfunctional honeytokens and protect logs; never reuse production credentials.',
+      it: 'Isolare le esche, limitare connessioni in uscita, usare honeytoken non operativi e proteggere i log; non riutilizzare credenziali di produzione.'
     },
     iconName: 'Activity'
   },
@@ -736,24 +736,24 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     layer: 'Layer 7 (Application)',
     category: 'security',
     role: {
-      en: 'Centralizes administrative access controls to network physical appliances, enforcing strict command privileges and action auditing.',
-      it: 'Centralizza i controlli di accesso amministrativo per gli apparati fisici di rete, imponendo ruoli rigidi di comando e tracciando ogni operazione.'
+      en: 'Centralizes authentication, authorization and accounting for network access or administration, according to the deployed protocol.',
+      it: 'Centralizza autenticazione, autorizzazione e accounting per accesso alla rete o amministrazione, secondo il protocollo adottato.'
     },
     howItWorks: {
-      en: 'Receives authentication requests from networking nodes, validates credentials against central LDAP/Active Directory engines, issues authorized shell levels, and records a trace of run command strings.',
-      it: "Riceve le richieste di login degli amministratori, convalida le credenziali su server centrali LDAP/Active Directory, stabilisce i livelli di comando abilitati e archivia l'elenco delle azioni digitate."
+      en: 'RADIUS commonly serves network access; TACACS+ commonly serves device administration. Command authorization and logging depend on support and configuration.',
+      it: 'RADIUS serve comunemente l’accesso di rete; TACACS+ l’amministrazione degli apparati. Autorizzazione e registrazione dei comandi dipendono da supporto e configurazione.'
     },
     securityAttacks: {
-      en: 'Stops unauthorized configuration changes on switches, defeats local default credential exploits, and guarantees individual admin account tracking.',
-      it: "Sventa configurazioni arbitrarie sugli apparati di rete, impedisce l'accesso tramite credenziali di fabbrica (default) e assicura la tracciabilità delle azioni per singolo utente."
+      en: 'Can enforce individual identities and permitted actions; fallback accounts, shared credentials and incomplete logs can weaken accountability.',
+      it: 'Può imporre identità individuali e azioni consentite; account alternativi, credenziali condivise e log incompleti possono indebolire la tracciabilità.'
     },
     cannotStop: {
-      en: 'Man-in-the-Middle hijacking of open console sessions if administrators log in using unencrypted protocols (like Telnet or HTTP) or credential scraping from administrative client devices.',
-      it: "Sottrazione di sessioni aperte consolle (session hijacking) via MITM qualora il personale usi protocolli non cifrati (come Telnet o HTTP), o furto di password sul PC dell'operatore."
+      en: 'Does not protect an unencrypted administrator session or an infected workstation; legacy AAA transports also need protection.',
+      it: 'Non protegge una sessione amministrativa non cifrata o una postazione infetta; anche i trasporti AAA legacy richiedono protezione.'
     },
     mitigation: {
-      en: 'Enforce modern cryptographic transport layers (SSHv2, HTTPS) for console connections, require Multi-Factor Authentication, and define short auto-logoff sessions.',
-      it: 'Imporre canali crittografici (SSHv2, HTTPS) per le connessioni, richiedere autenticazione a più fattori (MFA) e configurare sessioni brevi con auto-logoff.'
+      en: 'Use SSH or HTTPS for management, protect AAA transport, apply MFA where supported and test restricted emergency access.',
+      it: 'Usare SSH o HTTPS per la gestione, proteggere il trasporto AAA, applicare MFA dove supportata e collaudare accessi di emergenza limitati.'
     },
     iconName: 'Shield'
   },
@@ -763,24 +763,24 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     layer: 'Layer 7 (Application)',
     category: 'networking',
     role: {
-      en: 'Acts as an intermediary gateway for requests. A Forward Proxy handles outgoing traffic from internal clients to encrypt or filter content, while a Reverse Proxy intercepts incoming web requests to handle SSL/TLS termination, caching, and host shielding.',
-      it: 'Agisce come gateway intermedio per le richieste. Un Forward Proxy gestisce il traffico in uscita dei client interni per cifrare o filtrare i contenuti, mentre un Reverse Proxy intercetta le richieste web in entrata per gestire la terminazione SSL/TLS, il caching e il mascheramento dei server.'
+      en: 'A forward proxy mediates client requests; a reverse proxy fronts servers. Caching, filtering and TLS termination are optional capabilities.',
+      it: 'Un forward proxy media le richieste dei client; un reverse proxy precede i server. Cache, filtraggio e terminazione TLS sono capacità opzionali.'
     },
     howItWorks: {
-      en: 'Receives connection requests on behalf of other devices. It parses URL patterns, manages static caching assets to offload backend nodes, rewrites HTTP headers, and translates public IPs to private destination pools.',
-      it: 'Riceve richieste di connessione per conto di altri apparati. Analizza i pattern degli URL, gestisce copie cached di elementi statici per alleggerire i server reali, riscrive header HTTP ed esegue la traduzione (NAT) tra IP pubblici ed IP privati di destinazione.'
+      en: 'Handles requests on behalf of another endpoint; application proxying is distinct from network address translation (NAT).',
+      it: 'Gestisce richieste per conto di un altro endpoint; il proxy applicativo è distinto dalla traduzione degli indirizzi di rete (NAT).'
     },
     securityAttacks: {
-      en: 'Obscures internal network layouts, blocks direct access to origin web servers, filters unauthorized outbound web categorization targets, and mitigates basic web scraping.',
-      it: "Nasconde la struttura della rete LAN interna, impedisce l'accesso diretto ai server web di origine, blocca la navigazione dei dipendenti verso siti non autorizzati e attenua lo scraping automatizzato."
+      en: 'Configured policies can restrict destinations or requests; origin shielding also requires network rules that prevent direct bypass.',
+      it: 'Le politiche configurate possono limitare destinazioni o richieste; proteggere il server di origine richiede anche regole di rete contro l’accesso diretto.'
     },
     cannotStop: {
-      en: 'Sophisticated application exploits (like unvalidated SQL queries or remote file inclusion) if the proxy does not run active deep Web Application Firewall (WAF) rule sets, or attacks targeting non-web custom ports.',
-      it: 'Exploit applicativi avanzati (come SQL injection o attacchi di inclusione file) se il proxy non esegue moduli attivi di WAF, o attacchi diretti a porte personalizzate non HTTP/HTTPS.'
+      en: 'A proxy without appropriate application controls may relay malicious valid requests; tunneling does not imply payload inspection.',
+      it: 'Un proxy privo di controlli applicativi adeguati può inoltrare richieste valide ma dannose; il tunneling non implica ispezione dei payload.'
     },
     mitigation: {
-      en: 'Integrate with active WAF engines, configure robust TLS configurations with HSTS rules, and maintain updated URL categorization databases for forward proxies.',
-      it: 'Integrare motori WAF attivi nel proxy, forzare configurazioni TLS sicure con regole HSTS e mantenere sempre aggiornati i database di categorizzazione web per i forward proxy.'
+      en: 'Restrict proxy access and origin exposure, validate upstream TLS certificates and apply tested application rules where required.',
+      it: 'Limitare accessi al proxy ed esposizione dei server di origine, validare i certificati TLS a monte e applicare regole applicative collaudate dove richieste.'
     },
     iconName: 'Server'
   },
@@ -790,24 +790,24 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     layer: 'Layer 7 (Application - SSH / RDP / Web Console)',
     category: 'security',
     role: {
-      en: 'Acts as a single, highly-secured entry point (bastion host) that administrators must authenticate through before accessing other sensitive servers or physical devices in internal network zones.',
-      it: "Agisce come un singolo punto d'ingresso blindato e protetto (bastion host) attraverso il quale gli amministratori devono autenticarsi prima di accedere ad altri server sensibili o apparati all'interno della rete."
+      en: 'Provides a controlled administrative entry point to sensitive systems; security depends on hardening and access restrictions.',
+      it: 'Offre un punto di ingresso amministrativo controllato verso sistemi sensibili; la sicurezza dipende da protezione e restrizioni di accesso.'
     },
     howItWorks: {
-      en: 'Sits in a DMZ or isolated network segment. System administrators connect to the Jump Server (via SSH, RDP, or secure HTML5 consoles) using multi-factor credentials, then initiate a secondary authenticated session to internal servers.',
-      it: 'Si posiziona in una DMZ o un segmento di rete isolato. Gli amministratori si collegano al Jump Server (tramite SSH, RDP o console HTML5 protette) con credenziali e MFA, e da lì avviano una seconda sessione autenticata verso la vera destinazione.'
+      en: 'Administrators authenticate to an isolated host and then reach authorized targets; access paths and session controls must be configured.',
+      it: 'Gli amministratori si autenticano su un host isolato e raggiungono destinazioni autorizzate; percorsi e controlli di sessione vanno configurati.'
     },
     securityAttacks: {
-      en: 'Eliminates direct administrative access exposure from the internet, prevents brute-force attempts on database nodes, enforces strict protocol isolation, and centralizes session logging.',
-      it: "Elimina completamente l'esposizione diretta delle porte di gestione (SSH, RDP) su Internet, previene attacchi brute-force sui server core, impone un isolamento rigoroso dei protocolli e centralizza la registrazione video/testo delle sessioni."
+      en: 'Can reduce direct management exposure and centralize audit trails when bypass paths are blocked.',
+      it: 'Può ridurre l’esposizione diretta della gestione e centralizzare le tracce di audit quando i percorsi alternativi sono bloccati.'
     },
     cannotStop: {
-      en: "Credential scraping or keylogging on the administrator's local workstation, or privilege escalation exploits originating from already compromised internal services after session bridge establishment.",
-      it: "Furto di credenziali (credential scraping o keylogger) sul computer locale del manutentore prima dell'accesso, o exploit di escalation dei privileges scatenati da servizi interni infetti dopo il collegamento."
+      en: 'Compromised administrator workstations or the bastion itself can expose credentials and privileged sessions.',
+      it: 'Postazioni amministrative compromesse o la compromissione del bastion stesso possono esporre credenziali e sessioni privilegiate.'
     },
     mitigation: {
-      en: 'Mandate Multi-Factor Authentication (MFA), restrict Jump Server inbound traffic exclusively via secure client-to-site VPNs, and enable real-time session recording, auditing, and keystroke logging.',
-      it: "Imporre il vincolo di MFA, limitare l'accesso in ingresso al Jump Server solo tramite VPN preventiva e abilitare la registrazione video ed il tracciamento dei comandi digitati in tempo reale."
+      en: 'Require MFA, least privilege and protected management paths; patch the host and protect session logs and recorded secrets.',
+      it: 'Richiedere MFA, minimo privilegio e percorsi di gestione protetti; aggiornare l’host e proteggere log di sessione e segreti registrati.'
     },
     iconName: 'Shield'
   },
@@ -817,24 +817,24 @@ export const DEVICE_REGISTRY: DeviceInfo[] = [
     layer: 'Layer 1, 2 (Physical & Data Link)',
     category: 'infrastructure',
     role: {
-      en: 'Provides physical or optical visibility into network lines by creating exact copies of flowing packets to feed analysis systems like IDS, NTA, or SIEM silently and without latency.',
-      it: 'Fornisce visibilità fisica o ottica dei flussi cablati duplicando specularmente i pacchetti in transito per inviarli a sistemi di analisi come IDS, NDR o SIEM, in modo silente e senza indurre ritardi.'
+      en: 'Copies network traffic for analysis; a TAP supplies visibility, while attached sensors interpret the captured data.',
+      it: 'Copia traffico di rete per l’analisi; un TAP offre visibilità, mentre i sensori collegati interpretano i dati acquisiti.'
     },
     howItWorks: {
-      en: 'Interposes directly in-line between two network nodes (e.g., router and switch). A Passive TAP splits copper signals electrically or fiber signals optically, maintaining traffic flow even if the analyzer loses power.',
-      it: 'Si interpone fisicamente lungo il cavo tra due nodi (es. router e switch). Un TAP passivo sdoppia il segnale in rame o gli impulsi in fibra convogliando una copia esatta al monitor, consentendo il transito reale anche in caso di mancanza di corrente.'
+      en: 'Optical splitters and powered copper devices have different failure and signal properties; verify link budgets, capacity and power behavior.',
+      it: 'Splitter ottici e dispositivi in rame alimentati hanno proprietà diverse di segnale e guasto; verificare budget ottico, capacità e comportamento senza alimentazione.'
     },
     securityAttacks: {
-      en: 'Provides reliable, untamperable access to raw transit frames, completely immune to host-level MAC spoofing or route poisoning attempts.',
-      it: 'Fornisce un accesso affidabile ed immune a manutenzioni o manipolazioni logiche, catturando i frame di transito grezzi inalterati da tentativi di spoofing o avvelenamento ARP.'
+      en: 'Supports independent observation of traffic crossing the monitored link; it does not authenticate packets or make spoofing impossible.',
+      it: 'Supporta l’osservazione indipendente del traffico sul collegamento monitorato; non autentica pacchetti né rende impossibile lo spoofing.'
     },
     cannotStop: {
-      en: 'Malicious traffic from passing through the link. By architecture, a passive TAP is purely read-only and lacks any packet modification or active block capacity.',
-      it: 'Il transito di minacce o traffico malevolo. Per progettazione, il TAP passivo agisce in sola lettura e non ha facoltà di modificare i pacchetti o inibirne il passaggio.'
+      en: 'A passive TAP cannot drop malicious traffic; encryption, unmonitored paths and capture loss can limit analysis.',
+      it: 'Un TAP passivo non può scartare traffico dannoso; cifratura, percorsi non monitorati e perdite di acquisizione possono limitare l’analisi.'
     },
     mitigation: {
-      en: 'Enforce strict physical security for TAP hardware units to prevent malicious interceptors from intercepting corporate traffic directly from the racks.',
-      it: 'Garantire la massima sicurezza fisica per la stanza server e i rack in cui sono collocati i TAP per proteggere il traffico sensibile da intercettazioni fisiche abusive.'
+      en: 'Secure physical and monitor-port access, protect captured data and validate visibility and failure behavior before deployment.',
+      it: 'Proteggere accessi fisici e porte di monitoraggio, tutelare i dati acquisiti e validare visibilità e comportamento ai guasti prima dell’installazione.'
     },
     iconName: 'Network'
   }

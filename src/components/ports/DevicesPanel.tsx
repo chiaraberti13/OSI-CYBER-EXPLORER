@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useId } from 'react';
 import { motion } from 'motion/react';
 import {
   Search,
@@ -13,6 +13,7 @@ import {
   Cpu,
   Server
 } from 'lucide-react';
+import { deviceLayerLabel } from '../../lib/deviceLabels';
 import type { DeviceInfo } from '../../content/portsExplorerTypes';
 import type { DeviceCategoryFilter, Language } from '../../lib/portsFilter';
 
@@ -33,40 +34,74 @@ export default function DevicesPanel({
   setDeviceCategory,
   filteredDevices
 }: DevicesPanelProps) {
+  const statusId = useId();
+  const resetFilters = () => {
+    setSearchTerm('');
+    setDeviceCategory('all');
+  };
   return (
     <>
       {/* Category cards explaining Network Hardware level */}
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 p-6 bg-slate-50/70 border-b border-slate-100">
         <div className="p-3 bg-white rounded-xl border border-slate-100 flex flex-col justify-between">
           <div>
-            <span className="text-[9px] font-bold text-rose-600 uppercase tracking-wider block">Layer 3, 4, 7</span>
-            <span className="text-xs font-semibold text-slate-800">Security Gateways</span>
+            <span className="text-[9px] font-bold text-rose-600 uppercase tracking-wider block">
+              {language === 'en' ? 'Layer 3, 4, 7' : 'Livello 3, 4, 7'}
+            </span>
+            <span className="text-xs font-semibold text-slate-800">
+              {language === 'en' ? 'Security Gateways' : 'Gateway di sicurezza'}
+            </span>
           </div>
-          <p className="text-[10px] text-slate-400 mt-2 leading-tight">Firewall, Gateway Applicativo</p>
+          <p className="text-[10px] text-slate-400 mt-2 leading-tight">
+            {language === 'en' ? 'Firewall, application gateway' : 'Firewall, gateway applicativo'}
+          </p>
         </div>
         <div className="p-3 bg-white rounded-xl border border-slate-100 flex flex-col justify-between">
           <div>
-            <span className="text-[9px] font-bold text-indigo-600 uppercase tracking-wider block">Layer 3</span>
-            <span className="text-xs font-semibold text-slate-800">Network Layer</span>
+            <span className="text-[9px] font-bold text-indigo-600 uppercase tracking-wider block">
+              {language === 'en' ? 'Layer 3' : 'Livello 3'}
+            </span>
+            <span className="text-xs font-semibold text-slate-800">
+              {language === 'en' ? 'Network Layer' : 'Livello di rete'}
+            </span>
           </div>
-          <p className="text-[10px] text-slate-400 mt-2 leading-tight">Router, Switch Layer 3</p>
+          <p className="text-[10px] text-slate-400 mt-2 leading-tight">
+            {language === 'en' ? 'Router, Layer 3 switch' : 'Router, switch di livello 3'}
+          </p>
         </div>
         <div className="p-3 bg-white rounded-xl border border-slate-100 flex flex-col justify-between">
           <div>
-            <span className="text-[9px] font-bold text-blue-600 uppercase tracking-wider block">Layer 2</span>
-            <span className="text-xs font-semibold text-slate-800">Data Link</span>
+            <span className="text-[9px] font-bold text-blue-600 uppercase tracking-wider block">
+              {language === 'en' ? 'Layer 2' : 'Livello 2'}
+            </span>
+            <span className="text-xs font-semibold text-slate-800">
+              {language === 'en' ? 'Data Link' : 'Collegamento dati'}
+            </span>
           </div>
-          <p className="text-[10px] text-slate-400 mt-2 leading-tight">Switch Ethernet, Wireless AP, Bridge</p>
+          <p className="text-[10px] text-slate-400 mt-2 leading-tight">
+            {language === 'en' ? 'Ethernet switch, wireless AP, bridge' : 'Switch Ethernet, AP wireless, bridge'}
+          </p>
         </div>
         <div className="p-3 bg-white rounded-xl border border-slate-100 flex flex-col justify-between">
           <div>
-            <span className="text-[9px] font-bold text-amber-600 uppercase tracking-wider block">Layer 1</span>
-            <span className="text-xs font-semibold text-slate-800">Physical Layer</span>
+            <span className="text-[9px] font-bold text-amber-600 uppercase tracking-wider block">
+              {language === 'en' ? 'Layer 1' : 'Livello 1'}
+            </span>
+            <span className="text-xs font-semibold text-slate-800">
+              {language === 'en' ? 'Physical Layer' : 'Livello fisico'}
+            </span>
           </div>
-          <p className="text-[10px] text-slate-400 mt-2 leading-tight">Hub Passivo, Cavi, Ripetitore</p>
+          <p className="text-[10px] text-slate-400 mt-2 leading-tight">
+            {language === 'en' ? 'Hub, cables, repeater' : 'Hub, cavi, ripetitore'}
+          </p>
         </div>
       </div>
 
+      <p className="px-6 py-3 text-xs text-slate-600">
+        {language === 'en'
+          ? 'Layers indicate primary functions, not strict boundaries. Software and combined products may span layers; protection requires configuration and verification.'
+          : 'I livelli indicano funzioni prevalenti, non confini rigidi. Software e prodotti integrati possono coprire più livelli; la protezione richiede configurazione e verifica.'}
+      </p>
       {/* Filter / Search Bar for Devices */}
       <div className="px-6 py-4 border-b border-slate-100 bg-white space-y-3">
         <div className="flex flex-col sm:flex-row gap-3 items-center justify-between font-sans">
@@ -74,6 +109,8 @@ export default function DevicesPanel({
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input
               type="text"
+              aria-label={language === 'en' ? 'Search devices' : 'Cerca apparati'}
+              aria-describedby={statusId}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder={
@@ -86,18 +123,20 @@ export default function DevicesPanel({
           </div>
 
           <div className="flex items-center gap-1.5 shrink-0 self-start sm:self-auto">
-            <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider mr-1 font-mono">
+            <span
+              id={statusId}
+              role="status"
+              aria-live="polite"
+              className="text-[10px] uppercase font-bold text-slate-400 tracking-wider mr-1 font-mono"
+            >
               {language === 'en' ? 'Total' : 'Totale'}: {filteredDevices.length}
             </span>
             {(searchTerm || deviceCategory !== 'all') && (
               <button
-                onClick={() => {
-                  setSearchTerm('');
-                  setDeviceCategory('all');
-                }}
-                className="px-3.5 py-1.5 rounded-lg text-[10px] font-bold uppercase border bg-white border-slate-200 text-slate-500 hover:border-slate-300 transition-all shrink-0 font-mono"
+                onClick={resetFilters}
+                className="min-h-11 px-3.5 py-1.5 rounded-lg text-[10px] font-bold uppercase border bg-white border-slate-200 text-slate-500 hover:border-slate-300 transition-all shrink-0 font-mono"
               >
-                Reset
+                {language === 'en' ? 'Reset' : 'Azzera'}
               </button>
             )}
           </div>
@@ -109,8 +148,9 @@ export default function DevicesPanel({
             {language === 'en' ? 'Filter by Type:' : 'Filtra per Tipologia:'}
           </span>
           <button
+            aria-pressed={deviceCategory === 'all'}
             onClick={() => setDeviceCategory('all')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+            className={`min-h-11 px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
               deviceCategory === 'all'
                 ? 'bg-slate-900 border border-slate-900 text-white'
                 : 'bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-600'
@@ -121,8 +161,9 @@ export default function DevicesPanel({
           </button>
 
           <button
+            aria-pressed={deviceCategory === 'security'}
             onClick={() => setDeviceCategory('security')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+            className={`min-h-11 px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
               deviceCategory === 'security'
                 ? 'bg-rose-600 border border-rose-600 text-white'
                 : 'bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-600'
@@ -133,8 +174,9 @@ export default function DevicesPanel({
           </button>
 
           <button
+            aria-pressed={deviceCategory === 'networking'}
             onClick={() => setDeviceCategory('networking')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+            className={`min-h-11 px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
               deviceCategory === 'networking'
                 ? 'bg-indigo-600 border border-indigo-600 text-white'
                 : 'bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-600'
@@ -145,8 +187,9 @@ export default function DevicesPanel({
           </button>
 
           <button
+            aria-pressed={deviceCategory === 'infrastructure'}
             onClick={() => setDeviceCategory('infrastructure')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+            className={`min-h-11 px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
               deviceCategory === 'infrastructure'
                 ? 'bg-amber-600 border border-amber-600 text-white'
                 : 'bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-600'
@@ -197,24 +240,25 @@ export default function DevicesPanel({
 
               return (
                 <motion.div
-                  key={idx}
+                  key={item.name}
+                  data-device={item.name}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: Math.min(idx * 0.02, 0.2) }}
-                  className="bg-white border border-slate-100 rounded-lg p-5 hover:shadow-md hover:border-indigo-100 transition-all group flex flex-col justify-between"
+                  className="bg-white border border-slate-100 rounded-lg p-5 hover:shadow-md hover:border-indigo-100 transition-all group flex min-w-0 flex-col justify-between break-words"
                 >
                   <div className="space-y-3">
-                    <div className="flex justify-between items-start gap-2">
-                      <span className="flex items-center gap-2">
-                        <div className="p-1.5 bg-slate-50 rounded-lg border border-slate-100">
+                    <div className="flex flex-wrap justify-between items-start gap-2">
+                      <span className="flex min-w-0 items-center gap-2">
+                        <div className="shrink-0 p-1.5 bg-slate-50 rounded-lg border border-slate-100">
                           {getDeviceIcon(item.iconName)}
                         </div>
                         <span className="text-sm font-semibold text-slate-800 tracking-tight">{item.name}</span>
                       </span>
                       <span
-                        className={`text-[9.5px] font-mono font-semibold px-2 py-0.5 rounded-lg border uppercase ${layerColor}`}
+                        className={`min-w-0 max-w-full text-[9.5px] font-mono font-semibold px-2 py-0.5 rounded-lg border uppercase ${layerColor}`}
                       >
-                        {item.layer}
+                        {deviceLayerLabel(item.layer, language)}
                       </span>
                     </div>
 
@@ -236,7 +280,7 @@ export default function DevicesPanel({
                       </div>
                       <div className="pt-2 border-t border-slate-100">
                         <strong className="text-[9px] text-indigo-500 uppercase tracking-wider block mb-0.5">
-                          {language === 'en' ? 'Cyber Attack Risks (Mitigated)' : 'Vulnerabilità & Attacchi (Mitigati)'}
+                          {language === 'en' ? 'Security contribution' : 'Contributo alla sicurezza'}
                         </strong>
                         <p className="text-[11px] text-slate-600 leading-normal">
                           {language === 'en' ? item.securityAttacks.en : item.securityAttacks.it}
@@ -245,7 +289,7 @@ export default function DevicesPanel({
                       <div className="pt-2 border-t border-slate-100 bg-rose-50/40 -mx-3 -mb-3 px-3 pb-3 pt-2 rounded-b-xl border-dashed border-rose-100/70 mt-1">
                         <strong className="text-[9px] text-red-600 uppercase tracking-wider block mb-1 flex items-center gap-1">
                           <ShieldAlert className="w-3.5 h-3.5 text-red-500 shrink-0" />
-                          {language === 'en' ? 'What it CANNOT Stop & Why' : 'Cosa NON può fermare & Perché'}
+                          {language === 'en' ? 'Limits and residual risks' : 'Limiti e rischi residui'}
                         </strong>
                         <p className="text-[10.5px] text-red-950 font-semibold leading-relaxed">
                           {language === 'en' ? item.cannotStop.en : item.cannotStop.it}
@@ -279,12 +323,10 @@ export default function DevicesPanel({
                 : 'Prova a cercare termini come firewall, router, switch o hub.'}
             </p>
             <button
-              onClick={() => {
-                setSearchTerm('');
-              }}
-              className="mt-4 px-4 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold rounded-xl transition-all"
+              onClick={resetFilters}
+              className="min-h-11 mt-4 px-4 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold rounded-xl transition-all"
             >
-              {language === 'en' ? 'Clear search filter' : 'Riazzera filtro'}
+              {language === 'en' ? 'Clear all filters' : 'Cancella tutti i filtri'}
             </button>
           </div>
         )}
