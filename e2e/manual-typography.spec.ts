@@ -66,10 +66,13 @@ test.describe('manual reading rhythm (UX-23)', () => {
       );
       const topicGaps = topicBoxes.slice(1).map((box, index) => box.top - topicBoxes[index].bottom);
       for (const gap of topicGaps) {
-        // The declared 24 px gap can resolve one physical pixel lower after
-        // subpixel card heights are transported through Chromium.
-        expect(gap).toBeGreaterThanOrEqual(23);
-        expect(gap).toBeLessThanOrEqual(24);
+        // The declared 24 px gap is asserted at physical-pixel resolution: subpixel
+        // card heights transported through Chromium can carry a tiny fraction either
+        // way (e.g. 23.999… or 24.00006…), and it can also resolve one whole pixel
+        // lower. Rounding compares the intended pixel gap without that subpixel noise.
+        const physicalGap = Math.round(gap);
+        expect(physicalGap).toBeGreaterThanOrEqual(23);
+        expect(physicalGap).toBeLessThanOrEqual(24);
       }
     };
 
