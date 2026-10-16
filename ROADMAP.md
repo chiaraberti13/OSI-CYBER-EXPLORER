@@ -304,6 +304,17 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
         ricognizione I18N-10 (non un'aggiunta di guard). Criteri verificati: guard bilingue
         verde, `verify` completo (781 test), 74/74 E2E Chromium.
         Report: `docs/verify/2026-10-16-i18n10-scenario-feedback.md`.
+  - [x] **Revisione e guard dei laboratori interattivi (16/10/2026).** Letti per intero i
+        cinque dataset dei laboratori interattivi (`networkFundamentalsLab`, `networkAccessLab`,
+        `ipConnectivityLab`, `ipServicesLab`, `securityFundamentalsLab`, ~2300 righe):
+        accuratezza tecnica e parità IT/EN confermate (FHRP, OSPF, ACL/AAA, matrice WPA, DORA
+        con timer T1/T2, VLAN/STP/EtherChannel, subnetting, prefissi IPv6), **nessun difetto
+        trovato**. Questi dataset — unico contenuto didattico ancora raggiunto solo
+        dall'euristica testuale — sono stati messi sotto controllo strutturale con un unico
+        test che percorre per namespace ogni export dei cinque moduli (scala agli export
+        futuri), con contatore anti no-op (>100 coppie). Criteri verificati: `verify` completo
+        verde (782 test), guard bilingue 19 test, 74/74 E2E Chromium, 0 vulnerabilità.
+        Report: `docs/verify/2026-10-16-i18n10-interactive-labs.md`.
 
 ## 📝 Technical Writer — documentazione
 

@@ -28,6 +28,13 @@ import { ROUTING_SECURITY_SCENARIOS } from './routingSecurityScenarios';
 import { SEGMENTATION_SCENARIOS } from './segmentationScenarios';
 import { VPN_PKI_SCENARIOS } from './vpnPkiScenarios';
 import { WIRELESS_SECURITY_SCENARIOS } from './wirelessSecurityScenarios';
+// The five interactive-lab datasets are imported by namespace so every current and
+// future export is walked, without re-listing each one here (I18N-10, 2026-10-16).
+import * as networkFundamentalsLab from './networkFundamentalsLab';
+import * as networkAccessLab from './networkAccessLab';
+import * as ipConnectivityLab from './ipConnectivityLab';
+import * as ipServicesLab from './ipServicesLab';
+import * as securityFundamentalsLab from './securityFundamentalsLab';
 
 /**
  * A guard against the one bilingual failure that reading cannot catch reliably.
@@ -337,5 +344,43 @@ describe('structured bilingual datasets', () => {
     };
     for (const [, dataset] of BILINGUAL_DATASETS) count(dataset);
     expect(seen.n).toBeGreaterThan(500);
+  });
+
+  // The five interactive-lab datasets carry the exercise content the student works
+  // through. Each is a plain `Localized` / `Record<Language, string>` shape, so unlike
+  // the manual and the OSI layers they were only reachable by the source-text
+  // heuristic — which cannot tell that a whole language side was dropped. Walking every
+  // export of each module by namespace closes that gap and scales to future exports.
+  const INTERACTIVE_LABS: ReadonlyArray<readonly [string, Record<string, unknown>]> = [
+    ['networkFundamentalsLab', networkFundamentalsLab],
+    ['networkAccessLab', networkAccessLab],
+    ['ipConnectivityLab', ipConnectivityLab],
+    ['ipServicesLab', ipServicesLab],
+    ['securityFundamentalsLab', securityFundamentalsLab]
+  ];
+
+  it('fills both languages across every interactive-lab dataset', () => {
+    const offenders: string[] = [];
+    let pairs = 0;
+    for (const [name, mod] of INTERACTIVE_LABS) {
+      for (const [exportName, value] of Object.entries(mod)) {
+        collectEmptyTranslations(value, `${name}.${exportName}`, offenders);
+      }
+    }
+    // Anti no-op: confirm the walk actually reached a meaningful body of lab prose.
+    const count = (value: unknown): void => {
+      if (Array.isArray(value)) return value.forEach(count);
+      if (value === null || typeof value !== 'object') return;
+      const record = value as Record<string, unknown>;
+      const pair = isBilingualPair(record);
+      if (pair) pairs += 1;
+      for (const key of Object.keys(record)) {
+        if (pair && (key === 'it' || key === 'en')) continue;
+        count(record[key]);
+      }
+    };
+    for (const [, mod] of INTERACTIVE_LABS) for (const value of Object.values(mod)) count(value);
+    expect(offenders, 'an interactive-lab translation pair is missing a language or is empty').toEqual([]);
+    expect(pairs).toBeGreaterThan(100);
   });
 });
