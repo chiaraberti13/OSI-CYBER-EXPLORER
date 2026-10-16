@@ -43,6 +43,24 @@ export default function GlossaryModal({
         : `${count} di ${GLOSSARY_TERMS.length} ${count === 1 ? 'termine' : 'termini'}`;
   const hasActiveFilters = searchTerm.length > 0 || searchScope !== 'all';
 
+  // UX: a 120+ entry reference is unusable in insertion order. Sort A–Z (locale-aware,
+  // numeric-safe so "802.1X" lands under a "#" bucket) and group under a light letter
+  // index, so the eye can jump to a letter instead of scrolling the whole list. The
+  // letter dividers are decorative (aria-hidden): every term stays a real dt/dd.
+  const collator = new Intl.Collator(language, { sensitivity: 'base', numeric: true });
+  const sortedTerms = [...filteredTerms].sort((a, b) => collator.compare(a.term, b.term));
+  const groupLetter = (term: string) => {
+    const first = term.trim().charAt(0).toUpperCase();
+    return /[A-Z]/.test(first) ? first : '#';
+  };
+  const letterGroups: { letter: string; items: typeof sortedTerms }[] = [];
+  for (const item of sortedTerms) {
+    const letter = groupLetter(item.term);
+    const last = letterGroups[letterGroups.length - 1];
+    if (last && last.letter === letter) last.items.push(item);
+    else letterGroups.push({ letter, items: [item] });
+  }
+
   const renderWrapper = (children: React.ReactNode) => {
     if (inline) {
       return (
@@ -173,18 +191,30 @@ export default function GlossaryModal({
         className="min-h-0 flex-1 overflow-y-auto overscroll-contain bg-white p-6"
       >
         {filteredTerms.length > 0 ? (
-          <dl className="space-y-4">
-            {filteredTerms.map((item) => (
-              <div key={item.term} className="group">
-                <dt className="text-sm font-semibold text-blue-600 mb-1 group-hover:translate-x-1 transition-transform">
-                  <SearchHighlight text={item.term} query={searchTerm} />
-                </dt>
-                <dd className="text-[13px] text-slate-600 leading-relaxed bg-slate-50/50 p-3 rounded-lg border border-slate-100 group-hover:border-blue-100 group-hover:bg-blue-50/30 transition-all">
-                  <SearchHighlight text={item.definition[language]} query={searchTerm} />
-                </dd>
+          <div className="space-y-5">
+            {letterGroups.map((group) => (
+              <div key={group.letter}>
+                <div
+                  aria-hidden="true"
+                  className="sticky top-0 z-[1] -mx-1 mb-2 bg-white/95 px-1 py-1 text-xs font-bold tracking-widest text-slate-400 backdrop-blur-sm"
+                >
+                  {group.letter}
+                </div>
+                <dl className="divide-y divide-slate-100">
+                  {group.items.map((item) => (
+                    <div key={item.term} className="py-2.5 first:pt-0">
+                      <dt className="text-sm font-semibold text-blue-700">
+                        <SearchHighlight text={item.term} query={searchTerm} />
+                      </dt>
+                      <dd className="mt-1 text-[13px] leading-relaxed text-slate-600">
+                        <SearchHighlight text={item.definition[language]} query={searchTerm} />
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
               </div>
             ))}
-          </dl>
+          </div>
         ) : (
           <div className="text-center py-12">
             <BookOpen aria-hidden="true" className="w-12 h-12 text-slate-100 mx-auto mb-3" />
@@ -197,8 +227,8 @@ export default function GlossaryModal({
 
       {/* Footer */}
       <div className="shrink-0 border-t border-slate-100 bg-slate-50/30 p-4 text-center">
-        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
-          OSI Model Educational Tool • 2024
+        <p className="text-[11px] font-medium text-slate-400">
+          {GLOSSARY_TERMS.length} {language === 'en' ? 'terms' : 'termini'} · CCNA 200-301 + eJPT · IT/EN
         </p>
       </div>
     </>
