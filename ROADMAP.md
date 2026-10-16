@@ -261,6 +261,15 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
         Report: `docs/verify/2026-10-16-i18n10-device-catalogue.md`.
         Nessun catalogo resta escluso; I18N-10 rimane ricorrente per nuovi contenuti,
         senza dichiarare revisionato ogni testo storico dell’applicazione.
+  - [x] **Incremento glossario (16/10/2026).** Revisionate tutte le 114 voci (228 definizioni
+        IT/EN): accuratezza tecnica e parità confermate senza correzioni necessarie. Il
+        glossario — unico dataset fondamentale rivolto al discente ancora assente — è stato
+        aggiunto al guard strutturale `BILINGUAL_DATASETS` con un controllo dedicato per voce,
+        così da intercettare con un walk ricorsivo anche un lato mancante in eventuali campi
+        bilingui annidati futuri (dove il controllo superficiale di `content.test.ts` non
+        arriverebbe). Criteri verificati: parità strutturale ed euristica (3228 coppie, nessun
+        punto cieco), `verify` completo verde (778 test unitari), 74/74 E2E Chromium.
+        Report: `docs/verify/2026-10-16-i18n10-glossary.md`.
 
 ## 📝 Technical Writer — documentazione
 

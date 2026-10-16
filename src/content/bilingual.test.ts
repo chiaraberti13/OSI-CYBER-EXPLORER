@@ -1,6 +1,7 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { ATTACK_FAMILIES } from './securityTaxonomy';
+import { GLOSSARY_TERMS } from './glossaryTerms';
 import { SECURITY_TECHNIQUES } from './securityCoverage';
 import { DEFENSE_CONTROLS } from './defenseControls';
 import { DETECTION_USE_CASES } from './detectionUseCases';
@@ -43,7 +44,8 @@ import { WIRELESS_SECURITY_SCENARIOS } from './wirelessSecurityScenarios';
 
 const CONTENT_DIR = 'src/content';
 
-// All extracted catalogues are reviewed and included (I18N-10, 2026-10-16).
+// All extracted catalogues are reviewed and included (I18N-10, 2026-10-16); the
+// learner-facing glossary joined the structured parity walk below (I18N-10, 2026-10-16).
 
 interface Pair {
   file: string;
@@ -149,6 +151,7 @@ describe('bilingual content', () => {
  */
 
 const BILINGUAL_DATASETS: ReadonlyArray<readonly [string, unknown]> = [
+  ['GLOSSARY_TERMS', GLOSSARY_TERMS],
   ['ATTACK_FAMILIES', ATTACK_FAMILIES],
   ['SECURITY_TECHNIQUES', SECURITY_TECHNIQUES],
   ['DEFENSE_CONTROLS', DEFENSE_CONTROLS],
@@ -254,6 +257,18 @@ describe('structured bilingual datasets', () => {
         expect(device[field]).toHaveProperty('en');
         collectEmptyTranslations(device[field], `${device.name}.${field}`, offenders);
       }
+    }
+    expect(offenders).toEqual([]);
+  });
+
+  it('checks every glossary definition, including any future nested bilingual field', () => {
+    const offenders: string[] = [];
+    for (const entry of GLOSSARY_TERMS) {
+      expect(entry.definition, `${entry.term} definition`).toHaveProperty('it');
+      expect(entry.definition, `${entry.term} definition`).toHaveProperty('en');
+      // A deep walk, unlike a shallow `{ it, en }` presence check, also catches a
+      // dropped side inside any bilingual field a term may later nest (an example, a note).
+      collectEmptyTranslations(entry.definition, `${entry.term}.definition`, offenders);
     }
     expect(offenders).toEqual([]);
   });
