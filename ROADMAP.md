@@ -281,6 +281,18 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
         correzione di contenuto necessaria: tutti i campi hanno entrambe le lingue non vuote.
         Criteri verificati: `verify` completo verde (779 test unitari), guard bilingue 18 test,
         74/74 E2E Chromium, 0 vulnerabilità. Report: `docs/verify/2026-10-16-i18n10-study-manual.md`.
+  - [x] **Incremento modello OSI (16/10/2026).** `OSI_LAYERS` (`osiLayers.ts`, ~1900 righe) —
+        contenuto centrale dell'app — conserva le due lingue in blocchi paralleli
+        `translations.en`/`translations.it`, non come coppie `{ it, en }` adiacenti: né
+        l'euristica testuale né il walk strutturale raggiungevano quella prosa, e
+        `content.test.ts` verificava solo nome/descrizione e il _conteggio_ di attacchi/difese.
+        Aggiunto un controllo parallelo it↔en che verifica parità di lunghezza e non-vuoto di
+        responsabilità, casi d'uso, fatti chiave e, per ogni attacco e difesa, dei campi
+        testuali (nome, descrizione, funzionamento, impatto, mitigazione / metodo), con un
+        contatore anti no-op (>300 stringhe traducibili). Nessun difetto rilevato: tutti i
+        campi sono presenti e paralleli. Criteri verificati: `verify` completo verde (781 test
+        unitari), 74/74 E2E Chromium, 0 vulnerabilità.
+        Report: `docs/verify/2026-10-16-i18n10-osi-layers.md`.
 
 ## 📝 Technical Writer — documentazione
 

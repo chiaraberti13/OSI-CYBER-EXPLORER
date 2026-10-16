@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import type { Translation } from '../types';
 import { OSI_LAYERS } from '../content/osiLayers';
 import { ATTACK_SCENARIOS } from '../content/attackScenarios';
 import { ATTACK_WALKTHROUGHS } from '../content/attackWalkthroughs';
@@ -66,6 +67,88 @@ describe('OSI_LAYERS', () => {
         expect(layer.translations[lang].description?.trim(), `L${layer.id} ${lang} desc`).toBeTruthy();
       }
     }
+  });
+
+  // The two languages of a layer live in separate `translations.en` / `translations.it`
+  // objects, not as adjacent { it, en } strings, so neither the bilingual source-text
+  // heuristic nor the structured { it, en } walk reaches this prose. A dropped list item
+  // or an empty attack/defense field in one language is invisible to a reader of that
+  // language, which is exactly the Layer 7 attack-count bug the length check above was
+  // born from — here extended to every translatable field, not only the counts.
+  it('keeps every translatable OSI-layer field present and parallel in both languages', () => {
+    const offenders: string[] = [];
+    const bothNonEmpty = (it: unknown, en: unknown, where: string) => {
+      if (typeof it !== 'string' || it.trim() === '') offenders.push(`${where}.it`);
+      if (typeof en !== 'string' || en.trim() === '') offenders.push(`${where}.en`);
+    };
+    const parallelList = (it: readonly string[] = [], en: readonly string[] = [], where: string) => {
+      if (it.length !== en.length) {
+        offenders.push(`${where} length it=${it.length}/en=${en.length}`);
+        return;
+      }
+      it.forEach((value, index) => bothNonEmpty(value, en[index], `${where}[${index}]`));
+    };
+    for (const layer of OSI_LAYERS) {
+      const it = layer.translations.it;
+      const en = layer.translations.en;
+      const at = `L${layer.id}`;
+      bothNonEmpty(it.name, en.name, `${at}.name`);
+      bothNonEmpty(it.description, en.description, `${at}.description`);
+      // Free-prose lists; `protocols` is a list of inert identifiers, not translated text.
+      for (const field of ['responsibilities', 'useCases', 'keyFacts'] as const) {
+        parallelList(it[field], en[field], `${at}.${field}`);
+      }
+      // Attacks and defenses must line up one-to-one, and every prose field of each must
+      // exist in both languages (type, severity, counters and protocols are inert, not prose).
+      const itAttacks = it.attacks ?? [];
+      const enAttacks = en.attacks ?? [];
+      if (itAttacks.length !== enAttacks.length) {
+        offenders.push(`${at}.attacks length it=${itAttacks.length}/en=${enAttacks.length}`);
+      } else {
+        itAttacks.forEach((attack, index) => {
+          const other = enAttacks[index];
+          for (const field of ['name', 'description', 'howItWorks', 'impact', 'mitigation_strategy'] as const) {
+            bothNonEmpty(attack[field], other[field], `${at}.attacks[${index}].${field}`);
+          }
+        });
+      }
+      const itDefenses = it.defenses ?? [];
+      const enDefenses = en.defenses ?? [];
+      if (itDefenses.length !== enDefenses.length) {
+        offenders.push(`${at}.defenses length it=${itDefenses.length}/en=${enDefenses.length}`);
+      } else {
+        itDefenses.forEach((defense, index) => {
+          const other = enDefenses[index];
+          for (const field of ['name', 'description', 'method'] as const) {
+            bothNonEmpty(defense[field], other[field], `${at}.defenses[${index}].${field}`);
+          }
+        });
+      }
+    }
+    expect(offenders, 'an OSI-layer field is missing a language, empty, or out of parity').toEqual([]);
+  });
+
+  it('actually visits a large body of OSI-layer prose, so the parity walk cannot silently pass', () => {
+    let translatableStrings = 0;
+    const count = (t: Translation): void => {
+      translatableStrings += 2; // name + description
+      for (const field of ['responsibilities', 'useCases', 'keyFacts'] as const) {
+        translatableStrings += (t[field] ?? []).length;
+      }
+      for (const attack of t.attacks ?? []) {
+        translatableStrings += 5; // name, description, howItWorks, impact, mitigation_strategy
+        void attack;
+      }
+      for (const defense of t.defenses ?? []) {
+        translatableStrings += 3; // name, description, method
+        void defense;
+      }
+    };
+    for (const layer of OSI_LAYERS) {
+      count(layer.translations.it);
+      count(layer.translations.en);
+    }
+    expect(translatableStrings).toBeGreaterThan(300);
   });
 });
 
