@@ -244,7 +244,14 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
         pannello localizzato, ricerca nominata e badge senza garanzie assolute di sicurezza.
         Criteri: parità automatica, rendering IT/EN completo, ricerca, Axe e reflow a 320/1280 px.
         Report: `docs/verify/2026-10-15-i18n10-protocol-catalogue.md`.
-        Restano da revisionare `deviceRegistry.ts` e `portContent.ts`, ancora esclusi dal
+  - [x] **Incremento catalogo porte (16/10/2026).** Revisionate 45 schede e 90 coppie
+        IT/EN; corrette le note su TACACS+, posta/TLS, RADIUS, SNMP e database.
+        Rimossa `portContent.ts` dalle esclusioni; corretti intervalli effimeri,
+        porta Vite e lessico del pannello. Criteri verificati: parità strutturale
+        ed euristica, ricerca e filtri, rendering completo IT/EN, Axe e reflow
+        a 320/1280 px. `verify` superato (774 test), 72/72 E2E Chromium e audit puliti.
+        Report: `docs/verify/2026-10-16-i18n10-port-catalogue.md`.
+        Resta da revisionare `deviceRegistry.ts`, unico dataset escluso dal
         confronto euristico; il punto ricorrente I18N-10 non viene chiuso globalmente.
 
 ## 📝 Technical Writer — documentazione

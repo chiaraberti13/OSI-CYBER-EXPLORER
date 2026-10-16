@@ -106,8 +106,8 @@ export default function PortsExplorer({
             </Title>
             <p className="text-xs text-slate-400 font-medium">
               {language === 'en'
-                ? 'IANA numeric bands, protocol associations, standard definitions and security'
-                : 'Bande numeriche IANA, associazioni dei protocolli, definizioni standard e sicurezza'}
+                ? 'IANA port ranges, protocol associations, standard definitions and security'
+                : 'Intervalli di porte IANA, associazioni dei protocolli, definizioni standard e sicurezza'}
             </p>
           </div>
         </div>
@@ -233,8 +233,8 @@ export default function PortsExplorer({
       <div className="p-4 border-t border-slate-100 text-center bg-slate-50/30">
         <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
           {language === 'en'
-            ? 'IANA Bandwidth Classification • Standard Protocol Mappings'
-            : 'Classificazione Bande IANA • Monitor di Sicurezza Standard'}
+            ? 'IANA Port Ranges • Standard Protocol Mappings'
+            : 'Intervalli di porte IANA • Associazioni standard dei protocolli'}
         </p>
       </div>
     </>

@@ -70,6 +70,6 @@ describe('PortsExplorer IANA metadata', () => {
     await user.keyboard('{Enter}');
 
     expect(rangeButton.getAttribute('aria-pressed')).toBe('true');
-    expect(screen.getByRole('heading', { name: 'Understanding Dynamic Range' })).toBeTruthy();
+    expect(screen.getByRole('heading', { name: 'Understanding Dynamic Ports' })).toBeTruthy();
   });
 });

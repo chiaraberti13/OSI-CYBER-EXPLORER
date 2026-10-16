@@ -80,7 +80,7 @@ export const PORT_REGISTRY_METADATA: readonly PortRegistryMetadata[] = [
   entry('FTP Control', [21], ['TCP'], { iana: ['ftp'], encrypted: secure([22], 'SFTP', ['TCP']) }),
   entry('SSH', [22], ['TCP'], { iana: ['ssh'] }),
   entry('Telnet', [23], ['TCP'], { iana: ['telnet'], encrypted: secure([22], 'SSH', ['TCP']) }),
-  entry('SMTP', [25], ['TCP'], { iana: ['smtp'], encrypted: secure([465], 'Message Submission over TLS', ['TCP']) }),
+  entry('SMTP', [25], ['TCP'], { iana: ['smtp'], encrypted: secure([25], 'SMTP relay with STARTTLS', ['TCP']) }),
   entry('TACACS+', [49], ['TCP'], { iana: ['tacacs'] }),
   entry('DNS', [53], ['TCP', 'UDP'], { iana: ['domain'], encrypted: secure([853], 'DNS over TLS', ['TCP']) }),
   entry('DHCP', [67, 68], ['UDP'], { iana: ['bootps', 'bootpc'] }),
@@ -154,8 +154,8 @@ export const PORT_REGISTRY_METADATA: readonly PortRegistryMetadata[] = [
     status: 'de-facto',
     iana: ['hbci', 'remoteware-cl'],
     ambiguity: {
-      en: 'Vite and other development servers use TCP 3000 by convention; IANA registers HBCI and also records widespread RemoteWare use.',
-      it: 'Vite e altri server di sviluppo usano TCP 3000 per convenzione; IANA registra HBCI e annota anche l’uso diffuso di RemoteWare.'
+      en: 'This project configures Vite on TCP 3000, not its default 5173. IANA records HBCI and RemoteWare here.',
+      it: 'Questo progetto configura Vite su TCP 3000, non sul valore predefinito 5173. IANA registra qui HBCI e RemoteWare.'
     }
   }),
   entry('MySQL', [3306], ['TCP'], { iana: ['mysql'], encrypted: secure([3306], 'MySQL with TLS', ['TCP']) }),

@@ -9,6 +9,7 @@ import { DOMAIN_CHECKLISTS } from './domainChecklists';
 import { ATTACK_PATHS } from './attackPaths';
 import { SECURITY_EVIDENCE_CASES } from './securityEvidence';
 import { CCNA_DOMAINS } from './ccna';
+import { PORT_CONTENT } from './portContent';
 import { PROTOCOL_REGISTRY } from './protocolRegistry';
 import { APPLICATION_SECURITY_SCENARIOS } from './applicationSecurityScenarios';
 import { AVAILABILITY_SCENARIOS } from './availabilityScenarios';
@@ -46,9 +47,10 @@ const CONTENT_DIR = 'src/content';
  * while they lived inside the component, and still carry pre-existing it/en asymmetries
  * (mostly acronyms used in one language only). They are excluded until the translations
  * are reviewed; remove a file from this list once its findings are fixed.
- * protocolRegistry.ts was fully reviewed in I18N-10 (2026-10-15) and is now included.
+ * protocolRegistry.ts (2026-10-15) and portContent.ts (2026-10-16) were reviewed
+ * in I18N-10 and are now included.
  */
-const PENDING_TRANSLATION_REVIEW = new Set(['deviceRegistry.ts', 'portContent.ts']);
+const PENDING_TRANSLATION_REVIEW = new Set(['deviceRegistry.ts']);
 
 interface Pair {
   file: string;
@@ -166,6 +168,7 @@ const BILINGUAL_DATASETS: ReadonlyArray<readonly [string, unknown]> = [
   ['SECURITY_EVIDENCE_CASES', SECURITY_EVIDENCE_CASES],
   ['CCNA_DOMAINS', CCNA_DOMAINS],
   ['PROTOCOL_REGISTRY', PROTOCOL_REGISTRY],
+  ['PORT_CONTENT', PORT_CONTENT],
   ['APPLICATION_SECURITY_SCENARIOS', APPLICATION_SECURITY_SCENARIOS],
   ['AVAILABILITY_SCENARIOS', AVAILABILITY_SCENARIOS],
   ['EMAIL_HUMAN_SECURITY_SCENARIOS', EMAIL_HUMAN_SECURITY_SCENARIOS],
@@ -234,6 +237,18 @@ describe('structured bilingual datasets', () => {
         expect(protocol[field]).toHaveProperty('it');
         expect(protocol[field]).toHaveProperty('en');
         collectEmptyTranslations(protocol[field], `${protocol.name}.${field}`, offenders);
+      }
+    }
+    expect(offenders).toEqual([]);
+  });
+
+  it('checks every port description and security note', () => {
+    const offenders: string[] = [];
+    for (const port of PORT_CONTENT) {
+      for (const field of ['description', 'security'] as const) {
+        expect(port[field]).toHaveProperty('it');
+        expect(port[field]).toHaveProperty('en');
+        collectEmptyTranslations(port[field], `${port.service}.${field}`, offenders);
       }
     }
     expect(offenders).toEqual([]);

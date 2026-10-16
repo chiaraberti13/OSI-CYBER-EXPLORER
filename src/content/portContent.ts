@@ -46,8 +46,8 @@ export const PORT_CONTENT: PortContent[] = [
       it: "Consente l'accesso crittografato sicuro a terminali remoti e trasferimenti file (SFTP)."
     },
     security: {
-      en: 'Highly secure replacement for Telnet. Ensure strong key auth and disable root login.',
-      it: "Sostituto sicuro di Telnet. Assicurare l'autenticazione a chiavi e disabilitare login root."
+      en: 'Use modern SSH, verify host keys, require strong authentication and restrict administrator access.',
+      it: 'Usare SSH moderno, verificare le chiavi host, richiedere autenticazione robusta e limitare gli accessi amministrativi.'
     },
     isSecure: true
   },
@@ -62,8 +62,8 @@ export const PORT_CONTENT: PortContent[] = [
       it: 'Comunicazione testuale non cifrata legacy per la gestione di shell remote.'
     },
     security: {
-      en: 'CRITICAL RISK. All data, including logins and passwords, is transmitted in cleartext.',
-      it: 'RISCHIO CRITICO. Tutti i dati, inclusi login e password, sono trasmessi in chiaro.'
+      en: 'High risk: all data, including usernames and passwords, travels in cleartext. Replace with SSH.',
+      it: 'Rischio elevato: tutti i dati, inclusi utenti e password, viaggiano in chiaro. Sostituire con SSH.'
     },
     isSecure: false
   },
@@ -78,8 +78,8 @@ export const PORT_CONTENT: PortContent[] = [
       it: "Protocollo standard per l'invio e l'instradamento delle email tra i server."
     },
     security: {
-      en: 'Vulnerable to email spoofing and spam unless secured with STARTTLS and SPF/DKIM/DMARC.',
-      it: 'Vulnerabile a spoofing e spam se non protetto con STARTTLS e record SPF/DKIM/DMARC.'
+      en: 'STARTTLS protects a transport hop when negotiated and validated. SPF/DKIM/DMARC address domain impersonation, not all spam.',
+      it: 'STARTTLS protegge un tratto di trasporto se negoziato e validato. SPF/DKIM/DMARC contrastano la falsificazione del dominio, non tutto lo spam.'
     },
     isSecure: false
   },
@@ -90,14 +90,14 @@ export const PORT_CONTENT: PortContent[] = [
     type: 'TCP',
     range: 'well-known',
     description: {
-      en: 'Cisco proprietary AAA protocol used for authenticating administrators on routers, switches, and firewalls.',
-      it: "Protocollo AAA proprietario Cisco utilizzato per l'autenticazione degli amministratori su router, switch e firewall."
+      en: 'AAA protocol for network device administration, documented in RFC 8907.',
+      it: 'Protocollo AAA per amministrare apparati di rete, documentato nella RFC 8907.'
     },
     security: {
-      en: 'Enforces TCP connectivity and encrypts the complete packet payload body (only the standard header remains plaintext), making it extremely secure.',
-      it: "Forza la connettività TCP e cifra l'intero corpo del payload dei pacchetti (solo l'intestazione standard è in chiaro), rendendolo estremamente sicuro."
+      en: 'Legacy body obfuscation is not strong encryption and lacks integrity protection. Isolate management traffic and protect its transport.',
+      it: 'L’offuscamento legacy del corpo non è cifratura robusta e manca la protezione di integrità. Isolare il traffico di gestione e proteggerne il trasporto.'
     },
-    isSecure: true
+    isSecure: false
   },
   {
     port: 53,
@@ -110,8 +110,8 @@ export const PORT_CONTENT: PortContent[] = [
       it: 'Traduce i nomi di dominio (come example.com) in indirizzi IP leggibili dalle macchine.'
     },
     security: {
-      en: 'Cleartext by default: queries and answers are readable and forgeable. Target for DNS spoofing, cache poisoning, tunneling, and reflection/amplification. DNSSEC signs the records (authenticity and integrity) but does not encrypt; confidentiality requires DoT (TCP 853) or DoH (TCP 443).',
-      it: 'In chiaro per impostazione predefinita: query e risposte sono leggibili e falsificabili. Bersaglio di DNS spoofing, cache poisoning, tunneling e reflection/amplification. DNSSEC firma i record (autenticità e integrità) ma non cifra; per la riservatezza servono DoT (TCP 853) o DoH (TCP 443).'
+      en: 'Cleartext DNS permits interception and spoofing. DNSSEC authenticates records without encryption; DoT or DoH encrypts the connection to the resolver.',
+      it: 'DNS in chiaro espone a intercettazione e spoofing. DNSSEC autentica i record senza cifrarli; DoT o DoH cifra la connessione al resolver.'
     },
     isSecure: false
   },
@@ -122,12 +122,12 @@ export const PORT_CONTENT: PortContent[] = [
     type: 'UDP',
     range: 'well-known',
     description: {
-      en: 'Automatically assigns IP addresses and network parameters to client devices.',
-      it: 'Assegna automaticamente indirizzi IP e parametri di rete ai dispositivi client.'
+      en: 'Assigns IPv4 addresses and network settings: server UDP 67, client UDP 68.',
+      it: 'Assegna indirizzi IPv4 e parametri di rete: server UDP 67, client UDP 68.'
     },
     security: {
-      en: 'Subject to DHCP Starvation and Rogue DHCP Server attacks. Prevent via DHCP Snooping.',
-      it: 'Soggetto ad attacchi DHCP Starvation e Rogue DHCP Server. Prevenire tramite DHCP Snooping.'
+      en: 'Rogue servers and address exhaustion are risks. Configure DHCP snooping with trusted ports and suitable rate limits.',
+      it: 'Server abusivi ed esaurimento degli indirizzi sono rischi. Configurare DHCP snooping con porte fidate e limiti di frequenza adeguati.'
     },
     isSecure: false
   },
@@ -142,8 +142,8 @@ export const PORT_CONTENT: PortContent[] = [
       it: 'Un protocollo di trasferimento file molto elementare, spesso usato per il bootstrap di dispositivi diskless.'
     },
     security: {
-      en: 'No encryption or authentication whatsoever. Transmits data in cleartext; restrict to local networks.',
-      it: "Nessuna cifratura e nessuna autenticazione. Trasmette i dati in chiaro; limitare l'uso a reti isolate."
+      en: 'No encryption or authentication. Restrict transfers to isolated, controlled networks.',
+      it: 'Nessuna cifratura o autenticazione. Limitare i trasferimenti a reti isolate e controllate.'
     },
     isSecure: false
   },
@@ -170,12 +170,12 @@ export const PORT_CONTENT: PortContent[] = [
     type: 'Both',
     range: 'well-known',
     description: {
-      en: 'Computer network authentication protocol works on "tickets" to allow nodes to prove identity securely.',
-      it: 'Protocollo di autenticazione di rete operante su "ticket" che permette l\'identità mutua sicura tra nodi.'
+      en: 'Uses tickets to authenticate clients and services; mutual authentication depends on the exchange.',
+      it: 'Usa ticket per autenticare client e servizi; l’autenticazione reciproca dipende dallo scambio.'
     },
     security: {
-      en: 'Strong cryptography-centric system, though vulnerable to ticket exploitation (Golden/Silver Ticket).',
-      it: 'Sistema robusto basato su crittografia, sebbene vulnerabile a exploit sui ticket (Golden/Silver Ticket).'
+      en: 'Protect service and domain keys: their compromise can enable Silver Ticket or Golden Ticket forgery.',
+      it: 'Proteggere le chiavi dei servizi e del dominio: la loro compromissione può consentire falsificazioni Silver Ticket o Golden Ticket.'
     },
     isSecure: true
   },
@@ -186,12 +186,12 @@ export const PORT_CONTENT: PortContent[] = [
     type: 'TCP',
     range: 'well-known',
     description: {
-      en: 'Retrieves emails from a mail server and usually deletes them from the server afterwards.',
-      it: 'Scarica i messaggi email da un server remoto e solitamente li rimuove dal server stesso.'
+      en: 'Retrieves mail; deletion from the server depends on client commands and policy.',
+      it: 'Recupera la posta; la rimozione dal server dipende dai comandi e dalla politica del client.'
     },
     security: {
-      en: 'Insecure in default cleartext. Secure via POP3S (port 995) using SSL/TLS encryption.',
-      it: 'Non sicuro configurato in chiaro. Proteggere tramite POP3S (porta 995) usando SSL/TLS.'
+      en: 'Avoid cleartext credentials. Use POP3S on 995 with certificate validation.',
+      it: 'Evitare credenziali in chiaro. Usare POP3S su 995 con validazione del certificato.'
     },
     isSecure: false
   },
@@ -206,8 +206,8 @@ export const PORT_CONTENT: PortContent[] = [
       it: 'Utilizzato per la distribuzione, consultazione e pubblicazione degli articoli di news Usenet.'
     },
     security: {
-      en: 'Plaintext by default, highly subject to snooping. NNTPS over SSL is the secure choice.',
-      it: "In chiaro di default, esposto a intercettazione. NNTPS via SSL rappresenta l'alternativa sicura."
+      en: 'Cleartext traffic can be intercepted. Use NNTPS with modern TLS and certificate validation.',
+      it: 'Il traffico in chiaro è intercettabile. Usare NNTPS con TLS moderno e validazione del certificato.'
     },
     isSecure: false
   },
@@ -222,8 +222,8 @@ export const PORT_CONTENT: PortContent[] = [
       it: "Sincronizza gli orologi dei dispositivi e dei sistemi all'interno della rete."
     },
     security: {
-      en: 'Frequently abused in DRDoS (Distributed Reflective Denial of Service) amplification attacks.',
-      it: 'Spesso abusato in attacchi DDoS di tipo amplificato (DRDoS Reflective Attacks).'
+      en: 'Exposed servers can enable reflection/amplification attacks (DRDoS). Restrict queries and maintain updated software.',
+      it: 'Server esposti possono consentire attacchi di riflessione/amplificazione (DRDoS). Limitare le query e aggiornare il software.'
     },
     isSecure: false
   },
@@ -234,12 +234,12 @@ export const PORT_CONTENT: PortContent[] = [
     type: 'Both',
     range: 'well-known',
     description: {
-      en: 'Enables client-server communications for Microsoft-based systems and directory services.',
-      it: 'Abilita comunicazioni client-server per i servizi di directory e i sistemi Microsoft-based.'
+      en: 'Maps Microsoft RPC services to their endpoints; subsequent connections can use dynamic ports.',
+      it: 'Associa servizi Microsoft RPC ai relativi endpoint; le connessioni successive possono usare porte dinamiche.'
     },
     security: {
-      en: 'Can disclose system configuration details to attackers. Should be strictly firewalled.',
-      it: 'Rischia di svelare dettagli di configurazione di sistema agli attaccanti. Va schermato severamente.'
+      en: 'Can expose service information. Allow only required clients and endpoints through the firewall.',
+      it: 'Può esporre informazioni sui servizi. Consentire sul firewall soltanto client ed endpoint necessari.'
     },
     isSecure: false
   },
@@ -286,8 +286,8 @@ export const PORT_CONTENT: PortContent[] = [
       it: 'Fornisce sessioni orientate alla connessione per protocolli NetBIOS (condivisione file legacy).'
     },
     security: {
-      en: 'Highly vulnerable to scanning, enumeration, and exploitation. Deprecated in favor of direct SMB (445).',
-      it: 'Altamente vulnerabile a scansioni, enumerazione ed attacchi. Deprecato a favore di SMB diretto (445).'
+      en: 'Legacy file sharing can expose service information. Restrict access and prefer supported SMB directly on 445.',
+      it: 'La condivisione legacy può esporre informazioni sui servizi. Limitare gli accessi e preferire SMB supportato direttamente su 445.'
     },
     isSecure: false
   },
@@ -302,8 +302,8 @@ export const PORT_CONTENT: PortContent[] = [
       it: 'Memorizza e gestisce le email sul server, consentendo la sincronizzazione tra più dispositivi.'
     },
     security: {
-      en: 'Plaintext protocol. Secure via IMAPS (port 993) using explicit SSL/TLS connection wrapper.',
-      it: 'Protocollo in chiaro. Proteggere tramite IMAPS (porta 993) usando wrapper SSL/TLS.'
+      en: 'Avoid cleartext authentication. IMAPS on 993 uses implicit TLS; validate the server certificate.',
+      it: 'Evitare autenticazione in chiaro. IMAPS su 993 usa TLS implicito; validare il certificato del server.'
     },
     isSecure: false
   },
@@ -318,8 +318,8 @@ export const PORT_CONTENT: PortContent[] = [
       it: 'Utilizzato per monitorare, interrogare e configurare apparati di rete quali switch e router.'
     },
     security: {
-      en: 'SNMP v1/v2 transmit plaintext "community strings" (passwords). SNMP v3 is strongly recommended.',
-      it: 'SNMP v1/v2 trasmettono password ("community string") in chiaro. Raccomandato l\'uso esclusivo di SNMP v3.'
+      en: 'SNMP v1/v2c exposes community strings. Configure SNMPv3 authPriv for authentication and encryption; version alone is insufficient.',
+      it: 'SNMP v1/v2c espone le community string. Configurare SNMPv3 authPriv per autenticazione e cifratura; la sola versione non basta.'
     },
     isSecure: false
   },
@@ -334,8 +334,8 @@ export const PORT_CONTENT: PortContent[] = [
       it: 'Ascolta le notifiche e gli alert asincroni generati dagli apparati verso il sistema di gestione.'
     },
     security: {
-      en: 'Vulnerable to spoofed alert injections unless configured with SNMPv3 security and authentication.',
-      it: 'Vulnerabile a finti alert se non protetto con le chiavi di sicurezza e autenticazione di SNMPv3.'
+      en: 'Unauthenticated alerts can be forged. Configure SNMPv3 authPriv and restrict authorized senders.',
+      it: 'Gli avvisi non autenticati sono falsificabili. Configurare SNMPv3 authPriv e limitare i mittenti autorizzati.'
     },
     isSecure: false
   },
@@ -346,8 +346,8 @@ export const PORT_CONTENT: PortContent[] = [
     type: 'TCP',
     range: 'well-known',
     description: {
-      en: 'Decides routing paths between Autonomous Systems (ASes) on the global Internet.',
-      it: 'Decide i percorsi di instradamento tra gli Autonomous Systems (AS) su Internet.'
+      en: 'Exchanges reachability and selects routes between Autonomous Systems (AS) on the Internet.',
+      it: 'Scambia informazioni di raggiungibilità e seleziona rotte tra sistemi autonomi (AS) su Internet.'
     },
     security: {
       en: 'The TCP session is not encrypted: TCP-MD5 or TCP-AO only authenticate the peer. Vulnerable to hijacking and route leaks, mitigated by prefix filtering, max-prefix limits, RPKI origin validation, and GTSM/TTL security.',
@@ -366,8 +366,8 @@ export const PORT_CONTENT: PortContent[] = [
       it: 'Utilizzato per interrogare e gestire profili utente e oggetti nei servizi di directory in rete.'
     },
     security: {
-      en: 'Transmits queries and passwords in plaintext unless upgraded via STARTTLS or LDAPS (636).',
-      it: 'Invia letture e credenziali in chiaro a meno di non elevare il canale via STARTTLS o scegliere LDAPS (636).'
+      en: 'Simple bind can expose passwords without transport protection. Require STARTTLS or LDAPS (636) and validate certificates.',
+      it: 'Il simple bind può esporre password senza protezione del trasporto. Richiedere STARTTLS o LDAPS (636) e validare i certificati.'
     },
     isSecure: false
   },
@@ -378,12 +378,12 @@ export const PORT_CONTENT: PortContent[] = [
     type: 'TCP',
     range: 'well-known',
     description: {
-      en: 'Enables encrypted, authentic web browsing using Transport Layer Security (TLS).',
-      it: 'Consente la navigazione web cifrata e autenticata utilizzando TLS.'
+      en: 'Protects web communication using TLS and certificate-based server authentication.',
+      it: 'Protegge la comunicazione web tramite TLS e autenticazione del server basata su certificati.'
     },
     security: {
-      en: 'Standard secure standard. Protect against certificate private key leaks and outdated TS suites.',
-      it: 'Standard di sicurezza moderno. Proteggere da fughe di chiavi private e cifre obsolete.'
+      en: 'Validate certificates and use modern TLS. Encryption does not establish that a website or its content is trustworthy.',
+      it: 'Validare i certificati e usare TLS moderno. La cifratura non dimostra che un sito o i suoi contenuti siano affidabili.'
     },
     isSecure: true
   },
@@ -398,8 +398,8 @@ export const PORT_CONTENT: PortContent[] = [
       it: "Fornisce l'accesso condiviso a file, stampanti e porte seriali all'interno di reti locali."
     },
     security: {
-      en: 'Often abused by historical exploits (EternalBlue, WannaCry). Enforce SMBv3 signature and encryption.',
-      it: 'Molto sfruttato in exploit storici (EternalBlue, WannaCry). Forzare firme digitali e SMBv3.'
+      en: 'Disable SMBv1 and patch systems. Require signing for integrity and SMBv3 encryption for confidentiality; restrict access.',
+      it: 'Disabilitare SMBv1 e aggiornare i sistemi. Richiedere firma per integrità e cifratura SMBv3 per riservatezza; limitare gli accessi.'
     },
     isSecure: false
   },
@@ -410,12 +410,12 @@ export const PORT_CONTENT: PortContent[] = [
     type: 'TCP',
     range: 'well-known',
     description: {
-      en: 'Securely routes and sends electronic mail using implicit TLS encryption.',
-      it: 'Invia e instrada la posta elettronica in modo sicuro usando la cifratura TLS implicita.'
+      en: 'Client message submission over implicit TLS; distinct from server-to-server relay on 25.',
+      it: 'Invio della posta dal client con TLS implicito; distinto dal relay tra server su 25.'
     },
     security: {
-      en: 'Uses SSL/TLS to prevent message sniffing or credential theft during mail dispatch.',
-      it: "Utilizza SSL/TLS per prevenire sniffing dei messaggi o furto credenziali all'invio."
+      en: 'Validate certificates and authenticate users. Transport encryption does not provide end-to-end message encryption.',
+      it: 'Validare i certificati e autenticare gli utenti. La cifratura del trasporto non cifra i messaggi da mittente a destinatario.'
     },
     isSecure: true
   },
@@ -426,8 +426,8 @@ export const PORT_CONTENT: PortContent[] = [
     type: 'UDP',
     range: 'well-known',
     description: {
-      en: 'Standard protocol for transmitting system information and event logs across nodes.',
-      it: "Protocollo per la raccolta e l'invio di log di sistema e messaggi di diagnostica."
+      en: 'Sends system events and diagnostic logs to a collector.',
+      it: 'Invia eventi di sistema e log diagnostici a un collettore.'
     },
     security: {
       en: 'Unencrypted UDP. Messages can be intercepted, read, or spoofed easily on transit.',
@@ -442,28 +442,28 @@ export const PORT_CONTENT: PortContent[] = [
     type: 'TCP',
     range: 'well-known',
     description: {
-      en: 'Preferred modern port for routing user emails, requiring authentication and STARTTLS security.',
-      it: "Canale preferito moderno per l'invio di email da client, richiede autenticazione ed elezione a STARTTLS."
+      en: 'Client message submission, commonly upgraded with STARTTLS. Does not replace server-to-server relay on 25.',
+      it: 'Invio della posta dal client, comunemente protetto con STARTTLS. Non sostituisce il relay tra server su 25.'
     },
     security: {
-      en: 'Safe when configured to enforce encryption. Replaces plaintext transit via legacy port 25.',
-      it: 'Sicuro se configurato con cifratura obbligatoria. Sostituisce il vecchio transito in chiaro su porta 25.'
+      en: 'Require STARTTLS before credentials or messages, validate certificates and enforce authentication. Port 587 alone provides no encryption.',
+      it: 'Richiedere STARTTLS prima di credenziali o messaggi, validare i certificati e imporre autenticazione. La porta 587 da sola non cifra.'
     },
     isSecure: true
   },
   {
     port: 636,
     service: 'LDAPS',
-    name: 'LDAP Secure (over SSL/TLS)',
+    name: 'LDAP Secure (over TLS)',
     type: 'TCP',
     range: 'well-known',
     description: {
-      en: 'Provides encrypted connection for Active Directory and LDAP querying over SSL/TLS.',
-      it: 'Fornisce un canale crittografato protetto per interrogazioni Active Directory e LDAP via SSL/TLS.'
+      en: 'LDAP directory access over an implicit TLS connection.',
+      it: 'Accesso alle directory LDAP tramite una connessione TLS implicita.'
     },
     security: {
-      en: 'Protects critical user credentials and organization metadata from snooping.',
-      it: 'Protegge le credenziali sensibili degli utenti e i dati di struttura interni da eavesdropping.'
+      en: 'Validate certificates and restrict directory permissions; TLS protects transport, not authorization policy.',
+      it: 'Validare i certificati e limitare i permessi sulla directory; TLS protegge il trasporto, non la politica di autorizzazione.'
     },
     isSecure: true
   },
@@ -474,12 +474,12 @@ export const PORT_CONTENT: PortContent[] = [
     type: 'TCP',
     range: 'well-known',
     description: {
-      en: 'Accesses electronic mail on mail servers over an encrypted SSL/TLS session.',
-      it: 'Accede alla posta elettronica sul server remoto tramite una sessione cifrata SSL/TLS.'
+      en: 'Accesses mail over implicit TLS between client and server.',
+      it: 'Accede alla posta tramite TLS implicito tra client e server.'
     },
     security: {
-      en: 'Enforces end-to-end transport layer security, secure against local Wi-Fi interception.',
-      it: 'Garantisce la sicurezza dello strato di trasporto, protetto da eavesdropping su reti locali.'
+      en: 'Validate server certificates. This protects the connection, not messages end-to-end between correspondents.',
+      it: 'Validare i certificati del server. Protegge la connessione, non i messaggi da mittente a destinatario.'
     },
     isSecure: true
   },
@@ -494,8 +494,8 @@ export const PORT_CONTENT: PortContent[] = [
       it: 'Abilita il download sicuro delle email cifrando credenziali e messaggi.'
     },
     security: {
-      en: 'Prevents credential eavesdropping in transit during client extraction.',
-      it: "Previene l'intercettazione delle credenziali in transito durante il download."
+      en: 'Validate server certificates to protect credentials and messages in transit between client and server.',
+      it: 'Validare i certificati del server per proteggere credenziali e messaggi in transito tra client e server.'
     },
     isSecure: true
   },
@@ -512,8 +512,8 @@ export const PORT_CONTENT: PortContent[] = [
       it: 'Socket di default per il database relazionale Microsoft SQL Server.'
     },
     security: {
-      en: 'Frequent target for dictionary attacks. Block external access and enforce SQL encryption.',
-      it: 'Frequente bersaglio di attacchi dictionary. Bloccare accessi esterni e forzare crittografia.'
+      en: 'Restrict SQL access to authorized clients, require TLS and strong authentication.',
+      it: 'Limitare gli accessi SQL ai client autorizzati, richiedere TLS e autenticazione robusta.'
     },
     isSecure: false
   },
@@ -544,8 +544,8 @@ export const PORT_CONTENT: PortContent[] = [
       it: 'Porta alternativa storica per la gestione centrale delle richieste di autenticazione.'
     },
     security: {
-      en: 'Vulnerable to security gaps present in older RADIUS specifications. Prefer modern port 1812.',
-      it: 'Soggetto a vulnerabilità note presenti nelle vecchie specifiche. Preferire la porta moderna 1812.'
+      en: 'Use standard port 1812 for interoperability. Changing the port does not add encryption or repair protocol weaknesses.',
+      it: 'Usare la porta standard 1812 per interoperabilità. Cambiare porta non aggiunge cifratura né risolve debolezze del protocollo.'
     },
     isSecure: false
   },
@@ -556,12 +556,12 @@ export const PORT_CONTENT: PortContent[] = [
     type: 'UDP',
     range: 'registered',
     description: {
-      en: 'Legacy alternate port used for collecting system events and usage logs.',
-      it: "Porta alternativa storica utilizzata per raccogliere i log correlati all'account utente."
+      en: 'Legacy port for collecting session usage and accounting records.',
+      it: 'Porta legacy per raccogliere dati di utilizzo delle sessioni e registrazioni di accounting.'
     },
     security: {
-      en: 'Plaintext transit. Better to transition active servers to contemporary port 1813.',
-      it: 'Transito dati sensibili in chiaro. Meglio migrare i server operativi alla porta moderna 1813.'
+      en: 'Use standard port 1813 for interoperability. Protect the transport: changing the port does not encrypt accounting records.',
+      it: 'Usare la porta standard 1813 per interoperabilità. Proteggere il trasporto: cambiare porta non cifra i dati di accounting.'
     },
     isSecure: false
   },
@@ -576,8 +576,8 @@ export const PORT_CONTENT: PortContent[] = [
       it: "Porta standard per l'autenticazione centralizzata aziendale di connessioni VPN e Wi-Fi Corporate."
     },
     security: {
-      en: 'Relies on shared secrets. Should be coupled with secure IPSec tunnels or restricted network VLANs.',
-      it: 'Basato su segreti condivisi. È altamente consigliabile blindarlo dentro tunnel IPSec o VLAN protette.'
+      en: 'Shared secrets do not encrypt the entire packet. Use protected transport such as IPsec or supported RADIUS over TLS; a VLAN does not encrypt.',
+      it: 'I segreti condivisi non cifrano l’intero pacchetto. Usare trasporto protetto come IPsec o RADIUS su TLS se supportato; una VLAN non cifra.'
     },
     isSecure: false
   },
@@ -592,8 +592,8 @@ export const PORT_CONTENT: PortContent[] = [
       it: 'Porta ufficiale IANA destinata alla raccolta dati di monitoraggio e log di attività remota degli utenti.'
     },
     security: {
-      en: 'Insecure unless traffic passes through private local subnets or encrypted VPN links.',
-      it: 'Insicuro a meno che i dati non passino attraverso sottoreti private o reti VPN protette.'
+      en: 'Accounting data needs protected transport and restricted peers. A private subnet alone provides no encryption.',
+      it: 'I dati di accounting richiedono trasporto protetto e peer autorizzati. Una sottorete privata da sola non cifra.'
     },
     isSecure: false
   },
@@ -604,8 +604,8 @@ export const PORT_CONTENT: PortContent[] = [
     type: 'Both',
     range: 'registered',
     description: {
-      en: 'Common default development server port used in Vite, React, and Express development.',
-      it: 'Porta di sviluppo predefinita comune usata nei framework Vite, React ed Express.'
+      en: 'This project configures Vite on 3000; the Vite default is 5173. Development ports are configurable.',
+      it: 'Questo progetto configura Vite su 3000; il valore predefinito di Vite è 5173. Le porte di sviluppo sono configurabili.'
     },
     security: {
       en: 'Plain HTTP with no authentication by default, plus verbose errors and source maps. Bind it to localhost only and never expose a development server on a public interface.',
@@ -624,8 +624,8 @@ export const PORT_CONTENT: PortContent[] = [
       it: 'Porta standard per connettersi al motore database relazionale MySQL.'
     },
     security: {
-      en: 'Prone to credential brute forcing. Bind only to localhost (127.0.0.1) unless cluster-synchronized.',
-      it: 'Soggetto a tentativi di brute force delle credenziali. Consigliato il binding solo su localhost.'
+      en: 'Restrict access to authorized clients, require TLS and use least-privilege accounts with strong authentication.',
+      it: 'Limitare gli accessi ai client autorizzati, richiedere TLS e usare account con privilegi minimi e autenticazione robusta.'
     },
     isSecure: false
   },
@@ -636,12 +636,12 @@ export const PORT_CONTENT: PortContent[] = [
     type: 'Both',
     range: 'registered',
     description: {
-      en: 'Microsoft graphical user interface connection to remote physical or virtual systems.',
-      it: 'Collegamento grafico proprietario Microsoft a desktop windows su host remoti.'
+      en: 'Provides graphical remote desktop access to physical or virtual systems.',
+      it: 'Fornisce accesso grafico al desktop remoto di sistemi fisici o virtuali.'
     },
     security: {
-      en: 'High-risk port. Constantly targeted by ransomware bots. Protect via VPN, MFA, or Gateway.',
-      it: 'Porta ad alto rischio. Obiettivo prediletto dai bot ransomware. Proteggere con VPN e MFA.'
+      en: 'Patch hosts, require NLA and restrict exposure through a managed gateway or VPN with MFA.',
+      it: 'Aggiornare gli host, richiedere NLA e limitare l’esposizione tramite gateway gestito o VPN con MFA.'
     },
     isSecure: false
   },
@@ -652,12 +652,12 @@ export const PORT_CONTENT: PortContent[] = [
     type: 'TCP',
     range: 'registered',
     description: {
-      en: 'Enables network connections to PostgreSQL Object-Relational Database.',
-      it: 'Abilita connessioni di rete al database relazionale PostgreSQL.'
+      en: 'Enables network connections to the PostgreSQL object-relational database.',
+      it: 'Abilita connessioni di rete al database relazionale a oggetti PostgreSQL.'
     },
     security: {
-      en: 'Ensure pg_hba.conf restricts inbound client IPs and requires MD5/Scram passwords with TLS.',
-      it: 'Configurare pg_hba.conf per limitare gli ip client abilitati richiedendo pass secure e TLS.'
+      en: 'Restrict client IP addresses in pg_hba.conf; prefer SCRAM-SHA-256 authentication and require TLS.',
+      it: 'Limitare gli indirizzi IP dei client in pg_hba.conf; preferire autenticazione SCRAM-SHA-256 e richiedere TLS.'
     },
     isSecure: false
   },
@@ -668,12 +668,12 @@ export const PORT_CONTENT: PortContent[] = [
     type: 'TCP',
     range: 'registered',
     description: {
-      en: 'Extremely fast in-memory key-value database used for caching and session indexing.',
-      it: 'Database in-memory a chiave-valore velocissimo per cache e indexing sessioni.'
+      en: 'In-memory key-value database for caching and session storage.',
+      it: 'Database in memoria a chiave-valore per cache e archiviazione delle sessioni.'
     },
     security: {
-      en: 'By default, lacks strong security. Publicly exposed databases can leak cleartext sessions easily.',
-      it: 'Di default ha pochissime protezioni. Se esposto può causare fughe di dati critiche.'
+      en: 'Protected mode reduces accidental exposure. Still configure ACL permissions, TLS and network restrictions.',
+      it: 'La modalità protetta riduce l’esposizione accidentale. Configurare comunque permessi ACL, TLS e restrizioni di rete.'
     },
     isSecure: false
   },
@@ -688,8 +688,8 @@ export const PORT_CONTENT: PortContent[] = [
       it: "Protocollo ufficiale per l'invio crittografato di log di eventi di sistema protetto da TLS."
     },
     security: {
-      en: 'Ensures data confidentiality and authenticates sender and receiver nodes securely.',
-      it: "Garantisce la riservatezza delle informazioni di audit e autentica l'origine e i server log."
+      en: 'TLS protects logs in transit. Configure certificate validation and authorized peers; mutual authentication is not automatic.',
+      it: 'TLS protegge i log in transito. Configurare validazione dei certificati e peer autorizzati; l’autenticazione reciproca non è automatica.'
     },
     isSecure: true
   },
@@ -700,12 +700,12 @@ export const PORT_CONTENT: PortContent[] = [
     type: 'TCP',
     range: 'registered',
     description: {
-      en: 'Common alternate port for web hosting services or local application proxies.',
-      it: 'Porta alternativa comune per hosting web, proxy o server Apache Tomcat dedicati.'
+      en: 'Alternate port for web services and application proxies, including Apache Tomcat.',
+      it: 'Porta alternativa per servizi web e proxy applicativi, incluso Apache Tomcat.'
     },
     security: {
-      en: 'Identical risk profile as default HTTP. Used frequently to test web interfaces safely.',
-      it: 'Stesso profilo di rischio di HTTP. Usata spesso per interfacce amministrative interne.'
+      en: 'Changing the port does not secure HTTP. Require encrypted transport and restrict administrative interfaces.',
+      it: 'Cambiare porta non protegge HTTP. Richiedere trasporto cifrato e limitare le interfacce amministrative.'
     },
     isSecure: false
   },
@@ -716,12 +716,12 @@ export const PORT_CONTENT: PortContent[] = [
     type: 'TCP',
     range: 'registered',
     description: {
-      en: 'NoSQL document-oriented engine default listening channel.',
-      it: 'Canale di ascolto predefinito per il database NoSQL orientato ai documenti MongoDB.'
+      en: 'Default listening port for the MongoDB document-oriented NoSQL database.',
+      it: 'Porta di ascolto predefinita del database NoSQL MongoDB orientato ai documenti.'
     },
     security: {
-      en: 'Frequently left exposed without authentication by mistake. Must require authorization.',
-      it: 'Spesso lasciato esposto senza autenticazione per errore. Attivare il rbac/controllo accessi.'
+      en: 'Enable authentication, role-based authorization and TLS; restrict network access to authorized clients.',
+      it: 'Abilitare autenticazione, autorizzazione basata sui ruoli e TLS; limitare gli accessi di rete ai client autorizzati.'
     },
     isSecure: false
   }

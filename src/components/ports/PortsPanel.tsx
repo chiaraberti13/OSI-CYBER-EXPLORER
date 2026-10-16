@@ -78,8 +78,8 @@ export default function PortsPanel({
           <h2 className="font-mono text-xs font-bold text-slate-700">0 - 1023</h2>
           <p className="text-[11px] text-slate-500 mt-1 lines-clamp-2">
             {language === 'en'
-              ? 'Reserved for core system administration and essential transport daemons (HTTP, DNS, SSH, SMTP).'
-              : 'Assegnate da IANA per sistemi e servizi fondamentali della suite TCP/IP.'}
+              ? 'System ports: include services such as HTTP, DNS and SSH; not every number is assigned.'
+              : 'Porte di sistema: includono servizi come HTTP, DNS e SSH; non tutti i numeri sono assegnati.'}
           </p>
         </button>
 
@@ -102,8 +102,8 @@ export default function PortsPanel({
           <h2 className="font-mono text-xs font-bold text-slate-700">1024 - 49151</h2>
           <p className="text-[11px] text-slate-500 mt-1 lines-clamp-2">
             {language === 'en'
-              ? 'Assigned to user processes, databases (MySQL, Redis, PostgreSQL), third-party programs or local web servers.'
-              : 'Assegnate a ditte, utenti o processi specifici approvati (database, app locali, microservizi).'}
+              ? 'User ports: include registered application services. Registration does not certify security.'
+              : 'Porte utente: includono servizi applicativi registrati. La registrazione non certifica la sicurezza.'}
           </p>
         </button>
 
@@ -126,8 +126,8 @@ export default function PortsPanel({
           <h2 className="font-mono text-xs font-bold text-slate-700">49152 - 65535</h2>
           <p className="text-[11px] text-slate-500 mt-1 lines-clamp-2">
             {language === 'en'
-              ? 'Ephemeral sockets dynamically chosen by the host OS during client connection initiation.'
-              : "Porte temporanee assegnate dinamicamente dal sistema operativo client all'avvio di connessioni esterne."}
+              ? 'Private/dynamic range, not assigned by IANA. The operating system may use a different ephemeral range.'
+              : 'Intervallo privato/dinamico, non assegnato da IANA. Il sistema operativo può usare un diverso intervallo effimero.'}
           </p>
         </button>
       </div>
@@ -146,7 +146,7 @@ export default function PortsPanel({
             placeholder={
               language === 'en'
                 ? 'Search ports, services, security or protocols...'
-                : 'Cerca porte, sigle, sicurezze o protocolli...'
+                : 'Cerca porte, sigle, sicurezza o protocolli...'
             }
             className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100/50 transition-all font-medium"
           />
@@ -205,7 +205,9 @@ export default function PortsPanel({
             className="min-h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-700 outline-none focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100/50"
           >
             <option value="all">{language === 'en' ? 'All services' : 'Tutti i servizi'}</option>
-            <option value="secure">{language === 'en' ? 'Secure by design' : 'Sicuri per progettazione'}</option>
+            <option value="secure">
+              {language === 'en' ? 'Cryptographic protection (configure)' : 'Protezione crittografica (da configurare)'}
+            </option>
             <option value="review">{language === 'en' ? 'Needs security review' : 'Da valutare con attenzione'}</option>
           </select>
         </label>
@@ -241,12 +243,12 @@ export default function PortsPanel({
             <Activity className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
             <div>
               <h2 className="font-bold text-xs text-emerald-800 uppercase tracking-wider">
-                {language === 'en' ? 'Understanding Dynamic Range' : 'Comprensione della Banda Dinamica'}
+                {language === 'en' ? 'Understanding Dynamic Ports' : 'Comprendere le porte dinamiche'}
               </h2>
               <p className="text-[11px] text-emerald-700 leading-relaxed mt-1">
                 {language === 'en'
-                  ? 'This range (49152 to 65535) does not host pre-assigned application daemons. When you open a website, your computer chooses a dynamic port from this exact block as the "Source Port" (Porta Sorgente) to route incoming server replies back to your browser process.'
-                  : 'Questo intervallo (da 49152 a 65535) non ospita demoni di sistema fissi o preassegnati. Quando apri una pagina web, il tuo computer sceglie una porta dinamica da questo blocco come "Porta Sorgente" per ricanalizzare le risposte della rete verso la scheda corretta.'}
+                  ? 'IANA does not assign services in 49152–65535. Clients commonly use temporary source ports, but their range depends on the operating system and configuration. A connection is identified by protocol and both endpoint addresses and ports, not by one port alone.'
+                  : 'IANA non assegna servizi in 49152–65535. I client usano comunemente porte sorgenti temporanee, ma il loro intervallo dipende dal sistema operativo e dalla configurazione. Una connessione è identificata da protocollo, indirizzi e porte di entrambi gli endpoint, non da una sola porta.'}
               </p>
             </div>
           </div>
@@ -257,19 +259,20 @@ export default function PortsPanel({
             {filteredPorts.map((item, idx) => (
               <motion.div
                 key={`${item.ports.join('-')}-${item.transports.join('-')}`}
+                data-port-service={item.service}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: Math.min(idx * 0.02, 0.2) }}
-                className="bg-white border border-slate-100 rounded-lg p-4 hover:shadow-md hover:border-indigo-100 transition-all group flex flex-col justify-between"
+                className="bg-white border border-slate-100 rounded-lg p-4 hover:shadow-md hover:border-indigo-100 transition-all group flex min-w-0 flex-col justify-between break-words"
               >
                 <div>
                   {/* Header segment of port row */}
-                  <div className="flex justify-between items-start gap-2 mb-2">
-                    <span className="flex items-center gap-1.5">
+                  <div className="flex flex-wrap justify-between items-start gap-2 mb-2">
+                    <span className="flex min-w-0 flex-wrap items-center gap-1.5">
                       <span className="px-2.5 py-1 bg-slate-900 text-white font-mono font-semibold text-xs rounded-lg select-all">
                         <SearchHighlight text={`PORT ${item.ports.join(' / ')}`} query={searchTerm} />
                       </span>
-                      <span className="text-xs font-semibold text-slate-800 tracking-tight">
+                      <span className="min-w-0 text-xs font-semibold text-slate-800 tracking-tight">
                         <SearchHighlight text={item.service} query={searchTerm} />
                       </span>
                     </span>
