@@ -1,5 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
+import { STUDY_MANUAL } from '../src/content/studyManual';
 
 /**
  * QA-20 — end-to-end coverage of the eJPT study track (PENTEST-01/02/03).
@@ -35,14 +36,21 @@ test.describe('eJPT study track (QA-20)', () => {
       // Extension chapters of the eJPT path carry the cert label (toolbar + card).
       await expect(page.getByText(EJPT_CERT_LABEL).first()).toBeVisible();
 
-      // The "On this page" rail lists the three topics of the chapter.
-      const topicRail = page.getByRole('navigation', { name: 'In questa pagina' });
-      await expect(topicRail.getByRole('button')).toHaveCount(3);
+      // The "On this page" rail lists one button per topic of the chapter. The
+      // expected counts are derived from the dataset (ENG-31), so adding a topic or a
+      // guided exercise never forces a hand-edit here.
+      const data = STUDY_MANUAL.find((c) => c.id === chapter.id);
+      if (!data) throw new Error(`missing chapter ${chapter.id}`);
+      const topicCount = data.topics.length;
+      const guidedCount = data.topics.reduce((n, topic) => n + (topic.guidedLabs?.length ?? 0), 0);
 
-      // Each topic surfaces its guided exercise, the primary practical action that
-      // reuses an existing interactive lab (attackpaths, ports, inspection, …).
+      const topicRail = page.getByRole('navigation', { name: 'In questa pagina' });
+      await expect(topicRail.getByRole('button')).toHaveCount(topicCount);
+
+      // Each guided exercise is the primary practical action that reuses an existing
+      // interactive lab (attackpaths, ports, inspection, …).
       const guidedActions = page.locator('[data-manual-action="guided-exercise"]');
-      await expect(guidedActions).toHaveCount(3);
+      await expect(guidedActions).toHaveCount(guidedCount);
       await expect(guidedActions.first()).toContainText('Fai l’esercizio guidato');
 
       // The offensive content stays WCAG 2.2 AA accessible.

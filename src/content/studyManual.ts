@@ -1766,6 +1766,62 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
             ]
           }
         ]
+      },
+      {
+        id: 'ip-services-ntp',
+        title: {
+          it: 'NTP: sincronizzazione del tempo',
+          en: 'NTP: time synchronization'
+        },
+        objectives: [
+          {
+            it: 'Spiegare la gerarchia NTP a stratum, i ruoli client, server e peer, e il trasporto su UDP 123.',
+            en: 'Explain the NTP stratum hierarchy, the client, server, and peer roles, and the transport over UDP 123.'
+          },
+          {
+            it: 'Argomentare perché un tempo accurato è un prerequisito di sicurezza, non una comodità.',
+            en: 'Argue why accurate time is a security prerequisite, not a convenience.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere UDP e il ruolo dei servizi IP di infrastruttura (argomenti DHCP e DNS di questo capitolo).',
+            en: 'Know UDP and the role of infrastructure IP services (the DHCP and DNS topics of this chapter).'
+          }
+        ],
+        theory: [
+          {
+            it: 'NTP allinea gli orologi dei dispositivi sulla rete usando UDP 123. Lo stratum misura la distanza da un riferimento autorevole: stratum 0 è l’orologio di riferimento (GPS, atomico), stratum 1 un server collegato direttamente a esso, e ogni salto aggiunge uno fino a 15; stratum 16 significa non sincronizzato. Si preferisce lo stratum più basso, cioè la sorgente più vicina al riferimento.',
+            en: 'NTP aligns device clocks across the network over UDP 123. The stratum measures the distance from an authoritative reference: stratum 0 is the reference clock (GPS, atomic), stratum 1 a server directly attached to it, and each hop adds one up to 15; stratum 16 means unsynchronized. The lower stratum is preferred, that is the source closest to the reference.'
+          },
+          {
+            it: 'Un dispositivo può agire da client, server o peer; configurare più sorgenti attendibili protegge da un singolo orologio guasto o malevolo. Senza protezione, un server NTP fasullo può spostare il tempo e con esso tutto ciò che vi dipende: per questo si usano l’autenticazione NTP e, sugli stack moderni, NTS (Network Time Security).',
+            en: 'A device can act as client, server, or peer; configuring several trusted sources protects against a single faulty or malicious clock. Without protection, a rogue NTP server can shift time and everything that depends on it: this is why NTP authentication and, on modern stacks, NTS (Network Time Security) are used.'
+          },
+          {
+            it: 'Il tempo accurato è un prerequisito di sicurezza. Senza di esso i log di dispositivi diversi non sono correlabili, le finestre di validità dei certificati non sono valutabili e i protocolli sensibili al tempo falliscono. È il motivo per cui NTP e i timestamp di syslog si configurano insieme, in UTC, così che un SIEM possa allineare gli eventi di apparati diversi allo stesso secondo.',
+            en: 'Accurate time is a security prerequisite. Without it the logs of different devices cannot be correlated, certificate validity windows cannot be judged, and time-sensitive protocols fail. This is why NTP and syslog timestamps are configured together, in UTC, so that a SIEM can line up events from different devices to the same second.'
+          }
+        ],
+        example: {
+          it: 'Configurando due server NTP attendibili e marcando il syslog con il tempo NTP in UTC, un SIEM allinea gli eventi di apparati diversi allo stesso secondo; un dispositivo fermo a stratum 16 rivela una sincronizzazione rotta.',
+          en: 'Configuring two trusted NTP servers and stamping syslog with NTP time in UTC, a SIEM lines up events from different devices to the same second; a device stuck at stratum 16 reveals a broken synchronization.'
+        },
+        commonMistakes: [
+          {
+            it: 'Trattare la sincronizzazione del tempo come cosmetica: senza UTC accurato log e certificati non reggono.',
+            en: 'Treating time synchronization as cosmetic: without accurate UTC, logs and certificates do not hold up.'
+          },
+          {
+            it: 'Usare una sola sorgente NTP senza ridondanza né autenticazione: un orologio sbagliato diventa verità.',
+            en: 'Using a single NTP source with no redundancy or authentication: one wrong clock becomes the truth.'
+          },
+          {
+            it: 'Confondere lo stratum con la qualità assoluta: indica la distanza dal riferimento, non la precisione garantita.',
+            en: 'Confusing stratum with absolute quality: it indicates the distance from the reference, not guaranteed accuracy.'
+          }
+        ],
+        references: [{ kind: 'rfc', id: 'RFC 5905' }]
       }
     ]
   },
@@ -5920,6 +5976,62 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
             ]
           }
         ]
+      },
+      {
+        id: 'pentest-password-attacks',
+        title: {
+          it: 'Attacchi alle password: brute force e spraying',
+          en: 'Password attacks: brute force and spraying'
+        },
+        objectives: [
+          {
+            it: 'Distinguere brute force, dizionario, credential stuffing e password spraying, e separare il caso online da quello offline.',
+            en: 'Tell brute force, dictionary, credential stuffing, and password spraying apart, and separate the online case from the offline one.'
+          },
+          {
+            it: 'Collegare ciascuna tecnica alla difesa che la contiene, spiegando perché il solo blocco dopo N tentativi non basta.',
+            en: 'Link each technique to the defense that contains it, explaining why lockout after N attempts alone is not enough.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere autenticazione, hashing e la differenza tra una password memorizzata come hash e in chiaro (capitolo sui fondamenti di sicurezza).',
+            en: 'Know authentication, hashing, and the difference between a password stored as a hash and in cleartext (the security-fundamentals chapter).'
+          }
+        ],
+        theory: [
+          {
+            it: 'La distinzione di fondo è online contro offline. Un attacco online prova le credenziali contro un servizio vivo: è lento, visibile nei log e frenato da rate limiting e lockout. Un attacco offline lavora su hash già catturati: non ha limiti di velocità né log sul bersaglio, e la sua riuscita dipende solo dalla forza della password e dalla lentezza dell’algoritmo di hashing. Capire quale dei due si sta affrontando decide la difesa utile.',
+            en: 'The underlying split is online versus offline. An online attack tries credentials against a live service: it is slow, visible in the logs, and curbed by rate limiting and lockout. An offline attack works on already captured hashes: it has no rate limit or log on the target, and its success depends only on the password strength and the slowness of the hashing algorithm. Knowing which of the two you face decides the useful defense.'
+          },
+          {
+            it: 'Le varianti differiscono per strategia. Il brute force prova tutte le combinazioni; il dizionario usa una wordlist di password probabili; il credential stuffing riusa coppie già trapelate da altre violazioni, sfruttando il riuso delle password; il password spraying rovescia la logica e prova una sola password comune su molti account, proprio per restare sotto la soglia di lockout di ogni singolo account. Sono profili di rumore diversi, e quindi di rilevamento diverso.',
+            en: 'The variants differ by strategy. Brute force tries every combination; a dictionary attack uses a wordlist of likely passwords; credential stuffing reuses pairs already leaked from other breaches, exploiting password reuse; password spraying flips the logic and tries one common password across many accounts, precisely to stay under each single account’s lockout threshold. These are different noise profiles, and therefore different detection problems.'
+          },
+          {
+            it: 'La difesa è stratificata. Passphrase lunghe e uniche e un gestore di password tolgono valore a dizionario e stuffing; la MFA resistente al phishing rende insufficiente la sola password; un hashing lento e salato (bcrypt, scrypt, Argon2) difende il caso offline. Il lockout va tarato con cura perché punisce anche l’utente e non ferma lo spraying: per quello serve correlare i fallimenti tra account diversi, non solo per singolo account.',
+            en: 'The defense is layered. Long, unique passphrases and a password manager strip value from dictionary and stuffing; phishing-resistant MFA makes the password alone insufficient; slow, salted hashing (bcrypt, scrypt, Argon2) defends the offline case. Lockout must be tuned carefully because it also punishes the user and does not stop spraying: for that you must correlate failures across different accounts, not per single account.'
+          }
+        ],
+        example: {
+          it: 'Il password spraying prova una password comune su molti nomi utente per restare sotto la soglia di lockout di ciascuno, quindi il rilevamento deve correlare i fallimenti tra account e non contarli per singolo account.',
+          en: 'Password spraying tries one common password across many usernames to stay below each account’s lockout threshold, so detection must correlate failures across accounts rather than counting them per single account.'
+        },
+        commonMistakes: [
+          {
+            it: 'Affidarsi al solo lockout: il password spraying lo aggira restando sotto la soglia di ogni account.',
+            en: 'Relying on lockout alone: password spraying evades it by staying under each account’s threshold.'
+          },
+          {
+            it: 'Considerare un hash robusto sufficiente senza MFA: una password debole cade comunque offline.',
+            en: 'Treating a strong hash as enough without MFA: a weak password still falls offline.'
+          },
+          {
+            it: 'Dimenticare che il cracking offline ignora rate limiting e log: lì conta solo la lentezza dell’hashing.',
+            en: 'Forgetting that offline cracking ignores rate limiting and logs: there only the slowness of hashing matters.'
+          }
+        ],
+        references: [{ kind: 'attack', id: 'T1110' }]
       }
     ]
   },
@@ -6278,6 +6390,62 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
             ]
           }
         ]
+      },
+      {
+        id: 'web-file-inclusion-traversal',
+        title: {
+          it: 'Inclusione di file e directory traversal (LFI/RFI)',
+          en: 'File inclusion and directory traversal (LFI/RFI)'
+        },
+        objectives: [
+          {
+            it: 'Spiegare directory traversal, LFI e RFI e la causa comune: un percorso o un include costruito da input non validato.',
+            en: 'Explain directory traversal, LFI, and RFI and their common root cause: a path or include built from unvalidated input.'
+          },
+          {
+            it: 'Collegare ogni difetto alla difesa, distinguendo il blocco della sequenza letterale dalla validazione del percorso risolto.',
+            en: 'Link each flaw to its defense, distinguishing blocking the literal sequence from validating the resolved path.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere il modello richiesta/risposta HTTP e come un parametro arriva dal client al server (capitolo sul proxy e la mappatura web).',
+            en: 'Know the HTTP request/response model and how a parameter travels from client to server (the web proxy and mapping chapter).'
+          }
+        ],
+        theory: [
+          {
+            it: 'Il directory traversal (o path traversal) nasce quando l’applicazione costruisce il percorso di un file da input dell’utente: sequenze relative risalgono fuori dalla cartella prevista e leggono file altrove sul server, fino a file di sistema come quello delle password. La radice è la concatenazione di percorso non validata, non il singolo carattere: bloccare la sequenza letterale non basta, perché le codifiche la aggirano.',
+            en: 'Directory traversal (or path traversal) arises when the application builds a file path from user input: relative sequences climb out of the intended folder and read files elsewhere on the server, up to system files such as the password file. The root cause is unvalidated path concatenation, not the single character: blocking the literal sequence is not enough, because encodings bypass it.'
+          },
+          {
+            it: 'La File Inclusion è lo stesso difetto applicato all’include. La LFI (locale) fa includere un file già presente sul server — configurazioni o log — e può arrivare all’esecuzione di codice quando l’attaccante riesce a influenzare il contenuto incluso, per esempio avvelenando un log poi incluso. La RFI (remota) include una URL esterna ed è ormai rara perché gli include remoti sono disabilitati di default nelle piattaforme moderne.',
+            en: 'File Inclusion is the same flaw applied to the include. LFI (local) includes a file already on the server — configuration or logs — and can reach code execution when the attacker can influence the included content, for example by poisoning a log that is then included. RFI (remote) includes an external URL and is now rare because remote includes are disabled by default on modern platforms.'
+          },
+          {
+            it: 'La difesa è architetturale, non cosmetica. Non si deve mai derivare il bersaglio di un include o di una lettura di file dall’input grezzo: si mappa un allowlist fisso di identificatori lato server, così l’utente sceglie una voce, non un percorso. Dove serve un percorso, si canonicalizza e si verifica che resti sotto la directory di base, e si esegue il processo con privilegio minimo per limitare cosa un traversal riuscito possa leggere.',
+            en: 'The defense is architectural, not cosmetic. You must never derive the target of an include or a file read from raw input: map a fixed allowlist of identifiers server-side, so the user picks an entry, not a path. Where a path is unavoidable, canonicalize it and verify it stays under the base directory, and run the process with least privilege to limit what a successful traversal can read.'
+          }
+        ],
+        example: {
+          it: 'Un parametro che seleziona una pagina per percorso, se alimentato con sequenze relative, risale sopra la web root e legge file di sistema; la correzione mappa quel parametro su un allowlist di pagine, non su un percorso del filesystem.',
+          en: 'A parameter that selects a page by path, when fed relative sequences, climbs above the web root and reads system files; the fix maps that parameter to an allowlist of pages, not to a filesystem path.'
+        },
+        commonMistakes: [
+          {
+            it: 'Bloccare solo la sequenza letterale: le codifiche e i percorsi assoluti la aggirano.',
+            en: 'Blocking only the literal sequence: encodings and absolute paths bypass it.'
+          },
+          {
+            it: 'Credere che la RFI sia il rischio principale: oggi la LFI con avvelenamento dei log è la via più comune.',
+            en: 'Believing RFI is the main risk: today LFI with log poisoning is the more common path.'
+          },
+          {
+            it: 'Fidarsi dell’estensione o del nome del file invece di validare il percorso risolto lato server.',
+            en: 'Trusting the file extension or name instead of validating the resolved path server-side.'
+          }
+        ],
+        references: [{ kind: 'attack', id: 'T1190' }]
       }
     ]
   },
@@ -6636,6 +6804,62 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
             ]
           }
         ]
+      },
+      {
+        id: 'exploitation-reverse-bind-shell',
+        title: {
+          it: 'Reverse shell e bind shell',
+          en: 'Reverse shell and bind shell'
+        },
+        objectives: [
+          {
+            it: 'Distinguere bind shell e reverse shell e spiegare perché la reverse supera un firewall in ingresso e il NAT.',
+            en: 'Tell a bind shell from a reverse shell and explain why the reverse one defeats an inbound firewall and NAT.'
+          },
+          {
+            it: 'Individuare il controllo che spezza davvero la connessione: filtraggio dell’egress e ispezione, non le regole in ingresso.',
+            en: 'Identify the control that truly breaks the connection: egress filtering and inspection, not inbound rules.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere direzione delle connessioni TCP, NAT e la differenza tra traffico in ingresso e in uscita (capitoli sui servizi IP e sui fondamenti).',
+            en: 'Know TCP connection direction, NAT, and the difference between inbound and outbound traffic (the IP services and fundamentals chapters).'
+          }
+        ],
+        theory: [
+          {
+            it: 'Una shell è l’accesso interattivo ai comandi sul bersaglio. In una bind shell il target apre una porta in ascolto e attende la connessione dell’attaccante: semplice, ma inefficace quando un firewall in ingresso o il NAT bloccano le connessioni verso il target. In una reverse shell è il target ad aprire la connessione verso l’esterno, verso un listener controllato dall’attaccante.',
+            en: 'A shell is interactive command access on the target. In a bind shell the target opens a listening port and waits for the attacker to connect: simple, but useless when an inbound firewall or NAT block connections toward the target. In a reverse shell the target itself opens the connection outward, to a listener the attacker controls.'
+          },
+          {
+            it: 'La reverse shell è preferita proprio per questo: quasi tutte le reti consentono il traffico in uscita molto più liberamente di quello in ingresso, così la connessione esce dal target e aggira sia il firewall in ingresso sia il NAT. È la ragione per cui un perimetro che filtra solo l’ingresso dà una falsa sicurezza: una volta eseguito il codice sul target, è il target a chiamare fuori.',
+            en: 'The reverse shell is preferred for exactly this reason: almost every network allows outbound traffic far more freely than inbound, so the connection leaves the target and bypasses both the inbound firewall and NAT. This is why a perimeter that filters only ingress gives false confidence: once code runs on the target, it is the target that calls out.'
+          },
+          {
+            it: 'La difesa si sposta quindi sull’uscita. Il filtraggio dell’egress che consente solo destinazioni e porte note, l’ispezione del traffico e la segmentazione est-ovest spezzano la connessione di ritorno; il solo firewall in ingresso non la vede. L’attaccante tende a cifrare il canale di comando e controllo su porte comuni come la 443 per confondersi, perciò il rilevamento si basa su anomalie e log di proxy e DNS, non sul numero di porta.',
+            en: 'The defense therefore shifts to egress. Egress filtering that allows only known destinations and ports, traffic inspection, and east-west segmentation break the return connection; an inbound firewall alone does not see it. The attacker tends to encrypt the command-and-control channel over common ports such as 443 to blend in, so detection relies on anomalies and proxy and DNS logs, not on the port number.'
+          }
+        ],
+        example: {
+          it: 'Un target dietro NAT non può offrire una bind shell raggiungibile da fuori, quindi l’attaccante preferisce una reverse shell in uscita sulla 443; una policy di egress che consente solo il proxy la interrompe.',
+          en: 'A target behind NAT cannot offer a bind shell reachable from outside, so the attacker prefers a reverse shell outbound to 443; an egress policy that allows only the proxy breaks it.'
+        },
+        commonMistakes: [
+          {
+            it: 'Credere che un firewall in ingresso fermi le shell: la reverse esce dal target e lo aggira.',
+            en: 'Believing an inbound firewall stops shells: the reverse one leaves the target and bypasses it.'
+          },
+          {
+            it: 'Considerare benigna la porta 443: un canale cifrato di comando e controllo vi si nasconde.',
+            en: 'Treating port 443 as benign: an encrypted command-and-control channel hides in it.'
+          },
+          {
+            it: 'Dimenticare che il NAT impedisce una bind shell dall’esterno, ma non una connessione in uscita.',
+            en: 'Forgetting that NAT blocks a bind shell from outside, but not an outbound connection.'
+          }
+        ],
+        references: [{ kind: 'attack', id: 'T1059' }]
       }
     ]
   },

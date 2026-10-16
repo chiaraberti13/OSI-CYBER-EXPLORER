@@ -828,5 +828,97 @@ export const GLOSSARY_TERMS = [
       en: 'The gap that opens between the intended configuration held in the source of truth and the state actually running on the devices, caused by manual changes, failed rollouts, or partial rollbacks. It makes outcomes non-reproducible and silently reopens security exposure, which is why automation pipelines add periodic diffs, reconciliation, and policy as code.',
       it: 'Divario che si apre tra la configurazione voluta, custodita nella source of truth, e lo stato realmente in esecuzione sui dispositivi, causato da modifiche manuali, rollout falliti o rollback parziali. Rende i risultati non riproducibili e riapre silenziosamente esposizioni di sicurezza: per questo le pipeline di automazione aggiungono diff periodici, reconciliation e policy as code.'
     }
+  },
+
+  // ---------------------------------------------------------------------------
+  // CCNA 200-301 — complementi di rete (FHRP, IPv6, overlay, routing)
+  // ---------------------------------------------------------------------------
+  {
+    term: 'GLBP',
+    definition: {
+      en: 'Gateway Load Balancing Protocol - A Cisco first-hop redundancy protocol that, unlike HSRP and VRRP, shares the load across gateways at the same time: one Active Virtual Gateway (AVG) hands out up to four virtual MAC addresses, and each Active Virtual Forwarder (AVF) forwards for the hosts that received its MAC in the ARP reply. It still provides a single virtual IP for the hosts.',
+      it: 'Gateway Load Balancing Protocol - Protocollo Cisco di ridondanza del primo hop che, a differenza di HSRP e VRRP, distribuisce il carico tra i gateway contemporaneamente: un Active Virtual Gateway (AVG) assegna fino a quattro MAC virtuali e ogni Active Virtual Forwarder (AVF) inoltra per gli host che hanno ricevuto il suo MAC nella risposta ARP. Mantiene comunque un unico IP virtuale per gli host.'
+    }
+  },
+  {
+    term: 'DHCPv6',
+    definition: {
+      en: 'Dynamic Host Configuration Protocol for IPv6 - Assigns addresses and options over UDP (546 client, 547 server). The Router Advertisement flags decide the mode: stateless (O flag) lets the host build its address with SLAAC and take only DNS and options from the server, while stateful (M flag) has the server lease the full address. Unlike IPv4 DHCP it carries no default-gateway option — the gateway always comes from the RA.',
+      it: "Dynamic Host Configuration Protocol per IPv6 - Assegna indirizzi e opzioni su UDP (546 client, 547 server). I flag del Router Advertisement decidono la modalità: stateless (flag O) fa costruire l'indirizzo all'host con SLAAC prendendo dal server solo DNS e opzioni, mentre stateful (flag M) fa assegnare l'intero indirizzo dal server. A differenza del DHCP IPv4 non trasporta l'opzione default gateway: il gateway arriva sempre dal RA."
+    }
+  },
+  {
+    term: 'RA Guard',
+    definition: {
+      en: 'Router Advertisement Guard - A switch control that drops IPv6 Router Advertisements (ICMPv6 type 134) received on ports where no legitimate router should exist, so a rogue or spoofed RA cannot become the hosts default gateway. It is the IPv6 counterpart of DHCP snooping, and pairs with DHCPv6 Guard and ND inspection to protect the access layer.',
+      it: "Router Advertisement Guard - Controllo dello switch che scarta i Router Advertisement IPv6 (ICMPv6 tipo 134) ricevuti su porte dove non deve esistere alcun router legittimo, così un RA fasullo o falsificato non può diventare il default gateway degli host. È la controparte IPv6 del DHCP snooping e si abbina a DHCPv6 Guard e ND inspection per proteggere l'access layer."
+    }
+  },
+  {
+    term: 'VXLAN',
+    definition: {
+      en: 'Virtual Extensible LAN - A MAC-in-UDP overlay (UDP 4789) that carries Layer 2 frames across a routed Layer 3 underlay. Its 24-bit VNI gives about 16 million segments, far beyond the 4094 usable 802.1Q VLANs, which is why it is the data-center fabric encapsulation. A VTEP adds and removes the header; the overlay is only as stable as the underlay beneath it.',
+      it: "Virtual Extensible LAN - Overlay MAC-in-UDP (UDP 4789) che trasporta frame di livello 2 attraverso un underlay di livello 3 instradato. Il suo VNI a 24 bit offre circa 16 milioni di segmenti, ben oltre le 4094 VLAN 802.1Q utilizzabili, ed è per questo l'incapsulamento del fabric di data center. Un VTEP aggiunge e rimuove l'header; l'overlay è stabile solo quanto l'underlay sottostante."
+    }
+  },
+  {
+    term: 'Split Horizon',
+    definition: {
+      en: 'A distance-vector loop-prevention rule: a router does not advertise a route back out of the interface it learned it on, because the neighbor on that interface already has a better path to the destination. It prevents the two-router count-to-infinity loop and is why distance-vector protocols pair it with route poisoning and hold-down timers.',
+      it: "Regola di prevenzione dei loop dei protocolli distance-vector: un router non riannuncia una rotta sull'interfaccia da cui l'ha appresa, perché il vicino su quella interfaccia ha già un percorso migliore verso la destinazione. Evita il loop di count-to-infinity tra due router ed è il motivo per cui i protocolli distance-vector lo abbinano a route poisoning e hold-down timer."
+    }
+  },
+  {
+    term: 'Route Summarization',
+    definition: {
+      en: 'Aggregating several contiguous prefixes into one shorter prefix advertised in their place (for example four /24 networks inside one /22). It shrinks routing tables, cuts the work of the SPF or Bellman-Ford calculation, and contains instability because a flap inside the block no longer propagates. It only works when the addressing is contiguous and hierarchical.',
+      it: "Aggregazione di più prefissi contigui in un unico prefisso più corto annunciato al loro posto (per esempio quattro /24 dentro un /22). Riduce le tabelle di routing, alleggerisce il calcolo SPF o Bellman-Ford e contiene l'instabilità perché un flap interno al blocco non si propaga più. Funziona solo quando l'indirizzamento è contiguo e gerarchico."
+    }
+  },
+
+  // ---------------------------------------------------------------------------
+  // eJPT — metodologia offensiva (autorizzata, difensiva, solo documentazione)
+  // ---------------------------------------------------------------------------
+  {
+    term: 'Enumeration',
+    definition: {
+      en: 'The active extraction of concrete detail from a reachable service after discovery and scanning: user accounts, shares, endpoints, software and version. It is the bridge between scanning and exploitation — attempting an exploit before enumerating is guessing. Because it is active and noisy, an IDS and service logs record it, which is also why a defender reduces the service banner and metadata exposed.',
+      it: 'Estrazione attiva di dettagli concreti da un servizio raggiungibile dopo discovery e scanning: account utente, condivisioni, endpoint, software e versione. È il ponte tra scanning ed exploitation — tentare un exploit prima di enumerare è tirare a indovinare. Essendo attiva e rumorosa, un IDS e i log del servizio la registrano, ed è anche il motivo per cui un difensore riduce banner e metadati esposti dal servizio.'
+    }
+  },
+  {
+    term: 'Privilege Escalation',
+    definition: {
+      en: 'Gaining rights beyond those first obtained. Vertical escalation moves from a limited user to an administrator or root; horizontal escalation reaches another same-level account that owns data the attacker wants. It abuses misconfiguration, an unpatched vulnerability, weak file or service permissions, or stored credentials. The defenses are least privilege, patching, hardening and monitoring for the technique, not for a single tool.',
+      it: "Ottenere diritti oltre quelli inizialmente acquisiti. L'escalation verticale passa da un utente limitato ad amministratore o root; quella orizzontale raggiunge un altro account dello stesso livello che possiede dati di interesse. Sfrutta configurazioni errate, una vulnerabilità non corretta, permessi deboli su file o servizi, o credenziali memorizzate. Le difese sono privilegio minimo, patching, hardening e monitoraggio della tecnica, non di un singolo strumento."
+    }
+  },
+  {
+    term: 'Pivoting',
+    definition: {
+      en: 'Using an already compromised host as a relay to reach networks that are not directly routable from the attacker — the practical form of lateral, east-west movement. The pivot forwards traffic (often through a tunnel) into a segment the perimeter was meant to protect. The counter is internal segmentation, east-west filtering and egress control, since a perimeter firewall alone does nothing once a host inside is held.',
+      it: "Uso di un host già compromesso come relay per raggiungere reti non direttamente instradabili dall'attaccante: è la forma pratica del movimento laterale est-ovest. Il pivot inoltra traffico (spesso attraverso un tunnel) in un segmento che il perimetro doveva proteggere. La contromisura è la segmentazione interna, il filtraggio est-ovest e il controllo dell'egress, perché un firewall perimetrale da solo non serve una volta che un host interno è controllato."
+    }
+  },
+  {
+    term: 'Reverse Shell',
+    definition: {
+      en: 'Interactive command access where the target opens the connection outward to a listener the attacker controls, instead of listening locally as a bind shell does. Because most networks allow outbound far more freely than inbound, a reverse shell slips past an inbound firewall and NAT, which a bind shell cannot. The effective control is egress filtering and traffic inspection, not inbound rules alone.',
+      it: "Accesso interattivo ai comandi in cui il target apre la connessione verso l'esterno, verso un listener controllato dall'attaccante, invece di restare in ascolto localmente come fa una bind shell. Poiché quasi tutte le reti consentono l'uscita molto più liberamente dell'ingresso, una reverse shell supera firewall in ingresso e NAT, cosa che una bind shell non può. Il controllo efficace è il filtraggio dell'egress e l'ispezione del traffico, non le sole regole in ingresso."
+    }
+  },
+  {
+    term: 'LFI/RFI',
+    definition: {
+      en: 'Local and Remote File Inclusion - Web flaws where an application builds the path of a file to include from user input. LFI pulls in a local file (configuration, logs) and can reach code execution when the attacker can influence that file content; RFI includes a remote URL and is now rare because remote includes are disabled by default. The fix is to never derive an include target from raw input: map a fixed allowlist server-side.',
+      it: "Local e Remote File Inclusion - Difetti web in cui l'applicazione costruisce da input dell'utente il percorso di un file da includere. LFI richiama un file locale (configurazione, log) e può arrivare all'esecuzione di codice quando l'attaccante riesce a influenzarne il contenuto; RFI include una URL remota ed è ormai rara perché gli include remoti sono disabilitati di default. La correzione è non derivare mai il bersaglio dell'include dall'input grezzo: mappare un allowlist fisso lato server."
+    }
+  },
+  {
+    term: 'Directory Traversal',
+    definition: {
+      en: 'A web flaw (also called path traversal) where relative sequences in user input climb out of the intended directory to read files elsewhere on the server, up to system files such as the password file. The root cause is unvalidated path concatenation, and blocking the literal sequence is not enough because encodings bypass it. The fix is to canonicalize the resolved path and verify it stays under the base directory, with least privilege on the process.',
+      it: "Difetto web (detto anche path traversal) in cui sequenze relative nell'input dell'utente risalgono fuori dalla directory prevista per leggere file altrove sul server, fino a file di sistema come quello delle password. La causa è la concatenazione di percorso non validata, e bloccare la sequenza letterale non basta perché le codifiche la aggirano. La correzione è canonicalizzare il percorso risolto e verificare che resti sotto la directory di base, con privilegio minimo sul processo."
+    }
   }
 ];

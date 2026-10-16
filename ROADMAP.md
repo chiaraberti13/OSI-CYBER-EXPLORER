@@ -5,7 +5,7 @@
 > **Apertura Fase 3:** 14 ottobre 2026.
 > **Obiettivi di certificazione:** **CCNA 200-301** e **eJPT — INE/eLearnSecurity Junior
 > Penetration Tester**, in chiave didattica e autorizzata.
-> **Stato del manuale:** 29 capitoli / 88 argomenti / 74 laboratori guidati, bilingue IT/EN,
+> **Stato del manuale:** 29 capitoli / 92 argomenti / 74 laboratori guidati, bilingue IT/EN,
 > con il percorso eJPT completo e una sequenza di studio a doppio binario documentata.
 > **Metodo:** incrementi verticali completi e verificati (`npm run verify`, E2E Chromium con
 > Axe WCAG 2.2 AA, audit), pubblicati su `main`; ogni intervento documentato in `docs/verify/`.
@@ -350,5 +350,15 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
   binario, nuovo marchio). La Fase 3 completa la copertura guida↔laboratori, introduce laboratori
   interattivi per la metodologia eJPT e consolida qualità visiva, UX, i18n e documentazione. Roadmap
   storica Fase 2 archiviata in `docs/`.
+- **16/10/2026 — Contenuti aggiuntivi per i due obiettivi di certificazione.** Aggiunti al
+  **glossario** 12 voci bilingui (CCNA: GLBP, DHCPv6, RA Guard, VXLAN, Split Horizon, Route
+  Summarization; eJPT: Enumeration, Privilege Escalation, Pivoting, Reverse Shell, LFI/RFI,
+  Directory Traversal) e al **manuale** 4 nuovi argomenti nei capitoli esistenti: NTP in
+  `ip-services` (CCNA 4.x), e per l'eJPT «Attacchi alle password» (pentest-methodology),
+  «Inclusione di file e directory traversal» (web-app-pentest) e «Reverse shell e bind shell»
+  (exploitation-post-exploitation). Contenuti eJPT concettuali e difensivi, con soli target di
+  documentazione e riferimenti ATT&CK/RFC. Manuale ora a 92 argomenti; glossario a 126 voci.
+  Conteggi derivati dal dataset (ENG-31), nessuna asserzione hard-coded modificata.
+  Report: `docs/verify/2026-10-16-content-cert-additions.md`.
 - **Invarianti di responsabilità** (dalla Fase 2): contenuti offensivi didattici,
   autorizzazione-first, accoppiati alla difesa, con soli target di documentazione.
