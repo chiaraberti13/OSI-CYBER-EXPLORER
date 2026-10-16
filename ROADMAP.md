@@ -344,6 +344,34 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
 - Parità IT/EN, documentazione-target, `verify:offensive-content`, Axe WCAG 2.2 AA e audit restano
   verdi a ogni incremento.
 
+## 🔭 Prossimi interventi utili (backlog verificato)
+
+> Lo scopo obbligatorio della Fase 3 è raggiunto: tutti i task sopra sono completati e verificati,
+> e resta aperto solo **I18N-10** per sua natura ricorrente. Gli elementi seguenti sono evolutivi e
+> **facoltativi**, derivati da osservazioni reali su `main`; non sono blocchi. Ciascuno porta criteri
+> di completamento verificabili, così che un incremento resti un incremento verticale e verde.
+
+- [ ] **PERF-01 (P2) — Margine del budget JavaScript iniziale.** Il bundle d'ingresso misura ~122,4 kB
+      gzip contro il limite di 125 kB (`performance-budgets.json`): ~2% di margine, quindi il prossimo
+      contenuto pesante può far fallire il gate `verify:performance`. **Criteri:** riportare l'ingresso
+      sotto un margine comodo (indicativamente ≤118 kB gzip) senza togliere contenuti — per esempio
+      caricando in lazy un modulo oggi incluso nell'entry — oppure rivedere in modo documentato la
+      soglia con una motivazione; `size-limit`, Lighthouse CI e il budget restano verdi e il treemap
+      aggiornato come evidenza.
+- [ ] **CONTENT-10 (P3, ricorrente) — Nuovi argomenti per i due percorsi.** Proseguire l'aggiunta di
+      argomenti ad alto valore nei capitoli esistenti (es. CCNA: QoS applicata, lettura della GUI del
+      WLC; eJPT: enumerazione SMB/SNMP, cracking offline degli hash, basi di Active Directory), uno per
+      incremento, senza creare capitoli eJPT oltre ai tre fissati dai test. **Criteri:** ogni argomento
+      bilingue IT/EN con obiettivi, teoria ed errori comuni, riferimenti ATT&CK/RFC/NIST risolti in
+      HTTPS, solo target di documentazione; guard bilingue e integrità del manuale verdi; conteggi
+      derivati dal dataset; report in `docs/verify/`.
+- [ ] **EDU-40 (P3) — Esercizi guidati per gli argomenti aggiunti.** I quattro argomenti aggiunti il
+      16/10/2026 (NTP, attacchi alle password, LFI/RFI, reverse/bind shell) non hanno ancora un
+      esercizio guidato. Aggiungerne uno per argomento, riusando un laboratorio interattivo già
+      registrato (nessun nuovo `AppView` richiesto). **Criteri:** ogni `guidedLab` punta a una vista
+      registrata con `steps`, `solution` e `selfCheck` non vuoti e bilingui; l'E2E QA-20 (che ora deriva
+      i conteggi dal dataset) e `studyManual.test.ts` restano verdi.
+
 ## 🧾 Registro delle decisioni
 
 - **14/10/2026 — Apertura Fase 3.** Chiusa la Fase 2 (percorso eJPT completo, sequenza a doppio
