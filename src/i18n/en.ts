@@ -22,6 +22,8 @@ export const en = {
   },
   navigation: {
     label: 'Lab navigation',
+    primary: 'Main navigation',
+    menu: 'Open the navigation menu',
     search: 'Search for a lab',
     searchHint: 'Search by name, protocol, or topic…',
     close: 'Close',

@@ -7,7 +7,7 @@ import ModalDialog from './ModalDialog';
 import GuideModal from './GuideModal';
 import GlossaryModal from './GlossaryModal';
 import { GLOSSARY_TERMS } from '../content/glossaryTerms';
-import Header from './Header';
+import Sidebar from './Sidebar';
 import { useStore } from '../store';
 
 afterEach(() => {
@@ -123,14 +123,14 @@ describe('ModalDialog', () => {
 });
 
 describe('Guide dialog', () => {
-  it('opens from the header, is fully labelled and gives focus back on close', async () => {
+  it('opens from the sidebar, is fully labelled and gives focus back on close', async () => {
     const user = userEvent.setup();
     useStore.setState({ language: 'it', isGuideOpen: false });
     function App() {
       const { isGuideOpen, setIsGuideOpen, language } = useStore();
       return (
         <>
-          <Header />
+          <Sidebar />
           <GuideModal isOpen={isGuideOpen} onClose={() => setIsGuideOpen(false)} language={language} />
         </>
       );

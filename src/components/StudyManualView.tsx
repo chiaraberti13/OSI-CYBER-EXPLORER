@@ -516,7 +516,7 @@ export default function StudyManualView() {
           // UX-32: the route filter sits above the chapter navigation (not inside it), so
           // the labelled chapter tree stays a list of chapters only, and the filter + tree
           // scroll together within the sticky sidebar.
-          <div className="mb-6 hidden lg:sticky lg:top-[6.5rem] lg:col-start-1 lg:row-start-1 lg:mb-0 lg:flex lg:max-h-[calc(100dvh-7.75rem)] lg:flex-col lg:gap-4 lg:self-start lg:overflow-y-auto lg:pr-1">
+          <div className="mb-6 hidden lg:sticky lg:top-14 lg:col-start-1 lg:row-start-1 lg:mb-0 lg:flex lg:max-h-[calc(100dvh-5rem)] lg:flex-col lg:gap-4 lg:self-start lg:overflow-y-auto lg:pr-1">
             <TrackFilter
               value={trackFilter}
               onChange={setTrackFilter}
@@ -655,14 +655,14 @@ export default function StudyManualView() {
           ) : null}
           {/* Persistent context for long chapters. It deliberately uses plain text,
           not headings, so the document outline remains one h1 followed by the
-          chapter h2 and topic h3 elements. 6.5rem equals the fixed 3.5rem app
-          header plus the 3rem lab navigation immediately above it. */}
+          chapter h2 and topic h3 elements. 3.5rem equals the single fixed app top
+          bar immediately above the content column (IA-13). */}
           <div
             ref={chapterContextRef}
             role="region"
             aria-label={t.chapterContext}
             data-testid="chapter-context"
-            className="sticky top-[6.5rem] z-30 -mx-4 mb-5 border-y border-slate-200/80 bg-canvas/95 px-4 py-2 shadow-sm backdrop-blur-md md:-mx-6 md:px-6 lg:mx-0 lg:rounded-lg lg:border"
+            className="sticky top-14 z-30 -mx-4 mb-5 border-y border-slate-200/80 bg-canvas/95 px-4 py-2 shadow-sm backdrop-blur-md md:-mx-6 md:px-6 lg:mx-0 lg:rounded-lg lg:border"
           >
             <div className="hidden min-w-0 lg:flex lg:items-center lg:gap-2">
               <TrackMark track={chapterTrack} className="h-3.5 w-3.5" />
@@ -763,7 +763,7 @@ export default function StudyManualView() {
             Explicit grid coordinates retain the visual content-left/rail-right layout. */}
             {chapter.topics.length > 1 ? (
               <aside className="hidden xl:col-start-2 xl:row-start-1 xl:block">
-                <nav aria-label={t.onThisPage} className="sticky top-32">
+                <nav aria-label={t.onThisPage} className="sticky top-20">
                   <p className="flex items-center gap-1.5 eyebrow text-slate-400">
                     <ListChecks aria-hidden="true" className="h-3.5 w-3.5" />
                     {t.onThisPage}
