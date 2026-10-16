@@ -576,21 +576,21 @@ export default function StudyManualView() {
                                 aria-expanded={expanded}
                                 aria-controls={panelId}
                                 aria-label={`${sectionTitle} · ${t.chapterProgress}: ${sectionCompletion.completed}/${sectionCompletion.total}`}
-                                className="group flex w-full min-h-11 items-center gap-2 rounded-lg px-2 py-2 text-left transition-colors hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
+                                className="group flex w-full min-h-11 items-start gap-2 rounded-lg px-2 py-2.5 text-left transition-colors hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
                               >
                                 <ChevronRight
                                   aria-hidden="true"
-                                  className={`h-4 w-4 shrink-0 text-slate-400 transition-transform group-hover:text-slate-600 ${
+                                  className={`mt-0.5 h-4 w-4 shrink-0 text-slate-400 transition-transform group-hover:text-slate-600 ${
                                     expanded ? 'rotate-90' : ''
                                   }`}
                                 />
                                 <span
                                   aria-hidden="true"
-                                  className="flex h-5 min-w-[1.9rem] shrink-0 items-center justify-center rounded-md bg-indigo-50 px-1 text-[10px] font-bold tabular-nums text-indigo-700"
+                                  className="mt-px flex h-5 min-w-[1.9rem] shrink-0 items-center justify-center rounded-md bg-indigo-50 px-1 text-[10px] font-bold tabular-nums text-indigo-700"
                                 >
                                   {section.domain ? `${section.domain.number}.0` : <Layers className="h-3 w-3" />}
                                 </span>
-                                <span className="min-w-0 flex-1 truncate text-[12.5px] font-semibold text-slate-700">
+                                <span className="min-w-0 flex-1 text-[12.5px] font-semibold leading-snug text-slate-700">
                                   {section.domain ? section.domain.title[language] : t.sectionAdvanced}
                                 </span>
                                 <span
@@ -619,7 +619,7 @@ export default function StudyManualView() {
                               {expanded ? (
                                 <div
                                   id={panelId}
-                                  className="mb-1 ml-1 flex flex-col gap-0.5 border-l border-slate-100 pl-2"
+                                  className="mb-1 ml-1 flex flex-col gap-1 border-l border-slate-100 pl-2"
                                 >
                                   {section.chapters.map(renderChapterButton)}
                                 </div>
@@ -629,7 +629,7 @@ export default function StudyManualView() {
                         })}
                       </ul>
                     ) : (
-                      <div className="flex flex-col gap-0.5">{group.chapters.map(renderChapterButton)}</div>
+                      <div className="flex flex-col gap-1">{group.chapters.map(renderChapterButton)}</div>
                     )}
                   </div>
                 );
