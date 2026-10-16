@@ -727,7 +727,7 @@ export default function StudyManualView() {
                   <p className="sr-only">{t.tableOfContents}</p>
                   <ol
                     data-testid="mobile-topic-index"
-                    className="-mx-1 flex snap-x gap-1.5 overflow-x-auto px-1 pb-1 [scrollbar-width:thin]"
+                    className="topic-scroller -mx-1 flex snap-x gap-1.5 overflow-x-auto overscroll-x-contain px-1 pb-1 [scrollbar-width:thin]"
                   >
                     {chapter.topics.map((topic, i) => {
                       const isActive = activeTopic === topic.id;

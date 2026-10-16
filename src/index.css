@@ -228,6 +228,17 @@ body {
   color: var(--color-ink-secondary);
 }
 
+/* The mobile chapter-topic strip is a horizontal scroller. `touch-action: pan-x`
+   lets a horizontal swipe scroll it instead of being claimed by the page's vertical
+   scroll (the "can't scroll it on a phone" symptom). The right-edge mask fades only
+   content that actually reaches the edge, i.e. it appears exactly when the strip
+   overflows — a self-correcting "there is more to the right" affordance. */
+.topic-scroller {
+  touch-action: pan-x;
+  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 1.5rem), transparent);
+  mask-image: linear-gradient(to right, #000 calc(100% - 1.5rem), transparent);
+}
+
 /* UX-23: long-form manual copy follows a deliberate reading rhythm rather than
    inheriting the denser UI typography. The column leaves room for card padding,
    while running text is capped at 72 characters and keeps a 28 px baseline. */
