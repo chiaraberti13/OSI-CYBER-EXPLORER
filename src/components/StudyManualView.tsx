@@ -463,13 +463,37 @@ export default function StudyManualView() {
           {t.heading}
         </h1>
         <p className="mt-1 text-sm text-slate-500">{t.intro}</p>
-        <p className="mt-2 text-[12px] font-mono text-slate-400">
-          {stats.chapters} {t.chapters} · {stats.topics} {t.topics} · {stats.guidedLabs} {t.guidedLabs}
-        </p>
-        <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2 text-xs text-slate-600">
-          <span aria-label={`${t.chapterProgress}: ${overallCompletion.completed}/${overallCompletion.total}`}>
+        {/* A single, compact meta row: the dataset counts, the overall progress and the
+            per-route progress sit on one wrapping line instead of four stacked blocks, so
+            the reading pane starts higher. Every text node and aria-label is unchanged
+            (UX-33: each route keeps its icon + full accessible label). */}
+        <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-slate-500">
+          <span className="font-medium text-slate-600">
+            {stats.chapters} {t.chapters} · {stats.topics} {t.topics} · {stats.guidedLabs} {t.guidedLabs}
+          </span>
+          <span aria-hidden="true" className="text-slate-300">
+            ·
+          </span>
+          <span
+            className="font-medium text-slate-600"
+            aria-label={`${t.chapterProgress}: ${overallCompletion.completed}/${overallCompletion.total}`}
+          >
             {t.chapterProgress}: {overallCompletion.completed}/{overallCompletion.total} ({overallCompletion.percent}%)
           </span>
+          <ul aria-label={t.progressByRoute} className="flex flex-wrap items-center gap-x-3 gap-y-1">
+            {routeProgress.map((route) => (
+              <li
+                key={route.id}
+                className="inline-flex items-center gap-1.5"
+                aria-label={`${route.title[language]} · ${t.chapterProgress}: ${route.completion.completed}/${route.completion.total} (${route.completion.percent}%)`}
+              >
+                <TrackMark track={route.id} className="h-3.5 w-3.5" />
+                <span aria-hidden="true">
+                  {route.title[language]} {route.completion.completed}/{route.completion.total}
+                </span>
+              </li>
+            ))}
+          </ul>
           {overallCompletion.completed > 0 ? (
             <button
               type="button"
@@ -480,24 +504,8 @@ export default function StudyManualView() {
               {t.resetProgress}
             </button>
           ) : null}
-          <span className="basis-full text-[11px] text-slate-500">{t.progressStoredLocally}</span>
+          <span className="w-full text-[11px] text-slate-400">{t.progressStoredLocally}</span>
         </div>
-        {/* UX-33: per-route progress beside the total. The route icon (VIS-10) reinforces
-          the written route name, and each item carries a full accessible label. */}
-        <ul aria-label={t.progressByRoute} className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-600">
-          {routeProgress.map((route) => (
-            <li
-              key={route.id}
-              className="inline-flex items-center gap-1.5"
-              aria-label={`${route.title[language]} · ${t.chapterProgress}: ${route.completion.completed}/${route.completion.total} (${route.completion.percent}%)`}
-            >
-              <TrackMark track={route.id} className="h-3.5 w-3.5" />
-              <span aria-hidden="true">
-                {route.title[language]} {route.completion.completed}/{route.completion.total}
-              </span>
-            </li>
-          ))}
-        </ul>
       </header>
 
       {/* Desktop study layout: a persistent chapter sidebar + the reading pane, the
