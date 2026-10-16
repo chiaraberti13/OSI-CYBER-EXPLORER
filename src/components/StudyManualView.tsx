@@ -754,11 +754,15 @@ export default function StudyManualView() {
             </nav>
           </div>
 
-          <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_13rem] lg:gap-8">
+          {/* The "on this page" rail is a third column, so it only appears from xl up.
+          Between lg and xl the sidebar + reading pane already fill the width, and a
+          third 13rem column would squeeze the reading measure; there the reading pane
+          spans the full main area and the persistent topic index covers navigation. */}
+          <div className="xl:grid xl:grid-cols-[minmax(0,1fr)_13rem] xl:gap-8">
             {/* Keep the desktop topic navigation before the article in DOM/focus order.
             Explicit grid coordinates retain the visual content-left/rail-right layout. */}
             {chapter.topics.length > 1 ? (
-              <aside className="hidden lg:col-start-2 lg:row-start-1 lg:block">
+              <aside className="hidden xl:col-start-2 xl:row-start-1 xl:block">
                 <nav aria-label={t.onThisPage} className="sticky top-32">
                   <p className="flex items-center gap-1.5 eyebrow text-slate-400">
                     <ListChecks aria-hidden="true" className="h-3.5 w-3.5" />
@@ -792,7 +796,7 @@ export default function StudyManualView() {
             <article
               aria-labelledby={chapterTitleId}
               data-testid="manual-reading-column"
-              className="manual-reading-column min-w-0 space-y-6 lg:col-start-1 lg:row-start-1"
+              className="manual-reading-column min-w-0 space-y-6 xl:col-start-1 xl:row-start-1"
             >
               {/* Chapter overview card: alignment, title, summary and an in-chapter table of contents. */}
               <div className="rounded-xl border border-slate-200 bg-white p-5 md:p-6">
