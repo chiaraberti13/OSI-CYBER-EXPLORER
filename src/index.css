@@ -215,12 +215,15 @@ body {
   background-color: var(--color-dark-stroke);
 }
 
-/* Minimal, technological section labels: quiet, monospaced, wide-tracked. */
+/* Minimal section labels: quiet, wide-tracked eyebrows. They used to be
+   monospaced with very wide tracking, which read as a "terminal wall" when many
+   stacked up; a sans face with tighter tracking keeps the label hierarchy while
+   calming the overall page. Text is unchanged (text-transform is visual only). */
 .eyebrow {
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.12em;
+  font-weight: 600;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--color-ink-secondary);
 }
