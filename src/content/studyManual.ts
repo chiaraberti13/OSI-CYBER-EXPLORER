@@ -6031,7 +6031,60 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
             en: 'Forgetting that offline cracking ignores rate limiting and logs: there only the slowness of hashing matters.'
           }
         ],
-        references: [{ kind: 'attack', id: 'T1110' }]
+        references: [{ kind: 'attack', id: 'T1110' }],
+        guidedLabs: [
+          {
+            id: 'gl-pentest-password-defense',
+            title: {
+              it: 'Spezza spraying e stuffing con l’identità',
+              en: 'Break spraying and stuffing with identity'
+            },
+            difficulty: 'core',
+            lab: 'identitytrust',
+            scenario: {
+              it: 'Il laboratorio «Identità e trust» raccoglie i controlli di identità — MFA, rate limiting, controllo delle credenziali compromesse — e i loro limiti dichiarati.',
+              en: 'The “Identity and trust” lab gathers the identity controls — MFA, rate limiting, breached-credential checks — and their stated limits.'
+            },
+            task: {
+              it: 'Associa brute force, credential stuffing e password spraying al controllo che contiene ciascuno e spiega perché il solo lockout non basta.',
+              en: 'Match brute force, credential stuffing, and password spraying to the control that contains each, and explain why lockout alone is not enough.'
+            },
+            steps: [
+              {
+                it: 'Apri «Identità e trust» e individua i controlli di autenticazione e i limiti che dichiarano.',
+                en: 'Open “Identity and trust” and find the authentication controls and the limits they state.'
+              },
+              {
+                it: 'Collega il credential stuffing al riuso delle password, e la difesa a MFA e controllo delle credenziali compromesse.',
+                en: 'Link credential stuffing to password reuse, and the defense to MFA and breached-credential checks.'
+              },
+              {
+                it: 'Spiega perché il password spraying resta sotto la soglia di lockout e quale metrica lo rivela davvero.',
+                en: 'Explain why password spraying stays under the lockout threshold and which metric actually reveals it.'
+              }
+            ],
+            challenge: {
+              it: 'Un attaccante prova una sola password su molti account: quale segnale lo smaschera e quale difesa lo ferma senza bloccare gli utenti legittimi?',
+              en: 'An attacker tries one password across many accounts: which signal exposes it and which defense stops it without locking out legitimate users?'
+            },
+            solution: [
+              {
+                it: 'Brute force e dizionario si contrastano con passphrase forti e uniche e un hashing lento e salato; il credential stuffing con MFA e il controllo delle credenziali compromesse; il password spraying correlando i fallimenti tra account diversi e con MFA resistente al phishing. Il lockout da solo punisce gli utenti e lo spraying lo aggira restando sotto la soglia di ogni account.',
+                en: 'Brute force and dictionary are countered with strong, unique passphrases and slow, salted hashing; credential stuffing with MFA and breached-credential checks; password spraying by correlating failures across different accounts and with phishing-resistant MFA. Lockout alone punishes users and spraying evades it by staying under each account’s threshold.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So abbinare ogni attacco alle password alla difesa efficace.',
+                en: 'I can match each password attack to its effective defense.'
+              },
+              {
+                it: 'So dire perché lo spraying sfugge al lockout e come lo si rileva.',
+                en: 'I can say why spraying evades lockout and how it is detected.'
+              }
+            ]
+          }
+        ]
       }
     ]
   },
@@ -6445,7 +6498,60 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
             en: 'Trusting the file extension or name instead of validating the resolved path server-side.'
           }
         ],
-        references: [{ kind: 'attack', id: 'T1190' }]
+        references: [{ kind: 'attack', id: 'T1190' }],
+        guidedLabs: [
+          {
+            id: 'gl-web-inclusion-defense',
+            title: {
+              it: 'Neutralizza inclusione e traversal con un allowlist',
+              en: 'Neutralize inclusion and traversal with an allowlist'
+            },
+            difficulty: 'core',
+            lab: 'applicationsecurity',
+            scenario: {
+              it: 'Il laboratorio «Sicurezza applicativa» raccoglie i difetti web lato applicazione e le relative difese.',
+              en: 'The “Application security” lab gathers application-side web flaws and their defenses.'
+            },
+            task: {
+              it: 'Spiega la causa comune di LFI/RFI e directory traversal e perché la correzione è un allowlist lato server, non il blocco della sequenza.',
+              en: 'Explain the common cause of LFI/RFI and directory traversal and why the fix is a server-side allowlist, not blocking the sequence.'
+            },
+            steps: [
+              {
+                it: 'Apri «Sicurezza applicativa» e individua i difetti legati all’input non validato.',
+                en: 'Open “Application security” and find the flaws tied to unvalidated input.'
+              },
+              {
+                it: 'Collega directory traversal, LFI e RFI alla stessa causa: un percorso o un include costruito dall’input.',
+                en: 'Link directory traversal, LFI, and RFI to the same cause: a path or include built from input.'
+              },
+              {
+                it: 'Indica perché bloccare la sola sequenza di risalita non basta e cosa la aggira.',
+                en: 'Point out why blocking only the traversal sequence is not enough and what bypasses it.'
+              }
+            ],
+            challenge: {
+              it: 'Il filtro blocca la sequenza di risalita ma l’attacco riesce lo stesso: cosa l’ha aggirato e qual è la correzione definitiva?',
+              en: 'The filter blocks the traversal sequence but the attack still works: what bypassed it and what is the definitive fix?'
+            },
+            solution: [
+              {
+                it: 'Le codifiche (percent-encoding, doppia codifica) e i percorsi assoluti aggirano il blocco letterale della sequenza. La correzione definitiva è non derivare mai il bersaglio dall’input: un allowlist di identificatori mappati lato server, più la canonicalizzazione del percorso risolto con verifica che resti sotto la directory di base, e privilegio minimo sul processo.',
+                en: 'Encodings (percent-encoding, double encoding) and absolute paths bypass the literal sequence block. The definitive fix is to never derive the target from input: a server-side allowlist of mapped identifiers, plus canonicalizing the resolved path with a check that it stays under the base directory, and least privilege on the process.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So spiegare la causa comune di LFI/RFI e directory traversal.',
+                en: 'I can explain the common cause of LFI/RFI and directory traversal.'
+              },
+              {
+                it: 'So dire perché l’allowlist lato server è la difesa, non il blocco della sequenza.',
+                en: 'I can say why a server-side allowlist is the defense, not blocking the sequence.'
+              }
+            ]
+          }
+        ]
       }
     ]
   },
@@ -6859,7 +6965,60 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
             en: 'Forgetting that NAT blocks a bind shell from outside, but not an outbound connection.'
           }
         ],
-        references: [{ kind: 'attack', id: 'T1059' }]
+        references: [{ kind: 'attack', id: 'T1059' }],
+        guidedLabs: [
+          {
+            id: 'gl-exploitation-egress-shell',
+            title: {
+              it: 'Ferma la reverse shell con l’egress',
+              en: 'Stop the reverse shell with egress'
+            },
+            difficulty: 'advanced',
+            lab: 'inspection',
+            scenario: {
+              it: 'Il laboratorio «Ispezione del traffico» mostra quale traffico passa in ingresso e in uscita e dove viene ispezionato.',
+              en: 'The “Traffic inspection” lab shows which traffic passes inbound and outbound and where it is inspected.'
+            },
+            task: {
+              it: 'Spiega perché una reverse shell supera il firewall in ingresso e il NAT, e quale controllo sull’uscita la spezza.',
+              en: 'Explain why a reverse shell defeats the inbound firewall and NAT, and which control on egress breaks it.'
+            },
+            steps: [
+              {
+                it: 'Apri «Ispezione del traffico» e distingui ciò che è permesso in ingresso da ciò che è permesso in uscita.',
+                en: 'Open “Traffic inspection” and tell apart what is allowed inbound from what is allowed outbound.'
+              },
+              {
+                it: 'Collega la bind shell all’ingresso bloccato e la reverse shell all’uscita consentita.',
+                en: 'Link the bind shell to blocked inbound and the reverse shell to allowed outbound.'
+              },
+              {
+                it: 'Indica quale policy di egress e quale ispezione interrompono la connessione di ritorno.',
+                en: 'Point out which egress policy and which inspection break the return connection.'
+              }
+            ],
+            challenge: {
+              it: 'Il perimetro blocca ogni ingresso ma l’host interno «chiama fuori» sulla 443: cosa lo rende possibile e come lo si ferma senza rompere il traffico legittimo?',
+              en: 'The perimeter blocks all inbound but the internal host “calls out” on 443: what makes it possible and how do you stop it without breaking legitimate traffic?'
+            },
+            solution: [
+              {
+                it: 'La reverse shell esce dal target, quindi il firewall in ingresso e il NAT non la vedono; si confonde su porte comuni come la 443 cifrando il canale di comando e controllo. La si ferma con un egress filtering che consente solo destinazioni note (per esempio il proxy), con l’ispezione del traffico e con la segmentazione est-ovest; le sole regole in ingresso non bastano.',
+                en: 'The reverse shell leaves the target, so the inbound firewall and NAT do not see it; it blends in on common ports such as 443 by encrypting the command-and-control channel. You stop it with egress filtering that allows only known destinations (for example the proxy), with traffic inspection, and with east-west segmentation; inbound rules alone are not enough.'
+              }
+            ],
+            selfCheck: [
+              {
+                it: 'So spiegare perché la reverse shell aggira ingresso e NAT.',
+                en: 'I can explain why the reverse shell bypasses inbound and NAT.'
+              },
+              {
+                it: 'So indicare il controllo sull’uscita che la spezza.',
+                en: 'I can name the egress control that breaks it.'
+              }
+            ]
+          }
+        ]
       }
     ]
   },

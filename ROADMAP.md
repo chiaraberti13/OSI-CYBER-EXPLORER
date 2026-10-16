@@ -5,7 +5,7 @@
 > **Apertura Fase 3:** 14 ottobre 2026.
 > **Obiettivi di certificazione:** **CCNA 200-301** e **eJPT — INE/eLearnSecurity Junior
 > Penetration Tester**, in chiave didattica e autorizzata.
-> **Stato del manuale:** 29 capitoli / 92 argomenti / 74 laboratori guidati, bilingue IT/EN,
+> **Stato del manuale:** 29 capitoli / 92 argomenti / 77 laboratori guidati, bilingue IT/EN,
 > con il percorso eJPT completo e una sequenza di studio a doppio binario documentata.
 > **Metodo:** incrementi verticali completi e verificati (`npm run verify`, E2E Chromium con
 > Axe WCAG 2.2 AA, audit), pubblicati su `main`; ogni intervento documentato in `docs/verify/`.
@@ -351,13 +351,16 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
 > **facoltativi**, derivati da osservazioni reali su `main`; non sono blocchi. Ciascuno porta criteri
 > di completamento verificabili, così che un incremento resti un incremento verticale e verde.
 
-- [ ] **PERF-01 (P2) — Margine del budget JavaScript iniziale.** Il bundle d'ingresso misura ~122,4 kB
-      gzip contro il limite di 125 kB (`performance-budgets.json`): ~2% di margine, quindi il prossimo
-      contenuto pesante può far fallire il gate `verify:performance`. **Criteri:** riportare l'ingresso
-      sotto un margine comodo (indicativamente ≤118 kB gzip) senza togliere contenuti — per esempio
-      caricando in lazy un modulo oggi incluso nell'entry — oppure rivedere in modo documentato la
-      soglia con una motivazione; `size-limit`, Lighthouse CI e il budget restano verdi e il treemap
-      aggiornato come evidenza.
+- [ ] **PERF-01 (P2) — Margine del budget JavaScript iniziale.** Il chunk d'ingresso misura ~122,4 kB
+      gzip contro il limite di 125 kB (`performance-budgets.json`): ~2% di margine. **Verifica
+      (16/10/2026):** il budget misura il solo chunk entry, che contiene **codice dello shell**
+      (App, store, i18n, navigazione, `viewRegistry`, selettori del manuale); i dati di manuale e
+      glossario **non** sono nell'entry — Vite li colloca in un chunk condiviso lazy — quindi
+      l'aggiunta di contenuti non consuma questo margine. La pressione viene dalla crescita dello
+      **shell**, non dei contenuti. **Criteri:** se lo shell si avvicina alla soglia, caricare in lazy
+      una dipendenza eager oggi nell'entry (candidata: l'animazione `motion/react`) oppure rivedere in
+      modo documentato la soglia; `size-limit`, Lighthouse CI e il budget restano verdi, treemap come
+      evidenza. Priorità effettiva bassa finché l'entry resta sotto il budget.
 - [ ] **CONTENT-10 (P3, ricorrente) — Nuovi argomenti per i due percorsi.** Proseguire l'aggiunta di
       argomenti ad alto valore nei capitoli esistenti (es. CCNA: QoS applicata, lettura della GUI del
       WLC; eJPT: enumerazione SMB/SNMP, cracking offline degli hash, basi di Active Directory), uno per
@@ -365,12 +368,14 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
       bilingue IT/EN con obiettivi, teoria ed errori comuni, riferimenti ATT&CK/RFC/NIST risolti in
       HTTPS, solo target di documentazione; guard bilingue e integrità del manuale verdi; conteggi
       derivati dal dataset; report in `docs/verify/`.
-- [ ] **EDU-40 (P3) — Esercizi guidati per gli argomenti aggiunti.** I quattro argomenti aggiunti il
-      16/10/2026 (NTP, attacchi alle password, LFI/RFI, reverse/bind shell) non hanno ancora un
-      esercizio guidato. Aggiungerne uno per argomento, riusando un laboratorio interattivo già
-      registrato (nessun nuovo `AppView` richiesto). **Criteri:** ogni `guidedLab` punta a una vista
-      registrata con `steps`, `solution` e `selfCheck` non vuoti e bilingui; l'E2E QA-20 (che ora deriva
-      i conteggi dal dataset) e `studyManual.test.ts` restano verdi.
+- [x] **EDU-40 (P3) — Esercizi guidati per gli argomenti aggiunti.** **Esito (16/10/2026):** aggiunti
+      tre esercizi guidati ai nuovi argomenti eJPT, riusando laboratori interattivi già registrati:
+      «Attacchi alle password» → `identitytrust`, «Inclusione di file e directory traversal» →
+      `applicationsecurity`, «Reverse shell e bind shell» → `inspection`. L'argomento CCNA **NTP**
+      resta solo-teoria: non esiste un laboratorio interattivo con cui abbinarlo in modo istruttivo, e
+      forzarlo sarebbe un riuso debole. Ogni `guidedLab` è bilingue con `steps`, `solution` e
+      `selfCheck` non vuoti e punta a una vista registrata; laboratori guidati 74 → 77, conteggi
+      derivati dal dataset. `studyManual.test.ts` e l'E2E QA-20 (che deriva i conteggi) restano verdi.
 
 ## 🧾 Registro delle decisioni
 
