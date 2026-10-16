@@ -270,6 +270,17 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
         arriverebbe). Criteri verificati: parità strutturale ed euristica (3228 coppie, nessun
         punto cieco), `verify` completo verde (778 test unitari), 74/74 E2E Chromium.
         Report: `docs/verify/2026-10-16-i18n10-glossary.md`.
+  - [x] **Incremento manuale di studio (16/10/2026).** `STUDY_MANUAL` (29 capitoli / 88
+        argomenti / 74 laboratori guidati, ~9500 righe) — il dataset bilingue più grande e
+        importante dell'app — era protetto solo dall'euristica testuale, che per costruzione
+        non rileva un lato lingua interamente mancante in un campo `Bilingual` annidato.
+        Aggiunto al guard strutturale `BILINGUAL_DATASETS` con un controllo dedicato che
+        percorre esplicitamente titoli, sommari, obiettivi, prerequisiti, teoria, esempi,
+        errori comuni e, per ogni lab guidato, scenario/consegna/passi/sfida/soluzione/
+        autovalutazione, con contatori anti no-op (>80 argomenti, >70 lab). Nessuna
+        correzione di contenuto necessaria: tutti i campi hanno entrambe le lingue non vuote.
+        Criteri verificati: `verify` completo verde (779 test unitari), guard bilingue 18 test,
+        74/74 E2E Chromium, 0 vulnerabilità. Report: `docs/verify/2026-10-16-i18n10-study-manual.md`.
 
 ## 📝 Technical Writer — documentazione
 

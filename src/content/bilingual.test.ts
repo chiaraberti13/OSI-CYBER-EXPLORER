@@ -2,6 +2,7 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { ATTACK_FAMILIES } from './securityTaxonomy';
 import { GLOSSARY_TERMS } from './glossaryTerms';
+import { STUDY_MANUAL } from './studyManual';
 import { SECURITY_TECHNIQUES } from './securityCoverage';
 import { DEFENSE_CONTROLS } from './defenseControls';
 import { DETECTION_USE_CASES } from './detectionUseCases';
@@ -45,7 +46,8 @@ import { WIRELESS_SECURITY_SCENARIOS } from './wirelessSecurityScenarios';
 const CONTENT_DIR = 'src/content';
 
 // All extracted catalogues are reviewed and included (I18N-10, 2026-10-16); the
-// learner-facing glossary joined the structured parity walk below (I18N-10, 2026-10-16).
+// learner-facing glossary joined the structured parity walk below (I18N-10, 2026-10-16),
+// and the study manual — the largest learner-facing dataset — followed (I18N-10, 2026-10-16).
 
 interface Pair {
   file: string;
@@ -151,6 +153,7 @@ describe('bilingual content', () => {
  */
 
 const BILINGUAL_DATASETS: ReadonlyArray<readonly [string, unknown]> = [
+  ['STUDY_MANUAL', STUDY_MANUAL],
   ['GLOSSARY_TERMS', GLOSSARY_TERMS],
   ['ATTACK_FAMILIES', ATTACK_FAMILIES],
   ['SECURITY_TECHNIQUES', SECURITY_TECHNIQUES],
@@ -259,6 +262,44 @@ describe('structured bilingual datasets', () => {
       }
     }
     expect(offenders).toEqual([]);
+  });
+
+  it('checks every chapter, topic and guided-lab bilingual field of the study manual', () => {
+    const offenders: string[] = [];
+    let topics = 0;
+    let guidedLabs = 0;
+    for (const chapter of STUDY_MANUAL) {
+      const at = `STUDY_MANUAL[${chapter.id}]`;
+      // Chapter-level title and summary.
+      collectEmptyTranslations(chapter.title, `${at}.title`, offenders);
+      collectEmptyTranslations(chapter.summary, `${at}.summary`, offenders);
+      for (const topic of chapter.topics) {
+        topics += 1;
+        // Every Bilingual and Bilingual[] a topic carries, including the optional example.
+        collectEmptyTranslations(topic.title, `${at}.${topic.id}.title`, offenders);
+        collectEmptyTranslations(topic.objectives, `${at}.${topic.id}.objectives`, offenders);
+        collectEmptyTranslations(topic.prerequisites, `${at}.${topic.id}.prerequisites`, offenders);
+        collectEmptyTranslations(topic.theory, `${at}.${topic.id}.theory`, offenders);
+        collectEmptyTranslations(topic.example, `${at}.${topic.id}.example`, offenders);
+        collectEmptyTranslations(topic.commonMistakes, `${at}.${topic.id}.commonMistakes`, offenders);
+        for (const lab of topic.guidedLabs ?? []) {
+          guidedLabs += 1;
+          // A guided lab is the deepest bilingual nesting: steps, solution and
+          // self-check are Bilingual[] where a dropped side hides most easily.
+          collectEmptyTranslations(lab.title, `${at}.${lab.id}.title`, offenders);
+          collectEmptyTranslations(lab.scenario, `${at}.${lab.id}.scenario`, offenders);
+          collectEmptyTranslations(lab.task, `${at}.${lab.id}.task`, offenders);
+          collectEmptyTranslations(lab.steps, `${at}.${lab.id}.steps`, offenders);
+          collectEmptyTranslations(lab.challenge, `${at}.${lab.id}.challenge`, offenders);
+          collectEmptyTranslations(lab.solution, `${at}.${lab.id}.solution`, offenders);
+          collectEmptyTranslations(lab.selfCheck, `${at}.${lab.id}.selfCheck`, offenders);
+        }
+      }
+    }
+    expect(offenders, 'a manual field is missing a language or is empty').toEqual([]);
+    // Guard against a silent no-op: the manual is the largest learner-facing dataset.
+    expect(topics).toBeGreaterThan(80);
+    expect(guidedLabs).toBeGreaterThan(70);
   });
 
   it('checks every glossary definition, including any future nested bilingual field', () => {
