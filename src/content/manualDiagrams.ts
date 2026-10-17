@@ -153,6 +153,100 @@ export const MANUAL_DIAGRAMS = {
         dashed: true
       }
     ]
+  },
+  encapsulation: {
+    title: { it: 'La PDU si avvolge nello stack', en: 'A PDU is wrapped down the stack' },
+    description: {
+      it: 'Nel mittente i dati applicativi scendono nello stack: TCP o UDP aggiunge il proprio header, IP aggiunge il suo, Ethernet aggiunge header e trailer FCS, poi il livello fisico trasmette bit. Il destinatario rimuove e interpreta le stesse informazioni in ordine inverso. È uno schema didattico: il formato esatto dipende dai protocolli e dal collegamento.',
+      en: 'At the sender, application data moves down the stack: TCP or UDP adds its header, IP adds its header, Ethernet adds a header and the FCS trailer, and the physical layer transmits bits. The receiver removes and interprets the same information in reverse order. This is a teaching model; exact formats depend on the protocols and link.'
+    },
+    height: 470,
+    nodes: [
+      {
+        x: 28,
+        y: 10,
+        width: 264,
+        label: { it: 'Livelli 7–5 · Dati', en: 'Layers 7–5 · Data' },
+        detail: { it: 'Payload applicativo', en: 'Application payload' }
+      },
+      {
+        x: 28,
+        y: 106,
+        width: 264,
+        label: { it: 'Livello 4 · Segmento / datagramma', en: 'Layer 4 · Segment / datagram' },
+        detail: { it: 'Header TCP oppure UDP', en: 'TCP or UDP header' }
+      },
+      {
+        x: 28,
+        y: 202,
+        width: 264,
+        label: { it: 'Livello 3 · Pacchetto IP', en: 'Layer 3 · IP packet' },
+        detail: { it: 'Header IP + PDU di livello 4', en: 'IP header + layer-4 PDU' }
+      },
+      {
+        x: 28,
+        y: 298,
+        width: 264,
+        label: { it: 'Livello 2 · Frame', en: 'Layer 2 · Frame' },
+        detail: { it: 'Header Ethernet + pacchetto + FCS', en: 'Ethernet header + packet + FCS' }
+      },
+      {
+        x: 28,
+        y: 394,
+        width: 264,
+        label: { it: 'Livello 1 · Bit', en: 'Layer 1 · Bits' },
+        detail: { it: 'Segnali sul mezzo trasmissivo', en: 'Signals on the transmission medium' }
+      }
+    ],
+    edges: [
+      { path: 'M160 66 V104', x: 224, y: 91, label: { it: 'header L4', en: 'L4 header' } },
+      { path: 'M160 162 V200', x: 222, y: 187, label: { it: 'header IP', en: 'IP header' } },
+      { path: 'M160 258 V296', x: 226, y: 283, label: { it: 'header + FCS', en: 'header + FCS' } },
+      { path: 'M160 354 V392', x: 220, y: 379, label: { it: 'trasmissione', en: 'transmission' } }
+    ]
+  },
+  qos: {
+    title: { it: 'Dalla marcatura all’uscita in rete', en: 'From marking to network egress' },
+    description: {
+      it: 'La policy definisce il confine di fiducia, classifica il traffico e decide come servire o scartare i pacchetti durante la congestione. LLQ dà priorità stretta alla classe voce, CBWFQ ripartisce banda tra classi e WRED può scartare in anticipo traffico selezionato. QoS gestisce la capacità disponibile: non crea banda e le marcature vanno applicate e verificate lungo il percorso.',
+      en: 'Policy defines a trust boundary, classifies traffic and decides how to serve or drop packets during congestion. LLQ gives strict priority to the voice class, CBWFQ allocates bandwidth among classes, and WRED can drop selected traffic early. QoS manages available capacity; it does not create bandwidth, and markings must be applied and checked along the path.'
+    },
+    height: 390,
+    nodes: [
+      {
+        x: 24,
+        y: 10,
+        width: 272,
+        label: { it: 'Bordo e confine di fiducia', en: 'Edge and trust boundary' },
+        detail: { it: 'Conferma o azzera la marcatura', en: 'Trust or reset the marking' }
+      },
+      {
+        x: 24,
+        y: 106,
+        width: 272,
+        label: { it: 'Classificazione del traffico', en: 'Traffic classification' },
+        detail: { it: 'DSCP · EF 46 · AF · CS0', en: 'DSCP · EF 46 · AF · CS0' }
+      },
+      {
+        x: 24,
+        y: 202,
+        width: 272,
+        label: { it: 'Code e gestione congestione', en: 'Queues and congestion management' },
+        detail: { it: 'LLQ · CBWFQ · WRED', en: 'LLQ · CBWFQ · WRED' }
+      },
+      {
+        x: 24,
+        y: 298,
+        width: 272,
+        label: { it: 'Link in uscita', en: 'Egress link' },
+        detail: { it: 'Capacità condivisa tra flussi', en: 'Capacity shared among flows' }
+      }
+    ],
+    edges: [
+      { path: 'M160 66 V104', x: 222, y: 91, label: { it: 'classifica', en: 'classify' } },
+      { path: 'M160 162 V200', x: 224, y: 187, label: { it: 'accoda / gestisce', en: 'queue / manage' } },
+      { path: 'M160 258 V296', x: 220, y: 283, label: { it: 'trasmette', en: 'transmit' } }
+    ]
   }
 } satisfies Record<string, ManualDiagram>;
 

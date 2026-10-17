@@ -290,6 +290,7 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
         ]
       },
       {
+        diagram: 'encapsulation',
         id: 'osi-encapsulation',
         title: { it: 'Incapsulamento e decapsulamento', en: 'Encapsulation and decapsulation' },
         objectives: [
@@ -1837,6 +1838,7 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
         references: [{ kind: 'rfc', id: 'RFC 5905' }]
       },
       {
+        diagram: 'qos',
         id: 'ip-services-qos',
         title: {
           it: 'QoS: classificazione, marcatura e gestione della congestione',

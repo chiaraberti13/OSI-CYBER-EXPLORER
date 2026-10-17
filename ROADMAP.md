@@ -477,14 +477,22 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
       d'esame): un nuovo argomento senza riferimento ora fallisce in CI. Nessuna URL non-HTTPS (il
       test di risoluzione resta verde). I riferimenti sono `{kind,id}` senza testo, quindi senza
       impatto bilingue. Report: `docs/verify/2026-10-17-content15-references.md`.
-- [ ] **VIS-13 (P3) — Estendere i micro-diagrammi SVG ai concetti chiave.** Solo **3/94** argomenti
-      hanno un `diagram` (VIS-12). Aggiungere micro-diagrammi SVG bilingui, coerenti col sistema di
-      design e leggibili in tema chiaro/scuro, agli argomenti dove un disegno chiarisce più del testo
-      (candidati: incapsulamento/decapsulamento OSI, albero STP e ruoli delle porte, gerarchia QoS
-      LLQ/CBWFQ, handshake IKEv2/Child SA, catena di fiducia PKI/TLS). Uno o due per incremento.
-      **Criteri:** alternativa testuale visibile e `id` accessibili univoci (come VIS-12), contrasto
-      SVG e Axe verdi nei due temi e nelle due lingue, geometria corretta a 320/1280 px; E2E dedicato
-      verde; report in `docs/verify/`.
+- [~] **VIS-13 (P3) — Estendere i micro-diagrammi SVG ai concetti chiave.** Prima di questo incremento
+  solo **3/96** argomenti avevano un `diagram` (VIS-12). Aggiungere micro-diagrammi SVG bilingui, coerenti col sistema di
+  design e leggibili in tema chiaro/scuro, agli argomenti dove un disegno chiarisce più del testo
+  (candidati: incapsulamento/decapsulamento OSI, albero STP e ruoli delle porte, gerarchia QoS
+  LLQ/CBWFQ, handshake IKEv2/Child SA, catena di fiducia PKI/TLS). Uno o due per incremento.
+  **Criteri:** alternativa testuale visibile e `id` accessibili univoci (come VIS-12), contrasto
+  SVG e Axe verdi nei due temi e nelle due lingue, geometria corretta a 320/1280 px; E2E dedicato
+  verde; report in `docs/verify/`.
+  - [x] **Incremento incapsulamento OSI + QoS (17/10/2026).** Aggiunti diagrammi SVG bilingui ai
+        temi `osi-encapsulation` e `ip-services-qos`: sequenza di PDU e aggiunta degli header/FCS;
+        confine di fiducia, classificazione DSCP e gestione delle code LLQ/CBWFQ/WRED. Ogni figura ha
+        descrizione completa e visibile, titolo/descrizione accessibili e riferimenti SVG univoci; il
+        diagramma richiama i limiti già insegnati (protocollo/link variabili, QoS non crea banda).
+        I diagrammi coperti passano da 3/96 a 5/96. E2E: 8 combinazioni lingua/tema a viewport 320 e
+        1280 px, controllo Axe, contrasto, overflow e nomi/descrizioni accessibili; suite completa
+        84/84. Report: `docs/verify/2026-10-17-vis13-encapsulation-qos.md`.
 - [ ] **I18N-10 (P1, ricorrente) — Revisione IT/EN dei nuovi contenuti.** Vedi la voce dedicata nella
       sezione del Traduttore/Revisore: ogni argomento o diagramma aggiunto da questo backlog passa la
       revisione di accuratezza e naturalezza con parità di acronimi e cifre prima della pubblicazione.
