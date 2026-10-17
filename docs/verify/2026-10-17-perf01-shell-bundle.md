@@ -56,12 +56,16 @@ Verifiche già eseguite:
   lint, build e tutti i gate repository verdi.
 - Playwright locale è stato avviato ma il browser non è installato: il percorso
   `/opt/pw-browsers/chromium` e la cache Playwright sono assenti. I test E2E
-  quindi non hanno raggiunto l'app. Il workflow E2E GitHub installa Chromium
-  esplicitamente; l'esito remoto va verificato dopo il push. Anche il workflow
-  Performance esegue Lighthouse CI e va confermato dopo il push.
+  quindi non hanno raggiunto l'app localmente. Dopo il push, il workflow GitHub
+  **E2E** (che installa Chromium) è terminato con esito `success`.
+- Il workflow **Performance budgets**, che esegue build, budget deterministici
+  e Lighthouse CI su OSI e Ports, è terminato con esito `success`.
+- Sono inoltre riusciti i workflow **CI**, **CodeQL**, **OSV Dependency Scan**,
+  **Security Supply Chain**, **OpenSSF Scorecard** e
+  **Dynamic Deployment Security** per il commit pubblicato.
 
 ## Esito
 
 L'indice compatto e il bundle di produzione rispettano il budget senza alzare le
-soglie. PERF-01 resterà non spuntato finché i check Lighthouse CI e E2E attivati
-dal push su `main` non risultano verdi.
+soglie. Lighthouse CI e E2E sono verdi anche sul commit pubblicato su `main`;
+PERF-01 è quindi completato.
