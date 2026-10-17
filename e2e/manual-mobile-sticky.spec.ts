@@ -24,19 +24,13 @@ test.describe('manual mobile navigation (UX-25)', () => {
     const desktopNav = page.getByRole('navigation', { name: 'Capitoli del manuale' });
     const mobileNav = page.getByRole('navigation', { name: 'Navigazione mobile del manuale' });
     const chapterSelect = mobileNav.getByRole('combobox', { name: 'Vai a un capitolo' });
-    const topicIndex = page.getByTestId('mobile-topic-index');
+    const topicSelect = mobileNav.getByRole('combobox', { name: 'Vai a un argomento' });
 
     await expect(desktopNav).toBeHidden();
     await expect(mobileNav).toBeVisible();
     await expect(chapterSelect.locator('option')).toHaveCount(TOTAL_CHAPTERS);
     await expect(chapterSelect.locator('optgroup')).toHaveCount(ROUTE_GROUP_COUNT);
     expect((await mobileNav.boundingBox())?.height).toBeLessThanOrEqual(112);
-
-    const indexOverflow = await topicIndex.evaluate((index) => ({
-      clientWidth: index.clientWidth,
-      scrollWidth: index.scrollWidth
-    }));
-    expect(indexOverflow.scrollWidth).toBeGreaterThan(indexOverflow.clientWidth);
 
     await chapterSelect.selectOption('ethernet-switching');
     const ethernetTitle = page.getByRole('heading', { level: 2, name: /Ethernet/ });
@@ -47,9 +41,10 @@ test.describe('manual mobile navigation (UX-25)', () => {
     const progressLabel = `Progresso capitoli: 1/${TOTAL_CHAPTERS} (${ONE_OF_ALL_PERCENT}%)`;
     await expect(mobileNav.getByLabel(progressLabel)).toBeVisible();
 
-    const secondTopic = topicIndex.getByRole('button').nth(1);
-    await secondTopic.click();
-    await expect(secondTopic).toHaveAttribute('aria-current', 'location');
+    // UX-45c: the per-topic quick jump is a native select (no horizontal scrolling);
+    // choosing a topic anchors it below the sticky toolbar.
+    await topicSelect.selectOption('switch-cam-learning');
+    await expect(topicSelect).toHaveValue('switch-cam-learning');
     const toolbarBox = await mobileNav.boundingBox();
     await expect(mobileNav.getByLabel(progressLabel)).toBeInViewport();
 
@@ -59,10 +54,10 @@ test.describe('manual mobile navigation (UX-25)', () => {
 
     await page.evaluate(() => window.scrollBy({ top: 500, behavior: 'instant' }));
     const stickyToolbarBox = await mobileNav.boundingBox();
-    expect(stickyToolbarBox?.y).toBeGreaterThanOrEqual(103);
-    // The sticky region starts at 104 px; its border and 8 px padding put
-    // the navigation itself at 113 px.
-    expect(stickyToolbarBox?.y).toBeLessThanOrEqual(114);
+    // IA-13: the sticky region starts at the single 56 px top bar; its border and 8 px
+    // padding put the navigation itself at ~65 px.
+    expect(stickyToolbarBox?.y).toBeGreaterThanOrEqual(56);
+    expect(stickyToolbarBox?.y).toBeLessThanOrEqual(66);
     await expect(mobileNav.getByLabel(progressLabel)).toBeInViewport();
 
     const widths = await page.evaluate(() => ({
@@ -95,7 +90,7 @@ test.describe('manual mobile navigation (UX-25)', () => {
 
     await stepNav.getByRole('button', { name: /Capitolo successivo/ }).click();
     await expect(page.getByRole('heading', { level: 2, name: /Indirizzamento IPv4/ })).toBeFocused();
-    await expect(mobileNav.getByRole('combobox')).toHaveValue('ipv4-subnetting');
+    await expect(mobileNav.getByRole('combobox', { name: 'Vai a un capitolo' })).toHaveValue('ipv4-subnetting');
   });
 
   test('localises the compact navigation and keeps its controls at least 44 px', async ({ page }) => {

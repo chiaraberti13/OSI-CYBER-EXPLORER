@@ -127,15 +127,17 @@ describe('StudyManualView (EDU-01)', () => {
     const rail = screen.getByRole('navigation', { name: 'In questa pagina' });
     const mobileContents = screen.getByRole('navigation', { name: 'Navigazione mobile del manuale' });
     const railButtons = within(rail).getAllByRole('button');
-    // Scope to the topic index: the toolbar also holds the UX-32 route-filter buttons.
-    const mobileButtons = within(within(mobileContents).getByTestId('mobile-topic-index')).getAllByRole('button');
+    // The mobile per-topic quick jump is a native select (UX-45c), not a chip strip; its
+    // value tracks the same active topic as the desktop rail.
+    const topicSelect = within(mobileContents).getByTestId('mobile-topic-index') as HTMLSelectElement;
+    const topicOptions = within(topicSelect).getAllByRole('option') as HTMLOptionElement[];
 
     expect(railButtons[0].getAttribute('aria-current')).toBe('location');
-    expect(mobileButtons[0].getAttribute('aria-current')).toBe('location');
+    expect(topicSelect.value).toBe(topicOptions[0].value);
     await user.click(railButtons[1]);
     expect(railButtons[0].hasAttribute('aria-current')).toBe(false);
     expect(railButtons[1].getAttribute('aria-current')).toBe('location');
-    expect(mobileButtons[1].getAttribute('aria-current')).toBe('location');
+    expect(topicSelect.value).toBe(topicOptions[1].value);
   });
 
   it('offers a compact domain-grouped chapter selector and persistent topic index on mobile', async () => {
@@ -149,16 +151,16 @@ describe('StudyManualView (EDU-01)', () => {
     // The selector is grouped by the two study routes, each labelled with its progress.
     expect(chapterSelect.querySelector(`optgroup[label="Percorso CCNA · 0/${CCNA_CHAPTERS}"]`)).not.toBeNull();
     expect(chapterSelect.querySelector(`optgroup[label="eJPT · 0/${EJPT_CHAPTERS}"]`)).not.toBeNull();
-    // The persistent topic index holds one button per topic of the open chapter (the
-    // toolbar also carries the UX-32 route filter, so scope the count to the index).
-    const topicIndex = () => within(within(mobileNav).getByTestId('mobile-topic-index')).getAllByRole('button');
-    expect(topicIndex()).toHaveLength(4);
+    // The per-topic quick jump is a native select (UX-45c): one option per topic of the
+    // open chapter, so switching chapters re-populates it.
+    const topicOptions = () => within(within(mobileNav).getByTestId('mobile-topic-index')).getAllByRole('option');
+    expect(topicOptions()).toHaveLength(4);
 
     await user.selectOptions(chapterSelect, 'ethernet-switching');
     const chapterHeading = screen.getByRole('heading', { level: 2, name: /Ethernet/ });
     expect((chapterSelect as HTMLSelectElement).value).toBe('ethernet-switching');
     expect(document.activeElement).toBe(chapterHeading);
-    expect(topicIndex()).toHaveLength(3);
+    expect(topicOptions()).toHaveLength(3);
   });
 
   it('respects the reduced-motion preference for manual scrolling', () => {

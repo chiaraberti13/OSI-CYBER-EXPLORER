@@ -296,12 +296,15 @@ test.describe('WCAG reflow and touch targets', () => {
       expect(Math.round(box!.height * 100) / 100).toBeGreaterThanOrEqual(44);
     };
 
-    // IA-13: on mobile the top bar carries the menu, search and copy-link controls;
-    // the guide and language controls live in the navigation drawer (checked below).
+    // IA-13: on mobile the fixed top bar carries the menu button, search, language and
+    // guide (the primary menu itself collapses behind the menu button; copy-link is a
+    // desktop-only convenience and is hidden here to keep the bar within 320 px).
     const topBarControls = [
       page.getByRole('button', { name: 'Apri il menu di navigazione' }),
-      page.getByRole('button', { name: 'Copia il link di questo laboratorio' }),
       page.getByRole('button', { name: 'Cerca un laboratorio' }),
+      page.getByRole('button', { name: 'Italiano' }),
+      page.getByRole('button', { name: 'English' }),
+      page.getByRole('button', { name: 'Apri la guida' }),
       page.getByRole('button', { name: 'Velocità 0.5x' }),
       page.getByRole('button', { name: 'Velocità 1x' }),
       page.getByRole('button', { name: 'Velocità 2x' }),
@@ -340,14 +343,12 @@ test.describe('WCAG reflow and touch targets', () => {
     }));
     expect(reflow.content).toBeLessThanOrEqual(reflow.viewport);
 
-    // The guide and language controls live in the navigation drawer on mobile: open it
-    // and confirm they also meet the 44 px target without introducing horizontal overflow.
+    // The navigation drawer (the primary menu on mobile) opens without introducing
+    // horizontal overflow, and its destinations meet the 44 px target.
     await page.getByRole('button', { name: 'Apri il menu di navigazione' }).click();
     const drawer = page.getByRole('dialog', { name: 'Navigazione principale' });
     await expect(drawer).toBeVisible();
-    await meetsTarget(drawer.getByRole('button', { name: 'Apri la guida' }));
-    await meetsTarget(drawer.getByRole('button', { name: 'English' }));
-    await meetsTarget(drawer.getByRole('button', { name: 'Italiano' }));
+    await meetsTarget(drawer.getByRole('link', { name: 'Manuale' }));
 
     const reflowWithDrawer = await page.evaluate(() => ({
       viewport: document.documentElement.clientWidth,

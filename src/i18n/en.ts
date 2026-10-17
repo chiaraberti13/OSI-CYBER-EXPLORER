@@ -85,6 +85,7 @@ export const en = {
     doGuidedExercise: 'Do the guided exercise',
     chapterNav: 'Manual chapters',
     chapterSelector: 'Jump to a chapter',
+    topicSelector: 'Jump to a topic',
     mobileChapterNav: 'Mobile manual navigation',
     difficultyIntro: 'Intro',
     difficultyCore: 'Core',
