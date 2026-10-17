@@ -17,7 +17,69 @@ afterEach(() => {
   cleanup();
   disconnect?.();
   window.history.replaceState(null, '', '/');
-  useStore.setState({ activeView: 'manual', language: 'it' });
+  useStore.setState({ activeView: 'manual', language: 'it', isNavOpen: false });
+});
+
+describe('Topbar primary navigation', () => {
+  it('opens the Laboratori dropdown and switches view when an entry is chosen', async () => {
+    const user = userEvent.setup();
+    render(<Topbar />);
+
+    const labs = screen.getByRole('button', { name: /Laboratori/ });
+    expect(labs.getAttribute('aria-expanded')).toBe('false');
+    await user.click(labs);
+    expect(labs.getAttribute('aria-expanded')).toBe('true');
+
+    const entry = screen.getByRole('link', { name: /^Connettività IP/ });
+    expect(entry.getAttribute('href')).toBe('#/routing');
+    await user.click(entry);
+
+    expect(useStore.getState().activeView).toBe('routing');
+    expect(window.location.hash).toBe('#/routing');
+  });
+
+  it('navigates to a promoted single-destination item (Porte)', async () => {
+    const user = userEvent.setup();
+    render(<Topbar />);
+    const ports = screen.getByRole('link', { name: /Porte e protocolli/ });
+    expect(ports.getAttribute('href')).toBe('#/ports');
+    await user.click(ports);
+    expect(useStore.getState().activeView).toBe('ports');
+  });
+
+  it('marks the Laboratori item as current when a lab is the active view', () => {
+    useStore.setState({ activeView: 'emailsecurity' });
+    render(<Topbar />);
+    expect(screen.getByRole('button', { name: /Laboratori/ }).getAttribute('aria-current')).toBe('true');
+  });
+
+  it('renders every destination in English when the language changes', () => {
+    useStore.setState({ language: 'en' });
+    render(<Topbar />);
+    expect(screen.getByRole('link', { name: /Manual/ })).toBeTruthy();
+    expect(screen.getByRole('button', { name: /Labs/ })).toBeTruthy();
+    expect(screen.getByRole('link', { name: /Glossary/ })).toBeTruthy();
+    expect(screen.getByRole('link', { name: /CCNA map/ })).toBeTruthy();
+    expect(screen.getByRole('link', { name: /Ports & protocols/ })).toBeTruthy();
+  });
+
+  it('opens the guide and toggles the language from the top bar', async () => {
+    const user = userEvent.setup();
+    render(<Topbar />);
+    const guide = screen.getByRole('button', { name: 'Apri la guida' });
+    expect(guide.getAttribute('aria-haspopup')).toBe('dialog');
+    await user.click(guide);
+    expect(useStore.getState().isGuideOpen).toBe(true);
+    await user.click(screen.getByRole('button', { name: 'English' }));
+    expect(useStore.getState().language).toBe('en');
+  });
+
+  it('opens the navigation drawer from the menu button', async () => {
+    const user = userEvent.setup();
+    render(<Topbar />);
+    await user.click(screen.getByRole('button', { name: 'Apri il menu di navigazione' }));
+    expect(useStore.getState().isNavOpen).toBe(true);
+  });
 });
 
 describe('Topbar quick search', () => {
@@ -101,12 +163,5 @@ describe('Topbar quick search', () => {
     useStore.setState({ language: 'en' });
     render(<Topbar />);
     expect(screen.getByRole('button', { name: 'Copy link to this lab' })).toBeTruthy();
-  });
-
-  it('opens the navigation drawer from the menu button', async () => {
-    const user = userEvent.setup();
-    render(<Topbar />);
-    await user.click(screen.getByRole('button', { name: 'Apri il menu di navigazione' }));
-    expect(useStore.getState().isNavOpen).toBe(true);
   });
 });

@@ -86,6 +86,7 @@ export const it = {
     doGuidedExercise: 'Fai l’esercizio guidato',
     chapterNav: 'Capitoli del manuale',
     chapterSelector: 'Vai a un capitolo',
+    topicSelector: 'Vai a un argomento',
     mobileChapterNav: 'Navigazione mobile del manuale',
     difficultyIntro: 'Introduttivo',
     difficultyCore: 'Fondamentale',

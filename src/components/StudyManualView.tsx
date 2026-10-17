@@ -173,6 +173,7 @@ export default function StudyManualView() {
   const chapterContextRef = useRef<HTMLDivElement>(null);
   const focusChapterTitleAfterChange = useRef(false);
   const mobileChapterSelectId = useId();
+  const mobileTopicSelectId = useId();
   const sectionBaseId = useId();
 
   const difficultyLabel: Record<ManualDifficulty, string> = {
@@ -724,31 +725,33 @@ export default function StudyManualView() {
 
               {chapter.topics.length > 1 ? (
                 <div>
-                  <p className="sr-only">{t.tableOfContents}</p>
-                  <ol
+                  {/* UX-45c: the per-topic quick jump is a native select, not a
+                    horizontally-scrolling chip strip. A dropdown needs no sideways
+                    swipe (the strip was unreadable and hard to scroll on a phone), keeps
+                    the sticky toolbar short, and stays one tap from every topic. */}
+                  <label htmlFor={mobileTopicSelectId} className="sr-only">
+                    {t.topicSelector}
+                  </label>
+                  <select
+                    id={mobileTopicSelectId}
                     data-testid="mobile-topic-index"
-                    className="topic-scroller -mx-1 flex snap-x gap-1.5 overflow-x-auto overscroll-x-contain px-1 pb-1 [scrollbar-width:thin]"
+                    value={activeTopic ?? ''}
+                    onChange={(event) => jumpToTopic(event.target.value)}
+                    className="min-h-11 w-full truncate rounded-lg border border-slate-300 bg-white px-3 pr-8 text-[13px] font-medium text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
                   >
-                    {chapter.topics.map((topic, i) => {
-                      const isActive = activeTopic === topic.id;
-                      return (
-                        <li key={`mobile-topic-${topic.id}`} className="shrink-0 snap-start">
-                          <button
-                            type="button"
-                            onClick={() => jumpToTopic(topic.id)}
-                            aria-current={isActive ? 'location' : undefined}
-                            className={`inline-flex min-h-11 items-center rounded-full border px-3 text-[13px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 ${
-                              isActive
-                                ? 'border-indigo-300 bg-indigo-50 font-semibold text-indigo-800'
-                                : 'border-slate-200 bg-white font-medium text-slate-600 hover:text-slate-900'
-                            }`}
-                          >
-                            {i + 1}. {topic.title[language]}
-                          </button>
-                        </li>
-                      );
-                    })}
-                  </ol>
+                    {/* Until a topic is anchored the field shows the table-of-contents label
+                      as a disabled placeholder, so the control reads as "jump to a topic". */}
+                    {activeTopic ? null : (
+                      <option value="" disabled>
+                        {t.tableOfContents}
+                      </option>
+                    )}
+                    {chapter.topics.map((topic, i) => (
+                      <option key={`mobile-topic-${topic.id}`} value={topic.id}>
+                        {i + 1}. {topic.title[language]}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               ) : null}
             </nav>

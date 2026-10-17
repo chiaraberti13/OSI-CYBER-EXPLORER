@@ -68,12 +68,16 @@ test.describe('manual accessibility on mobile (UX-24)', () => {
 
   test('keeps current location, touch targets and colored tiles accessible', async ({ page }) => {
     await page.goto('/#/manual');
+    // UX-45c: the per-topic quick jump is a native select; its value reflects the active
+    // topic (the "current location") and updates when another topic is chosen.
     const contents = page.getByRole('navigation', { name: 'Navigazione mobile del manuale' });
-    const buttons = contents.getByRole('button');
-    await expect(buttons.first()).toHaveAttribute('aria-current', 'location');
-    await buttons.nth(1).click();
-    await expect(buttons.first()).not.toHaveAttribute('aria-current');
-    await expect(buttons.nth(1)).toHaveAttribute('aria-current', 'location');
+    const topicSelect = contents.getByRole('combobox', { name: 'Vai a un argomento' });
+    const options = topicSelect.getByRole('option');
+    const firstValue = await options.first().getAttribute('value');
+    const secondValue = await options.nth(1).getAttribute('value');
+    await expect(topicSelect).toHaveValue(firstValue ?? '');
+    await topicSelect.selectOption(secondValue!);
+    await expect(topicSelect).toHaveValue(secondValue!);
 
     const undersized = await page
       .locator('main button:visible, main a[href]:visible, main summary:visible')
