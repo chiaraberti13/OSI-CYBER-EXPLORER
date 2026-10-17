@@ -1115,6 +1115,7 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
       },
       {
         id: 'stp-loops',
+        diagram: 'stp-tree',
         title: { it: 'Spanning Tree: evitare i loop di livello 2', en: 'Spanning Tree: preventing layer-2 loops' },
         objectives: [
           {
@@ -4836,6 +4837,62 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
             ]
           }
         ]
+      },
+      {
+        id: 'automation-ai-ml-netops',
+        title: {
+          it: 'IA e machine learning nelle operazioni di rete',
+          en: 'AI and machine learning in network operations'
+        },
+        objectives: [
+          {
+            it: 'Distinguere machine learning, IA predittiva e IA generativa e spiegare, a livello concettuale, come si applicano alle operazioni di rete.',
+            en: 'Distinguish machine learning, predictive AI and generative AI, and explain, at a conceptual level, how they apply to network operations.'
+          },
+          {
+            it: 'Collegare l’IA all’automazione esistente e riconoscerne i limiti: l’output è un suggerimento da verificare, non una verità.',
+            en: 'Link AI to the existing automation and recognize its limits: the output is a suggestion to verify, not a truth.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere l’impatto dell’automazione e il networking basato su controller (argomenti precedenti di questo capitolo).',
+            en: 'Know the impact of automation and controller-based networking (previous topics in this chapter).'
+          }
+        ],
+        theory: [
+          {
+            it: 'Il CCNA 200-301 v1.1 aggiunge l’IA alle operazioni di rete (obiettivo 6.4). Tre termini vanno distinti. Il machine learning (ML) impara schemi dai dati invece di seguire regole scritte a mano. L’IA predittiva usa quegli schemi per prevedere o rilevare: previsione della capacità, dei guasti, rilevamento di anomalie nel traffico e nei log. L’IA generativa produce contenuti da una richiesta: bozze di configurazione, riassunti, risposte di un assistente. In rete trasformano la telemetria che l’infrastruttura già emette in informazione e assistenza.',
+            en: 'CCNA 200-301 v1.1 adds AI to network operations (objective 6.4). Three terms must be told apart. Machine learning (ML) learns patterns from data instead of following hand-written rules. Predictive AI uses those patterns to forecast or detect: capacity forecasting, fault prediction, anomaly detection in traffic and logs. Generative AI produces content from a prompt: draft configurations, summaries, an assistant’s answers. In the network they turn the telemetry the infrastructure already emits into insight and assistance.'
+          },
+          {
+            it: 'Dove si applica nelle operazioni (AIOps): analisi predittiva per capacità e guasti, rilevamento di anomalie che impara la linea di base del «normale» e segnala lo scostamento, assurance e analisi della causa radice correlate da piattaforme basate su controller (es. Catalyst Center), e assistenti generativi che abbozzano una configurazione o spiegano un problema. L’IA completa l’automazione (API, controller): l’automazione esegue compiti predefiniti, l’IA suggerisce o decide a partire dai dati. Le due cose lavorano insieme, ma non sono la stessa cosa.',
+            en: 'Where it applies in operations (AIOps): predictive analytics for capacity and faults, anomaly detection that learns the baseline of «normal» and flags the deviation, assurance and root-cause analysis correlated by controller-based platforms (e.g. Catalyst Center), and generative assistants that draft a configuration or explain a problem. AI complements automation (APIs, controllers): automation runs predefined tasks, AI suggests or decides from data. The two work together, but they are not the same thing.'
+          },
+          {
+            it: 'I limiti contano quanto le capacità. L’output di un modello è un suggerimento da verificare, non una verità: un modello può sbagliare, essere sbilanciato dai dati di addestramento o, nel caso generativo, «allucinare» una configurazione plausibile ma errata. Un umano rivede ogni cambiamento prima che tocchi la rete, e la qualità e la privacy della telemetria restano responsabilità dell’operatore. Per il CCNA la profondità è concettuale: capire cosa fanno IA e ML nelle operazioni, non implementarli.',
+            en: 'The limits matter as much as the capabilities. A model’s output is a suggestion to verify, not a truth: a model can be wrong, skewed by its training data or, in the generative case, «hallucinate» a plausible but incorrect configuration. A human reviews every change before it touches the network, and the quality and privacy of the telemetry stay the operator’s responsibility. For the CCNA the depth is conceptual: understand what AI and ML do in operations, not implement them.'
+          }
+        ],
+        example: {
+          it: 'Una piattaforma basata su controller segnala un’anomalia nella telemetria di un’interfaccia (IA predittiva) e un assistente generativo abbozza una modifica di configurazione: l’operatore verifica entrambe prima di applicarle, perché il modello suggerisce, non decide al posto suo.',
+          en: 'A controller-based platform flags an anomaly in an interface’s telemetry (predictive AI) and a generative assistant drafts a configuration change: the operator verifies both before applying them, because the model suggests, it does not decide in their place.'
+        },
+        commonMistakes: [
+          {
+            it: 'Trattare l’output dell’IA come autorevole senza verificarlo: può essere errato o «allucinato», e tocca la rete solo dopo revisione umana.',
+            en: 'Treating AI output as authoritative without verifying it: it can be wrong or «hallucinated», and it touches the network only after human review.'
+          },
+          {
+            it: 'Confondere automazione e IA: l’automazione esegue compiti predefiniti, l’IA impara, prevede o genera dai dati.',
+            en: 'Confusing automation and AI: automation runs predefined tasks, AI learns, predicts or generates from data.'
+          },
+          {
+            it: 'Credere che l’IA sostituisca la comprensione della rete: resta uno strumento sopra la telemetria, non un rimpiazzo del progetto e della verifica.',
+            en: 'Believing AI replaces understanding of the network: it stays a tool on top of the telemetry, not a replacement for design and verification.'
+          }
+        ],
+        references: [{ kind: 'cisco', id: 'Cisco AI and machine learning in network operations' }]
       }
     ]
   },
@@ -6250,6 +6307,65 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
           }
         ],
         references: [{ kind: 'nist', id: 'SP 800-115' }]
+      },
+      {
+        id: 'host-network-auditing',
+        title: {
+          it: 'Auditing di host e rete',
+          en: 'Host and network auditing'
+        },
+        objectives: [
+          {
+            it: 'Spiegare la prospettiva di auditing dell’eJPT: inventariare cosa un host e il segmento espongono, dallo stato di rete locale ai servizi raggiungibili.',
+            en: 'Explain the eJPT auditing perspective: inventory what a host and the segment expose, from the local network state to the reachable services.'
+          },
+          {
+            it: 'Collegare l’auditing al suo speculare difensivo: baseline, minima esposizione e monitoraggio dello scostamento.',
+            en: 'Link auditing to its defensive mirror: baselines, least exposure and drift monitoring.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere scanning, enumerazione dei servizi e valutazione delle vulnerabilità (argomenti precedenti).',
+            en: 'Know scanning, service enumeration and vulnerability assessment (previous topics).'
+          }
+        ],
+        theory: [
+          {
+            it: 'Nell’eJPT il dominio Host & Network Auditing è la prospettiva di auditing: inventariare in modo sistematico cosa un host e il suo segmento espongono, dall’interno o con accesso. Su un host si legge lo stato di rete locale — tabella di routing, cache ARP, porte in ascolto, condivisioni, utenti — per capire la raggiungibilità e di chi l’host si fida; sulla rete si verifica quali servizi (SMB, FTP, SSH, HTTP, SQL) sono raggiungibili e come sono configurati.',
+            en: 'In the eJPT the Host & Network Auditing domain is the auditing perspective: systematically inventory what a host and its segment expose, from the inside or with access. On a host you read the local network state — routing table, ARP cache, listening ports, shares, users — to understand reachability and who the host trusts; on the network you check which services (SMB, FTP, SSH, HTTP, SQL) are reachable and how they are configured.'
+          },
+          {
+            it: 'L’auditing si distingue dallo scanning remoto: non è un sondaggio esterno veloce, ma una ricognizione sistematica e basata sull’evidenza, spesso da un punto d’appoggio o con credenziali, che mappa la configurazione e l’esposizione reali per produrre un quadro difendibile. Correlare ciò che ogni servizio rivela e trasferire le evidenze tra host e tester fa parte del metodo: conta la configurazione effettiva, non la sola presenza di una porta.',
+            en: 'Auditing differs from remote scanning: it is not a quick external probe, but a systematic, evidence-first review, often from a foothold or with credentials, that maps the actual configuration and exposure to produce a defensible picture. Correlating what each service reveals and transferring the evidence between host and tester is part of the method: what counts is the effective configuration, not the mere presence of a port.'
+          },
+          {
+            it: 'Lo speculare difensivo è l’audit di sicurezza con baseline: minima esposizione (chiudere porte e servizi non usati), configurazione dei servizi irrobustita, inventario e baseline di configurazione, e monitoraggio che segnala lo scostamento. Lo stesso stato di host e rete che l’auditor legge è ciò che il difensore dovrebbe già conoscere: la distanza tra i due è il rilievo. Studiare l’auditing insegna a trasformare un elenco di dati grezzi in una valutazione che indica dove ridurre l’esposizione.',
+            en: 'The defensive mirror is the security audit with baselines: least exposure (close unused ports and services), hardened service configuration, inventory and configuration baselines, and monitoring that flags drift. The same host and network state the auditor reads is what the defender should already know: the gap between the two is the finding. Studying auditing teaches turning a list of raw data into an assessment that points to where exposure should be reduced.'
+          }
+        ],
+        example: {
+          it: 'Su un host in 192.0.2.0/24 l’audit legge tabella di routing, cache ARP e porte in ascolto e trova una condivisione SMB e una porta di database esposta: una baseline difensiva avrebbe chiuso la porta inutilizzata e documentato la condivisione, quindi la distanza tra stato reale e baseline è il rilievo.',
+          en: 'On a host in 192.0.2.0/24 the audit reads the routing table, ARP cache and listening ports and finds an SMB share and an exposed database port: a defensive baseline would have closed the unused port and documented the share, so the gap between the real state and the baseline is the finding.'
+        },
+        commonMistakes: [
+          {
+            it: 'Confondere l’auditing con una scansione veloce: l’audit è un inventario sistematico e basato sull’evidenza della configurazione e dell’esposizione reali.',
+            en: 'Confusing auditing with a quick scan: the audit is a systematic, evidence-first inventory of the real configuration and exposure.'
+          },
+          {
+            it: 'Ignorare lo stato di rete locale dell’host (routing, ARP, porte in ascolto): rivela raggiungibilità e relazioni di fiducia.',
+            en: 'Ignoring the host’s local network state (routing, ARP, listening ports): it reveals reachability and trust relationships.'
+          },
+          {
+            it: 'Eseguire l’auditing fuori dallo scope o senza autorizzazione: resta vincolato come ogni altra attività del test.',
+            en: 'Performing the auditing out of scope or without authorization: it stays bound like every other test activity.'
+          }
+        ],
+        references: [
+          { kind: 'attack', id: 'T1016' },
+          { kind: 'nist', id: 'SP 800-115' }
+        ]
       },
       {
         id: 'pentest-password-attacks',

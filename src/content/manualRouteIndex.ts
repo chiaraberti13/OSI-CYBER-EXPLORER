@@ -144,7 +144,7 @@ export const MANUAL_ROUTE_INDEX: readonly ManualRouteEntry[] = [
       it: 'Automazione e programmabilità',
       en: 'Automation and programmability'
     },
-    topicIds: ['automation-impact-sdn', 'rest-apis-json', 'config-management-tools'],
+    topicIds: ['automation-impact-sdn', 'rest-apis-json', 'config-management-tools', 'automation-ai-ml-netops'],
     labs: ['automation']
   },
   {
@@ -186,6 +186,7 @@ export const MANUAL_ROUTE_INDEX: readonly ManualRouteEntry[] = [
       'pentest-scanning-enumeration',
       'pentest-service-enumeration',
       'pentest-vulnerability-assessment',
+      'host-network-auditing',
       'pentest-password-attacks',
       'offline-hash-cracking-defense'
     ],

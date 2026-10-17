@@ -5,7 +5,7 @@
 > **Apertura Fase 3:** 14 ottobre 2026.
 > **Obiettivi di certificazione:** **CCNA 200-301** e **eJPT — INE/eLearnSecurity Junior
 > Penetration Tester**, in chiave didattica e autorizzata.
-> **Stato del manuale:** 29 capitoli / 102 argomenti / 77 laboratori guidati, bilingue IT/EN,
+> **Stato del manuale:** 29 capitoli / 104 argomenti / 77 laboratori guidati, bilingue IT/EN,
 > con il percorso eJPT completo e una sequenza di studio a doppio binario documentata.
 > **Metodo:** incrementi verticali completi e verificati (`npm run verify`, E2E Chromium con
 > Axe WCAG 2.2 AA, audit), pubblicati su `main`; ogni intervento documentato in `docs/verify/`.
@@ -425,8 +425,8 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
 
 > Piano concreto di **contenuti da aggiungere** e **miglioramenti ai contenuti**, derivato da una
 > ricognizione reale della copertura su `main` (218 id di capitoli/argomenti/lab; `manualStats()` →
-> 29 capitoli / 102 argomenti / 77 laboratori guidati; **102/102** argomenti con `references` (CONTENT-15
-> completato e mantenuto dal guard), **7/97** con `diagram` SVG). Resta aperta la sola **VIS-13** (`[~]`,
+> 29 capitoli / 104 argomenti / 77 laboratori guidati; **104/104** argomenti con `references` (CONTENT-15
+> completato e mantenuto dal guard), **8/102** con `diagram` SVG). Resta aperta la sola **VIS-13** (`[~]`,
 > P3, ricorrente); CONTENT-11, CONTENT-12, CONTENT-13 e CONTENT-15 sono stati completati il 17/10/2026.
 > I vincoli di sempre restano: bilingue IT/EN con parità di acronimi e
 > cifre, riferimenti ATT&CK/RFC/NIST/Cisco risolti in **HTTPS**, **soli target di documentazione**,
@@ -494,7 +494,7 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
       test di risoluzione resta verde). I riferimenti sono `{kind,id}` senza testo, quindi senza
       impatto bilingue. Report: `docs/verify/2026-10-17-content15-references.md`.
 - [~] **VIS-13 (P3) — Estendere i micro-diagrammi SVG ai concetti chiave.** Dopo gli incrementi già
-  verificati, **7/97** argomenti hanno un `diagram` bilingue. Aggiungere micro-diagrammi SVG coerenti col sistema di
+  verificati, **8/102** argomenti hanno un `diagram` bilingue. Aggiungere micro-diagrammi SVG coerenti col sistema di
   design e leggibili in tema chiaro/scuro, agli argomenti dove un disegno chiarisce più del testo
   (candidati restanti: albero STP e ruoli delle porte, handshake IKEv2/Child SA). Uno o due per incremento.
   **Criteri:** alternativa testuale visibile e `id` accessibili univoci (come VIS-12), contrasto
@@ -519,6 +519,16 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
         `manual-concept-diagrams.spec.ts` esteso al capitolo `crypto-vpn-pki-tls`: 8/8 combinazioni
         lingua/tema a 320 e 1280 px (overflow, contrasto ≥ 4.5, Axe WCAG 2.2 AA). Report:
         `docs/verify/2026-10-17-vis13-pki-tls-chain.md`.
+  - [x] **Incremento albero STP e ruoli delle porte (17/10/2026).** Aggiunto il diagramma SVG bilingue
+        `stp-tree` al tema `stp-loops` (capitolo `vlan-trunk-stp`): Root Bridge (Bridge ID più basso) con
+        Switch B e C, frecce Root Port / Designated verso la radice e il collegamento ridondante B–C
+        tratteggiato in Blocking che spezza il loop. Riusa `MANUAL_DIAGRAMS`/`ManualConceptDiagram`;
+        alternativa testuale visibile, `id` accessibili univoci, etichette d'arco uniche, inline senza
+        asset remoti; schema che dichiara i limiti (priorità, costi di percorso e temporizzazioni non
+        mostrati). Diagrammi coperti 7/102 → **8/102**. Guard del componente e guard bilingue
+        strutturale verdi; E2E `manual-concept-diagrams.spec.ts` esteso al capitolo `vlan-trunk-stp`:
+        8/8 combinazioni lingua/tema a 320 e 1280 px (overflow, contrasto ≥ 4.5, Axe WCAG 2.2 AA).
+        Report: `docs/verify/2026-10-17-vis13-stp-tree.md`.
 - [ ] **I18N-10 (P1, ricorrente) — Revisione IT/EN dei nuovi contenuti.** Vedi la voce dedicata nella
       sezione del Traduttore/Revisore: ogni argomento o diagramma aggiunto da questo backlog passa la
       revisione di accuratezza e naturalezza con parità di acronimi e cifre prima della pubblicazione.
@@ -533,16 +543,13 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
 
 ## 🧭 Mappa di copertura eJPT (syllabus INE eJPTv2)
 
-Corrispondenza tra i **moduli ufficiali** del percorso eJPT e gli argomenti del manuale (tutti
-difensivi/neutri, con soli target di documentazione; i contenuti eJPT restano nei **3 capitoli**
-fissati dai test). Fonte: outline pubblico del corso eJPTv2; i nomi dei moduli non sono inventati.
+Corrispondenza tra i **4 domini ufficiali** del percorso eJPTv2 (con i pesi dichiarati da INE) e gli
+argomenti del manuale (tutti difensivi/neutri, con soli target di documentazione; i contenuti eJPT
+restano nei **3 capitoli** fissati dai test). Fonte: pagina di certificazione INE e outline del corso
+(dato da ricerca web il 17/10/2026 — la pagina ufficiale non era raggiungibile via DNS dal sandbox;
+i nomi dei domini/moduli non sono inventati). I pesi vanno riconfermati sul blueprint ufficiale.
 
-- **Assessment Methodologies**
-  - Information Gathering → `pentest-recon-footprinting`
-  - Footprinting & Scanning → `pentest-scanning-enumeration`
-  - Enumeration (servizi) → `pentest-service-enumeration` (SMB/SNMP/NFS)
-  - Vulnerability Assessment → `pentest-vulnerability-assessment`
-- **Host & Network Penetration Testing**
+- **Host & Network Penetration Testing (~35%)**
   - System/Host-Based Attacks → `system-host-based-attacks`
   - Network-Based Attacks → `network-based-attacks` (ARP/MITM, LLMNR/NBT-NS)
   - The Metasploit Framework → `exploitation-frameworks-metasploit`
@@ -551,19 +558,51 @@ fissati dai test). Fonte: outline pubblico del corso eJPTv2; i nomi dei moduli n
   - Pivoting → `lateral-movement-pivoting`
   - (approfondimenti) credenziali/hash → `pentest-password-attacks`, `offline-hash-cracking-defense`;
     Active Directory → `active-directory-basics`
-- **Web Application Penetration Testing**
+- **Assessment Methodologies (~25%)**
+  - Information Gathering → `pentest-recon-footprinting`
+  - Footprinting & Scanning → `pentest-scanning-enumeration`
+  - Enumeration (servizi) → `pentest-service-enumeration` (SMB/SNMP/NFS)
+  - Vulnerability Assessment → `pentest-vulnerability-assessment`
+- **Host & Network Auditing (~25%)**
+  - Auditing di host e rete (stato di rete locale, servizi SMB/FTP/SSH/HTTP/SQL, evidenze) →
+    `host-network-auditing`
+- **Web Application Penetration Testing (~15%)**
   - Introduzione al Web & HTTP → `web-http-proxy-mapping`
   - Web application enumeration → `web-enumeration`
   - Attacchi web → `web-injection-classes`, `web-file-inclusion-traversal`, `web-auth-session-access`
 - **Social engineering** (marginale nell'eJPT) → `phishing-social-engineering` (capitolo estensione)
 
-Stato: **tutti i moduli principali dell'eJPTv2 sono coperti** come argomenti. Eventuali
-approfondimenti futuri (es. varianti di privilege escalation per OS, altri attacchi web) proseguono
-sotto **CONTENT-10** (ricorrente), senza nuovi capitoli eJPT e senza inventare moduli non presenti
-nel syllabus.
+Stato: **tutti e 4 i domini dell'eJPTv2 sono coperti** come argomenti (il dominio Host & Network
+Auditing, in precedenza assente, è stato aggiunto con `host-network-auditing` dopo l'incrocio con la
+pagina INE). Eventuali approfondimenti futuri proseguono sotto **CONTENT-10** (ricorrente), senza
+nuovi capitoli eJPT e senza inventare moduli non presenti nel syllabus.
 
 ## 🧾 Registro delle decisioni
 
+- **17/10/2026 — Incrocio con i blueprint ufficiali (eJPT + CCNA v1.1) e lacune colmate.** Incrociati
+  gli argomenti con la pagina eJPT INE e il PDF CCNA 200-301 v1.1 (le fonti ufficiali non erano
+  raggiungibili via DNS dal sandbox — `ENOTFOUND` su `ine.com` e `learningcontent.cisco.com` — quindi
+  dato ricavato via ricerca web e segnalato come da riconfermare). Emerse e colmate **due lacune
+  reali**:
+  1. **CCNA v1.1 obiettivo 6.4** — «AI (generativa e predittiva) e machine learning nelle operazioni
+     di rete», novità della v1.1 (ago 2024), assente: aggiunto l'argomento `automation-ai-ml-netops`
+     al capitolo `automation-programmability` (ML vs IA predittiva vs generativa, AIOps/anomaly
+     detection/assistenti, limiti e verifica umana; taglio concettuale da esame).
+  2. **eJPTv2 dominio «Host & Network Auditing» (~25%)** — l'eJPTv2 ha **4 domini**, non 3; questo
+     mancava: aggiunto l'argomento `host-network-auditing` al capitolo `pentest-methodology` (stato di
+     rete locale: routing/ARP/porte in ascolto; audit di SMB/FTP/SSH/HTTP/SQL; speculare difensivo con
+     baseline e minima esposizione). Corretta la mappa di copertura eJPT (4 domini con pesi).
+     Entrambi difensivi/neutri, soli target di documentazione; riferimenti Cisco (6.4) e ATT&CK T1016 +
+     NIST SP 800-115 (auditing) risolti in HTTPS. Nessun nuovo capitolo eJPT. Manuale 102 → **104**
+     argomenti; `MANUAL_ROUTE_INDEX` in sincrono. `verify` completo verde, E2E Chromium con Axe verdi,
+     0 vulnerabilità. Report: `docs/verify/2026-10-17-syllabus-crosscheck.md`.
+- **17/10/2026 — VIS-13: diagramma albero STP e ruoli delle porte.** Aggiunto il diagramma bilingue
+  `stp-tree` al tema `stp-loops` (Root Bridge con Switch B/C, Root Port/Designated e il link ridondante
+  in Blocking che spezza il loop), riusando il modello/componente VIS-12. Diagrammi 7/102 → **8/102**.
+  Alternativa testuale visibile, `id` univoci, etichette d'arco uniche, inline. Guard componente e
+  bilingue strutturale verdi; E2E diagrammi 8/8 a 320/1280 px (overflow, contrasto, Axe). `verify`
+  completo verde, E2E Chromium verdi, 0 vulnerabilità. Resta candidato l'handshake IKEv2/Child SA.
+  Report: `docs/verify/2026-10-17-vis13-stp-tree.md`.
 - **17/10/2026 — eJPT: «System/Host-Based Attacks» e «Web application enumeration» (moduli del
   syllabus).** Aggiunti due argomenti che completano la copertura dei moduli eJPTv2:
   `system-host-based-attacks` (capitolo `exploitation-post-exploitation`: exploitation di servizi/OS

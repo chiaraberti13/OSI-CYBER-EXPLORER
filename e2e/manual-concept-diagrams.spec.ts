@@ -7,7 +7,8 @@ const chapters = [
   ['pentest-methodology', 'pentest'],
   ['osi-model', 'encapsulation'],
   ['ip-services', 'qos'],
-  ['crypto-vpn-pki-tls', 'pki-tls-chain']
+  ['crypto-vpn-pki-tls', 'pki-tls-chain'],
+  ['vlan-trunk-stp', 'stp-tree']
 ] as const;
 
 for (const language of ['it', 'en'] as const) {

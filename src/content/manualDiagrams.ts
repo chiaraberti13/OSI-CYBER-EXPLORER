@@ -341,6 +341,42 @@ export const MANUAL_DIAGRAMS = {
       { path: 'M160 232 V258', x: 224, y: 248, label: { it: 'presenta', en: 'presents' } },
       { path: 'M298 288 H312 V36 H298', x: 160, y: 0, dashed: true }
     ]
+  },
+  'stp-tree': {
+    title: { it: 'Albero STP e ruoli delle porte', en: 'STP tree and port roles' },
+    description: {
+      it: 'Lo Spanning Tree elegge come Root Bridge lo switch con il Bridge ID più basso; ogni altro switch sceglie una Root Port verso la radice e le porte designate inoltrano. Sul collegamento ridondante tra Switch B e Switch C una porta passa in Blocking per spezzare il loop, pronta a riattivarsi se un percorso cade. Schema semplificato: priorità, costi di percorso e temporizzazioni non sono mostrati.',
+      en: 'Spanning Tree elects as Root Bridge the switch with the lowest Bridge ID; every other switch chooses a Root Port toward the root and designated ports forward. On the redundant link between Switch B and Switch C one port goes to Blocking to break the loop, ready to reactivate if a path fails. Simplified schematic: priorities, path costs and timers are not shown.'
+    },
+    height: 230,
+    nodes: [
+      {
+        x: 85,
+        y: 10,
+        width: 150,
+        label: { it: 'Root Bridge', en: 'Root Bridge' },
+        detail: { it: 'Bridge ID più basso', en: 'Lowest Bridge ID' }
+      },
+      {
+        x: 8,
+        y: 150,
+        width: 140,
+        label: { it: 'Switch B', en: 'Switch B' },
+        detail: { it: '1 Root Port', en: '1 Root Port' }
+      },
+      {
+        x: 172,
+        y: 150,
+        width: 140,
+        label: { it: 'Switch C', en: 'Switch C' },
+        detail: { it: '1 Root Port', en: '1 Root Port' }
+      }
+    ],
+    edges: [
+      { path: 'M140 66 L100 148', x: 88, y: 112, label: { it: 'Root Port', en: 'Root Port' } },
+      { path: 'M180 66 L220 148', x: 232, y: 112, label: { it: 'Designated', en: 'Designated' } },
+      { path: 'M148 178 H172', x: 160, y: 168, label: { it: 'Blocking', en: 'Blocking' }, dashed: true }
+    ]
   }
 } satisfies Record<string, ManualDiagram>;
 
