@@ -6550,6 +6550,65 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
         ]
       },
       {
+        id: 'web-enumeration',
+        title: {
+          it: 'Enumerazione dell’applicazione web',
+          en: 'Web application enumeration'
+        },
+        objectives: [
+          {
+            it: 'Spiegare come si scopre la superficie reale di un’applicazione web — contenuti nascosti, virtual host, stack tecnologico — oltre a ciò che è linkato.',
+            en: 'Explain how the real surface of a web application is discovered — hidden content, virtual hosts, technology stack — beyond what is linked.'
+          },
+          {
+            it: 'Collegare l’enumerazione alle difese (nessuna sicurezza per oscurità, igiene dei file, errori generici) e alla sua firma nei log.',
+            en: 'Link enumeration to the defenses (no security by obscurity, file hygiene, generic errors) and to its signature in the logs.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere HTTP e la mappatura dell’applicazione con un proxy di intercettazione (argomento precedente).',
+            en: 'Know HTTP and mapping the application with an intercepting proxy (previous topic).'
+          }
+        ],
+        theory: [
+          {
+            it: 'Nel dominio Web Application Penetration Testing dell’eJPT, dopo aver capito HTTP, l’enumerazione scopre attivamente la superficie reale dell’applicazione: directory e file non collegati da nessuna pagina (content discovery con wordlist), i virtual host serviti sullo stesso IP (variando l’header Host) e lo stack tecnologico (server, framework, versioni) dedotto da header, pagine d’errore e cookie. Trasforma «un web server risponde» in «esistono questi endpoint e queste tecnologie».',
+            en: 'In the eJPT Web Application Penetration Testing domain, after understanding HTTP, enumeration actively discovers the real surface of the application: directories and files linked from no page (content discovery with wordlists), the virtual hosts served on the same IP (by varying the Host header), and the technology stack (server, framework, versions) inferred from headers, error pages and cookies. It turns «a web server responds» into «these endpoints and technologies exist».'
+          },
+          {
+            it: 'L’applicazione lascia indizi: robots.txt e sitemap.xml elencano percorsi (a volte proprio quelli che si volevano nascondere), pagine di default o di amministrazione, file di backup dimenticati (.bak, copie con la tilde), errori verbosi che rivelano stack e percorsi, nomi prevedibili. Ogni endpoint scoperto allarga ciò che gli attacchi successivi — injection, autenticazione, inclusione di file — possono prendere di mira: la qualità dell’enumerazione decide se quei tentativi sono alla cieca o mirati.',
+            en: 'The application leaks clues: robots.txt and sitemap.xml list paths (sometimes exactly the ones meant to be hidden), default or administration pages, forgotten backup files (.bak, tilde copies), verbose errors that reveal stack and paths, predictable names. Every discovered endpoint widens what later attacks — injection, authentication, file inclusion — can target: the quality of the enumeration decides whether those attempts are blind or aimed.'
+          },
+          {
+            it: 'La difesa parte da un principio: non affidare la sicurezza al fatto che un URL non sia linkato (la sicurezza per oscurità cade davanti a una wordlist). Rimuovere file di default e di backup, sopprimere banner di versione ed errori verbosi, richiedere autenticazione sulle pagine di amministrazione e osservare i log: la content discovery è una raffica di 404 verso percorsi indovinati, una firma riconoscibile. Segmentazione e WAF riducono l’esposizione, ma non sostituiscono l’igiene dell’applicazione.',
+            en: 'The defense starts from a principle: do not rest security on a URL not being linked (security by obscurity falls to a wordlist). Remove default and backup files, suppress version banners and verbose errors, require authentication on administration pages, and watch the logs: content discovery is a burst of 404 responses toward guessed paths, a recognizable signature. Segmentation and a WAF reduce exposure, but do not replace application hygiene.'
+          }
+        ],
+        example: {
+          it: 'Scansionando un host in 192.0.2.0/24, la content discovery trova un percorso /admin non collegato e un file config.bak dimenticato: il rimedio è rimuovere il backup, autenticare /admin e rendere generici gli errori, mentre la raffica di 404 resta visibile nei log.',
+          en: 'Scanning a host in 192.0.2.0/24, content discovery finds an unlinked /admin path and a forgotten config.bak file: the fix is to remove the backup, authenticate /admin and make errors generic, while the burst of 404 responses stays visible in the logs.'
+        },
+        commonMistakes: [
+          {
+            it: 'Affidarsi a un URL non linkato come protezione: una wordlist lo trova comunque (sicurezza per oscurità).',
+            en: 'Relying on an unlinked URL as protection: a wordlist finds it anyway (security by obscurity).'
+          },
+          {
+            it: 'Lasciare file di default e di backup e abilitare errori verbosi: regalano percorsi, versioni e stack all’enumerazione.',
+            en: 'Leaving default and backup files and enabling verbose errors: they hand paths, versions and stack to the enumeration.'
+          },
+          {
+            it: 'Scambiare un 200 su un percorso scoperto per una vulnerabilità: è superficie, non ancora un difetto verificato.',
+            en: 'Mistaking a 200 on a discovered path for a vulnerability: it is surface, not yet a verified flaw.'
+          }
+        ],
+        references: [
+          { kind: 'attack', id: 'T1595' },
+          { kind: 'attack', id: 'T1595.003' }
+        ]
+      },
+      {
         id: 'web-injection-classes',
         title: {
           it: 'Injection: SQL, XSS e comandi, una radice comune',
@@ -7129,6 +7188,65 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
         references: [
           { kind: 'attack', id: 'T1557' },
           { kind: 'attack', id: 'T1557.001' }
+        ]
+      },
+      {
+        id: 'system-host-based-attacks',
+        title: {
+          it: 'Attacchi a sistema e host',
+          en: 'System and host-based attacks'
+        },
+        objectives: [
+          {
+            it: 'Spiegare come il sistema operativo e i servizi locali di un host diventano un punto d’accesso: servizi non aggiornati, configurazioni errate, permessi deboli.',
+            en: 'Explain how a host operating system and its local services become an entry point: unpatched services, misconfigurations, weak permissions.'
+          },
+          {
+            it: 'Collegare l’hardening dell’host — patch, minima funzionalità, baseline di configurazione, logging locale — a ciò che riduce o rivela l’attacco.',
+            en: 'Link host hardening — patching, least functionality, configuration baselines, local logging — to what reduces or reveals the attack.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere i concetti di exploitation e la valutazione delle vulnerabilità (argomenti precedenti).',
+            en: 'Know the exploitation concepts and vulnerability assessment (previous topics).'
+          }
+        ],
+        theory: [
+          {
+            it: 'Nel dominio Host & Network Penetration Testing dell’eJPT, gli attacchi a sistema e host prendono di mira il sistema operativo e i servizi locali in esecuzione su una macchina: un servizio non aggiornato, una configurazione errata, permessi troppo larghi. L’obiettivo è l’esecuzione di codice o l’accesso iniziale sull’host. Si distinguono dagli attacchi basati sulla rete (che abusano del segmento) e dalla post-exploitation (che segue l’accesso): qui il bersaglio è ciò che gira sull’host stesso.',
+            en: 'In the eJPT Host & Network Penetration Testing domain, system and host-based attacks target the operating system and the local services running on a machine: an unpatched service, a misconfiguration, permissions that are too broad. The goal is code execution or initial access on the host. They differ from network-based attacks (which abuse the segment) and from post-exploitation (which follows access): here the target is what runs on the host itself.'
+          },
+          {
+            it: 'I punti d’appoggio tipici, su Windows e Linux, sono pochi e ricorrenti: un servizio esposto e obsoleto con un CVE noto; credenziali predefinite o deboli su un servizio locale; permessi mal configurati (binari di servizio scrivibili, SUID su Linux, attività pianificate manipolabili). La valutazione è sempre versione e configurazione → debolezza nota, verificata nello scope. Ciò che rende un host attaccabile raramente è un solo bug: è l’accumulo di software non aggiornato e configurazioni lasche.',
+            en: 'The typical footholds, on Windows and Linux, are few and recurring: an exposed, outdated service with a known CVE; default or weak credentials on a local service; misconfigured permissions (writable service binaries, SUID on Linux, manipulable scheduled tasks). The assessment is always version and configuration → known weakness, verified in scope. What makes a host attackable is rarely a single bug: it is the accumulation of unpatched software and loose configuration.'
+          },
+          {
+            it: 'La difesa è l’hardening dell’host, speculare all’attacco: gestione delle patch (togliere la versione vulnerabile), minima funzionalità (disattivare o rimuovere servizi e software inutili), baseline di configurazione sicura (niente default, permessi stretti) e logging locale o EDR che rivela il tentativo di exploitation. La superficie d’attacco dell’host si riduce esattamente nella misura in cui l’hardening è applicato: non serve un controllo esotico, ma la disciplina di patch e configurazione.',
+            en: 'The defense is host hardening, the mirror of the attack: patch management (remove the vulnerable version), least functionality (disable or remove unused services and software), secure configuration baselines (no defaults, tight permissions), and local logging or EDR that reveals the exploitation attempt. The host attack surface shrinks exactly as far as hardening is applied: it needs no exotic control, but the discipline of patching and configuration.'
+          }
+        ],
+        example: {
+          it: 'Un host in 192.0.2.0/24 esegue un servizio locale obsoleto con un CVE noto e ha un binario di servizio scrivibile da tutti: applicare la patch al servizio e correggere i permessi (più una baseline di configurazione) toglie entrambi i punti d’appoggio, mentre i log locali registrano il tentativo di exploitation.',
+          en: 'A host in 192.0.2.0/24 runs an outdated local service with a known CVE and has a world-writable service binary: patching the service and fixing the permissions (plus a configuration baseline) removes both footholds, while the local logs record the exploitation attempt.'
+        },
+        commonMistakes: [
+          {
+            it: 'Credere che il perimetro protegga l’host: questi attacchi colpiscono i servizi e la configurazione dell’host stesso.',
+            en: 'Believing the perimeter protects the host: these attacks hit the host’s own services and configuration.'
+          },
+          {
+            it: 'Lasciare servizi inutili e configurazioni di default: la minima funzionalità è la difesa più economica e più efficace.',
+            en: 'Leaving unused services and default configurations: least functionality is the cheapest and most effective defense.'
+          },
+          {
+            it: 'Dichiarare sfruttabile un CVE abbinato alla sola versione senza verificarlo: patch retroportate e falsi positivi lo smentiscono.',
+            en: 'Declaring a CVE matched by version alone exploitable without verifying it: backported patches and false positives disprove it.'
+          }
+        ],
+        references: [
+          { kind: 'attack', id: 'T1210' },
+          { kind: 'nist', id: 'SP 800-123' }
         ]
       },
       {

@@ -5,7 +5,7 @@
 > **Apertura Fase 3:** 14 ottobre 2026.
 > **Obiettivi di certificazione:** **CCNA 200-301** e **eJPT — INE/eLearnSecurity Junior
 > Penetration Tester**, in chiave didattica e autorizzata.
-> **Stato del manuale:** 29 capitoli / 100 argomenti / 77 laboratori guidati, bilingue IT/EN,
+> **Stato del manuale:** 29 capitoli / 102 argomenti / 77 laboratori guidati, bilingue IT/EN,
 > con il percorso eJPT completo e una sequenza di studio a doppio binario documentata.
 > **Metodo:** incrementi verticali completi e verificati (`npm run verify`, E2E Chromium con
 > Axe WCAG 2.2 AA, audit), pubblicati su `main`; ogni intervento documentato in `docs/verify/`.
@@ -425,7 +425,7 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
 
 > Piano concreto di **contenuti da aggiungere** e **miglioramenti ai contenuti**, derivato da una
 > ricognizione reale della copertura su `main` (218 id di capitoli/argomenti/lab; `manualStats()` →
-> 29 capitoli / 100 argomenti / 77 laboratori guidati; **100/100** argomenti con `references` (CONTENT-15
+> 29 capitoli / 102 argomenti / 77 laboratori guidati; **102/102** argomenti con `references` (CONTENT-15
 > completato e mantenuto dal guard), **7/97** con `diagram` SVG). Resta aperta la sola **VIS-13** (`[~]`,
 > P3, ricorrente); CONTENT-11, CONTENT-12, CONTENT-13 e CONTENT-15 sono stati completati il 17/10/2026.
 > I vincoli di sempre restano: bilingue IT/EN con parità di acronimi e
@@ -531,8 +531,50 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
         flusso dei profili/tag, porte CAPWAP, comportamento central/local e terminologia di sicurezza;
         report e verifiche in `docs/verify/2026-10-17-content10-wlc-policy-mapping.md`.
 
+## 🧭 Mappa di copertura eJPT (syllabus INE eJPTv2)
+
+Corrispondenza tra i **moduli ufficiali** del percorso eJPT e gli argomenti del manuale (tutti
+difensivi/neutri, con soli target di documentazione; i contenuti eJPT restano nei **3 capitoli**
+fissati dai test). Fonte: outline pubblico del corso eJPTv2; i nomi dei moduli non sono inventati.
+
+- **Assessment Methodologies**
+  - Information Gathering → `pentest-recon-footprinting`
+  - Footprinting & Scanning → `pentest-scanning-enumeration`
+  - Enumeration (servizi) → `pentest-service-enumeration` (SMB/SNMP/NFS)
+  - Vulnerability Assessment → `pentest-vulnerability-assessment`
+- **Host & Network Penetration Testing**
+  - System/Host-Based Attacks → `system-host-based-attacks`
+  - Network-Based Attacks → `network-based-attacks` (ARP/MITM, LLMNR/NBT-NS)
+  - The Metasploit Framework → `exploitation-frameworks-metasploit`
+  - Exploitation → `exploitation-concepts`, `exploitation-reverse-bind-shell`
+  - Post-Exploitation → `post-exploitation-privesc`
+  - Pivoting → `lateral-movement-pivoting`
+  - (approfondimenti) credenziali/hash → `pentest-password-attacks`, `offline-hash-cracking-defense`;
+    Active Directory → `active-directory-basics`
+- **Web Application Penetration Testing**
+  - Introduzione al Web & HTTP → `web-http-proxy-mapping`
+  - Web application enumeration → `web-enumeration`
+  - Attacchi web → `web-injection-classes`, `web-file-inclusion-traversal`, `web-auth-session-access`
+- **Social engineering** (marginale nell'eJPT) → `phishing-social-engineering` (capitolo estensione)
+
+Stato: **tutti i moduli principali dell'eJPTv2 sono coperti** come argomenti. Eventuali
+approfondimenti futuri (es. varianti di privilege escalation per OS, altri attacchi web) proseguono
+sotto **CONTENT-10** (ricorrente), senza nuovi capitoli eJPT e senza inventare moduli non presenti
+nel syllabus.
+
 ## 🧾 Registro delle decisioni
 
+- **17/10/2026 — eJPT: «System/Host-Based Attacks» e «Web application enumeration» (moduli del
+  syllabus).** Aggiunti due argomenti che completano la copertura dei moduli eJPTv2:
+  `system-host-based-attacks` (capitolo `exploitation-post-exploitation`: exploitation di servizi/OS
+  locali — servizi obsoleti con CVE, credenziali deboli, permessi errati/SUID — e hardening dell'host:
+  patch, minima funzionalità, baseline, logging/EDR; riferimenti ATT&CK T1210 + NIST SP 800-123) e
+  `web-enumeration` (capitolo `web-app-pentest`: content discovery, virtual host, fingerprinting dello
+  stack, file di default/backup, errori verbosi; difesa contro la sicurezza per oscurità; riferimenti
+  ATT&CK T1595 + T1595.003). Didattici/difensivi, nessun comando operativo, target di documentazione.
+  Aggiunta la **mappa di copertura eJPT** in ROADMAP. Manuale 100 → **102** argomenti;
+  `MANUAL_ROUTE_INDEX` in sincrono. Guard integrità, riferimenti (102/102), indice di rotta e bilingue
+  (strutturale + euristico) verdi. Report: `docs/verify/2026-10-17-ejpt-host-web-enum.md`.
 - **17/10/2026 — eJPT: «The Metasploit Framework» e «Network-Based Attacks» (moduli del syllabus).**
   Aggiunti due argomenti al capitolo eJPT `exploitation-post-exploitation`, corrispondenti a moduli
   omonimi del dominio **Host & Network Penetration Testing** della certificazione eJPT (INE eJPTv2),

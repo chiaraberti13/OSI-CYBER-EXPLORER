@@ -199,6 +199,7 @@ export const MANUAL_ROUTE_INDEX: readonly ManualRouteEntry[] = [
     },
     topicIds: [
       'web-http-proxy-mapping',
+      'web-enumeration',
       'web-injection-classes',
       'web-auth-session-access',
       'web-file-inclusion-traversal'
@@ -215,6 +216,7 @@ export const MANUAL_ROUTE_INDEX: readonly ManualRouteEntry[] = [
       'exploitation-concepts',
       'exploitation-frameworks-metasploit',
       'network-based-attacks',
+      'system-host-based-attacks',
       'post-exploitation-privesc',
       'lateral-movement-pivoting',
       'active-directory-basics',
