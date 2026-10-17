@@ -653,7 +653,7 @@ export default function StudyManualView() {
               className="manual-reading-column min-w-0 space-y-6 xl:col-start-1 xl:row-start-1"
             >
               {/* Chapter overview card: alignment, title, summary and an in-chapter table of contents. */}
-              <div className="rounded-xl border border-slate-200 bg-white p-5 md:p-6">
+              <div className="rounded-2xl border border-slate-200/70 bg-white p-5 shadow-sm md:p-6">
                 <div className="flex flex-col items-start justify-between gap-4 sm:flex-row">
                   <div className="min-w-0">
                     <span className="flex items-center gap-1.5">
@@ -725,7 +725,7 @@ export default function StudyManualView() {
                   id={`topic-${topic.id}`}
                   aria-labelledby={`topic-h-${topic.id}`}
                   data-manual-topic={topic.id}
-                  className="scroll-mt-[13.5rem] rounded-xl border border-slate-200 bg-white p-5 md:p-6 lg:scroll-mt-40"
+                  className="scroll-mt-[13.5rem] rounded-2xl border border-slate-200/70 bg-white p-5 shadow-sm md:p-6 lg:scroll-mt-40"
                 >
                   <h3 id={`topic-h-${topic.id}`} className="text-lg font-semibold leading-7 text-slate-900">
                     {idx + 1}. {topic.title[language]}
