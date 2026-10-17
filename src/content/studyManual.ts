@@ -7017,6 +7017,121 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
         ]
       },
       {
+        id: 'exploitation-frameworks-metasploit',
+        title: {
+          it: 'Framework di exploitation (Metasploit)',
+          en: 'Exploitation frameworks (Metasploit)'
+        },
+        objectives: [
+          {
+            it: 'Descrivere a cosa serve un framework di exploitation e la sua struttura — moduli, payload, sessioni — senza comandi operativi.',
+            en: 'Describe what an exploitation framework is for and its structure — modules, payloads, sessions — without operational commands.'
+          },
+          {
+            it: 'Collegare il funzionamento del framework a ciò che un difensore rileva e previene.',
+            en: 'Link how the framework works to what a defender detects and prevents.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere i concetti di exploitation e di reverse/bind shell (argomenti di questo capitolo).',
+            en: 'Know the exploitation concepts and reverse/bind shells (topics in this chapter).'
+          }
+        ],
+        theory: [
+          {
+            it: 'Nel dominio Host & Network Penetration Testing dell’eJPT, un framework di exploitation automatizza la fase di exploitation: invece di ricostruire ogni exploit a mano, offre un catalogo di moduli riusabili, payload pronti e la gestione delle sessioni ottenute. Metasploit è l’esempio di riferimento del percorso. Ciò che conta imparare è la struttura, non una sequenza di comandi: capire come è organizzato spiega sia come un test lo usa sia come una difesa lo riconosce.',
+            en: 'In the eJPT Host & Network Penetration Testing domain, an exploitation framework automates the exploitation phase: instead of rebuilding each exploit by hand, it offers a catalog of reusable modules, ready-made payloads, and management of the sessions obtained. Metasploit is the reference example of the path. What matters to learn is the structure, not a sequence of commands: understanding how it is organized explains both how a test uses it and how a defense recognizes it.'
+          },
+          {
+            it: 'I concetti chiave sono tre. I moduli si dividono per scopo: exploit (sfruttano una vulnerabilità), auxiliary (scanning, enumerazione, azioni senza payload) e post (attività dopo l’accesso). I payload possono essere staged (un piccolo stager scarica il resto dopo la connessione) o stageless (autosufficienti). La sessione risultante — per esempio una sessione interattiva tipo Meterpreter — è attesa da un handler che riceve la connessione di ritorno: per questo l’exploitation produce tipicamente una connessione in uscita verso l’attaccante, la stessa forma che il filtraggio in egress intercetta.',
+            en: 'There are three key concepts. Modules divide by purpose: exploit (abuse a vulnerability), auxiliary (scanning, enumeration, actions with no payload) and post (activity after access). Payloads can be staged (a small stager downloads the rest after connecting) or stageless (self-contained). The resulting session — for example an interactive Meterpreter-style session — is awaited by a handler that receives the callback: this is why exploitation typically produces an outbound connection toward the attacker, the same shape that egress filtering intercepts.'
+          },
+          {
+            it: 'Il lato difensivo nasce proprio da questa struttura. I framework usano moduli noti e lasciano artefatti predefiniti (nomi dei payload, pattern di staging, certificati) che le firme di IDS/IPS ed EDR riconoscono; la sessione di ritorno è un evento di egress che il monitoraggio della rete rileva; e un modulo exploit funziona solo finché esiste la vulnerabilità, quindi la patch lo neutralizza alla radice. Studiare il framework serve al difensore per prevedere cosa cercare — non è una guida all’uso, ma una mappa di ciò che l’exploitation lascia dietro di sé.',
+            en: 'The defensive side comes precisely from this structure. Frameworks use known modules and leave default artifacts (payload names, staging patterns, certificates) that IDS/IPS and EDR signatures recognize; the callback session is an egress event that network monitoring detects; and an exploit module works only while the vulnerability exists, so patching neutralizes it at the root. Studying the framework helps the defender predict what to look for — it is not a usage guide, but a map of what exploitation leaves behind.'
+          }
+        ],
+        example: {
+          it: 'Un modulo exploit consegna un payload staged che apre una sessione verso l’host dell’attaccante in 192.0.2.0/24: la patch della vulnerabilità toglie il modulo alla radice, le firme EDR riconoscono gli artefatti del payload e il filtraggio in egress intercetta la connessione di ritorno.',
+          en: 'An exploit module delivers a staged payload that opens a session toward the attacker host in 192.0.2.0/24: patching the vulnerability removes the module at the root, EDR signatures recognize the payload artifacts, and egress filtering intercepts the callback connection.'
+        },
+        commonMistakes: [
+          {
+            it: 'Vedere il framework come una collezione di comandi da memorizzare invece che una struttura (moduli, payload, sessioni) da capire.',
+            en: 'Seeing the framework as a set of commands to memorize instead of a structure (modules, payloads, sessions) to understand.'
+          },
+          {
+            it: 'Dimenticare che un modulo exploit dipende da una vulnerabilità reale: senza quella, o con la patch, non funziona.',
+            en: 'Forgetting that an exploit module depends on a real vulnerability: without it, or with the patch, it does not work.'
+          },
+          {
+            it: 'Trascurare la connessione di ritorno: è il segnale in egress che rivela l’exploitation più del tentativo iniziale.',
+            en: 'Overlooking the callback connection: it is the egress signal that reveals the exploitation more than the initial attempt.'
+          }
+        ],
+        references: [{ kind: 'nist', id: 'SP 800-115' }]
+      },
+      {
+        id: 'network-based-attacks',
+        title: {
+          it: 'Attacchi basati sulla rete: MITM e poisoning',
+          en: 'Network-based attacks: MITM and poisoning'
+        },
+        objectives: [
+          {
+            it: 'Spiegare come un attaccante sulla rete locale si inserisce nel traffico (ARP spoofing) o cattura autenticazioni (poisoning LLMNR/NBT-NS).',
+            en: 'Explain how an attacker on the local network inserts into traffic (ARP spoofing) or captures authentication (LLMNR/NBT-NS poisoning).'
+          },
+          {
+            it: 'Collegare ogni tecnica alla difesa di switch e host che la neutralizza.',
+            en: 'Link each technique to the switch- and host-side defense that neutralizes it.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere ARP, la CAM table e la risoluzione dei nomi (capitoli sui fondamenti e sui servizi IP).',
+            en: 'Know ARP, the CAM table, and name resolution (the fundamentals and IP services chapters).'
+          }
+        ],
+        theory: [
+          {
+            it: 'Il dominio Host & Network Penetration Testing dell’eJPT include gli attacchi basati sulla rete: chi può immettere frame su un segmento può inserirsi nel traffico. L’ARP spoofing invia risposte ARP falsificate così le vittime associano l’IP del gateway al MAC dell’attaccante, mettendolo on-path (man-in-the-middle). Il poisoning di LLMNR e NBT-NS sfrutta i fallback di risoluzione dei nomi di Windows: quando il DNS non risolve, l’host chiede in broadcast «chi è questo nome?» e l’attaccante risponde, inducendo il client a tentare un’autenticazione verso di lui e consegnandogli il materiale (es. hash di sfida/risposta).',
+            en: 'The eJPT Host & Network Penetration Testing domain includes network-based attacks: whoever can inject frames on a segment can insert into the traffic. ARP spoofing sends forged ARP replies so victims map the gateway IP to the attacker MAC, putting the attacker on-path (man-in-the-middle). LLMNR and NBT-NS poisoning abuses Windows name-resolution fallbacks: when DNS fails to resolve, the host broadcasts «who is this name?» and the attacker answers, luring the client into attempting authentication toward it and handing over the material (e.g. challenge/response hashes).'
+          },
+          {
+            it: 'La radice comune è la fiducia implicita: ARP e i protocolli di fallback credono a qualunque rispondente sul segmento, senza autenticazione. Una volta on-path, i protocolli in chiaro perdono credenziali e dati, e il materiale di autenticazione catturato alimenta il cracking offline o il relay verso un altro servizio. Non è un bug del software ma una proprietà del livello 2 e della risoluzione dei nomi locale: ecco perché la difesa è strutturale, non una semplice patch.',
+            en: 'The common root is implicit trust: ARP and the fallback protocols believe any responder on the segment, with no authentication. Once on-path, cleartext protocols leak credentials and data, and captured authentication material feeds offline cracking or relay toward another service. It is not a software bug but a property of Layer 2 and local name resolution: that is why the defense is structural, not a simple patch.'
+          },
+          {
+            it: 'Le difese stanno su switch e host. DHCP Snooping con Dynamic ARP Inspection scarta le risposte ARP non coerenti con la binding table e ferma l’ARP spoofing; disattivare LLMNR e NBT-NS toglie il fallback su cui vive il poisoning; la firma SMB blocca il relay del materiale catturato; la cifratura e la segmentazione riducono ciò che l’essere on-path produce. Il monitoraggio rivela le anomalie — raffiche di ARP gratuiti, rispondenti inattesi alla risoluzione dei nomi — che tradiscono l’attacco.',
+            en: 'The defenses are on the switch and the host. DHCP Snooping with Dynamic ARP Inspection drops ARP replies inconsistent with the binding table and stops ARP spoofing; disabling LLMNR and NBT-NS removes the fallback the poisoning lives on; SMB signing blocks relay of the captured material; encryption and segmentation reduce what being on-path yields. Monitoring reveals the anomalies — gratuitous ARP bursts, unexpected name-resolution responders — that give the attack away.'
+          }
+        ],
+        example: {
+          it: 'Su un segmento in 192.0.2.0/24 l’attaccante avvelena la cache ARP per diventare on-path e risponde alle query LLMNR per raccogliere un hash di autenticazione: Dynamic ARP Inspection e la disattivazione di LLMNR/NBT-NS avrebbero spezzato entrambe le vie, e la firma SMB avrebbe reso inutile il relay.',
+          en: 'On a segment in 192.0.2.0/24 the attacker poisons the ARP cache to become on-path and answers LLMNR queries to collect an authentication hash: Dynamic ARP Inspection and disabling LLMNR/NBT-NS would have broken both paths, and SMB signing would have made the relay useless.'
+        },
+        commonMistakes: [
+          {
+            it: 'Credere che una VLAN basti: separa i domini ma non autentica ARP né i fallback di risoluzione dei nomi dentro il segmento.',
+            en: 'Believing a VLAN is enough: it separates domains but does not authenticate ARP or the name-resolution fallbacks within the segment.'
+          },
+          {
+            it: 'Lasciare attivi LLMNR e NBT-NS «perché non danno fastidio»: sono il fallback su cui vive il poisoning.',
+            en: 'Leaving LLMNR and NBT-NS enabled «because they are harmless»: they are the fallback the poisoning lives on.'
+          },
+          {
+            it: 'Affidarsi al solo perimetro: questi attacchi sono interni al segmento e li fermano DAI, firma SMB e cifratura, non il firewall di confine.',
+            en: 'Relying on the perimeter alone: these attacks are internal to the segment and are stopped by DAI, SMB signing and encryption, not the border firewall.'
+          }
+        ],
+        references: [
+          { kind: 'attack', id: 'T1557' },
+          { kind: 'attack', id: 'T1557.001' }
+        ]
+      },
+      {
         id: 'post-exploitation-privesc',
         title: {
           it: 'Post-exploitation: privilegi, bottino e persistenza',

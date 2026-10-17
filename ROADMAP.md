@@ -5,7 +5,7 @@
 > **Apertura Fase 3:** 14 ottobre 2026.
 > **Obiettivi di certificazione:** **CCNA 200-301** e **eJPT — INE/eLearnSecurity Junior
 > Penetration Tester**, in chiave didattica e autorizzata.
-> **Stato del manuale:** 29 capitoli / 98 argomenti / 77 laboratori guidati, bilingue IT/EN,
+> **Stato del manuale:** 29 capitoli / 100 argomenti / 77 laboratori guidati, bilingue IT/EN,
 > con il percorso eJPT completo e una sequenza di studio a doppio binario documentata.
 > **Metodo:** incrementi verticali completi e verificati (`npm run verify`, E2E Chromium con
 > Axe WCAG 2.2 AA, audit), pubblicati su `main`; ogni intervento documentato in `docs/verify/`.
@@ -425,7 +425,7 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
 
 > Piano concreto di **contenuti da aggiungere** e **miglioramenti ai contenuti**, derivato da una
 > ricognizione reale della copertura su `main` (218 id di capitoli/argomenti/lab; `manualStats()` →
-> 29 capitoli / 98 argomenti / 77 laboratori guidati; **98/98** argomenti con `references` (CONTENT-15
+> 29 capitoli / 100 argomenti / 77 laboratori guidati; **100/100** argomenti con `references` (CONTENT-15
 > completato e mantenuto dal guard), **7/97** con `diagram` SVG). Resta aperta la sola **VIS-13** (`[~]`,
 > P3, ricorrente); CONTENT-11, CONTENT-12, CONTENT-13 e CONTENT-15 sono stati completati il 17/10/2026.
 > I vincoli di sempre restano: bilingue IT/EN con parità di acronimi e
@@ -533,6 +533,19 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
 
 ## 🧾 Registro delle decisioni
 
+- **17/10/2026 — eJPT: «The Metasploit Framework» e «Network-Based Attacks» (moduli del syllabus).**
+  Aggiunti due argomenti al capitolo eJPT `exploitation-post-exploitation`, corrispondenti a moduli
+  omonimi del dominio **Host & Network Penetration Testing** della certificazione eJPT (INE eJPTv2),
+  finora assenti: `exploitation-frameworks-metasploit` (struttura di un framework di exploitation —
+  moduli exploit/auxiliary/post, payload staged/stageless, sessioni e handler, connessione di ritorno
+  in egress — e cosa ne rileva/previene la difesa: firme EDR/IDS, patch, egress) e
+  `network-based-attacks` (ARP spoofing/MITM e poisoning LLMNR/NBT-NS, con difese DHCP snooping+DAI,
+  disattivazione LLMNR/NBT-NS, firma SMB, cifratura, monitoraggio). Didattici/difensivi, nessun
+  comando operativo, target di documentazione; riferimenti NIST SP 800-115 e ATT&CK T1557/T1557.001
+  risolti in HTTPS. Nessun nuovo capitolo eJPT (i 3 restano fissi): approfondimenti come argomenti,
+  ancorati ai moduli ufficiali del corso, non inventati. Manuale 98 → **100** argomenti;
+  `MANUAL_ROUTE_INDEX` aggiornato in sincrono. Guard integrità manuale, riferimenti (100/100), indice
+  di rotta e bilingue verdi. Report: `docs/verify/2026-10-17-ejpt-metasploit-network-attacks.md`.
 - **17/10/2026 — eJPT: argomento «Valutazione delle vulnerabilità» (syllabus reale).** Aggiunto
   l'argomento `pentest-vulnerability-assessment` al capitolo eJPT `pentest-methodology`, dopo
   l'enumerazione dei servizi: è una sotto-fase esplicita del dominio **Assessment Methodologies**

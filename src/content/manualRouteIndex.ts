@@ -213,6 +213,8 @@ export const MANUAL_ROUTE_INDEX: readonly ManualRouteEntry[] = [
     },
     topicIds: [
       'exploitation-concepts',
+      'exploitation-frameworks-metasploit',
+      'network-based-attacks',
       'post-exploitation-privesc',
       'lateral-movement-pivoting',
       'active-directory-basics',
