@@ -86,6 +86,7 @@ export const en = {
     chapterNav: 'Manual chapters',
     chapterSelector: 'Jump to a chapter',
     topicSelector: 'Jump to a topic',
+    backToIndex: 'All chapters',
     mobileChapterNav: 'Mobile manual navigation',
     difficultyIntro: 'Intro',
     difficultyCore: 'Core',

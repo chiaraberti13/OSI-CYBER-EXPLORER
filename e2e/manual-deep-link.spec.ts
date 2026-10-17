@@ -16,8 +16,9 @@ test.describe('manual chapter deep links (EDU-STRUCT-04)', () => {
 
   test('falls back to the manual root for a broken chapter id', async ({ page }) => {
     await page.goto('/#/manual/not-a-real-chapter');
-    // The first chapter (OSI model) opens, and the URL is canonicalized to #/manual.
-    await expect(page.getByRole('heading', { level: 2, name: /modello OSI/ })).toBeVisible();
+    // The URL is canonicalized to #/manual and the card index (the manual root) opens.
+    await expect(page.getByRole('heading', { level: 1, name: 'Manuale di studio' })).toBeVisible();
+    await expect(page.getByRole('navigation', { name: 'Capitoli del manuale' })).toBeVisible();
     await expect(page).toHaveURL(/#\/manual$/);
   });
 
@@ -25,17 +26,17 @@ test.describe('manual chapter deep links (EDU-STRUCT-04)', () => {
     await page.goto('/#/manual');
     await expect(page.getByRole('heading', { level: 1, name: 'Manuale di studio' })).toBeVisible();
 
-    // Select the Ethernet chapter from the desktop chip navigation.
+    // Open the Ethernet chapter from the card index.
     await page
       .getByRole('navigation', { name: 'Capitoli del manuale' })
-      .getByRole('button', { name: /Ethernet/ })
+      .getByRole('link', { name: /Ethernet, switching/ })
       .click();
     await expect(page).toHaveURL(/#\/manual\/ethernet-switching$/);
     await expect(page.getByRole('heading', { level: 2, name: /Ethernet/ })).toBeVisible();
 
-    // Back returns to the manual root and its first chapter.
+    // Back returns to the manual root (the card index).
     await page.goBack();
     await expect(page).toHaveURL(/#\/manual$/);
-    await expect(page.getByRole('heading', { level: 2, name: /modello OSI/ })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: 'Manuale di studio' })).toBeVisible();
   });
 });

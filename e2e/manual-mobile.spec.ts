@@ -15,7 +15,7 @@ test.describe('manual mobile navigation (UX-25)', () => {
   test.use({ viewport: { width: 320, height: 800 } });
 
   test('collapses the chapter navigation into a compact selector without overflow', async ({ page }) => {
-    await page.goto('/#/manual');
+    await page.goto('/#/manual/osi-model');
 
     const chapterNav = page.getByRole('navigation', { name: 'Navigazione mobile del manuale' });
     const selector = chapterNav.getByRole('combobox', { name: 'Vai a un capitolo' });
@@ -43,7 +43,7 @@ test.describe('manual mobile navigation (UX-25)', () => {
   });
 
   test('keeps the index and Previous/Next flow reachable from the selector', async ({ page }) => {
-    await page.goto('/#/manual');
+    await page.goto('/#/manual/osi-model');
 
     const selector = page
       .getByRole('navigation', { name: 'Navigazione mobile del manuale' })

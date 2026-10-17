@@ -28,7 +28,7 @@ test.describe('manual reading rhythm (UX-23)', () => {
   test.use({ viewport: { width: 1280, height: 900 } });
 
   test('keeps readable measure, hierarchy and tile spacing across chapters', async ({ page }) => {
-    await page.goto('/#/manual');
+    await page.goto('/#/manual/osi-model');
 
     const assertChapterTypography = async () => {
       const topics = page.locator('[data-manual-topic]');
@@ -78,8 +78,8 @@ test.describe('manual reading rhythm (UX-23)', () => {
 
     await assertChapterTypography();
     await page
-      .getByRole('navigation', { name: 'Capitoli del manuale' })
-      .getByRole('button', { name: /Ethernet/ })
+      .getByRole('navigation', { name: 'Capitolo precedente e successivo' })
+      .getByRole('button', { name: /Capitolo successivo/ })
       .click();
     await expect(page.getByRole('heading', { level: 2, name: /Ethernet/ })).toBeVisible();
     await assertChapterTypography();
@@ -90,7 +90,7 @@ test.describe('manual reading rhythm on mobile (UX-23)', () => {
   test.use({ viewport: { width: 320, height: 800 } });
 
   test('preserves body size and leading while adapting the measure without overflow', async ({ page }) => {
-    await page.goto('/#/manual');
+    await page.goto('/#/manual/osi-model');
 
     const rhythm = await readingRhythm(page.locator('[data-manual-copy="theory"]').first());
     expect(rhythm.charactersWide).toBeLessThan(65);

@@ -9,7 +9,7 @@ test.describe('per-route progress (UX-33, two-route IA)', () => {
   test.use({ viewport: { width: 1280, height: 900 } });
 
   test('advances only the route of the completed chapter', async ({ page }) => {
-    await page.goto('/#/manual');
+    await page.goto('/#/manual/osi-model');
 
     const routeList = page.getByRole('list', { name: 'Progresso per percorso' });
     await expect(routeList).toBeVisible();

@@ -19,7 +19,7 @@ test.describe('manual mobile navigation (UX-25)', () => {
   });
 
   test('keeps chapter, progress and topic navigation compact and reachable', async ({ page }) => {
-    await page.goto('/#/manual');
+    await page.goto('/#/manual/osi-model');
 
     const desktopNav = page.getByRole('navigation', { name: 'Capitoli del manuale' });
     const mobileNav = page.getByRole('navigation', { name: 'Navigazione mobile del manuale' });
@@ -73,7 +73,7 @@ test.describe('manual mobile navigation (UX-25)', () => {
   });
 
   test('keeps previous and next chapter actions usable at 320 px', async ({ page }) => {
-    await page.goto('/#/manual');
+    await page.goto('/#/manual/osi-model');
     const mobileNav = page.getByRole('navigation', { name: 'Navigazione mobile del manuale' });
     await mobileNav.getByRole('combobox', { name: 'Vai a un capitolo' }).selectOption('ethernet-switching');
 
@@ -94,7 +94,7 @@ test.describe('manual mobile navigation (UX-25)', () => {
   });
 
   test('localises the compact navigation and keeps its controls at least 44 px', async ({ page }) => {
-    await page.goto('/#/manual');
+    await page.goto('/#/manual/osi-model');
     await page.getByRole('button', { name: 'English', exact: true }).click();
     const mobileNav = page.getByRole('navigation', { name: 'Mobile manual navigation' });
     const selector = mobileNav.getByRole('combobox', { name: 'Jump to a chapter' });

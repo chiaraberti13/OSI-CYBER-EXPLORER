@@ -10,12 +10,10 @@ import {
   ArrowRight,
   BookOpen,
   Check,
-  ChevronRight,
   CircleCheck,
   Crosshair,
   ExternalLink,
   FlaskConical,
-  Layers,
   ListChecks,
   RotateCcw,
   Route,
@@ -29,7 +27,6 @@ import {
   certificationTrackForChapter,
   chapterCompletion,
   chaptersByCertificationTrack,
-  chaptersByDomain,
   chaptersForCertificationTrack,
   findChapter,
   manualStats,
@@ -174,7 +171,6 @@ export default function StudyManualView() {
   const focusChapterTitleAfterChange = useRef(false);
   const mobileChapterSelectId = useId();
   const mobileTopicSelectId = useId();
-  const sectionBaseId = useId();
 
   const difficultyLabel: Record<ManualDifficulty, string> = {
     intro: t.difficultyIntro,
@@ -195,33 +191,6 @@ export default function StudyManualView() {
   };
   const chapterTrack = certificationTrackForChapter(chapter);
   const chapterDomain = ccnaDomainForChapter(chapter);
-  // IA-12 — the CCNA route is deep (26 chapters), so its sidebar index is organised into
-  // collapsible CCNA-domain sections (plus a final "Approfondimenti" bucket). The section
-  // holding the open chapter is expanded; the rest start collapsed so the tree stays short
-  // and scannable. The eJPT route is shallow (one section) and renders flat. Only the CCNA
-  // route uses sections, so a section key never collides between routes.
-  const activeSectionKey = chapterTrack === 'ccna' ? (chapterDomain ? chapterDomain.id : 'extension') : null;
-  const [expandedSections, setExpandedSections] = useState<Set<string>>(() =>
-    activeSectionKey ? new Set([activeSectionKey]) : new Set()
-  );
-  // Navigating into a collapsed section (mobile selector, previous/next, a deep link) opens
-  // it, so the active chapter is always visible in the tree; manual toggles are preserved.
-  // This adjusts state while rendering when the active chapter changes — React's endorsed
-  // "store information from previous renders" pattern — rather than in an effect.
-  const [lastActiveSectionKey, setLastActiveSectionKey] = useState(activeSectionKey);
-  if (activeSectionKey !== lastActiveSectionKey) {
-    setLastActiveSectionKey(activeSectionKey);
-    if (activeSectionKey && !expandedSections.has(activeSectionKey)) {
-      setExpandedSections((prev) => new Set(prev).add(activeSectionKey));
-    }
-  }
-  const toggleSection = (key: string) =>
-    setExpandedSections((prev) => {
-      const next = new Set(prev);
-      if (next.has(key)) next.delete(key);
-      else next.add(key);
-      return next;
-    });
   // The context line names where the chapter sits: its CCNA domain for a backbone chapter,
   // otherwise its certification source (Security+ or eJPT) — no separate "extension" label.
   const chapterAlignment =
@@ -347,41 +316,55 @@ export default function StudyManualView() {
     }
   };
 
-  // A single chapter row in the desktop tree: a numbered badge with clear
-  // active/completed/default states, so chapters read as a chapter tree rather than
-  // interchangeable plain-text links (IA-04). The stable test id lets specs target the
-  // chapter links without matching the section-toggle buttons (IA-12).
-  const renderChapterButton = (entry: (typeof chapters)[number]) => {
-    const isActive = entry.id === chapter.id;
+  // A chapter card for the index grid (the chapter chooser that replaced the left tree):
+  // a large, tappable card with a number/checkmark badge, title, summary and topic count.
+  // It is a real link (deep-links to `#/manual/<id>`) so copy/open-in-new-tab work, and it
+  // focuses the chapter title on arrival. The stable test id lets specs target chapters.
+  const renderChapterCard = (entry: (typeof chapters)[number]) => {
     const isCompleted = completedChapterIds.includes(entry.id);
+    const entryDomain = ccnaDomainForChapter(entry);
     return (
-      <button
-        key={entry.id}
-        type="button"
-        data-testid="manual-chapter-link"
-        onClick={() => selectChapter(entry.id)}
-        aria-current={isActive ? 'page' : undefined}
-        className={`group flex w-full min-h-11 items-center gap-2 rounded-lg px-2.5 py-2 text-left text-[13px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 ${
-          isActive
-            ? 'bg-indigo-50 font-semibold text-indigo-800'
-            : 'font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-900'
-        }`}
-      >
-        <span
-          aria-hidden="true"
-          className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold ${
-            isCompleted
-              ? 'bg-emerald-600 text-white'
-              : isActive
-                ? 'bg-indigo-600 text-white'
-                : 'border border-slate-300 text-slate-500 group-hover:border-slate-400'
-          }`}
+      <li key={entry.id}>
+        <ViewLink
+          view="manual"
+          chapterId={entry.id}
+          data-testid="manual-chapter-link"
+          onClick={() => {
+            focusChapterTitleAfterChange.current = true;
+          }}
+          className="group flex h-full min-h-11 flex-col gap-3 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 motion-reduce:transition-none motion-reduce:hover:translate-y-0"
         >
-          {isCompleted ? <Check className="h-3 w-3" /> : entry.order}
-        </span>
-        <span className="leading-snug">{entry.title[language]}</span>
-        {isCompleted ? <span className="sr-only"> — {t.completedChapter}</span> : null}
-      </button>
+          <div className="flex items-start justify-between gap-2">
+            <span
+              aria-hidden="true"
+              className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-[13px] font-bold ${
+                isCompleted ? 'bg-emerald-600 text-white' : 'bg-indigo-50 text-indigo-700'
+              }`}
+            >
+              {isCompleted ? <Check className="h-4 w-4" /> : entry.order}
+            </span>
+            {entryDomain ? (
+              <span
+                className="shrink-0 rounded-full bg-slate-900 px-2 py-0.5 text-[10px] font-semibold text-white"
+                aria-label={`${t.examWeight}: ${entryDomain.weight}%`}
+              >
+                {entryDomain.weight}%
+              </span>
+            ) : null}
+          </div>
+          <div className="min-w-0 flex-1">
+            <h3 className="text-[15px] font-semibold leading-snug tracking-tight text-slate-900 group-hover:text-indigo-800">
+              {entry.order}. {entry.title[language]}
+            </h3>
+            <p className="mt-1.5 line-clamp-2 text-[13px] leading-snug text-slate-500">{entry.summary[language]}</p>
+          </div>
+          <div className="flex items-center gap-1.5 text-[12px] font-medium text-slate-400">
+            <BookOpen aria-hidden="true" className="h-3.5 w-3.5" />
+            {entry.topics.length} {t.topics}
+            {isCompleted ? <span className="text-emerald-600"> · {t.completedChapter}</span> : null}
+          </div>
+        </ViewLink>
+      </li>
     );
   };
 
@@ -460,10 +443,10 @@ export default function StudyManualView() {
   return (
     <div data-manual-root className="mx-auto max-w-7xl">
       <header className="mb-6">
-        <h1 id={headingId} className="text-xl font-semibold tracking-tight text-slate-900">
+        <h1 id={headingId} className="text-2xl font-semibold tracking-tight text-slate-900 sm:text-[28px]">
           {t.heading}
         </h1>
-        <p className="mt-1 text-sm text-slate-500">{t.intro}</p>
+        <p className="mt-1.5 text-[15px] text-slate-500">{t.intro}</p>
         {/* A single, compact meta row: the dataset counts, the overall progress and the
             per-route progress sit on one wrapping line instead of four stacked blocks, so
             the reading pane starts higher. Every text node and aria-label is unchanged
@@ -509,151 +492,19 @@ export default function StudyManualView() {
         </div>
       </header>
 
-      {/* Desktop study layout: a persistent chapter sidebar + the reading pane, the
-          two-pane docs structure a study app is expected to have. Below lg the sidebar
-          collapses and the sticky chapter selector (in the toolbar) takes over. */}
-      <div className="lg:grid lg:grid-cols-[15rem_minmax(0,1fr)] lg:items-start lg:gap-6">
-        {chapters.length > 1 ? (
-          // UX-32: the route filter sits above the chapter navigation (not inside it), so
-          // the labelled chapter tree stays a list of chapters only, and the filter + tree
-          // scroll together within the sticky sidebar.
-          <div className="mb-6 hidden lg:sticky lg:top-14 lg:col-start-1 lg:row-start-1 lg:mb-0 lg:flex lg:max-h-[calc(100dvh-5rem)] lg:flex-col lg:gap-4 lg:self-start lg:overflow-y-auto lg:pr-1">
-            <TrackFilter
-              value={trackFilter}
-              onChange={setTrackFilter}
-              groupLabel={t.trackFilterLabel}
-              allLabel={t.trackFilterAll}
-              trackLabels={trackShort}
-            />
-            <nav aria-label={t.chapterNav} className="space-y-5">
-              {chapterGroups.map((group) => {
-                const groupLabel = group.title[language];
-                const groupCompletion = chapterCompletion(group.chapters, completedChapterIds);
-                // CCNA splits into its domain sections (+ an "Approfondimenti" bucket); eJPT
-                // is a single section, so it stays a flat chapter list under its route header.
-                const sections = chaptersByDomain(group.key);
-                const collapsible = sections.length > 1;
-                return (
-                  <div
-                    key={group.key}
-                    role="group"
-                    aria-label={groupLabel}
-                    className="border-l-2 border-slate-200 pl-3"
-                  >
-                    {/* Route header (VIS-10 / two-group IA): the route mark and name, with its
-                    chapter progress on the right. The two groups are the study objectives —
-                    Percorso CCNA and eJPT — not a flat domain list. */}
-                    <div className="mb-2 flex items-center justify-between gap-3">
-                      <div className="flex min-w-0 items-center gap-1.5">
-                        <TrackMark track={group.key} className="h-4 w-4" />
-                        <span className="truncate text-[13px] font-semibold text-slate-800">{groupLabel}</span>
-                      </div>
-                      <span
-                        className="shrink-0 font-mono text-[11px] text-slate-500"
-                        aria-label={`${groupLabel} · ${t.chapterProgress}: ${groupCompletion.completed}/${groupCompletion.total}`}
-                      >
-                        {groupCompletion.completed}/{groupCompletion.total}
-                      </span>
-                    </div>
-                    {collapsible ? (
-                      // IA-12 — collapsible CCNA-domain sections. Each section is a disclosure
-                      // (a button with aria-expanded controlling its chapter panel), so the
-                      // long index collapses to a short, scannable outline. The sections are
-                      // not landmark groups, so the route groups stay the only `role="group"`.
-                      <ul className="flex flex-col gap-0.5">
-                        {sections.map((section) => {
-                          const sectionTitle = section.domain
-                            ? `${section.domain.number}.0 · ${section.domain.title[language]}`
-                            : t.sectionAdvanced;
-                          const sectionCompletion = chapterCompletion(section.chapters, completedChapterIds);
-                          const expanded = expandedSections.has(section.key);
-                          const panelId = `${sectionBaseId}-${group.key}-${section.key}`;
-                          return (
-                            <li key={section.key}>
-                              <button
-                                type="button"
-                                data-testid="manual-chapter-section"
-                                onClick={() => toggleSection(section.key)}
-                                aria-expanded={expanded}
-                                aria-controls={panelId}
-                                aria-label={`${sectionTitle} · ${t.chapterProgress}: ${sectionCompletion.completed}/${sectionCompletion.total}`}
-                                className="group flex w-full min-h-11 items-start gap-2 rounded-lg px-2 py-2.5 text-left transition-colors hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
-                              >
-                                <ChevronRight
-                                  aria-hidden="true"
-                                  className={`mt-0.5 h-4 w-4 shrink-0 text-slate-400 transition-transform group-hover:text-slate-600 ${
-                                    expanded ? 'rotate-90' : ''
-                                  }`}
-                                />
-                                <span
-                                  aria-hidden="true"
-                                  className="mt-px flex h-5 min-w-[1.9rem] shrink-0 items-center justify-center rounded-md bg-indigo-50 px-1 text-[10px] font-bold tabular-nums text-indigo-700"
-                                >
-                                  {section.domain ? `${section.domain.number}.0` : <Layers className="h-3 w-3" />}
-                                </span>
-                                <span className="min-w-0 flex-1 text-[12.5px] font-semibold leading-snug text-slate-700">
-                                  {section.domain ? section.domain.title[language] : t.sectionAdvanced}
-                                </span>
-                                <span
-                                  aria-hidden="true"
-                                  className={`shrink-0 font-mono text-[10px] ${
-                                    sectionCompletion.total > 0 &&
-                                    sectionCompletion.completed === sectionCompletion.total
-                                      ? 'text-emerald-700'
-                                      : 'text-slate-400'
-                                  }`}
-                                >
-                                  {sectionCompletion.completed}/{sectionCompletion.total}
-                                </span>
-                              </button>
-                              {/* Slim per-section progress bar — a decorative visual cue; the
-                              accessible count already lives in the toggle's aria-label. */}
-                              <div
-                                aria-hidden="true"
-                                className="mx-2 mb-1 h-0.5 overflow-hidden rounded-full bg-slate-400/20"
-                              >
-                                <div
-                                  className="h-full rounded-full bg-emerald-500/70 transition-all"
-                                  style={{ width: `${sectionCompletion.percent}%` }}
-                                />
-                              </div>
-                              {expanded ? (
-                                <div
-                                  id={panelId}
-                                  className="mb-1 ml-1 flex flex-col gap-1 border-l border-slate-100 pl-2"
-                                >
-                                  {section.chapters.map(renderChapterButton)}
-                                </div>
-                              ) : null}
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    ) : (
-                      <div className="flex flex-col gap-1">{group.chapters.map(renderChapterButton)}</div>
-                    )}
-                  </div>
-                );
-              })}
-            </nav>
+      {activeChapterId ? (
+        <div className="min-w-0">
+          {/* The reader is full width — no chapter tree. The card index (the default
+              `#/manual` landing) is the chapter chooser, reached again from this link. */}
+          <div className="mb-5">
+            <ViewLink
+              view="manual"
+              className="inline-flex min-h-11 items-center gap-1.5 rounded-full px-3 py-1.5 text-[13px] font-medium text-indigo-700 transition-colors hover:bg-indigo-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
+            >
+              <ArrowLeft aria-hidden="true" className="h-4 w-4" />
+              {t.backToIndex}
+            </ViewLink>
           </div>
-        ) : null}
-
-        <div className="min-w-0 lg:col-start-2 lg:row-start-1">
-          {/* UX-32 (mobile): the route filter sits above the sticky toolbar and outside
-            it, in normal flow, so the compact sticky chapter/topic navigation keeps its
-            height budget. It shares the filter state with the desktop sidebar control. */}
-          {chapters.length > 1 ? (
-            <div className="mb-4 lg:hidden">
-              <TrackFilter
-                value={trackFilter}
-                onChange={setTrackFilter}
-                groupLabel={t.trackFilterLabel}
-                allLabel={t.trackFilterAll}
-                trackLabels={trackShort}
-              />
-            </div>
-          ) : null}
           {/* Persistent context for long chapters. It deliberately uses plain text,
           not headings, so the document outline remains one h1 followed by the
           chapter h2 and topic h3 elements. 3.5rem equals the single fixed app top
@@ -1039,7 +890,46 @@ export default function StudyManualView() {
             </article>
           </div>
         </div>
-      </div>
+      ) : (
+        <div className="min-w-0">
+          {chapters.length > 1 ? (
+            <div className="mb-6">
+              <TrackFilter
+                value={trackFilter}
+                onChange={setTrackFilter}
+                groupLabel={t.trackFilterLabel}
+                allLabel={t.trackFilterAll}
+                trackLabels={trackShort}
+              />
+            </div>
+          ) : null}
+          <nav aria-label={t.chapterNav} className="space-y-10">
+            {chapterGroups.map((group) => {
+              const groupLabel = group.title[language];
+              const groupCompletion = chapterCompletion(group.chapters, completedChapterIds);
+              return (
+                <section key={group.key} role="group" aria-label={groupLabel}>
+                  <div className="mb-4 flex items-center justify-between gap-3">
+                    <div className="flex min-w-0 items-center gap-2">
+                      <TrackMark track={group.key} className="h-5 w-5" />
+                      <h2 className="truncate text-xl font-semibold tracking-tight text-slate-900">{groupLabel}</h2>
+                    </div>
+                    <span
+                      className="shrink-0 rounded-full bg-slate-100 px-2.5 py-1 font-mono text-[11px] text-slate-500"
+                      aria-label={`${groupLabel} · ${t.chapterProgress}: ${groupCompletion.completed}/${groupCompletion.total}`}
+                    >
+                      {groupCompletion.completed}/{groupCompletion.total}
+                    </span>
+                  </div>
+                  <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                    {group.chapters.map(renderChapterCard)}
+                  </ul>
+                </section>
+              );
+            })}
+          </nav>
+        </div>
+      )}
     </div>
   );
 }

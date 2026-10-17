@@ -13,7 +13,7 @@ test.describe('manual dark theme (UX-28)', () => {
   test.use({ viewport: { width: 1280, height: 900 } });
 
   test('applies the dark tokens to the manual cards with AA contrast', async ({ page }) => {
-    await page.goto('/#/manual');
+    await page.goto('/#/manual/osi-model');
     await expect(page.getByRole('heading', { level: 1, name: 'Manuale di studio' })).toBeVisible();
 
     // Opt into the dark theme (attribute-driven; the app ships light by default).

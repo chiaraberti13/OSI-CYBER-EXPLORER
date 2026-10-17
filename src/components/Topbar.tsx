@@ -145,7 +145,7 @@ export default function Topbar() {
     }`;
 
   return (
-    <header ref={barRef} className="sticky top-0 z-40 border-b border-slate-200/70 bg-canvas/90 backdrop-blur-md">
+    <header ref={barRef} className="sticky top-0 z-40 border-b border-slate-200/60 bg-canvas/75 backdrop-blur-xl">
       <div className="relative flex h-14 items-center gap-2 px-3 sm:px-5">
         {/* Mobile menu button opens the navigation drawer. */}
         <button

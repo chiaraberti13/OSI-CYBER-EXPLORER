@@ -38,17 +38,17 @@ test.describe('certification-route filter (UX-32, two-route IA)', () => {
     expect(axe.violations).toEqual([]);
   });
 
-  test('preserves a deep-linked chapter while its route is filtered out', async ({ page }) => {
-    await page.goto('/#/manual/osi-model');
-    await expect(page.getByRole('heading', { level: 2, name: /Il modello OSI/ })).toBeVisible();
+  test('filters the card index by route without navigating away from the manual root (UX-32)', async ({ page }) => {
+    // IA-13 — the filter lives on the card index; it is view state, so narrowing the shown
+    // route never changes the route and keeps the URL on the manual root.
+    await page.goto('/#/manual');
+    const nav = page.getByRole('navigation', { name: 'Capitoli del manuale' });
+    await expect(nav.getByRole('group')).toHaveCount(2);
 
-    // Filter to eJPT: the open CCNA chapter stays rendered and the URL is unchanged.
-    await page
-      .getByRole('group', { name: 'Filtra per percorso' })
-      .first()
-      .getByRole('button', { name: 'eJPT' })
-      .click();
-    await expect(page).toHaveURL(/#\/manual\/osi-model$/);
-    await expect(page.getByRole('heading', { level: 2, name: /Il modello OSI/ })).toBeVisible();
+    await page.getByRole('group', { name: 'Filtra per percorso' }).getByRole('button', { name: 'eJPT' }).click();
+    await expect(nav.getByRole('group')).toHaveCount(1);
+    await expect(nav.getByRole('group', { name: 'eJPT' })).toBeVisible();
+    await expect(nav.getByRole('group', { name: 'Percorso CCNA' })).toHaveCount(0);
+    await expect(page).toHaveURL(/#\/manual$/);
   });
 });

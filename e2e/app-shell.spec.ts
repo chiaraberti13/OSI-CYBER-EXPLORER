@@ -123,6 +123,13 @@ test.describe('application shell', () => {
     await expect(page).toHaveTitle(/Manuale di studio — OSI Cyber Explorer/);
     await expect(page.getByRole('heading', { level: 1, name: 'Manuale di studio' })).toBeVisible();
 
+    // IA-13: the manual opens on the card index; open the first chapter from it.
+    await page
+      .getByRole('navigation', { name: 'Capitoli del manuale' })
+      .getByRole('link', { name: /Il modello OSI/ })
+      .click();
+    await expect(page.getByRole('heading', { level: 2, name: /Il modello OSI/ })).toBeVisible();
+
     // A guided-lab solution is disclosed on demand.
     const disclosure = page.getByText('Mostra la soluzione commentata').first();
     await disclosure.click();
@@ -145,7 +152,7 @@ test.describe('application shell', () => {
   });
 
   test('the manual keeps domain and chapter context below the sticky navigation (UX-20)', async ({ page }) => {
-    await page.goto('/#/manual');
+    await page.goto('/#/manual/osi-model');
     const context = page.getByRole('region', { name: 'Contesto del capitolo' });
 
     await expect(context).toContainText('CCNA 1.0 · Fondamenti di rete');
@@ -171,14 +178,14 @@ test.describe('application shell', () => {
       .toBeGreaterThanOrEqual(8);
 
     await page
-      .getByRole('navigation', { name: 'Capitoli del manuale' })
-      .getByRole('button', { name: /Ethernet/ })
+      .getByRole('navigation', { name: 'Capitolo precedente e successivo' })
+      .getByRole('button', { name: /Capitolo successivo/ })
       .click();
     await expect(context).toContainText('Ethernet, switching e tabella CAM');
   });
 
   test('chapter completion persists locally, aggregates by route, and resets (UX-21)', async ({ page }) => {
-    await page.goto('/#/manual');
+    await page.goto('/#/manual/osi-model');
     await expect(page.getByLabel(`Progresso capitoli: 0/${TOTAL_CHAPTERS}`, { exact: true })).toBeVisible();
 
     await page.getByRole('button', { name: 'Segna come completato' }).click();
@@ -189,13 +196,10 @@ test.describe('application shell', () => {
       'true'
     );
 
-    // Per-route aggregation lives in the manual's own chapter navigation: the CCNA route
-    // group header shows one completed chapter (scoped to the tree so it is not confused
-    // with the per-route progress summary in the header).
+    // Per-route aggregation: the masthead's per-route progress summary advances the CCNA
+    // route only (the completed chapter is a CCNA chapter).
     await expect(
-      page
-        .getByRole('navigation', { name: 'Capitoli del manuale' })
-        .getByLabel(`Percorso CCNA · Progresso capitoli: 1/${CCNA_CHAPTERS}`)
+      page.getByRole('list', { name: 'Progresso per percorso' }).getByText(`Percorso CCNA 1/${CCNA_CHAPTERS}`)
     ).toBeVisible();
 
     await page.getByRole('button', { name: 'Azzera progresso' }).click();
