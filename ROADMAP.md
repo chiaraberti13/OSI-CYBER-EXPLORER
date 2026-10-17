@@ -378,16 +378,17 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
 > **facoltativi**, derivati da osservazioni reali su `main`; non sono blocchi. Ciascuno porta criteri
 > di completamento verificabili, così che un incremento resti un incremento verticale e verde.
 
-- [ ] **PERF-01 (P2) — Margine del budget JavaScript iniziale.** Il chunk d'ingresso misura ~122,4 kB
-      gzip contro il limite di 125 kB (`performance-budgets.json`): ~2% di margine. **Verifica
-      (16/10/2026):** il budget misura il solo chunk entry, che contiene **codice dello shell**
-      (App, store, i18n, navigazione, `viewRegistry`, selettori del manuale); i dati di manuale e
-      glossario **non** sono nell'entry — Vite li colloca in un chunk condiviso lazy — quindi
-      l'aggiunta di contenuti non consuma questo margine. La pressione viene dalla crescita dello
-      **shell**, non dei contenuti. **Criteri:** se lo shell si avvicina alla soglia, caricare in lazy
-      una dipendenza eager oggi nell'entry (candidata: l'animazione `motion/react`) oppure rivedere in
-      modo documentato la soglia; `size-limit`, Lighthouse CI e il budget restano verdi, treemap come
-      evidenza. Priorità effettiva bassa finché l'entry resta sotto il budget.
+- [ ] **PERF-01 (P2) — Margine del budget JavaScript iniziale.** **Intervento verificato in locale
+      (17/10/2026):** l'entry gzip è scesa da **122.911 B** a **83.816 B** (−31,8%; margine sul budget
+      125.000 B da 2.089 B a 41.184 B). La treemap ha individuato il dataset bilingue completo del
+      manuale nell'entry attraverso `viewRouting`, `store`, preferenze e `LabManualLink`, oltre a
+      Motion importato dallo shell. Sostituiti gli accessi runtime al dataset con l'indice compatto
+      `manualRouteIndex.ts` (29 capitoli, 96 argomenti, collegamenti lab), la cui parità è verificata
+      contro il dataset; guida caricata solo all'apertura; le animazioni dello shell usano CSS e
+      rispettano `prefers-reduced-motion`. Il dataset completo resta nel chunk lazy del manuale
+      (**232.790 B gzip**), mentre il chunk Ports misura **47.968 B gzip**. `size-limit` e il budget
+      manifest passano su **36** route lazy. Criterio Lighthouse CI ancora da confermare dopo il push.
+      Report: `docs/verify/2026-10-17-perf01-shell-bundle.md`.
 - [ ] **CONTENT-10 (P3, ricorrente) — Nuovi argomenti per i due percorsi.** Proseguire l'aggiunta di
       argomenti ad alto valore nei capitoli esistenti (es. CCNA: QoS applicata, lettura della GUI del
       WLC; eJPT: enumerazione SMB/SNMP, cracking offline degli hash, basi di Active Directory), uno per

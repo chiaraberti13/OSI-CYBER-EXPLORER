@@ -13,6 +13,10 @@ export default defineConfig({
     environment: 'node',
     globals: false,
     restoreMocks: true,
+    // The managed runners can report many host CPUs while enforcing a much smaller
+    // CPU quota. Capping workers avoids resource starvation and flaky async timeouts.
+    maxWorkers: 2,
+    testTimeout: 20_000,
     include: ['src/**/*.test.{ts,tsx}'],
     coverage: {
       provider: 'v8',

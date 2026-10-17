@@ -11,7 +11,7 @@ import {
   sanitizePreferences
 } from './lib/preferences';
 import type { SimulationSpeed } from './lib/preferences';
-import { findChapter } from './lib/studyManual';
+import { findManualRoute } from './content/manualRouteIndex';
 
 export type AppView =
   | 'manual'
@@ -153,21 +153,21 @@ const createNavigationSlice: Slice<NavigationSlice> = (set) => ({
   activeChapterId: null,
   // Unknown ids collapse to null so a tampered URL can never select a missing chapter.
   // Changing chapter clears the topic anchor — the new chapter has its own topics.
-  setActiveChapter: (id) => set({ activeChapterId: id && findChapter(id) ? id : null, activeTopicId: null }),
+  setActiveChapter: (id) => set({ activeChapterId: id && findManualRoute(id) ? id : null, activeTopicId: null }),
   activeTopicId: null,
   setActiveTopic: (id) =>
     set((state) => {
-      const chapter = state.activeChapterId ? findChapter(state.activeChapterId) : undefined;
-      return { activeTopicId: id && chapter?.topics.some((topic) => topic.id === id) ? id : null };
+      const chapter = state.activeChapterId ? findManualRoute(state.activeChapterId) : undefined;
+      return { activeTopicId: id && chapter?.topicIds.includes(id) ? id : null };
     }),
   // Set view, chapter and topic in a single update so the router never observes an
   // inconsistent intermediate state (which would push a wrong URL during traversal).
   applyRoute: (view, chapterId, topicId) => {
-    const chapter = chapterId ? findChapter(chapterId) : undefined;
+    const chapter = chapterId ? findManualRoute(chapterId) : undefined;
     set({
       activeView: view,
       activeChapterId: chapter ? chapter.id : null,
-      activeTopicId: chapter && topicId && chapter.topics.some((topic) => topic.id === topicId) ? topicId : null
+      activeTopicId: chapter && topicId && chapter.topicIds.includes(topicId) ? topicId : null
     });
   }
 });
@@ -175,7 +175,7 @@ const createNavigationSlice: Slice<NavigationSlice> = (set) => ({
 const createProgressSlice: Slice<ProgressSlice> = (set) => ({
   completedChapterIds: DEFAULT_PREFERENCES.completedChapterIds,
   toggleChapterCompleted: (id) => {
-    if (!findChapter(id)) return;
+    if (!findManualRoute(id)) return;
     set((state) => ({
       completedChapterIds: state.completedChapterIds.includes(id)
         ? state.completedChapterIds.filter((chapterId) => chapterId !== id)

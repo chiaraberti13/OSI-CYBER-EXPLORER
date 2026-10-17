@@ -52,6 +52,58 @@ body {
   margin: 0;
 }
 
+/* Lightweight shell transitions keep the eager bundle independent of Motion.
+   The media query also avoids movement for people who request reduced motion. */
+@keyframes app-view-enter-subtle {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes app-view-enter-pronounced {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes nav-panel-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.app-view-enter[data-motion-preset='subtle'] {
+  animation: app-view-enter-subtle 180ms ease-out both;
+}
+.app-view-enter[data-motion-preset='pronounced'] {
+  animation: app-view-enter-pronounced 200ms ease-out both;
+}
+.nav-panel-enter {
+  animation: nav-panel-enter 140ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-view-enter,
+  .nav-panel-enter {
+    animation: none;
+  }
+}
+
 /* UX-28: dark-theme palette for the study manual's new cards.
    The app ships light by default; dark styling is opt-in via `data-theme="dark"`
    on the document root, so the current light experience and the rest of the shell

@@ -5,6 +5,7 @@
 
 import { describe, expect, it } from 'vitest';
 import { MANUAL_CERTIFICATION_TRACKS, STUDY_MANUAL, type ManualChapter } from '../content/studyManual';
+import { MANUAL_ROUTE_INDEX } from '../content/manualRouteIndex';
 import { CCNA_DOMAINS } from '../content/ccna';
 import { VIEW_REGISTRY } from '../content/viewRegistry';
 import { securityReferenceUrl } from '../content/securityReferences';
@@ -52,6 +53,23 @@ function assertBilingualParity(value: unknown, path: string): void {
 }
 
 describe('study manual content integrity', () => {
+  it('keeps the compact route index in sync with chapter, topic and lab links', () => {
+    const expected = STUDY_MANUAL.map((chapter) => ({
+      id: chapter.id,
+      title: chapter.title,
+      topicIds: chapter.topics.map((topic) => topic.id),
+      labs: [
+        ...new Set(
+          chapter.topics.flatMap((topic) => [
+            ...(topic.lab ? [topic.lab] : []),
+            ...(topic.guidedLabs ?? []).map((guidedLab) => guidedLab.lab)
+          ])
+        )
+      ]
+    }));
+    expect(MANUAL_ROUTE_INDEX).toEqual(expected);
+  });
+
   it('has unique chapter ids and orders', () => {
     const ids = STUDY_MANUAL.map((c) => c.id);
     const orders = STUDY_MANUAL.map((c) => c.order);

@@ -1,5 +1,5 @@
 import type { Language } from '../types';
-import { STUDY_MANUAL } from '../content/studyManual';
+import { MANUAL_ROUTE_INDEX } from '../content/manualRouteIndex';
 
 export const PREFERENCES_STORAGE_KEY = 'osi-lab-preferences';
 export const PREFERENCES_STORAGE_VERSION = 3;
@@ -25,7 +25,7 @@ export const DEFAULT_PREFERENCES: Readonly<PersistedPreferences> = Object.freeze
   completedChapterIds: []
 });
 
-const MANUAL_CHAPTER_IDS = new Set(STUDY_MANUAL.map((chapter) => chapter.id));
+const MANUAL_CHAPTER_IDS = new Set(MANUAL_ROUTE_INDEX.map((chapter) => chapter.id));
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);

@@ -1,20 +1,19 @@
 import { BookOpen, ArrowRight } from 'lucide-react';
 import { useStore, type AppView } from '../store';
 import { uiMessages } from '../i18n';
-import { chaptersForLab } from '../lib/studyManual';
+import { manualChaptersForLab } from '../content/manualRouteIndex';
 import ViewLink from './ViewLink';
 
 /**
  * EDU-STRUCT-05 — a lab's deferral to the manual. The study manual is the single source
  * of theory; a lab is where the student practises it. This renders the back-reference
  * from a lab to the chapter(s) whose theory it exercises, deep-linking each chapter
- * (`#/manual/<id>`, EDU-STRUCT-04). The chapters are derived from the manual data
- * (`chaptersForLab`), so a lab that no chapter cites renders nothing rather than an
- * empty or broken link.
+ * (`#/manual/<id>`, EDU-STRUCT-04). The compact route index is guarded against the full
+ * manual dataset, so this shell link does not pull the handbook into the initial bundle.
  */
 export default function LabManualLink({ lab }: { lab: AppView }) {
   const language = useStore((state) => state.language);
-  const chapters = chaptersForLab(lab);
+  const chapters = manualChaptersForLab(lab);
   if (chapters.length === 0) return null;
   const copy = uiMessages(language).labManual;
 

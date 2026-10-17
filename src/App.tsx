@@ -5,45 +5,17 @@
 
 import Sidebar from './components/Sidebar';
 import Topbar from './components/Topbar';
-import { motion, AnimatePresence } from 'motion/react';
-import GuideModal from './components/GuideModal';
+import { lazy, Suspense, useEffect } from 'react';
 import ChunkErrorBoundary from './components/ChunkErrorBoundary';
 import ManualViewSkeleton from './components/ManualViewSkeleton';
 import LabManualLink from './components/LabManualLink';
-import { Suspense, useEffect } from 'react';
 import { useStore } from './store';
 import { useShallow } from 'zustand/react/shallow';
-import { VIEW_REGISTRY, type MotionPreset } from './content/viewRegistry';
+import { VIEW_REGISTRY } from './content/viewRegistry';
 import { viewTitle } from './lib/viewRouting';
 import { uiMessages } from './i18n';
 
-/**
- * Entrance/exit animations for a view switch, resolved from the `motion` preset each
- * view declares in the registry. Keeping the concrete values here keeps presentation
- * in the component while the registry stays declarative.
- */
-const MOTION_PRESETS: Record<
-  MotionPreset,
-  {
-    initial: { opacity: number; y: number };
-    animate: { opacity: number; y: number };
-    exit: { opacity: number; y: number };
-    transition: { duration: number };
-  }
-> = {
-  subtle: {
-    initial: { opacity: 0, y: 8 },
-    animate: { opacity: 1, y: 0 },
-    exit: { opacity: 0, y: -8 },
-    transition: { duration: 0.18 }
-  },
-  pronounced: {
-    initial: { opacity: 0, y: 15 },
-    animate: { opacity: 1, y: 0 },
-    exit: { opacity: 0, y: -15 },
-    transition: { duration: 0.2 }
-  }
-};
+const GuideModal = lazy(() => import('./components/GuideModal'));
 
 function ViewFallback({ language }: { language: 'it' | 'en' }) {
   return (
@@ -72,7 +44,7 @@ export default function App() {
 
   const activeDefinition = VIEW_REGISTRY[activeView];
   const ActiveView = activeDefinition.component;
-  const preset = MOTION_PRESETS[activeDefinition.motion ?? 'subtle'];
+  const motionPreset = activeDefinition.motion ?? 'subtle';
   const copy = uiMessages(language).app;
 
   // A layout-matched skeleton for the tall manual chunk avoids the jump the generic
@@ -139,22 +111,10 @@ export default function App() {
           }}
         >
           <Suspense fallback={suspenseFallback}>
-            <AnimatePresence mode="wait">
-              {/*
-                A single registry-driven switch replaces the former per-view blocks:
-                `key={activeView}` drives the exit/enter animation, the preset comes from
-                the view's declared motion, and only the embeddable views receive `inline`.
-              */}
-              <motion.div
-                key={activeView}
-                initial={preset.initial}
-                animate={preset.animate}
-                exit={preset.exit}
-                transition={preset.transition}
-              >
-                {activeDefinition.inline ? <ActiveView inline={true} /> : <ActiveView />}
-              </motion.div>
-            </AnimatePresence>
+            {/* Registry-driven, CSS-only transition keeps Motion off the initial shell. */}
+            <div key={activeView} className="app-view-enter" data-motion-preset={motionPreset}>
+              {activeDefinition.inline ? <ActiveView inline={true} /> : <ActiveView />}
+            </div>
           </Suspense>
         </ChunkErrorBoundary>
       </main>
@@ -166,7 +126,13 @@ export default function App() {
       </footer>
 
       {/* Global Modals */}
-      <GuideModal isOpen={isGuideOpen} onClose={() => setIsGuideOpen(false)} language={language} />
+      {isGuideOpen ? (
+        <ChunkErrorBoundary language={language}>
+          <Suspense fallback={null}>
+            <GuideModal isOpen={isGuideOpen} onClose={() => setIsGuideOpen(false)} language={language} />
+          </Suspense>
+        </ChunkErrorBoundary>
+      ) : null}
     </div>
   );
 }

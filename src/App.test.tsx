@@ -6,6 +6,7 @@
 
 import { afterEach, describe, expect, it } from 'vitest';
 import { cleanup, render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import App from './App';
 import { useStore } from './store';
 
@@ -25,7 +26,9 @@ describe('App lazy loading states (UX-27)', () => {
     expect(skeleton.textContent?.trim()).toBe('Caricamento del manuale di studio…');
 
     // Once loaded, the real manual replaces the skeleton with no leftover placeholder.
-    expect(await screen.findByRole('heading', { level: 1, name: 'Manuale di studio' })).toBeTruthy();
+    expect(
+      await screen.findByRole('heading', { level: 1, name: 'Manuale di studio' }, { timeout: 15_000 })
+    ).toBeTruthy();
     expect(screen.queryByTestId('manual-skeleton')).toBeNull();
   });
 
@@ -36,5 +39,17 @@ describe('App lazy loading states (UX-27)', () => {
     // Non-manual views keep the small shared placeholder, not the manual skeleton.
     expect(screen.queryByTestId('manual-skeleton')).toBeNull();
     expect(screen.getByText('Caricamento del modulo…')).toBeTruthy();
+  });
+
+  it('loads the guide on demand and opens the bilingual dialog', async () => {
+    const user = userEvent.setup();
+    useStore.setState({ activeView: 'osi', language: 'it', isGuideOpen: false });
+    render(<App />);
+
+    expect(screen.queryByRole('dialog')).toBeNull();
+    await user.click(screen.getByRole('button', { name: 'Apri la guida' }));
+    expect(
+      await screen.findByRole('dialog', { name: 'Manuale & Repository di Rete' }, { timeout: 15_000 })
+    ).toBeTruthy();
   });
 });

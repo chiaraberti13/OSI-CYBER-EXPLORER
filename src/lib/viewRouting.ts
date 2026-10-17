@@ -1,6 +1,6 @@
 import type { StoreApi } from 'zustand';
 import { VIEW_ORDER, VIEW_REGISTRY } from '../content/viewRegistry';
-import { findChapter } from './studyManual';
+import { findManualRoute } from '../content/manualRouteIndex';
 import type { AppState, AppView } from '../store';
 import type { Language } from '../types';
 
@@ -39,10 +39,9 @@ export function parseRoute(hash: string): { view: AppView; chapterId: string | n
   const manual = /^#\/manual(?:\/(.*))?$/.exec(hash);
   if (manual) {
     const [chapterCandidate, topicCandidate] = (manual[1] ?? '').split('/');
-    const chapter = chapterCandidate ? findChapter(chapterCandidate) : undefined;
+    const chapter = chapterCandidate ? findManualRoute(chapterCandidate) : undefined;
     if (!chapter) return { view: 'manual', chapterId: null, topicId: null };
-    const topicId =
-      topicCandidate && chapter.topics.some((topic) => topic.id === topicCandidate) ? topicCandidate : null;
+    const topicId = topicCandidate && chapter.topicIds.includes(topicCandidate) ? topicCandidate : null;
     return { view: 'manual', chapterId: chapter.id, topicId };
   }
   return { view: resolveViewHash(hash), chapterId: null, topicId: null };
