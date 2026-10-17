@@ -5,7 +5,7 @@
 > **Apertura Fase 3:** 14 ottobre 2026.
 > **Obiettivi di certificazione:** **CCNA 200-301** e **eJPT — INE/eLearnSecurity Junior
 > Penetration Tester**, in chiave didattica e autorizzata.
-> **Stato del manuale:** 29 capitoli / 93 argomenti / 77 laboratori guidati, bilingue IT/EN,
+> **Stato del manuale:** 29 capitoli / 94 argomenti / 77 laboratori guidati, bilingue IT/EN,
 > con il percorso eJPT completo e una sequenza di studio a doppio binario documentata.
 > **Metodo:** incrementi verticali completi e verificati (`npm run verify`, E2E Chromium con
 > Axe WCAG 2.2 AA, audit), pubblicati su `main`; ogni intervento documentato in `docs/verify/`.
@@ -409,9 +409,10 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
 
 > Piano concreto di **contenuti da aggiungere** e **miglioramenti ai contenuti**, derivato da una
 > ricognizione reale della copertura su `main` (217 id di capitoli/argomenti/lab; `manualStats()` →
-> 29 capitoli / 93 argomenti / 77 laboratori guidati; **83/94** argomenti con `references`, **3/94**
-> con `diagram` SVG). Ogni voce è `[ ]` **da iniziare** con criteri di completamento verificabili;
-> nessuna è dichiarata fatta. I vincoli di sempre restano: bilingue IT/EN con parità di acronimi e
+> 29 capitoli / 94 argomenti / 77 laboratori guidati; **84/94** argomenti con `references`, **3/94**
+> con `diagram` SVG). Le voci ancora aperte sono `[ ]` **da iniziare** con criteri di completamento
+> verificabili; nessuna è dichiarata fatta se non lo è (CONTENT-11 è stato completato il 17/10/2026).
+> I vincoli di sempre restano: bilingue IT/EN con parità di acronimi e
 > cifre, riferimenti ATT&CK/RFC/NIST/Cisco risolti in **HTTPS**, **soli target di documentazione**,
 > **nessun nuovo capitolo eJPT** oltre ai tre fissati dai test (gli argomenti eJPT entrano nei
 > capitoli esistenti), conteggi **derivati dal dataset** (ENG-31), guard bilingue e integrità del
@@ -419,16 +420,20 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
 
 ### Contenuti da aggiungere — nuovi argomenti ad alto valore
 
-- [ ] **CONTENT-11 (P2) — eJPT: enumerazione dei servizi di rete (SMB/SNMP/NFS).** Lacuna reale: i
-      termini `smb`, `nfs` non compaiono e l'enumerazione è oggi solo generica
-      (`pentest-scanning-enumeration`). Nuovo argomento nel capitolo eJPT `pentest-methodology` che
-      insegni, in chiave didattica e difensiva, cosa espone ciascun servizio (SMB: share, sessioni
-      null/guest, versioni; SNMP: community string di sola lettura, MIB; NFS: export e `no_root_squash`),
-      come un difensore riduce la superficie (versioni aggiornate, autenticazione, segmentazione) e
-      quale telemetria lo rivela. **Criteri:** argomento bilingue con obiettivi/teoria/errori comuni,
-      riferimenti risolti in HTTPS (es. ATT&CK T1135 _Network Share Discovery_, NIST SP 800-123), soli
-      host di documentazione, nessun comando operativo d'attacco; guard bilingue + integrità manuale
-      verdi; `manualStats()` 93 → 94; report in `docs/verify/`.
+- [x] **CONTENT-11 (P2) — eJPT: enumerazione dei servizi di rete (SMB/SNMP/NFS).** **Esito
+      (17/10/2026):** aggiunto l'argomento `pentest-service-enumeration` al capitolo eJPT
+      `pentest-methodology`, subito dopo scanning ed enumerazione. Copre, in chiave didattica e
+      difensiva, cosa espone ciascun servizio mal configurato — **SMB** (445/139: sessioni null/guest,
+      elenco di share, utenti e politica password, SMBv1 obsoleto vs firma su SMBv2/3), **SNMP** (UDP
+      161: community string «public» RO/«private» RW in chiaro su v1/v2c, enumerazione via MIB,
+      rimedio SNMPv3), **NFS** (2049: export troppo aperti e `no_root_squash`, rimedio con root squash
+      e Kerberos su NFSv4) — con la difesa e la telemetria che rivela l'enumerazione per ciascuno.
+      Contenuto concettuale/difensivo, nessun comando operativo, soli target di documentazione
+      (`192.0.2.0/24`). Riferimenti risolti in HTTPS: ATT&CK **T1135** (Network Share Discovery) e
+      NIST **SP 800-123**. Parità IT/EN curata su acronimi e cifre (445/139, 161, 2049, RO/RW,
+      v1/v2c/v3, SMBv1/2/3). Teoria-only (nessun laboratorio interattivo adeguato). `manualStats()`
+      29 → **29/94/77**. Guard bilingue strutturale ed euristico e integrità del manuale verdi,
+      typecheck pulito. Report: `docs/verify/2026-10-17-content11-service-enumeration.md`.
 - [ ] **CONTENT-12 (P2) — eJPT: basi di Active Directory.** Lacuna reale (`active directory`,
       `kerberos`, `ldap` assenti). Nuovo argomento nel capitolo eJPT `pentest-methodology` o
       `exploitation-post-exploitation`: modello AD (dominio, foresta, OU, GPO), autenticazione
@@ -468,6 +473,13 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
 
 ## 🧾 Registro delle decisioni
 
+- **17/10/2026 — CONTENT-11: enumerazione dei servizi (SMB/SNMP/NFS).** Completato il prossimo task
+  del backlog: aggiunto l'argomento eJPT `pentest-service-enumeration` al capitolo
+  `pentest-methodology` (SMB 445/139, SNMP UDP 161, NFS 2049) in chiave didattica e difensiva, con
+  difesa e telemetria per servizio, soli target di documentazione e riferimenti ATT&CK T1135 / NIST
+  SP 800-123 risolti in HTTPS. Nessun nuovo capitolo eJPT (vincolo dei test rispettato). Manuale
+  93 → 94 argomenti (conteggi derivati dal dataset). `verify` completo verde, E2E Chromium con Axe
+  verdi, 0 vulnerabilità. Report: `docs/verify/2026-10-17-content11-service-enumeration.md`.
 - **17/10/2026 — Pianificazione del backlog contenuti.** Dopo una ricognizione reale della copertura
   (217 id, 83/94 argomenti con riferimenti, 3/94 con diagramma) è stata aggiunta la sezione «Contenuti
   pianificati»: nuovi argomenti su lacune verificate (enumerazione SMB/SNMP/NFS, basi di Active

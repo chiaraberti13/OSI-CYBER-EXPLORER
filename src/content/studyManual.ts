@@ -6049,6 +6049,65 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
         ]
       },
       {
+        id: 'pentest-service-enumeration',
+        title: {
+          it: 'Enumerazione dei servizi: SMB, SNMP e NFS',
+          en: 'Service enumeration: SMB, SNMP, and NFS'
+        },
+        objectives: [
+          {
+            it: 'Spiegare cosa espongono SMB, SNMP e NFS quando sono configurati in modo debole e perché l’enumerazione del servizio precede ogni tentativo di exploitation.',
+            en: 'Explain what SMB, SNMP, and NFS expose when weakly configured, and why service enumeration precedes any exploitation attempt.'
+          },
+          {
+            it: 'Collegare ciascun servizio alla difesa che ne riduce la superficie e alla telemetria che rivela l’enumerazione.',
+            en: 'Link each service to the defense that reduces its surface and to the telemetry that reveals the enumeration.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere la differenza tra scanning ed enumerazione e la lettura di servizio e versione (argomento precedente).',
+            en: 'Know the difference between scanning and enumeration and how to read service and version (the previous topic).'
+          }
+        ],
+        theory: [
+          {
+            it: 'SMB (porte 445 e 139) condivide file e stampanti sulla rete, ed è il servizio che più spesso parla troppo. Una sessione null o guest — l’accesso senza credenziali che le configurazioni legacy ammettono — può restituire l’elenco delle condivisioni, gli utenti, i gruppi e la politica delle password, cioè la mappa che orienta tutto il resto del test. Conta anche la versione: SMBv1 è obsoleto e va disattivato, mentre SMBv2 e SMBv3 vanno imposti con la firma dei messaggi. La difesa è negare le sessioni anonime, limitare l’esposizione di 445 con la segmentazione e non pubblicare condivisioni oltre il necessario.',
+            en: 'SMB (ports 445 and 139) shares files and printers over the network, and it is the service that most often says too much. A null or guest session — the credential-less access that legacy configurations allow — can return the list of shares, users, groups, and the password policy, that is, the map that guides the rest of the test. The version matters too: SMBv1 is obsolete and must be disabled, while SMBv2 and SMBv3 must be enforced with message signing. The defense is to deny anonymous sessions, limit the exposure of 445 with segmentation, and not publish shares beyond what is needed.'
+          },
+          {
+            it: 'SNMP (porta UDP 161) monitora e gestisce gli apparati, e la sua debolezza storica è la community string: una stringa condivisa che funge da password. I valori predefiniti «public» in sola lettura (RO) e «private» in lettura-scrittura (RW) sono notissimi, e SNMPv1 e v2c li trasmettono in chiaro. Con la sola RO si enumerano tabella di routing, interfacce, processi e versione del sistema; con la RW si può persino riconfigurare l’apparato. La difesa è SNMPv3 con autenticazione e cifratura, l’abbandono delle community predefinite e il filtro di 161 verso i soli collector autorizzati su una rete di gestione separata.',
+            en: 'SNMP (UDP port 161) monitors and manages devices, and its historical weakness is the community string: a shared string that acts as a password. The default values «public» for read-only (RO) and «private» for read-write (RW) are well known, and SNMPv1 and v2c send them in cleartext. With RO alone you enumerate the routing table, interfaces, processes, and system version; with RW you can even reconfigure the device. The defense is SNMPv3 with authentication and encryption, dropping the default communities, and filtering 161 to the authorized collectors only on a separate management network.'
+          },
+          {
+            it: 'NFS (porta 2049) condivide file system in rete, tipicamente tra sistemi Unix. L’enumerazione legge la lista degli export e le reti a cui ciascuno è concesso; un export troppo aperto, o l’opzione no_root_squash che lascia a root del client i privilegi di root sul file system, trasforma una condivisione in un accesso privilegiato. La difesa è esportare solo verso host o reti precise, mantenere il root squash e preferire autenticazione e cifratura (Kerberos su NFSv4) alla sola fiducia nell’indirizzo IP. In tutti e tre i casi l’enumerazione lascia una firma nei log — sessioni anonime, query SNMP, richieste mount — e la segmentazione limita a monte chi può anche solo raggiungere il servizio.',
+            en: 'NFS (port 2049) shares file systems over the network, typically between Unix systems. Enumeration reads the list of exports and the networks each is granted to; an export that is too open, or the no_root_squash option that leaves the client’s root with root privileges on the file system, turns a share into privileged access. The defense is to export only to precise hosts or networks, keep root squash, and prefer authentication and encryption (Kerberos on NFSv4) over trusting the IP address alone. In all three cases enumeration leaves a signature in the logs — anonymous sessions, SNMP queries, mount requests — and segmentation limits upstream who can even reach the service.'
+          }
+        ],
+        example: {
+          it: 'Su un host in 192.0.2.0/24 una sessione SMB null elenca le condivisioni e gli utenti, SNMP risponde alla community «public» con la tabella di routing e NFS mostra un export concesso a tutta la sottorete: la difesa nega le sessioni anonime, sostituisce la community con SNMPv3 e restringe l’export a un solo host, mentre i log registrano le tre richieste di enumerazione.',
+          en: 'On a host in 192.0.2.0/24 an SMB null session lists the shares and users, SNMP answers the «public» community with the routing table, and NFS shows an export granted to the whole subnet: the defense denies anonymous sessions, replaces the community with SNMPv3, and narrows the export to a single host, while the logs record the three enumeration requests.'
+        },
+        commonMistakes: [
+          {
+            it: 'Lasciare attive le sessioni SMB null o guest: restituiscono condivisioni, utenti e politica delle password senza credenziali.',
+            en: 'Leaving SMB null or guest sessions active: they return shares, users, and password policy with no credentials.'
+          },
+          {
+            it: 'Conservare le community SNMP «public»/«private» su v1/v2c: viaggiano in chiaro e aprono lettura o riconfigurazione.',
+            en: 'Keeping the «public»/«private» SNMP communities on v1/v2c: they travel in cleartext and open read or reconfiguration.'
+          },
+          {
+            it: 'Esportare in NFS con no_root_squash o verso reti troppo ampie: una condivisione diventa un accesso privilegiato.',
+            en: 'Exporting over NFS with no_root_squash or to networks that are too broad: a share becomes privileged access.'
+          }
+        ],
+        references: [
+          { kind: 'attack', id: 'T1135' },
+          { kind: 'nist', id: 'SP 800-123' }
+        ]
+      },
+      {
         id: 'pentest-password-attacks',
         title: {
           it: 'Attacchi alle password: brute force e spraying',
