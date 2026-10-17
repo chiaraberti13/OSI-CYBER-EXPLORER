@@ -18,7 +18,13 @@ describe('manual concept diagrams', () => {
         expect(document.getElementById(graphic.getAttribute('aria-describedby')!)?.textContent).toBe(
           MANUAL_DIAGRAMS[id].description[language]
         );
-        for (const node of MANUAL_DIAGRAMS[id].nodes) expect(screen.getByText(node.label[language])).toBeTruthy();
+        for (const node of MANUAL_DIAGRAMS[id].nodes) {
+          expect(screen.getAllByText(node.label[language]).length).toBeGreaterThan(0);
+          expect(screen.getAllByText(node.detail[language]).length).toBeGreaterThan(0);
+        }
+        for (const edge of MANUAL_DIAGRAMS[id].edges) {
+          if (edge.label?.[language]) expect(screen.getByText(edge.label[language])).toBeTruthy();
+        }
         unmount();
       }
     });

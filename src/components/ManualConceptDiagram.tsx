@@ -47,7 +47,7 @@ export default function ManualConceptDiagram({ id, language }: { id: ManualDiagr
                 strokeDasharray={edge.dashed ? '5 3' : undefined}
                 markerEnd={`url(#${arrowId})`}
               />
-              {edge.label[language] && (
+              {edge.label?.[language] && (
                 <text x={edge.x} y={edge.y} textAnchor="middle" fill="currentColor" fontSize="12">
                   {edge.label[language]}
                 </text>

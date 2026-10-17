@@ -5,7 +5,7 @@ export interface ManualDiagram {
   description: Bilingual;
   height: number;
   nodes: { x: number; y: number; width: number; label: Bilingual; detail: Bilingual }[];
-  edges: { path: string; x: number; y: number; label: Bilingual; dashed?: boolean }[];
+  edges: { path: string; x: number; y: number; label?: Bilingual; dashed?: boolean }[];
 }
 
 /** Inert, schematic teaching aids. Coordinates keep every label readable on a narrow screen. */
@@ -141,21 +141,20 @@ export const MANUAL_DIAGRAMS = {
       }
     ],
     edges: [
-      { path: 'M160 66 V98', x: 160, y: 0, label: { it: '', en: '' } },
-      { path: 'M160 156 V188', x: 160, y: 0, label: { it: '', en: '' } },
-      { path: 'M160 246 V278', x: 160, y: 0, label: { it: '', en: '' } },
+      { path: 'M160 66 V98', x: 160, y: 0 },
+      { path: 'M160 156 V188', x: 160, y: 0 },
+      { path: 'M160 246 V278', x: 160, y: 0 },
       { path: 'M160 336 V378', x: 210, y: 362, label: { it: 'Evidenze', en: 'Evidence' } },
       {
         path: 'M275 308 H300 V128 H277',
         x: 160,
         y: 176,
-        label: { it: '', en: '' },
         dashed: true
       }
     ]
   },
   encapsulation: {
-    title: { it: 'La PDU si avvolge nello stack', en: 'A PDU is wrapped down the stack' },
+    title: { it: 'Incapsulamento lungo lo stack di rete', en: 'Encapsulation down the network stack' },
     description: {
       it: 'Nel mittente i dati applicativi scendono nello stack: TCP o UDP aggiunge il proprio header, IP aggiunge il suo, Ethernet aggiunge header e trailer FCS, poi il livello fisico trasmette bit. Il destinatario rimuove e interpreta le stesse informazioni in ordine inverso. È uno schema didattico: il formato esatto dipende dai protocolli e dal collegamento.',
       en: 'At the sender, application data moves down the stack: TCP or UDP adds its header, IP adds its header, Ethernet adds a header and the FCS trailer, and the physical layer transmits bits. The receiver removes and interprets the same information in reverse order. This is a teaching model; exact formats depend on the protocols and link.'
@@ -208,8 +207,8 @@ export const MANUAL_DIAGRAMS = {
   qos: {
     title: { it: 'Dalla marcatura all’uscita in rete', en: 'From marking to network egress' },
     description: {
-      it: 'La policy definisce il confine di fiducia, classifica il traffico e decide come servire o scartare i pacchetti durante la congestione. LLQ dà priorità stretta alla classe voce, CBWFQ ripartisce banda tra classi e WRED può scartare in anticipo traffico selezionato. QoS gestisce la capacità disponibile: non crea banda e le marcature vanno applicate e verificate lungo il percorso.',
-      en: 'Policy defines a trust boundary, classifies traffic and decides how to serve or drop packets during congestion. LLQ gives strict priority to the voice class, CBWFQ allocates bandwidth among classes, and WRED can drop selected traffic early. QoS manages available capacity; it does not create bandwidth, and markings must be applied and checked along the path.'
+      it: 'La policy definisce il confine di fiducia, classifica il traffico e decide come servire o scartare i pacchetti durante la congestione. LLQ dà priorità stretta alla classe configurata, CBWFQ ripartisce banda tra classi e WRED può scartare in anticipo traffico selezionato. QoS gestisce la capacità disponibile: non crea banda e le marcature vanno applicate e verificate lungo il percorso.',
+      en: 'Policy defines a trust boundary, classifies traffic and decides how to serve or drop packets during congestion. LLQ gives strict priority to its configured class, CBWFQ allocates bandwidth among classes, and WRED can drop selected traffic early. QoS manages available capacity; it does not create bandwidth, and markings must be applied and checked along the path.'
     },
     height: 390,
     nodes: [
@@ -218,7 +217,7 @@ export const MANUAL_DIAGRAMS = {
         y: 10,
         width: 272,
         label: { it: 'Bordo e confine di fiducia', en: 'Edge and trust boundary' },
-        detail: { it: 'Conferma o azzera la marcatura', en: 'Trust or reset the marking' }
+        detail: { it: 'Considera attendibile o riscrivi la marcatura', en: 'Trust or rewrite the marking' }
       },
       {
         x: 24,

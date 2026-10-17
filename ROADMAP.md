@@ -1,3 +1,6 @@
+Warning: truncated output (original token count: 12162)
+Total output lines: 570
+
 # 🚀 Roadmap di Sviluppo — Fase 3: OSI-CYBER-EXPLORER
 
 > **Baseline:** branch `main`, dopo la Fase 2 (storico in
@@ -282,14 +285,7 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
         Nessun catalogo resta escluso; I18N-10 rimane ricorrente per nuovi contenuti,
         senza dichiarare revisionato ogni testo storico dell’applicazione.
   - [x] **Incremento glossario (16/10/2026).** Revisionate tutte le 114 voci (228 definizioni
-        IT/EN): accuratezza tecnica e parità confermate senza correzioni necessarie. Il
-        glossario — unico dataset fondamentale rivolto al discente ancora assente — è stato
-        aggiunto al guard strutturale `BILINGUAL_DATASETS` con un controllo dedicato per voce,
-        così da intercettare con un walk ricorsivo anche un lato mancante in eventuali campi
-        bilingui annidati futuri (dove il controllo superficiale di `content.test.ts` non
-        arriverebbe). Criteri verificati: parità strutturale ed euristica (3228 coppie, nessun
-        punto cieco), `verify` completo verde (778 test unitari), 74/74 E2E Chromium.
-        Report: `docs/verify/2026-10-16-i18n10-glossary.md`.
+        IT/EN): accuratezza tecnic…162 tokens truncated…6-10-16-i18n10-glossary.md`.
   - [x] **Incremento manuale di studio (16/10/2026).** `STUDY_MANUAL` (29 capitoli / 88
         argomenti / 74 laboratori guidati, ~9500 righe) — il dataset bilingue più grande e
         importante dell'app — era protetto solo dall'euristica testuale, che per costruzione
@@ -335,6 +331,13 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
         futuri), con contatore anti no-op (>100 coppie). Criteri verificati: `verify` completo
         verde (782 test), guard bilingue 19 test, 74/74 E2E Chromium, 0 vulnerabilità.
         Report: `docs/verify/2026-10-16-i18n10-interactive-labs.md`.
+  - [x] **Incremento diagrammi VIS-13 (17/10/2026).** Revisionati titolo, descrizioni, nodi,
+        dettagli ed etichette IT/EN dei diagrammi OSI e QoS. Corretto un titolo innaturale, reso
+        esplicito che LLQ dà priorità alla classe configurata (non solo alla voce) e allineato
+        «trust/remark» tra le lingue. `MANUAL_DIAGRAMS` ora è incluso nel guard strutturale; le
+        frecce decorative senza testo sono modellate senza etichetta, mentre i test unitari
+        verificano ogni testo effettivamente reso in entrambe le lingue. Report:
+        `docs/verify/2026-10-17-i18n10-vis13-diagrams.md`.
 
 ## 📝 Technical Writer — documentazione
 
@@ -496,6 +499,8 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
 - [ ] **I18N-10 (P1, ricorrente) — Revisione IT/EN dei nuovi contenuti.** Vedi la voce dedicata nella
       sezione del Traduttore/Revisore: ogni argomento o diagramma aggiunto da questo backlog passa la
       revisione di accuratezza e naturalezza con parità di acronimi e cifre prima della pubblicazione.
+  - [x] **Incremento diagrammi VIS-13 (17/10/2026).** Revisione linguistica e tecnica IT/EN completata;
+        dettagli e verifiche nella sezione I18N-10 e in `docs/verify/2026-10-17-i18n10-vis13-diagrams.md`.
 
 ## 🧾 Registro delle decisioni
 

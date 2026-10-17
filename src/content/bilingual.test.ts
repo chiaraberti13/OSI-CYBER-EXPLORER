@@ -2,6 +2,7 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { ATTACK_FAMILIES } from './securityTaxonomy';
 import { GLOSSARY_TERMS } from './glossaryTerms';
+import { MANUAL_DIAGRAMS } from './manualDiagrams';
 import { STUDY_MANUAL } from './studyManual';
 import { SECURITY_TECHNIQUES } from './securityCoverage';
 import { DEFENSE_CONTROLS } from './defenseControls';
@@ -164,6 +165,7 @@ describe('bilingual content', () => {
 
 const BILINGUAL_DATASETS: ReadonlyArray<readonly [string, unknown]> = [
   ['STUDY_MANUAL', STUDY_MANUAL],
+  ['MANUAL_DIAGRAMS', MANUAL_DIAGRAMS],
   ['GLOSSARY_TERMS', GLOSSARY_TERMS],
   ['ATTACK_FAMILIES', ATTACK_FAMILIES],
   ['SECURITY_TECHNIQUES', SECURITY_TECHNIQUES],
