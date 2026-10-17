@@ -6228,6 +6228,65 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
             ]
           }
         ]
+      },
+      {
+        id: 'offline-hash-cracking-defense',
+        title: {
+          it: 'Cracking offline degli hash: modello di costo e difesa',
+          en: 'Offline hash cracking: cost model and defense'
+        },
+        objectives: [
+          {
+            it: 'Spiegare perché un hash catturato è attaccabile offline e da cosa dipende il costo del cracking.',
+            en: 'Explain why a captured hash is attackable offline and what the cracking cost depends on.'
+          },
+          {
+            it: 'Collegare la difesa della memorizzazione — KDF lente, sale per-utente, pepper, fattore di lavoro — al costo che impone all’attaccante.',
+            en: 'Link the storage defense — slow KDFs, per-user salt, pepper, work factor — to the cost it imposes on the attacker.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere la distinzione tra attacco online e offline e l’hashing delle password (argomento precedente e capitolo sui fondamenti di sicurezza).',
+            en: 'Know the online-versus-offline distinction and password hashing (the previous topic and the security-fundamentals chapter).'
+          }
+        ],
+        theory: [
+          {
+            it: 'Il cracking offline parte da un hash già catturato — da un database esfiltrato o da una cattura di rete — e lavora sulla macchina dell’attaccante, senza rate limiting né log sul bersaglio. Il metodo è sempre lo stesso: indovinare una password candidata, calcolarne l’hash con lo stesso algoritmo e confrontarlo. Il costo non è quindi un singolo tentativo ma il prodotto «numero di tentativi × costo di un hash»: ogni difesa efficace agisce su uno dei due fattori, aumentando lo spazio da provare o il costo di ogni prova.',
+            en: 'Offline cracking starts from an already captured hash — from an exfiltrated database or a network capture — and works on the attacker’s machine, with no rate limiting or logging on the target. The method is always the same: guess a candidate password, compute its hash with the same algorithm, and compare. The cost is therefore not a single attempt but the product «number of attempts × cost of one hash»: every effective defense acts on one of the two factors, raising the space to try or the cost of each try.'
+          },
+          {
+            it: 'È qui che l’algoritmo di memorizzazione decide tutto. Un hash veloce e generico come MD5 o SHA-1 nudo è nato per essere rapido: una GPU ne calcola miliardi al secondo, quindi il costo per tentativo è irrisorio. Una funzione di derivazione della chiave (KDF) lenta e progettata apposta — bcrypt, scrypt, Argon2, PBKDF2 — ha un fattore di lavoro regolabile che rende ogni hash volutamente costoso, alzando di ordini di grandezza il tempo per tentativo. Il sale, un valore casuale e per-utente concatenato alla password prima dell’hash, non rallenta il singolo calcolo ma annulla la precomputazione: rende inutili le rainbow table e fa sì che due utenti con la stessa password abbiano hash diversi, costringendo ad attaccare ogni hash separatamente. Il pepper aggiunge un segreto non memorizzato nel database (tenuto altrove, es. in un HSM) che l’attaccante con il solo dump non possiede.',
+            en: 'This is where the storage algorithm decides everything. A fast, general-purpose hash such as bare MD5 or SHA-1 was built to be quick: a GPU computes billions per second, so the cost per attempt is negligible. A slow, purpose-built key derivation function (KDF) — bcrypt, scrypt, Argon2, PBKDF2 — has a tunable work factor that makes each hash deliberately expensive, raising the time per attempt by orders of magnitude. The salt, a random, per-user value concatenated to the password before hashing, does not slow the single computation but defeats precomputation: it makes rainbow tables useless and ensures two users with the same password get different hashes, forcing the attacker to attack each hash separately. The pepper adds a secret not stored in the database (kept elsewhere, e.g. in an HSM) that an attacker with only the dump does not possess.'
+          },
+          {
+            it: 'La difesa è un budget a due fattori e nessuno dei due basta da solo. L’entropia della password amplia lo spazio dei tentativi; il fattore di lavoro della KDF alza il costo di ciascuno. Una KDF lenta non salva una password debole, che cade comunque perché lo spazio è piccolo; una password forte non salva un hash veloce e senza sale, che cade alla precomputazione. La scelta progettuale che ne segue è netta: mai memorizzare con hash veloci e senza sale, usare una KDF moderna con sale per-utente e fattore di lavoro tarato sull’hardware odierno, aggiornarlo quando l’hardware migliora e, dove possibile, aggiungere un pepper. L’attaccante investe in GPU e ASIC proprio per abbattere il costo per tentativo: è quel costo che il fattore di lavoro è progettato per difendere.',
+            en: 'The defense is a two-factor budget and neither factor alone is enough. The entropy of the password widens the space of attempts; the work factor of the KDF raises the cost of each. A slow KDF does not save a weak password, which falls anyway because the space is small; a strong password does not save a fast, unsalted hash, which falls to precomputation. The design choice that follows is clear: never store with fast, unsalted hashes, use a modern KDF with a per-user salt and a work factor tuned to today’s hardware, raise it as hardware improves, and, where possible, add a pepper. The attacker invests in GPUs and ASICs precisely to drive down the cost per attempt: it is that cost the work factor is designed to defend.'
+          }
+        ],
+        example: {
+          it: 'Lo stesso database con «password123» memorizzata come MD5 nudo cade in un istante a una rainbow table; memorizzata con Argon2, sale per-utente e un fattore di lavoro tarato, costringe l’attaccante ad attaccare ogni hash separatamente e a un costo per tentativo migliaia di volte maggiore — ma «password123» resta debole, quindi serve anche l’entropia della password.',
+          en: 'The same database with «password123» stored as bare MD5 falls instantly to a rainbow table; stored with Argon2, a per-user salt, and a tuned work factor, it forces the attacker to attack each hash separately and at a per-attempt cost thousands of times higher — but «password123» stays weak, so the password entropy is needed too.'
+        },
+        commonMistakes: [
+          {
+            it: 'Memorizzare le password con hash veloci e senza sale (MD5/SHA-1 nudi): una GPU li prova a miliardi al secondo.',
+            en: 'Storing passwords with fast, unsalted hashes (bare MD5/SHA-1): a GPU tries them at billions per second.'
+          },
+          {
+            it: 'Usare un sale unico o assente: senza sale per-utente le rainbow table e gli hash identici per password uguali tornano utili all’attaccante.',
+            en: 'Using a single or absent salt: without a per-user salt, rainbow tables and identical hashes for equal passwords become useful to the attacker again.'
+          },
+          {
+            it: 'Considerare la KDF lenta una licenza per password deboli, o non alzare mai il fattore di lavoro mentre l’hardware migliora.',
+            en: 'Treating the slow KDF as a license for weak passwords, or never raising the work factor as hardware improves.'
+          }
+        ],
+        references: [
+          { kind: 'nist', id: 'SP 800-63B' },
+          { kind: 'attack', id: 'T1110.002' }
+        ]
       }
     ]
   },

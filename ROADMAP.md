@@ -5,7 +5,7 @@
 > **Apertura Fase 3:** 14 ottobre 2026.
 > **Obiettivi di certificazione:** **CCNA 200-301** e **eJPT — INE/eLearnSecurity Junior
 > Penetration Tester**, in chiave didattica e autorizzata.
-> **Stato del manuale:** 29 capitoli / 95 argomenti / 77 laboratori guidati, bilingue IT/EN,
+> **Stato del manuale:** 29 capitoli / 96 argomenti / 77 laboratori guidati, bilingue IT/EN,
 > con il percorso eJPT completo e una sequenza di studio a doppio binario documentata.
 > **Metodo:** incrementi verticali completi e verificati (`npm run verify`, E2E Chromium con
 > Axe WCAG 2.2 AA, audit), pubblicati su `main`; ogni intervento documentato in `docs/verify/`.
@@ -409,9 +409,9 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
 
 > Piano concreto di **contenuti da aggiungere** e **miglioramenti ai contenuti**, derivato da una
 > ricognizione reale della copertura su `main` (217 id di capitoli/argomenti/lab; `manualStats()` →
-> 29 capitoli / 95 argomenti / 77 laboratori guidati; **95/95** argomenti con `references` (CONTENT-15
-> completato), **3/95** con `diagram` SVG). Le voci ancora aperte sono `[ ]` **da iniziare** con criteri
-> di completamento verificabili; CONTENT-11, CONTENT-12 e CONTENT-15 sono stati completati il 17/10/2026.
+> 29 capitoli / 96 argomenti / 77 laboratori guidati; **96/96** argomenti con `references` (CONTENT-15
+> completato e mantenuto dal guard), **3/96** con `diagram` SVG). Resta aperta la sola **VIS-13** (`[ ]`,
+> P3); CONTENT-11, CONTENT-12, CONTENT-13 e CONTENT-15 sono stati completati il 17/10/2026.
 > I vincoli di sempre restano: bilingue IT/EN con parità di acronimi e
 > cifre, riferimenti ATT&CK/RFC/NIST/Cisco risolti in **HTTPS**, **soli target di documentazione**,
 > **nessun nuovo capitolo eJPT** oltre ai tre fissati dai test (gli argomenti eJPT entrano nei
@@ -447,13 +447,21 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
       curata su acronimi (AD/OU/GPO/DC/LDAP/KDC/TGT/TGS/NTLM/Kerberos). Teoria-only. `manualStats()`
       94 → **29/95/77**. Guard bilingue e integrità del manuale verdi, typecheck pulito. Report:
       `docs/verify/2026-10-17-content12-active-directory.md`.
-- [ ] **CONTENT-13 (P3) — eJPT: cracking offline degli hash in ottica difensiva.** Migliorare/estendere
-      `pentest-password-attacks`: perché un hash catturato è crackabile offline, cosa cambia tra hash
-      veloci (MD5/SHA-1 nudi) e KDF lente con sale (bcrypt/scrypt/Argon2/PBKDF2), e come la difesa
-      alza il costo (sale per-utente, pepper, lunghezza/entropia, lockout). Nessun comando di
-      cracking; focus su modello di costo e hardening. **Criteri:** bilingue, riferimenti es. NIST
-      SP 800-63B (memorized secrets), OWASP Password Storage; soli dati di documentazione; guard
-      verdi; report in `docs/verify/`.
+- [x] **CONTENT-13 (P3) — eJPT: cracking offline degli hash in ottica difensiva.** **Esito
+      (17/10/2026):** aggiunto l'argomento complementare `offline-hash-cracking-defense` al capitolo
+      eJPT `pentest-methodology`, dopo gli attacchi alle password (di cui copre il lato memorizzazione
+      senza ridondanza: il precedente tratta strategie d'attacco e difese di account, questo il
+      modello di costo e lo storage). Copre: perché un hash catturato è attaccabile offline (nessun
+      rate limiting/log, costo = tentativi × costo per hash); hash veloci (MD5/SHA-1 nudi, miliardi/s
+      su GPU) vs KDF lente con fattore di lavoro (bcrypt/scrypt/Argon2/PBKDF2); il **sale** per-utente
+      che annulla la precomputazione (rainbow table) e il **pepper** fuori dal database; il budget a
+      due fattori entropia × fattore di lavoro (nessuno basta da solo). Nessun comando di cracking,
+      soli target di documentazione. Riferimenti risolti in HTTPS: NIST **SP 800-63B** (memorized
+      secret) e ATT&CK **T1110.002** (Password Cracking); OWASP non è un tipo `SecurityReference`
+      (`rfc|ieee|nist|attack|cisco`), quindi non citato come riferimento strutturato. Parità IT/EN
+      su acronimi e cifre. Teoria-only. `manualStats()` 95 → **29/96/77**. Guard bilingue, integrità
+      del manuale (incluso il guard dei riferimenti) e typecheck verdi. Report:
+      `docs/verify/2026-10-17-content13-offline-cracking.md`.
 
 ### Miglioramenti ai contenuti esistenti
 
@@ -483,6 +491,14 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
 
 ## 🧾 Registro delle decisioni
 
+- **17/10/2026 — CONTENT-13: cracking offline degli hash (difensivo).** Aggiunto l'argomento
+  complementare `offline-hash-cracking-defense` al capitolo eJPT `pentest-methodology`: modello di
+  costo (tentativi × costo per hash), hash veloci vs KDF lente con fattore di lavoro, sale per-utente
+  contro la precomputazione e pepper, budget entropia × fattore di lavoro. Lato memorizzazione, senza
+  ridondanza con «Attacchi alle password». Nessun comando di cracking, soli target di documentazione,
+  riferimenti NIST SP 800-63B / ATT&CK T1110.002 risolti in HTTPS. Manuale 95 → 96 argomenti.
+  `verify` completo verde, E2E Chromium con Axe verdi, 0 vulnerabilità. Report:
+  `docs/verify/2026-10-17-content13-offline-cracking.md`.
 - **17/10/2026 — CONTENT-15: riferimenti completati + guard.** Aggiunto un riferimento autorevole
   (RFC/IEEE/Cisco) risolto in HTTPS ai 10 argomenti fondamentali CCNA che ne erano privi (copertura
   85/95 → 95/95) e introdotto in `studyManual.test.ts` il guard «ogni argomento espone ≥1
