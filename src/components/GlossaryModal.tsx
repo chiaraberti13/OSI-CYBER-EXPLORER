@@ -67,7 +67,7 @@ export default function GlossaryModal({
         <section
           aria-labelledby={titleId}
           aria-describedby={descriptionId}
-          className="relative flex h-[82dvh] max-h-[48rem] min-h-0 w-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-white"
+          className="relative flex h-[82dvh] max-h-[48rem] min-h-0 w-full flex-col overflow-hidden rounded-2xl border border-slate-200/70 bg-white shadow-sm"
         >
           {children}
         </section>
@@ -94,14 +94,14 @@ export default function GlossaryModal({
       {/* Header */}
       <div className="sticky top-0 flex shrink-0 items-center justify-between border-b border-slate-100 bg-white p-6">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-blue-50 rounded-lg">
-            <BookOpen aria-hidden="true" className="w-5 h-5 text-blue-600" />
+          <div className="rounded-xl bg-indigo-50 p-2.5">
+            <BookOpen aria-hidden="true" className="h-5 w-5 text-indigo-600" />
           </div>
           <div>
-            <Title id={titleId} className="text-lg font-semibold text-slate-900 uppercase tracking-tighter">
+            <Title id={titleId} className="text-xl font-semibold tracking-tight text-slate-900">
               {language === 'en' ? 'Network Glossary' : 'Glossario di Rete'}
             </Title>
-            <p id={descriptionId} className="text-xs text-slate-400 font-medium italic">
+            <p id={descriptionId} className="text-[13px] font-medium text-slate-500">
               {language === 'en' ? 'Key concepts of the OSI world' : 'Concetti chiave del mondo OSI'}
             </p>
           </div>
@@ -131,7 +131,7 @@ export default function GlossaryModal({
             aria-controls={termsId}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-10 py-2 bg-white border border-slate-200 rounded-xl text-sm outline-none focus:border-blue-400 focus:ring-4 focus:ring-blue-50 transition-all"
+            className="w-full pl-10 pr-10 py-2 bg-white border border-slate-200 rounded-xl text-sm outline-none focus:border-indigo-400 focus:ring-4 focus:ring-indigo-50 transition-all"
             // In the modal, ModalDialog moves focus here through initialFocusRef.
             autoFocus={inline}
           />
@@ -155,7 +155,7 @@ export default function GlossaryModal({
             <select
               value={searchScope}
               onChange={(event) => setSearchScope(event.target.value as GlossarySearchScope)}
-              className="min-h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-700 outline-none focus:border-blue-400 focus:ring-4 focus:ring-blue-50"
+              className="min-h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-700 outline-none focus:border-indigo-400 focus:ring-4 focus:ring-indigo-50"
             >
               <option value="all">{language === 'en' ? 'Terms and definitions' : 'Termini e definizioni'}</option>
               <option value="term">{language === 'en' ? 'Terms only' : 'Solo termini'}</option>
@@ -174,7 +174,7 @@ export default function GlossaryModal({
                 setSearchScope('all');
                 searchRef.current?.focus();
               }}
-              className="min-h-11 rounded-xl border border-slate-200 bg-white px-3 text-xs font-bold text-slate-700 transition-colors hover:border-blue-300 disabled:cursor-not-allowed disabled:opacity-50"
+              className="min-h-11 rounded-xl border border-slate-200 bg-white px-3 text-xs font-bold text-slate-700 transition-colors hover:border-indigo-300 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {language === 'en' ? 'Reset filters' : 'Azzera filtri'}
             </button>
@@ -196,14 +196,14 @@ export default function GlossaryModal({
               <div key={group.letter}>
                 <div
                   aria-hidden="true"
-                  className="sticky top-0 z-[1] -mx-1 mb-2 bg-white/95 px-1 py-1 text-xs font-bold tracking-widest text-slate-400 backdrop-blur-sm"
+                  className="sticky top-0 z-[1] -mx-1 mb-2 bg-white/95 px-1 py-1 text-[13px] font-bold tracking-wide text-indigo-500 backdrop-blur-sm"
                 >
                   {group.letter}
                 </div>
                 <dl className="divide-y divide-slate-100">
                   {group.items.map((item) => (
-                    <div key={item.term} className="py-2.5 first:pt-0">
-                      <dt className="text-sm font-semibold text-blue-700">
+                    <div key={item.term} className="py-3 first:pt-0">
+                      <dt className="text-[15px] font-semibold tracking-tight text-slate-900">
                         <SearchHighlight text={item.term} query={searchTerm} />
                       </dt>
                       <dd className="mt-1 text-[13px] leading-relaxed text-slate-600">
