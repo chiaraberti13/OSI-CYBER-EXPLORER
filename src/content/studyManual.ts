@@ -3789,6 +3789,10 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
           {
             it: 'Verificare quali tag e percorsi di gestione sono necessari perché un AP pubblichi la WLAN in sicurezza.',
             en: 'Check which tags and management paths are required for an AP to advertise the WLAN securely.'
+          },
+          {
+            it: 'Interpretare i profili QoS e le impostazioni WLAN avanzate nella GUI, verificandone l’effetto su client e percorso dati.',
+            en: 'Interpret WLAN QoS profiles and advanced settings in the GUI, and verify their effect on clients and the data path.'
           }
         ],
         prerequisites: [
@@ -3801,6 +3805,10 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
           {
             it: 'Sul Catalyst 9800 con IOS XE la GUI organizza la configurazione in profili e tag. Il WLAN profile definisce la WLAN/SSID e le impostazioni di sicurezza; il policy profile definisce la policy del client, inclusi VLAN e modalità di switching. Il policy tag collega una WLAN profile al relativo policy profile: creare i due profili senza associare il tag e applicarlo all’AP non rende la WLAN disponibile su quell’AP. I nomi e la posizione dei menu possono variare leggermente tra release IOS XE; il modello logico resta il riferimento.',
             en: 'On a Catalyst 9800 running IOS XE, the GUI organises configuration into profiles and tags. The WLAN profile defines the WLAN/SSID and security settings; the policy profile defines client policy, including VLAN and switching mode. The policy tag links a WLAN profile to its policy profile: creating both profiles without mapping the tag and applying it to an AP does not make the WLAN available on that AP. Menu names and locations can vary slightly across IOS XE releases; the logical model remains the guide.'
+          },
+          {
+            it: 'Nel flusso GUI del CCNA v1.1 vanno interpretati anche QoS e impostazioni avanzate, non solo SSID e sicurezza. Sul Catalyst 9800 i profili QoS predefiniti Platinum (voce), Gold (video), Silver (best effort) e Bronze (background) assegnano classi di trattamento alla WLAN; non creano banda né sostituiscono code e policy end-to-end. Le opzioni avanzate — ad esempio isolamento peer-to-peer, timeout di sessione o esclusione client — dipendono da modello e release: si verifica l’effetto sulla connettività, non soltanto il valore selezionato nella GUI.',
+            en: 'The CCNA v1.1 GUI workflow also requires interpreting QoS and advanced settings, not just the SSID and security. On Catalyst 9800, the predefined Platinum (voice), Gold (video), Silver (best effort), and Bronze (background) QoS profiles assign treatment classes to a WLAN; they do not create bandwidth or replace queues and end-to-end policy. Advanced options — for example peer-to-peer blocking, session timeouts, or client exclusion — depend on model and release: verify their effect on connectivity, not just the value selected in the GUI.'
           },
           {
             it: 'Il policy tag non sostituisce gli altri tag dell’AP: il site tag governa l’appartenenza al sito e il comportamento di join (tra cui il modello di switching previsto), mentre l’RF tag associa i profili radio. Il mapping WLAN↔policy profile determina la policy client; site e RF tag descrivono contesto operativo e radio. Separarli aiuta a capire quale oggetto correggere quando una WLAN manca, un AP non fa join o una radio usa parametri inattesi.',
@@ -4969,6 +4977,7 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
       },
       {
         id: 'ipsec-ikev2-depth',
+        diagram: 'ikev2-handshake',
         title: {
           it: 'IPsec e IKEv2 in profondità',
           en: 'IPsec and IKEv2 in depth'
@@ -5997,6 +6006,10 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
             en: 'The goal is to build the attack surface: the set of points where a target can be reached. DNS footprinting enumerates a domain’s names — hosts, subdomains, MX and NS records — and resolves them to addresses; from there you derive the exposed hosts and the likely services. Every piece of information should be recorded with its source and date, because stale or uncertain data leads the later phases astray. Reconnaissance does not «attack»: it draws the map that scanning and enumeration will work on.'
           },
           {
+            it: 'Le fonti pubbliche possono inoltre rivelare nomi e struttura dell’azienda, indirizzi email pubblicati e dettagli tecnici come domini, certificati, tecnologie dichiarate e repository. Si registrano fonte, data e attendibilità; gli indirizzi email restano dati personali da trattare con minimizzazione e non si trasformano in contatti o tentativi di accesso. La raccolta resta limitata allo scope autorizzato.',
+            en: 'Public sources can also reveal company names and structure, published email addresses, and technical details such as domains, certificates, declared technologies, and repositories. Record the source, date, and confidence; email addresses remain personal data to minimize and are not a reason to contact people or attempt access. Collection remains within the authorized scope.'
+          },
+          {
             it: 'Dal lato difensivo, la ricognizione passiva è quasi invisibile, ma quella attiva lascia segni: un picco di query DNS da un’unica origine, risoluzioni di nomi inesistenti, accessi insoliti a servizi esposti. La contromisura non è nascondere il DNS — serve a funzionare — ma ridurre la superficie (chiudere ciò che non deve essere pubblico), tenere coerenti i dati esposti e raccogliere log che rendano riconoscibile un footprinting attivo. Conoscere ciò che un tester cerca è il modo più diretto per decidere cosa non esporre.',
             en: 'On the defensive side, passive recon is almost invisible, but active recon leaves signs: a spike of DNS queries from a single source, lookups of nonexistent names, unusual access to exposed services. The countermeasure is not to hide DNS — it must work — but to reduce the surface (close what should not be public), keep the exposed data consistent, and collect logs that make active footprinting recognizable. Knowing what a tester looks for is the most direct way to decide what not to expose.'
           }
@@ -6091,6 +6104,10 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
             en: 'Explain host discovery and TCP and UDP port scanning, and what tells an open, closed, or filtered port apart.'
           },
           {
+            it: 'Formulare un’ipotesi sul sistema operativo di un target da risposte e servizi osservabili, dichiarando incertezza e limiti del fingerprinting.',
+            en: 'Form a hypothesis about a target operating system from observable responses and services, stating fingerprinting uncertainty and limits.'
+          },
+          {
             it: 'Trasformare i risultati dello scanning in enumerazione e in una valutazione delle vulnerabilità difendibile.',
             en: 'Turn scanning results into enumeration and a defensible vulnerability assessment.'
           }
@@ -6105,6 +6122,10 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
           {
             it: 'Lo scanning verifica cosa è vivo e raggiungibile. L’host discovery individua gli host attivi in una sottorete; il port scanning determina quali porte rispondono. Su TCP lo stato si deduce dall’handshake: una risposta SYN-ACK indica una porta aperta, un RST una porta chiusa, nessuna risposta una porta filtrata da un firewall. UDP è più ambiguo perché non ha handshake: il silenzio può significare aperto o filtrato, e spesso serve la risposta del servizio per decidere. Distinguere aperto da filtrato è ciò che separa un servizio reale da un confine di rete.',
             en: 'Scanning checks what is alive and reachable. Host discovery finds the active hosts in a subnet; port scanning determines which ports respond. On TCP the state is inferred from the handshake: a SYN-ACK reply means an open port, an RST a closed port, no reply a port filtered by a firewall. UDP is more ambiguous because it has no handshake: silence can mean open or filtered, and often the service’s reply is needed to decide. Telling open from filtered is what separates a real service from a network boundary.'
+          },
+          {
+            it: 'Le risposte TCP/IP, alcuni banner e i servizi installati possono suggerire il sistema operativo, ma il fingerprinting è un’inferenza, non una prova: NAT, firewall, proxy, stack modificati o risposte simulate possono alterarla. Si annotano indizi e confidenza, si verifica solo nello scope e si evita di trattare una famiglia OS ipotizzata come vulnerabilità confermata.',
+            en: 'TCP/IP responses, some banners, and installed services can suggest the operating system, but fingerprinting is an inference, not proof: NAT, firewalls, proxies, modified stacks, or simulated responses can distort it. Record the evidence and confidence, verify only within scope, and do not treat a hypothesized OS family as a confirmed vulnerability.'
           },
           {
             it: 'Una porta aperta è solo l’inizio: l’enumerazione estrae i dettagli che rendono un servizio sfruttabile o sicuro. La rilevazione di servizio e versione legge il banner o le risposte del protocollo per capire cosa gira e in quale versione; da lì si enumerano utenti, condivisioni, endpoint o record a seconda del servizio. La valutazione delle vulnerabilità correla versione e configurazione con debolezze note, ma resta un’ipotesi finché non è verificata: una versione «vulnerabile» può essere stata corretta con una patch retroportata. Enumerare bene è ciò che evita tentativi alla cieca nella fase di exploitation.',
@@ -6320,6 +6341,10 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
             en: 'Explain the eJPT auditing perspective: inventory what a host and the segment expose, from the local network state to the reachable services.'
           },
           {
+            it: 'Valutare le informazioni presenti nei file autorizzati (configurazione di rete e sistema, utenti e credenziali/hash) e trasferire solo le evidenze necessarie in modo controllato.',
+            en: 'Assess information in authorized files (network and system configuration, users, and credentials/hashes) and transfer only necessary evidence in a controlled manner.'
+          },
+          {
             it: 'Collegare l’auditing al suo speculare difensivo: baseline, minima esposizione e monitoraggio dello scostamento.',
             en: 'Link auditing to its defensive mirror: baselines, least exposure and drift monitoring.'
           }
@@ -6338,6 +6363,10 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
           {
             it: 'L’auditing si distingue dallo scanning remoto: non è un sondaggio esterno veloce, ma una ricognizione sistematica e basata sull’evidenza, spesso da un punto d’appoggio o con credenziali, che mappa la configurazione e l’esposizione reali per produrre un quadro difendibile. Correlare ciò che ogni servizio rivela e trasferire le evidenze tra host e tester fa parte del metodo: conta la configurazione effettiva, non la sola presenza di una porta.',
             en: 'Auditing differs from remote scanning: it is not a quick external probe, but a systematic, evidence-first review, often from a foothold or with credentials, that maps the actual configuration and exposure to produce a defensible picture. Correlating what each service reveals and transferring the evidence between host and tester is part of the method: what counts is the effective configuration, not the mere presence of a port.'
+          },
+          {
+            it: 'Il programma INE include anche la revisione dei file sul target: configurazioni e log possono rivelare indirizzi, rotte, servizi, sistema operativo, utenti e relazioni di fiducia che una vista remota non mostra. Le informazioni di password e gli hash sono evidenze sensibili: si raccolgono solo se autorizzati, si riduce al minimo ciò che viene copiato e si trasferisce con protezione e integrità documentate. Il trasferimento di file fa parte del flusso di evidenze, ma non autorizza a leggere o esportare file fuori scope.',
+            en: 'INE’s blueprint also includes reviewing files on the target: configuration and logs can reveal addresses, routes, services, operating systems, users, and trust relationships that a remote view cannot show. Password information and hashes are sensitive evidence: collect them only when authorized, minimize what is copied, and transfer it with documented protection and integrity. File transfer is part of evidence handling, but it does not authorize reading or exporting out-of-scope files.'
           },
           {
             it: 'Lo speculare difensivo è l’audit di sicurezza con baseline: minima esposizione (chiudere porte e servizi non usati), configurazione dei servizi irrobustita, inventario e baseline di configurazione, e monitoraggio che segnala lo scostamento. Lo stesso stato di host e rete che l’auditor legge è ciò che il difensore dovrebbe già conoscere: la distanza tra i due è il rilievo. Studiare l’auditing insegna a trasformare un elenco di dati grezzi in una valutazione che indica dove ridurre l’esposizione.',
@@ -6360,6 +6389,10 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
           {
             it: 'Eseguire l’auditing fuori dallo scope o senza autorizzazione: resta vincolato come ogni altra attività del test.',
             en: 'Performing the auditing out of scope or without authorization: it stays bound like every other test activity.'
+          },
+          {
+            it: 'Copiare interi file o archivi di credenziali senza necessità e senza protezione: raccogliere il minimo dato autorizzato, preservarne l’integrità e limitare accesso e conservazione.',
+            en: 'Copying entire files or credential stores without need or protection: collect the minimum authorized data, preserve its integrity, and restrict access and retention.'
           }
         ],
         references: [
@@ -6393,6 +6426,10 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
           {
             it: 'La distinzione di fondo è online contro offline. Un attacco online prova le credenziali contro un servizio vivo: è lento, visibile nei log e frenato da rate limiting e lockout. Un attacco offline lavora su hash già catturati: non ha limiti di velocità né log sul bersaglio, e la sua riuscita dipende solo dalla forza della password e dalla lentezza dell’algoritmo di hashing. Capire quale dei due si sta affrontando decide la difesa utile.',
             en: 'The underlying split is online versus offline. An online attack tries credentials against a live service: it is slow, visible in the logs, and curbed by rate limiting and lockout. An offline attack works on already captured hashes: it has no rate limit or log on the target, and its success depends only on the password strength and the slowness of the hashing algorithm. Knowing which of the two you face decides the useful defense.'
+          },
+          {
+            it: 'Il brute force del login web è un caso online: richieste ripetute al form o all’API di autenticazione possono essere visibili come fallimenti per account, IP, dispositivo e sessione. In un test autorizzato si valuta il comportamento dei controlli senza generare carico o bloccare utenti; il difensore combina rate limiting adattivo, MFA, rilevamento di credenziali compromesse e correlazione distribuita, evitando errori che rivelino se un account esiste.',
+            en: 'Brute-forcing a web login is an online case: repeated requests to an authentication form or API can be visible as failures by account, IP, device, and session. In an authorized test, evaluate control behavior without creating load or locking users out; defenders combine adaptive rate limiting, MFA, breached-credential detection, and distributed correlation while avoiding errors that reveal whether an account exists.'
           },
           {
             it: 'Le varianti differiscono per strategia. Il brute force prova tutte le combinazioni; il dizionario usa una wordlist di password probabili; il credential stuffing riusa coppie già trapelate da altre violazioni, sfruttando il riuso delle password; il password spraying rovescia la logica e prova una sola password comune su molti account, proprio per restare sotto la soglia di lockout di ogni singolo account. Sono profili di rumore diversi, e quindi di rilevamento diverso.',
@@ -7223,6 +7260,10 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
             en: 'There are three key concepts. Modules divide by purpose: exploit (abuse a vulnerability), auxiliary (scanning, enumeration, actions with no payload) and post (activity after access). Payloads can be staged (a small stager downloads the rest after connecting) or stageless (self-contained). The resulting session — for example an interactive Meterpreter-style session — is awaited by a handler that receives the callback: this is why exploitation typically produces an outbound connection toward the attacker, the same shape that egress filtering intercepts.'
           },
           {
+            it: 'Identificare e modificare un exploit significa prima correlare versione, configurazione e prerequisiti con la vulnerabilità dichiarata; solo in un laboratorio isolato e autorizzato si adattano poi parametri o compatibilità e si verifica l’effetto. Una modifica non convalida l’exploit né autorizza a superare lo scope: si revisionano le differenze, si conserva un rollback e si documentano impatto e tracce. Dal lato difensivo, payload o comportamento modificati possono sfuggire alle sole firme note, quindi contano telemetria comportamentale, patch e controlli d’uscita.',
+            en: 'Identifying and modifying an exploit first means matching the claimed vulnerability to the version, configuration, and prerequisites; only in an isolated, authorized lab are compatibility or parameters then adapted and the effect verified. A modification does not validate the exploit or authorize going beyond scope: review the differences, keep a rollback, and document impact and traces. Defensively, modified payloads or behavior may evade known signatures alone, so behavioral telemetry, patching, and egress controls matter.'
+          },
+          {
             it: 'Il lato difensivo nasce proprio da questa struttura. I framework usano moduli noti e lasciano artefatti predefiniti (nomi dei payload, pattern di staging, certificati) che le firme di IDS/IPS ed EDR riconoscono; la sessione di ritorno è un evento di egress che il monitoraggio della rete rileva; e un modulo exploit funziona solo finché esiste la vulnerabilità, quindi la patch lo neutralizza alla radice. Studiare il framework serve al difensore per prevedere cosa cercare — non è una guida all’uso, ma una mappa di ciò che l’exploitation lascia dietro di sé.',
             en: 'The defensive side comes precisely from this structure. Frameworks use known modules and leave default artifacts (payload names, staging patterns, certificates) that IDS/IPS and EDR signatures recognize; the callback session is an egress event that network monitoring detects; and an exploit module works only while the vulnerability exists, so patching neutralizes it at the root. Studying the framework helps the defender predict what to look for — it is not a usage guide, but a map of what exploitation leaves behind.'
           }
@@ -7505,6 +7546,10 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
           {
             it: 'Il movimento laterale è lo spostamento da un sistema compromesso a un altro all’interno della stessa rete, riusando le credenziali e le relazioni di fiducia raccolte nella post-exploitation. Il pivoting è la tecnica che lo rende possibile oltre i confini di rete: l’host compromesso diventa un ponte verso segmenti che l’attaccante non raggiungerebbe direttamente, instradando il traffico attraverso di esso. Insieme trasformano un singolo punto d’appoggio in un percorso verso il bersaglio reale — spesso dati o sistemi che il perimetro proteggeva proprio impedendo l’accesso diretto.',
             en: 'Lateral movement is the shift from one compromised system to another within the same network, reusing the credentials and trust relationships gathered in post-exploitation. Pivoting is the technique that makes it possible beyond network boundaries: the compromised host becomes a bridge toward segments the attacker could not reach directly, routing traffic through it. Together they turn a single foothold into a path toward the real target — often data or systems that the perimeter protected precisely by preventing direct access.'
+          },
+          {
+            it: 'Nel modello eJPT il pivot può rendere raggiungibile una rete aggiungendo una rotta sul sistema di test autorizzato, oppure esporre un singolo servizio con port forwarding attraverso l’host ponte. La rotta instrada destinazioni di rete; il port forwarding rimappa una connessione verso un servizio/porta specifici: sono meccanismi diversi. Entrambi ampliano la portata e vanno limitati a target, porte e durata approvati; log e policy di egress/inter-segmento aiutano a rilevarli e bloccarli.',
+            en: 'In the eJPT model, a pivot can make a network reachable by adding a route on the authorized test system, or expose a single service through the bridge host with port forwarding. A route directs network destinations; port forwarding remaps a connection to a specific service/port: they are different mechanisms. Both expand reach and must be limited to approved targets, ports, and duration; logs and egress/inter-segment policies help detect and block them.'
           },
           {
             it: 'Ciò che abilita il movimento è la fiducia implicita: reti piatte dove ogni host raggiunge ogni altro, credenziali valide ovunque, relazioni di fiducia non verificate a ogni passo. La mappa che conta non è quella degli indirizzi ma quella delle relazioni: chi può autenticarsi dove, quale host si fida di quale. Un tester segue proprio queste relazioni; documentarle è spesso il risultato più utile di un test, perché mostra al difensore i percorsi che non sapeva di avere. L’impatto non è il numero di host «presi», ma la distanza coperta dal punto d’ingresso al dato critico.',

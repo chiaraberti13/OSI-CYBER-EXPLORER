@@ -22,7 +22,7 @@ export interface CcnaBlueprintDomain {
 export const CCNA_BLUEPRINT = {
   exam: '200-301',
   version: '1.1',
-  reviewedOn: '2026-10-10',
+  reviewedOn: '2026-10-17',
   source: {
     label: 'Cisco CCNA Exam v1.1 (200-301) exam topics',
     url: 'https://learningcontent.cisco.com/documents/marketing/exam-topics/200-301-CCNA-v1.1.pdf'

@@ -377,6 +377,49 @@ export const MANUAL_DIAGRAMS = {
       { path: 'M180 66 L220 148', x: 232, y: 112, label: { it: 'Designated', en: 'Designated' } },
       { path: 'M148 178 H172', x: 160, y: 168, label: { it: 'Blocking', en: 'Blocking' }, dashed: true }
     ]
+  },
+  'ikev2-handshake': {
+    title: { it: 'Scambi IKEv2 e prima CHILD_SA', en: 'IKEv2 exchanges and the first CHILD_SA' },
+    description: {
+      it: 'Nel caso comune, IKEv2 usa quattro messaggi in due scambi request/response. IKE_SA_INIT negozia i parametri crittografici, scambia valori Diffie–Hellman e nonce e stabilisce la IKE SA per il controllo. IKE_AUTH autentica le identità dei peer e negozia la prima CHILD_SA; questa contiene una IPsec SA per ciascuna direzione del traffico. La IKE SA protegge la segnalazione, le CHILD_SA proteggono i dati. Scambi successivi CREATE_CHILD_SA possono creare altre CHILD_SA o rinnovarle; errori e flussi EAP più lunghi sono omessi.',
+      en: 'In the common case, IKEv2 uses four messages in two request/response exchanges. IKE_SA_INIT negotiates cryptographic parameters, exchanges Diffie–Hellman values and nonces, and establishes the control IKE SA. IKE_AUTH authenticates peer identities and negotiates the first CHILD_SA; it contains one IPsec SA for each traffic direction. The IKE SA protects control messages; CHILD_SAs protect data. Later CREATE_CHILD_SA exchanges can create additional CHILD_SAs or rekey them; errors and longer EAP flows are omitted.'
+    },
+    height: 350,
+    nodes: [
+      {
+        x: 24,
+        y: 8,
+        width: 272,
+        label: { it: '1 · IKE_SA_INIT', en: '1 · IKE_SA_INIT' },
+        detail: { it: 'Suite · Diffie–Hellman · nonce', en: 'Suite · Diffie–Hellman · nonces' }
+      },
+      {
+        x: 24,
+        y: 92,
+        width: 272,
+        label: { it: '2 · IKE_AUTH', en: '2 · IKE_AUTH' },
+        detail: { it: 'Autentica i peer · prima CHILD_SA', en: 'Authenticates peers · first CHILD_SA' }
+      },
+      {
+        x: 24,
+        y: 176,
+        width: 272,
+        label: { it: 'IKE SA · piano di controllo', en: 'IKE SA · control plane' },
+        detail: { it: 'Protegge gli scambi IKE', en: 'Protects IKE exchanges' }
+      },
+      {
+        x: 24,
+        y: 260,
+        width: 272,
+        label: { it: 'CHILD_SA · piano dati', en: 'CHILD_SA · data plane' },
+        detail: { it: 'Due IPsec SA · una per direzione', en: 'Two IPsec SAs · one per direction' }
+      }
+    ],
+    edges: [
+      { path: 'M160 64 V90', x: 222, y: 80, label: { it: 'negoziazione', en: 'negotiation' } },
+      { path: 'M160 148 V174', x: 222, y: 164, label: { it: 'autenticazione', en: 'authentication' } },
+      { path: 'M160 232 V258', x: 222, y: 248, label: { it: 'protegge i dati', en: 'protects data' } }
+    ]
   }
 } satisfies Record<string, ManualDiagram>;
 

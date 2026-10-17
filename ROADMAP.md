@@ -373,8 +373,8 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
 
 ## 🔭 Prossimi interventi utili (backlog verificato)
 
-> Lo scopo obbligatorio della Fase 3 è raggiunto: tutti i task sopra sono completati e verificati,
-> e resta aperto solo **I18N-10** per sua natura ricorrente. Gli elementi seguenti sono evolutivi e
+> Lo scopo obbligatorio della Fase 3 è raggiunto: tutti i task sopra sono completati e verificati.
+> **I18N-10** e **CONTENT-10** restano aperti per loro natura ricorrente. Gli elementi seguenti sono evolutivi e
 > **facoltativi**, derivati da osservazioni reali su `main`; non sono blocchi. Ciascuno porta criteri
 > di completamento verificabili, così che un incremento resti un incremento verticale e verde.
 
@@ -412,6 +412,12 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
         la distinzione dalla GUI classica AireOS già presente; aggiunto diagramma accessibile e riferimenti
         Cisco/RFC 5415. `manualStats()` → 29/97/77. Typecheck, guard bilingue/tecnico/offensive e test mirati
         verdi. Report: `docs/verify/2026-10-17-content10-wlc-policy-mapping.md`.
+  - [x] **Incrocio blueprint eJPT/CCNA (17/10/2026).** Verificate direttamente la pagina INE e il PDF
+        Cisco v1.1. Lacune di contenuto colmate con estensioni bilingui: auditing da file/utenti/hash e
+        trasferimento sicuro delle evidenze, ipotesi sul sistema operativo, OSINT aziendale/email, route e
+        port forwarding, modifica concettuale di exploit e brute force di login web; per CCNA 2.9 aggiunte
+        QoS WLAN e impostazioni GUI avanzate. Mappa puntuale, pesi correnti e residui documentati nel report
+        `docs/verify/2026-10-17-syllabus-crosscheck-update.md`.
 - [x] **EDU-40 (P3) — Esercizi guidati per gli argomenti aggiunti.** **Esito (16/10/2026):** aggiunti
       tre esercizi guidati ai nuovi argomenti eJPT, riusando laboratori interattivi già registrati:
       «Attacchi alle password» → `identitytrust`, «Inclusione di file e directory traversal» →
@@ -426,8 +432,9 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
 > Piano concreto di **contenuti da aggiungere** e **miglioramenti ai contenuti**, derivato da una
 > ricognizione reale della copertura su `main` (218 id di capitoli/argomenti/lab; `manualStats()` →
 > 29 capitoli / 104 argomenti / 77 laboratori guidati; **104/104** argomenti con `references` (CONTENT-15
-> completato e mantenuto dal guard), **8/102** con `diagram` SVG). Resta aperta la sola **VIS-13** (`[~]`,
-> P3, ricorrente); CONTENT-11, CONTENT-12, CONTENT-13 e CONTENT-15 sono stati completati il 17/10/2026.
+> completato e mantenuto dal guard), **9/104** con `diagram` SVG). **VIS-13** è completata sui candidati
+> identificati; **CONTENT-10** e **I18N-10** restano aperti come attività ricorrenti. CONTENT-11,
+> CONTENT-12, CONTENT-13 e CONTENT-15 sono stati completati il 17/10/2026.
 > I vincoli di sempre restano: bilingue IT/EN con parità di acronimi e
 > cifre, riferimenti ATT&CK/RFC/NIST/Cisco risolti in **HTTPS**, **soli target di documentazione**,
 > **nessun nuovo capitolo eJPT** oltre ai tre fissati dai test (gli argomenti eJPT entrano nei
@@ -493,13 +500,11 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
       d'esame): un nuovo argomento senza riferimento ora fallisce in CI. Nessuna URL non-HTTPS (il
       test di risoluzione resta verde). I riferimenti sono `{kind,id}` senza testo, quindi senza
       impatto bilingue. Report: `docs/verify/2026-10-17-content15-references.md`.
-- [~] **VIS-13 (P3) — Estendere i micro-diagrammi SVG ai concetti chiave.** Dopo gli incrementi già
-  verificati, **8/102** argomenti hanno un `diagram` bilingue. Aggiungere micro-diagrammi SVG coerenti col sistema di
-  design e leggibili in tema chiaro/scuro, agli argomenti dove un disegno chiarisce più del testo
-  (candidati restanti: albero STP e ruoli delle porte, handshake IKEv2/Child SA). Uno o due per incremento.
-  **Criteri:** alternativa testuale visibile e `id` accessibili univoci (come VIS-12), contrasto
-  SVG e Axe verdi nei due temi e nelle due lingue, geometria corretta a 320/1280 px; E2E dedicato
-  verde; report in `docs/verify/`.
+- [x] **VIS-13 (P3) — Estendere i micro-diagrammi SVG ai concetti chiave.** **Esito (17/10/2026):**
+      i due candidati rimanenti identificati — albero STP e handshake IKEv2/Child SA — sono stati completati;
+      il manuale ha **9/104** diagrammi bilingui. Ogni incremento conserva alternativa testuale, `id`
+      accessibili univoci, contrasto e Axe nei due temi/lingue, geometria a 320/1280 px ed E2E dedicato.
+      Ulteriori concetti potranno aprire un nuovo intervento quando una lacuna didattica concreta li motiverà.
   - [x] **Incremento incapsulamento OSI + QoS (17/10/2026).** Aggiunti diagrammi SVG bilingui ai
         temi `osi-encapsulation` e `ip-services-qos`: sequenza di PDU e aggiunta degli header/FCS;
         confine di fiducia, classificazione DSCP e gestione delle code LLQ/CBWFQ/WRED. Ogni figura ha
@@ -529,6 +534,12 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
         strutturale verdi; E2E `manual-concept-diagrams.spec.ts` esteso al capitolo `vlan-trunk-stp`:
         8/8 combinazioni lingua/tema a 320 e 1280 px (overflow, contrasto ≥ 4.5, Axe WCAG 2.2 AA).
         Report: `docs/verify/2026-10-17-vis13-stp-tree.md`.
+  - [x] **Incremento handshake IKEv2/CHILD_SA (17/10/2026).** Aggiunto il diagramma bilingue
+        `ikev2-handshake` a `ipsec-ikev2-depth`, distinguendo IKE_SA_INIT (suite, DH, nonce), IKE_AUTH
+        (autenticazione e prima CHILD_SA), IKE SA/control plane e CHILD_SA/data plane; la descrizione
+        dichiara il caso comune e gli scambi successivi CREATE_CHILD_SA. Diagrammi 8/104 → **9/104**.
+        Guard bilingue/componente e E2E su lingue, temi e viewport verificati; report:
+        `docs/verify/2026-10-17-vis13-ikev2-handshake.md`.
 - [ ] **I18N-10 (P1, ricorrente) — Revisione IT/EN dei nuovi contenuti.** Vedi la voce dedicata nella
       sezione del Traduttore/Revisore: ogni argomento o diagramma aggiunto da questo backlog passa la
       revisione di accuratezza e naturalezza con parità di acronimi e cifre prima della pubblicazione.
@@ -540,46 +551,53 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
   - [x] **Revisione IT/EN del contenuto WLC (17/10/2026).** Verificati equivalenza degli obiettivi,
         flusso dei profili/tag, porte CAPWAP, comportamento central/local e terminologia di sicurezza;
         report e verifiche in `docs/verify/2026-10-17-content10-wlc-policy-mapping.md`.
+  - [x] **Revisione IT/EN del cross-check INE/Cisco (17/10/2026).** Riviste le nuove estensioni del
+        manuale su auditing da file, OS fingerprinting, OSINT, pivoting, exploit, login web e QoS WLAN;
+        la parità di obiettivi, acronimi e limiti di scope è verificata dai guard bilingui e dai test.
+        Report: `docs/verify/2026-10-17-syllabus-crosscheck-update.md`.
 
-## 🧭 Mappa di copertura eJPT (syllabus INE eJPTv2)
+## 🧭 Mappa di copertura eJPT (pagina ufficiale INE)
 
-Corrispondenza tra i **4 domini ufficiali** del percorso eJPTv2 (con i pesi dichiarati da INE) e gli
-argomenti del manuale (tutti difensivi/neutri, con soli target di documentazione; i contenuti eJPT
-restano nei **3 capitoli** fissati dai test). Fonte: pagina di certificazione INE e outline del corso
-(dato da ricerca web il 17/10/2026 — la pagina ufficiale non era raggiungibile via DNS dal sandbox;
-i nomi dei domini/moduli non sono inventati). I pesi vanno riconfermati sul blueprint ufficiale.
+Corrispondenza tra i **4 domini ufficiali** della pagina INE e gli argomenti del manuale (contenuti
+bilingui, didattici e vincolati allo scope autorizzato; eJPT resta nei **3 capitoli** fissati dai
+test). La pagina di certificazione è stata verificata direttamente il **17/10/2026**: i pesi
+pubblicati sono **35% / 25% / 25% / 15%**. Per la mappatura puntuale degli obiettivi e le lacune
+colmate, vedi `docs/verify/2026-10-17-syllabus-crosscheck-update.md`.
 
-- **Host & Network Penetration Testing (~35%)**
+- **Host & Network Penetration Testing (35%)**
   - System/Host-Based Attacks → `system-host-based-attacks`
   - Network-Based Attacks → `network-based-attacks` (ARP/MITM, LLMNR/NBT-NS)
-  - The Metasploit Framework → `exploitation-frameworks-metasploit`
+  - The Metasploit Framework, selezione e modifica concettuale di exploit → `exploitation-frameworks-metasploit`
   - Exploitation → `exploitation-concepts`, `exploitation-reverse-bind-shell`
   - Post-Exploitation → `post-exploitation-privesc`
-  - Pivoting → `lateral-movement-pivoting`
-  - (approfondimenti) credenziali/hash → `pentest-password-attacks`, `offline-hash-cracking-defense`;
-    Active Directory → `active-directory-basics`
-- **Assessment Methodologies (~25%)**
-  - Information Gathering → `pentest-recon-footprinting`
-  - Footprinting & Scanning → `pentest-scanning-enumeration`
-  - Enumeration (servizi) → `pentest-service-enumeration` (SMB/SNMP/NFS)
-  - Vulnerability Assessment → `pentest-vulnerability-assessment`
-- **Host & Network Auditing (~25%)**
-  - Auditing di host e rete (stato di rete locale, servizi SMB/FTP/SSH/HTTP/SQL, evidenze) →
+  - Pivoting (route e port forwarding) → `lateral-movement-pivoting`
+  - Brute force e cracking hash → `pentest-password-attacks`, `offline-hash-cracking-defense`
+  - Active Directory → `active-directory-basics`
+- **Assessment Methodologies (25%)**
+  - Information Gathering (fonti pubbliche, azienda/email/tecnologia) → `pentest-recon-footprinting`
+  - Footprinting, endpoint e service discovery, ipotesi OS → `pentest-scanning-enumeration`
+  - Enumeration (SMB/SNMP/NFS) → `pentest-service-enumeration`
+  - Vulnerability Assessment, criticità e impatto → `pentest-vulnerability-assessment`
+- **Host and Networking Auditing (25%)**
+  - File autorizzati, rete/sistema, utenti, password/hash e trasferimento controllato delle evidenze →
     `host-network-auditing`
-- **Web Application Penetration Testing (~15%)**
-  - Introduzione al Web & HTTP → `web-http-proxy-mapping`
-  - Web application enumeration → `web-enumeration`
-  - Attacchi web → `web-injection-classes`, `web-file-inclusion-traversal`, `web-auth-session-access`
-- **Social engineering** (marginale nell'eJPT) → `phishing-social-engineering` (capitolo estensione)
+- **Web Application Penetration Testing (15%)**
+  - Web/HTTP e ricognizione → `web-http-proxy-mapping`, `web-enumeration`
+  - Vulnerabilità, file e directory nascosti → `web-injection-classes`, `web-file-inclusion-traversal`,
+    `web-enumeration`
+  - Brute force del login e difese online → `pentest-password-attacks`, `web-auth-session-access`
+- **Social engineering** (contesto aggiuntivo, non dominio autonomo della pagina) →
+  `phishing-social-engineering` (capitolo estensione)
 
-Stato: **tutti e 4 i domini dell'eJPTv2 sono coperti** come argomenti (il dominio Host & Network
-Auditing, in precedenza assente, è stato aggiunto con `host-network-auditing` dopo l'incrocio con la
-pagina INE). Eventuali approfondimenti futuri proseguono sotto **CONTENT-10** (ricorrente), senza
-nuovi capitoli eJPT e senza inventare moduli non presenti nel syllabus.
+Stato: **tutti i quattro domini e gli obiettivi elencati dalla pagina INE risultano mappati** dopo
+l'incrocio del 17/10/2026. I paragrafi aggiunti colmano raccolta da file, fingerprinting OS, dettagli
+OSINT, route/port forwarding, modifica concettuale degli exploit, login web e QoS/GUI WLAN. Gli
+ampliamenti futuri restano sotto **CONTENT-10** (ricorrente), senza nuovi capitoli eJPT né istruzioni
+operative fuori da ambienti autorizzati.
 
 ## 🧾 Registro delle decisioni
 
-- **17/10/2026 — Incrocio con i blueprint ufficiali (eJPT + CCNA v1.1) e lacune colmate.** Incrociati
+- **17/10/2026 — Incrocio iniziale eJPT + CCNA v1.1.** Incrociati
   gli argomenti con la pagina eJPT INE e il PDF CCNA 200-301 v1.1 (le fonti ufficiali non erano
   raggiungibili via DNS dal sandbox — `ENOTFOUND` su `ine.com` e `learningcontent.cisco.com` — quindi
   dato ricavato via ricerca web e segnalato come da riconfermare). Emerse e colmate **due lacune

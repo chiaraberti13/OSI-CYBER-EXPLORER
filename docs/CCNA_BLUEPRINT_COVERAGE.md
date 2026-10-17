@@ -2,7 +2,7 @@
 
 ## English
 
-The application tracks the numbered topics in the official **CCNA 200-301 v1.1** exam blueprint reviewed on **2026-10-10**. The authoritative source is Cisco's [CCNA Exam v1.1 (200-301) exam topics PDF](https://learningcontent.cisco.com/documents/marketing/exam-topics/200-301-CCNA-v1.1.pdf).
+The application tracks the numbered topics in the official **CCNA 200-301 v1.1** exam blueprint reviewed on **2026-10-17**. The authoritative source is Cisco's [CCNA Exam v1.1 (200-301) exam topics PDF](https://learningcontent.cisco.com/documents/marketing/exam-topics/200-301-CCNA-v1.1.pdf).
 
 `src/content/ccnaBlueprint.ts` is the versioned coverage matrix. Each entry contains:
 
@@ -21,7 +21,7 @@ When Cisco publishes a new blueprint, update the metadata, domain objectives, bi
 
 ## Italiano
 
-L'applicazione traccia gli argomenti numerati del blueprint ufficiale **CCNA 200-301 v1.1**, verificato il **10/10/2026**. La fonte autorevole è il [PDF Cisco degli argomenti d'esame CCNA v1.1 (200-301)](https://learningcontent.cisco.com/documents/marketing/exam-topics/200-301-CCNA-v1.1.pdf).
+L'applicazione traccia gli argomenti numerati del blueprint ufficiale **CCNA 200-301 v1.1**, verificato il **17/10/2026**. La fonte autorevole è il [PDF Cisco degli argomenti d'esame CCNA v1.1 (200-301)](https://learningcontent.cisco.com/documents/marketing/exam-topics/200-301-CCNA-v1.1.pdf).
 
 `src/content/ccnaBlueprint.ts` è la matrice di copertura versionata. Ogni voce contiene:
 

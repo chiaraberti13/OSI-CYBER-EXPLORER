@@ -8,7 +8,8 @@ const chapters = [
   ['osi-model', 'encapsulation'],
   ['ip-services', 'qos'],
   ['crypto-vpn-pki-tls', 'pki-tls-chain'],
-  ['vlan-trunk-stp', 'stp-tree']
+  ['vlan-trunk-stp', 'stp-tree'],
+  ['crypto-vpn-pki-tls', 'ikev2-handshake']
 ] as const;
 
 for (const language of ['it', 'en'] as const) {
