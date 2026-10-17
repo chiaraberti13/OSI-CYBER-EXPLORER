@@ -12,6 +12,7 @@ import { ATTACK_PATHS } from './attackPaths';
 import { SECURITY_EVIDENCE_CASES } from './securityEvidence';
 import { CCNA_DOMAINS } from './ccna';
 import { DEVICE_REGISTRY } from './deviceRegistry';
+import { VPN_CONTENT } from './vpnContent';
 import { EAP_CONTENT } from './eapContent';
 import { AAA_CONTENT } from './aaaContent';
 import { PORT_CONTENT } from './portContent';
@@ -177,6 +178,7 @@ const BILINGUAL_DATASETS: ReadonlyArray<readonly [string, unknown]> = [
   ['PORT_CONTENT', PORT_CONTENT],
   ['AAA_CONTENT', AAA_CONTENT],
   ['EAP_CONTENT', EAP_CONTENT],
+  ['VPN_CONTENT', VPN_CONTENT],
   ['DEVICE_REGISTRY', DEVICE_REGISTRY],
   ['APPLICATION_SECURITY_SCENARIOS', APPLICATION_SECURITY_SCENARIOS],
   ['AVAILABILITY_SCENARIOS', AVAILABILITY_SCENARIOS],

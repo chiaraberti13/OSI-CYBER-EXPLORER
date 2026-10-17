@@ -1,4 +1,5 @@
 import React from 'react';
+import { VPN_CONTENT } from '../../content/vpnContent';
 import { EAP_CONTENT } from '../../content/eapContent';
 import { AAA_CONTENT } from '../../content/aaaContent';
 import { motion, AnimatePresence } from 'motion/react';
@@ -225,168 +226,57 @@ export default function SecureAccessPanel({
             exit={{ opacity: 0, y: -10 }}
             className="space-y-6"
           >
-            {/* VPN Overview card */}
-            <div className="bg-white border border-slate-200/80 rounded-lg p-5 space-y-3">
-              <h3 className="font-extrabold text-slate-800 text-sm uppercase tracking-tight">
-                {language === 'en'
-                  ? 'Overlay Tunneling Security: VPN, IPsec & DTLS'
-                  : "La Sicurezza dell'Overlay Tunneling: VPN, IPsec & DTLS"}
-              </h3>
-              <p className="text-xs text-slate-500 leading-relaxed">
-                {language === 'en'
-                  ? 'A Virtual Private Network (VPN) creates a secure logical overlay network on top of physical networks (like the internet). IPsec and DTLS are the standard cryptographic engines that make VPN tunnels secure against sniffing and manipulation.'
-                  : "Una Virtual Private Network (VPN) estende un canale privato sicuro (overlay) al di sopra di infrastrutture pubbliche (underlay) non filtrate come la rete globale Internet. IPsec e DTLS rappresentano i motori crittografici fondamentali usati per blindare e convalidare i tunnel contro l'intercettazione e il sabotaggio."}
-              </p>
-            </div>
-
-            {/* Interactive selector for VPN Modes */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-              {/* Left menu selection */}
-              <div className="lg:col-span-4 space-y-2">
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
-                  {language === 'en' ? 'Select Tunnel Technology' : 'Scegli la Tecnologia Minerale'}
-                </span>
-                {(
-                  [
-                    { id: 'vpn-overview', name: 'VPN Overview', desc: 'Secure logical envelopes' },
-                    { id: 'ipsec-tunnel', name: 'IPsec Tunnel Mode', desc: 'Whole packet encryption' },
-                    { id: 'ipsec-transport', name: 'IPsec Transport Mode', desc: 'Payload encryption only' },
-                    { id: 'dtls', name: 'DTLS (UDP Security)', desc: 'Real-time high performance' }
-                  ] as const
-                ).map((vMode) => (
-                  <button
-                    key={vMode.id}
-                    id={`vpn-btn-${vMode.id}`}
-                    onClick={() => setSelectedVpnMode(vMode.id)}
-                    className={`w-full text-left p-3.5 rounded-xl border text-xs transition-all flex justify-between items-center ${
-                      selectedVpnMode === vMode.id
-                        ? 'bg-emerald-600 border-emerald-700 text-white shadow'
-                        : 'bg-white border-slate-200/80 text-slate-700 hover:bg-slate-50'
-                    }`}
-                  >
-                    <div>
-                      <div className="font-semibold">{vMode.name}</div>
-                      <div
-                        className={`text-[10px] font-normal leading-tight ${selectedVpnMode === vMode.id ? 'text-emerald-100' : 'text-slate-400'}`}
-                      >
-                        {vMode.desc}
-                      </div>
-                    </div>
-                    <span className="text-[14px] shrink-0 font-bold">→</span>
-                  </button>
-                ))}
-              </div>
-
-              {/* Right detail area */}
-              <div
-                id="vpn-detail-card"
-                className="lg:col-span-8 bg-white border border-slate-200/80 rounded-lg p-5 space-y-5"
-              >
-                {/* Header description */}
-                <div className="space-y-2">
-                  <h4 className="font-semibold text-slate-800 text-sm uppercase">
-                    {selectedVpnMode === 'vpn-overview' &&
-                      (language === 'en'
-                        ? 'VPN Overview & Cryptographic Tunneling'
-                        : 'Panoramica VPN & Tunnel Crittografati')}
-                    {selectedVpnMode === 'ipsec-tunnel' && 'IPsec Tunnel Mode (Gateway-to-Gateway)'}
-                    {selectedVpnMode === 'ipsec-transport' && 'IPsec Transport Mode (Host-to-Host)'}
-                    {selectedVpnMode === 'dtls' && 'DTLS (Datagram Transport Layer Security)'}
-                  </h4>
-                  <p className="text-xs text-slate-500 leading-relaxed">
-                    {selectedVpnMode === 'vpn-overview' &&
-                      (language === 'en'
-                        ? 'VPNs connect remote locations or telecommuters safely. Popular methods include OpenVPN, WireGuard, L2TP/IPsec, and SSL/TLS. Security depends on robust ciphers (AES/ChaCha) and establishing a cryptographic barrier over public lines.'
-                        : 'Le VPN collegano in sicurezza uffici divisi o utenti remoti. I software di riferimento (es. OpenVPN, WireGuard, IPsec) aprono una porta virtuale protetta (TUN/TAP). La solidità dipende dagli algoritmi scelti, ed è garantita introducendo un Kill Switch che stacca Internet se il tunnel cade.')}
-                    {selectedVpnMode === 'ipsec-tunnel' &&
-                      (language === 'en'
-                        ? 'In Tunnel Mode, IPsec encrypts the entire original IP packet (the original IP header and payload are both ciphered) and places it inside a completely new IP packet with a new Outer IP Header routing the packet between VPN gateways, making original locations completely hidden from passive analysis. Ideal for Site-to-Site WANs.'
-                        : "In modalità Tunnel, IPsec cifra interamente il pacchetto IP originale (sia i dati sia l'intestazione IP di origine). L'intero pacchetto cifrato viene avvolto all'interno di un nuovo pacchetto IP con una nuova intestazione (Outer IP Header) che indica i gateway di transito. Nasconde i nodi reali dagli sniffer. Standard per reti Site-to-Site WAN.")}
-                    {selectedVpnMode === 'ipsec-transport' &&
-                      (language === 'en'
-                        ? 'In Transport Mode, IPsec only encrypts the payload (TCP/UDP segment and data). The original IP header is kept in plaintext without any wrapper, meaning routing addresses are visible. It is optimized for Host-to-Host communication within already defined private environments, reducing header overhead.'
-                        : "In modalità Trasporto, IPsec cifra esclusivamente il payload (i dati e i segmenti TCP/UDP), mantenendo l'intestazione IP originale visibile e intatta. Poiché non c'è un nuovo indirizzo IP di transito applicato a monte, riduce il peso dei pacchetti. È usato per comunicazioni dirette Host-to-Host in reti private predefinite.")}
-                    {selectedVpnMode === 'dtls' &&
-                      (language === 'en'
-                        ? 'DTLS mirrors the TLS engine but adapts it to secure light connectionless UDP transmissions. Standard TLS works over TCP and suffers when nesting TCP payload streams inside TCP tunnels (TCP Meltdown / severe packet loss delays). DTLS bypasses this, making VPN tunnels perform at maximum speed, perfect for audio streams.'
-                        : 'La sicurezza di TLS (lo stesso usufruito per HTTPS) incontra i flussi veloci UDP. TLS richiede TCP e soffre gravemente se si instradano flussi TCP all\'interno di tunnel TCP (frenando la linea per colli di bottiglia e latenze, "TCP Meltdown"). DTLS supera tutto questo, erogando massime performance per VPN ad alto traffico.')}
+            <div data-testid="vpn-content" className="space-y-6 min-w-0 break-words">
+              <h3 className="font-bold text-slate-800">VPN, IPsec &amp; DTLS</h3>
+              <p className="text-sm text-slate-600">{VPN_CONTENT.overview[language]}</p>
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                <div
+                  className="lg:col-span-4 min-w-0 space-y-2"
+                  role="group"
+                  aria-label={language === 'en' ? 'Select VPN topic' : 'Seleziona argomento VPN'}
+                >
+                  {(['vpn-overview', 'ipsec-tunnel', 'ipsec-transport', 'dtls'] as const).map((id) => (
+                    <button
+                      key={id}
+                      id={`vpn-btn-${id}`}
+                      aria-pressed={selectedVpnMode === id}
+                      aria-controls="vpn-detail-card"
+                      onClick={() => setSelectedVpnMode(id)}
+                      className={`w-full min-h-11 text-left p-3 rounded-xl border text-sm font-bold ${selectedVpnMode === id ? 'bg-blue-700 text-white border-blue-800' : 'bg-white text-slate-700 border-slate-300'}`}
+                    >
+                      {VPN_CONTENT.modes[id].title[language]}
+                    </button>
+                  ))}
+                </div>
+                <section
+                  id="vpn-detail-card"
+                  aria-live="polite"
+                  aria-atomic="true"
+                  className="lg:col-span-8 min-w-0 bg-white border border-slate-200 rounded-lg p-5 space-y-4"
+                >
+                  <h4 className="font-bold text-slate-800">{VPN_CONTENT.modes[selectedVpnMode].title[language]}</h4>
+                  <p className="text-sm text-slate-600">{VPN_CONTENT.modes[selectedVpnMode].description[language]}</p>
+                  <figure className="space-y-3">
+                    <figcaption className="text-sm text-slate-600">{VPN_CONTENT.diagramNote[language]}</figcaption>
+                    <ol
+                      className="grid grid-cols-1 sm:grid-cols-2 gap-2 list-none"
+                      aria-label={language === 'en' ? 'Packet fields in order' : 'Campi del pacchetto in ordine'}
+                    >
+                      {VPN_CONTENT.modes[selectedVpnMode].blocks.map((block, index) => (
+                        <li
+                          key={index}
+                          className="min-w-0 rounded-lg border border-slate-300 bg-slate-50 p-3 text-sm text-slate-800"
+                        >
+                          <span className="block font-bold">{index + 1}.</span>
+                          {block[language]}
+                        </li>
+                      ))}
+                    </ol>
+                  </figure>
+                  <p data-testid="vpn-note" className="text-sm text-slate-600">
+                    {VPN_CONTENT.modes[selectedVpnMode].note[language]}
                   </p>
-                </div>
-
-                {/* Packet visualizer grid */}
-                <div className="space-y-2 shrink-0">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block font-mono">
-                    {language === 'en'
-                      ? 'Packet Frame Structure Visualizer'
-                      : 'Visualizzatore del Pacchetto e dei Suoi Strati'}
-                  </span>
-
-                  {selectedVpnMode === 'vpn-overview' && (
-                    <div className="border border-slate-200 rounded-xl p-3.5 bg-slate-50 space-y-2 font-mono text-[10px]">
-                      <div className="text-slate-500 font-bold uppercase pb-1 border-b">
-                        Standard Plaintext TCP/IP packet
-                      </div>
-                      <div className="flex text-center border overflow-hidden rounded-lg font-bold">
-                        <div className="w-1/4 bg-slate-100 text-slate-500 border-r py-2">Outer IP</div>
-                        <div className="w-1/4 bg-slate-100 text-slate-500 border-r py-2">TCP (L4)</div>
-                        <div className="w-2/4 bg-red-100 text-red-700 py-2 animate-pulse">
-                          Application Payload (Plaintext, EXPOSED!)
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {selectedVpnMode === 'ipsec-tunnel' && (
-                    <div className="border border-slate-200 rounded-xl p-3.5 bg-slate-50 space-y-2 font-mono text-[10px]">
-                      <div className="text-emerald-700 font-bold uppercase pb-1 border-b">
-                        IPsec Tunnel Mode (Site-to-Site Encapsulated)
-                      </div>
-                      <div className="flex text-center border overflow-hidden rounded-lg font-bold">
-                        <div className="w-1/5 bg-emerald-600 text-white border-r py-2">New IP Header</div>
-                        <div className="w-1/5 bg-indigo-600 text-white border-r py-2">ESP Header (L3)</div>
-                        <div className="w-3/5 bg-emerald-100 border-dashed border-2 border-emerald-400 text-emerald-800 py-2 flex flex-col justify-center">
-                          <span>[ENCRYPTED Original IP Header]</span>
-                          <span className="text-[9px] opacity-80">[ENCRYPTED Payload &amp; TCP]</span>
-                        </div>
-                        <div className="w-1/10 bg-indigo-600 text-white py-2 shrink-0">ESP Authentication Trailer</div>
-                      </div>
-                    </div>
-                  )}
-
-                  {selectedVpnMode === 'ipsec-transport' && (
-                    <div className="border border-slate-200 rounded-xl p-3.5 bg-slate-50 space-y-2 font-mono text-[10px]">
-                      <div className="text-amber-700 font-bold uppercase pb-1 border-b">
-                        IPsec Transport Mode (Payload Secure)
-                      </div>
-                      <div className="flex text-center border overflow-hidden rounded-lg font-bold">
-                        <div className="w-1/4 bg-slate-200 text-slate-600 border-r py-2">
-                          Original IP Header (VISIBLE)
-                        </div>
-                        <div className="w-1/4 bg-indigo-600 text-white border-r py-2">ESP Header</div>
-                        <div className="w-2/4 bg-emerald-100 border-dashed border-2 border-emerald-400 text-emerald-800 py-2">
-                          [ENCRYPTED Payload &amp; TCP/UDP Layers]
-                        </div>
-                        <div className="w-1/12 bg-indigo-600 text-white py-2 shrink-0">ESP Trailer</div>
-                      </div>
-                    </div>
-                  )}
-
-                  {selectedVpnMode === 'dtls' && (
-                    <div className="border border-slate-200 rounded-xl p-3.5 bg-slate-50 space-y-2 font-mono text-[10px]">
-                      <div className="text-purple-700 font-bold uppercase pb-1 border-b">
-                        DTLS Secure Datagram Format
-                      </div>
-                      <div className="flex text-center border overflow-hidden rounded-lg font-bold">
-                        <div className="w-1/5 bg-slate-200 text-slate-600 border-r py-2">IP</div>
-                        <div className="w-1/5 bg-amber-500 text-white border-r py-2">UDP (L4 datagram)</div>
-                        <div className="w-1/5 bg-indigo-600 text-white border-r py-2">DTLS Header</div>
-                        <div className="w-2/5 bg-emerald-100 border-dashed border-2 border-emerald-400 text-emerald-800 py-2">
-                          [ENCRYPTED Secure Data]
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
+                </section>
               </div>
             </div>
           </motion.div>
