@@ -5,7 +5,7 @@
 > **Apertura Fase 3:** 14 ottobre 2026.
 > **Obiettivi di certificazione:** **CCNA 200-301** e **eJPT — INE/eLearnSecurity Junior
 > Penetration Tester**, in chiave didattica e autorizzata.
-> **Stato del manuale:** 29 capitoli / 96 argomenti / 77 laboratori guidati, bilingue IT/EN,
+> **Stato del manuale:** 29 capitoli / 97 argomenti / 77 laboratori guidati, bilingue IT/EN,
 > con il percorso eJPT completo e una sequenza di studio a doppio binario documentata.
 > **Metodo:** incrementi verticali completi e verificati (`npm run verify`, E2E Chromium con
 > Axe WCAG 2.2 AA, audit), pubblicati su `main`; ogni intervento documentato in `docs/verify/`.
@@ -406,6 +406,12 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
         RFC 4594 risolti in HTTPS. Parità IT/EN curata su acronimi e cifre. `manualStats()` →
         29/93/77. `verify` completo verde (786 test), E2E 74/74 con Axe, budget 122,9 kB gzip,
         `npm audit` 0 vulnerabilità. Report: `docs/verify/2026-10-17-content10-qos.md`.
+  - [x] **Incremento GUI WLC Catalyst 9800 (17/10/2026).** Aggiunta una lezione CCNA bilingue sul
+        modello IOS XE WLAN profile → policy profile → policy tag, assegnazione distinta dei tag site/RF,
+        central vs local switching, percorso VLAN/trunk/gateway e hardening del piano di gestione. Chiarita
+        la distinzione dalla GUI classica AireOS già presente; aggiunto diagramma accessibile e riferimenti
+        Cisco/RFC 5415. `manualStats()` → 29/97/77. Typecheck, guard bilingue/tecnico/offensive e test mirati
+        verdi. Report: `docs/verify/2026-10-17-content10-wlc-policy-mapping.md`.
 - [x] **EDU-40 (P3) — Esercizi guidati per gli argomenti aggiunti.** **Esito (16/10/2026):** aggiunti
       tre esercizi guidati ai nuovi argomenti eJPT, riusando laboratori interattivi già registrati:
       «Attacchi alle password» → `identitytrust`, «Inclusione di file e directory traversal» →
@@ -418,9 +424,9 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
 ## 📚 Contenuti pianificati (backlog, 17/10/2026)
 
 > Piano concreto di **contenuti da aggiungere** e **miglioramenti ai contenuti**, derivato da una
-> ricognizione reale della copertura su `main` (217 id di capitoli/argomenti/lab; `manualStats()` →
-> 29 capitoli / 96 argomenti / 77 laboratori guidati; **96/96** argomenti con `references` (CONTENT-15
-> completato e mantenuto dal guard), **3/96** con `diagram` SVG). Resta aperta la sola **VIS-13** (`[ ]`,
+> ricognizione reale della copertura su `main` (218 id di capitoli/argomenti/lab; `manualStats()` →
+> 29 capitoli / 97 argomenti / 77 laboratori guidati; **97/97** argomenti con `references` (CONTENT-15
+> completato e mantenuto dal guard), **6/97** con `diagram` SVG). Resta aperta la sola **VIS-13** (`[ ]`,
 > P3); CONTENT-11, CONTENT-12, CONTENT-13 e CONTENT-15 sono stati completati il 17/10/2026.
 > I vincoli di sempre restano: bilingue IT/EN con parità di acronimi e
 > cifre, riferimenti ATT&CK/RFC/NIST/Cisco risolti in **HTTPS**, **soli target di documentazione**,
@@ -487,8 +493,8 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
       d'esame): un nuovo argomento senza riferimento ora fallisce in CI. Nessuna URL non-HTTPS (il
       test di risoluzione resta verde). I riferimenti sono `{kind,id}` senza testo, quindi senza
       impatto bilingue. Report: `docs/verify/2026-10-17-content15-references.md`.
-- [~] **VIS-13 (P3) — Estendere i micro-diagrammi SVG ai concetti chiave.** Prima di questo incremento
-  solo **3/96** argomenti avevano un `diagram` (VIS-12). Aggiungere micro-diagrammi SVG bilingui, coerenti col sistema di
+- [~] **VIS-13 (P3) — Estendere i micro-diagrammi SVG ai concetti chiave.** Dopo gli incrementi già
+  verificati, **6/97** argomenti hanno un `diagram` bilingue. Aggiungere micro-diagrammi SVG coerenti col sistema di
   design e leggibili in tema chiaro/scuro, agli argomenti dove un disegno chiarisce più del testo
   (candidati: incapsulamento/decapsulamento OSI, albero STP e ruoli delle porte, gerarchia QoS
   LLQ/CBWFQ, handshake IKEv2/Child SA, catena di fiducia PKI/TLS). Uno o due per incremento.
@@ -508,6 +514,12 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
       revisione di accuratezza e naturalezza con parità di acronimi e cifre prima della pubblicazione.
   - [x] **Incremento diagrammi VIS-13 (17/10/2026).** Revisione linguistica e tecnica IT/EN completata;
         dettagli e verifiche nella sezione I18N-10 e in `docs/verify/2026-10-17-i18n10-vis13-diagrams.md`.
+  - [x] **Diagramma modello tag WLC (17/10/2026).** Aggiunto diagramma verticale accessibile che
+        distingue WLAN profile, policy tag, policy profile, tag AP e percorso dati; incremento revisionato
+        in IT/EN. Report: `docs/verify/2026-10-17-content10-wlc-policy-mapping.md`.
+  - [x] **Revisione IT/EN del contenuto WLC (17/10/2026).** Verificati equivalenza degli obiettivi,
+        flusso dei profili/tag, porte CAPWAP, comportamento central/local e terminologia di sicurezza;
+        report e verifiche in `docs/verify/2026-10-17-content10-wlc-policy-mapping.md`.
 
 ## 🧾 Registro delle decisioni
 

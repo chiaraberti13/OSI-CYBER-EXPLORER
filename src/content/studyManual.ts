@@ -3638,8 +3638,8 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
             en: 'Associating is not authenticating. A client first discovers the AP (beacon or probe), then authenticates, and only afterwards associates: these are three distinct steps, and an associated client is not yet authorized on the network. Wireless Layer 2 security lives in the Authentication Key Management and encryption pair: WPA2 uses AES/CCMP, WPA3 adds SAE (which replaces the vulnerable PSK handshake) and makes Protected Management Frames (802.11w) mandatory. The PSK is shared by every client, so it identifies no one and cannot be revoked individually: for named users you need WPA2/WPA3-Enterprise with 802.1X.'
           },
           {
-            it: 'Dalla GUI del WLC una WLAN si crea in pochi passi: nella scheda General si impostano Profile Name, SSID, Status e la Interface che lega la WLAN alla sua VLAN; nella scheda Security si sceglie Layer 2 Security = WPA2 (o WPA2+WPA3), AES/CCMP e Authentication Key Management = PSK con la passphrase. Il controller stesso va protetto: lo si configura via HTTPS (GUI cifrata con TLS) limitato alle sorgenti di management, mai via HTTP in chiaro, perché quella GUI espone le credenziali dell’intera infrastruttura wireless.',
-            en: 'From the WLC GUI a WLAN is created in a few steps: in the General tab you set Profile Name, SSID, Status, and the Interface that binds the WLAN to its VLAN; in the Security tab you choose Layer 2 Security = WPA2 (or WPA2+WPA3), AES/CCMP, and Authentication Key Management = PSK with the passphrase. The controller itself must be protected: you configure it over HTTPS (TLS-encrypted GUI) restricted to management sources, never over cleartext HTTP, because that GUI exposes the credentials of the whole wireless infrastructure.'
+            it: 'Nell’interfaccia classica AireOS del WLC, la WLAN si crea in pochi passi: nella scheda General si impostano Profile Name, SSID, Status e la Interface che lega la WLAN alla sua VLAN; nella scheda Security si sceglie Layer 2 Security = WPA2 (o WPA2+WPA3), AES/CCMP e Authentication Key Management = PSK con la passphrase. È un flusso distinto dal modello a profili e tag di Catalyst 9800 IOS XE descritto nell’argomento successivo. Il controller stesso va protetto: lo si configura via HTTPS (GUI cifrata con TLS) limitato alle sorgenti di management, mai via HTTP in chiaro, perché quella GUI espone le credenziali dell’intera infrastruttura wireless.',
+            en: 'In the classic AireOS WLC interface, a WLAN is created in a few steps: in the General tab you set Profile Name, SSID, Status, and the Interface that binds the WLAN to its VLAN; in the Security tab you choose Layer 2 Security = WPA2 (or WPA2+WPA3), AES/CCMP, and Authentication Key Management = PSK with the passphrase. This flow differs from the Catalyst 9800 IOS XE profile-and-tag model covered in the next topic. The controller itself must be protected: configure it over HTTPS (a TLS-encrypted GUI) restricted to management sources, never over cleartext HTTP, because that GUI exposes the credentials of the whole wireless infrastructure.'
           }
         ],
         example: {
@@ -3767,6 +3767,78 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
               }
             ]
           }
+        ]
+      },
+      {
+        id: 'wlc-gui-policy-mapping',
+        title: {
+          it: 'WLC Catalyst 9800: dalla WLAN ai tag dell’AP',
+          en: 'Catalyst 9800 WLC: from WLAN to AP tags'
+        },
+        diagram: 'wlc-policy-mapping',
+        objectives: [
+          {
+            it: 'Distinguere WLAN profile, policy profile e policy tag nella GUI del Catalyst 9800.',
+            en: 'Distinguish the WLAN profile, policy profile, and policy tag in the Catalyst 9800 GUI.'
+          },
+          {
+            it: 'Seguire l’associazione SSID→VLAN e prevedere dove passa il traffico con central o local switching.',
+            en: 'Trace the SSID-to-VLAN mapping and predict where traffic flows with central or local switching.'
+          },
+          {
+            it: 'Verificare quali tag e percorsi di gestione sono necessari perché un AP pubblichi la WLAN in sicurezza.',
+            en: 'Check which tags and management paths are required for an AP to advertise the WLAN securely.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere SSID, VLAN, trunk e il ruolo del tunnel CAPWAP illustrati nel tema WLAN precedente.',
+            en: 'Know SSIDs, VLANs, trunks, and the role of the CAPWAP tunnel from the preceding WLAN topic.'
+          }
+        ],
+        theory: [
+          {
+            it: 'Sul Catalyst 9800 con IOS XE la GUI organizza la configurazione in profili e tag. Il WLAN profile definisce la WLAN/SSID e le impostazioni di sicurezza; il policy profile definisce la policy del client, inclusi VLAN e modalità di switching. Il policy tag collega una WLAN profile al relativo policy profile: creare i due profili senza associare il tag e applicarlo all’AP non rende la WLAN disponibile su quell’AP. I nomi e la posizione dei menu possono variare leggermente tra release IOS XE; il modello logico resta il riferimento.',
+            en: 'On a Catalyst 9800 running IOS XE, the GUI organises configuration into profiles and tags. The WLAN profile defines the WLAN/SSID and security settings; the policy profile defines client policy, including VLAN and switching mode. The policy tag links a WLAN profile to its policy profile: creating both profiles without mapping the tag and applying it to an AP does not make the WLAN available on that AP. Menu names and locations can vary slightly across IOS XE releases; the logical model remains the guide.'
+          },
+          {
+            it: 'Il policy tag non sostituisce gli altri tag dell’AP: il site tag governa l’appartenenza al sito e il comportamento di join (tra cui il modello di switching previsto), mentre l’RF tag associa i profili radio. Il mapping WLAN↔policy profile determina la policy client; site e RF tag descrivono contesto operativo e radio. Separarli aiuta a capire quale oggetto correggere quando una WLAN manca, un AP non fa join o una radio usa parametri inattesi.',
+            en: 'The policy tag does not replace the AP’s other tags: the site tag governs site membership and join behaviour (including the intended switching model), while the RF tag assigns radio profiles. The WLAN-to-policy-profile mapping determines client policy; site and RF tags describe operating context and radio settings. Keeping them distinct helps identify which object to fix when a WLAN is missing, an AP will not join, or a radio uses unexpected settings.'
+          },
+          {
+            it: 'Con central switching il traffico dati del client attraversa CAPWAP fino al controller, dove viene associato al contesto VLAN configurato; con local switching viene inoltrato dalla sede tramite l’AP e il relativo trunk. Il control channel CAPWAP usa UDP 5246 e il data channel UDP 5247; DTLS protegge il control channel, mentre la protezione DTLS del data channel dipende dalla configurazione e dal supporto. La VLAN client deve esistere nel corretto contesto e attraversare il percorso cablato fino al gateway: il solo SSID o una VLAN configurata nel controller non crea il trunk né il routing.',
+            en: 'With central switching, client data traverses CAPWAP to the controller, where it is associated with the configured VLAN context; with local switching, it is forwarded at the site through the AP and its uplink trunk. The CAPWAP control channel uses UDP 5246 and the data channel UDP 5247; DTLS protects the control channel, while DTLS protection for the data channel depends on configuration and support. The client VLAN must exist in the right context and traverse the wired path to its gateway: an SSID or a VLAN configured on the controller does not create the trunk or routing.'
+          },
+          {
+            it: 'Tratta il WLC come un piano di gestione privilegiato: usa la GUI via HTTPS, AAA con identità individuali e accesso limitato a una rete o a sorgenti di management; consenti i flussi CAPWAP necessari solo tra AP e controller previsti. Dopo una modifica verifica join dell’AP, tag effettivamente applicati, associazione del client, assegnazione IP/DHCP e raggiungibilità del gateway: così distingui un problema radio da un errore di policy o di VLAN.',
+            en: 'Treat the WLC as a privileged management plane: use its GUI over HTTPS, AAA with individual identities, and access restricted to a management network or approved management sources; allow required CAPWAP flows only between intended APs and controllers. After a change, verify AP join, applied tags, client association, DHCP/IP assignment, and gateway reachability: this separates a radio issue from a policy or VLAN error.'
+          }
+        ],
+        example: {
+          it: 'Una filiale usa il WLAN profile `CORP` e il policy profile `EMPLOYEE` associato alla VLAN 120. Il policy tag `BRANCH` collega i profili ed è assegnato agli AP della sede insieme ai tag site e RF corretti. In central switching il client percorre il tunnel dati fino al WLC; in local switching la VLAN 120 deve invece essere ammessa sull’uplink locale dell’AP. In entrambi i casi si controllano il trunk a monte, lo scope DHCP e il gateway della VLAN 120 prima di attribuire il guasto all’autenticazione wireless.',
+          en: 'A branch uses the `CORP` WLAN profile and the `EMPLOYEE` policy profile mapped to VLAN 120. The `BRANCH` policy tag links the profiles and is assigned to the site APs alongside the correct site and RF tags. With central switching, client data traverses the tunnel to the WLC; with local switching, VLAN 120 must instead be allowed on the AP’s local uplink. In either case, check the upstream trunk, DHCP scope, and VLAN 120 gateway before blaming wireless authentication.'
+        },
+        commonMistakes: [
+          {
+            it: 'Confondere il WLAN profile con la configurazione completa dell’AP: il policy tag deve collegare i profili e risultare applicato all’AP perché la WLAN venga distribuita.',
+            en: 'Confusing the WLAN profile with a complete AP configuration: the policy tag must link the profiles and be applied to the AP for the WLAN to be provisioned.'
+          },
+          {
+            it: 'Scambiare policy tag, site tag e RF tag o tentare di risolvere una VLAN client modificando il solo RF tag.',
+            en: 'Mixing up policy, site, and RF tags, or trying to fix a client VLAN by changing only the RF tag.'
+          },
+          {
+            it: 'Presumere che central e local switching abbiano lo stesso percorso dati o che il controller crei automaticamente VLAN, trunk e gateway.',
+            en: 'Assuming central and local switching use the same data path, or that the controller automatically creates VLANs, trunks, and gateways.'
+          },
+          {
+            it: 'Esporre la GUI di gestione del controller alla rete client o consentire CAPWAP da sorgenti non previste.',
+            en: 'Exposing the controller management GUI to the client network or allowing CAPWAP from unintended sources.'
+          }
+        ],
+        references: [
+          { kind: 'cisco', id: 'Catalyst 9800 configuration model and WLAN policy profile GUI' },
+          { kind: 'rfc', id: 'RFC 5415' }
         ]
       }
     ]

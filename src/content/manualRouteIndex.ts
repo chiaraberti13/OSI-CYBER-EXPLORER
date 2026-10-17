@@ -117,7 +117,7 @@ export const MANUAL_ROUTE_INDEX: readonly ManualRouteEntry[] = [
       it: 'Accesso alla rete: scoperta, EtherChannel e wireless',
       en: 'Network access: discovery, EtherChannel, and wireless'
     },
-    topicIds: ['neighbor-discovery', 'etherchannel', 'wlan-ap-wlc'],
+    topicIds: ['neighbor-discovery', 'etherchannel', 'wlan-ap-wlc', 'wlc-gui-policy-mapping'],
     labs: ['access', 'wirelesssecurity']
   },
   {

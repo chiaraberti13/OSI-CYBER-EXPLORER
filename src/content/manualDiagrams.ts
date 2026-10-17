@@ -246,6 +246,57 @@ export const MANUAL_DIAGRAMS = {
       { path: 'M160 162 V200', x: 224, y: 187, label: { it: 'accoda / gestisce', en: 'queue / manage' } },
       { path: 'M160 258 V296', x: 220, y: 283, label: { it: 'trasmette', en: 'transmit' } }
     ]
+  },
+  'wlc-policy-mapping': {
+    title: { it: 'Dalla WLAN alla VLAN del client', en: 'From WLAN to the client VLAN' },
+    description: {
+      it: 'Il WLAN profile definisce SSID e sicurezza; il policy tag mappa la WLAN al policy profile e viene assegnato all’AP. Site tag e RF tag restano associazioni distinte. Il policy profile e la modalità di switching determinano dove prosegue il traffico client.',
+      en: 'The WLAN profile defines the SSID and security; the policy tag maps the WLAN to a policy profile and is assigned to the AP. Site and RF tags remain separate assignments. The policy profile and switching mode determine where client traffic goes next.'
+    },
+    height: 440,
+    nodes: [
+      {
+        x: 24,
+        y: 8,
+        width: 272,
+        label: { it: 'WLAN profile', en: 'WLAN profile' },
+        detail: { it: 'SSID · autenticazione · cifratura', en: 'SSID · authentication · encryption' }
+      },
+      {
+        x: 24,
+        y: 92,
+        width: 272,
+        label: { it: 'Policy tag', en: 'Policy tag' },
+        detail: { it: 'Associa WLAN e policy profile', en: 'Maps WLAN to policy profile' }
+      },
+      {
+        x: 24,
+        y: 176,
+        width: 272,
+        label: { it: 'Policy profile', en: 'Policy profile' },
+        detail: { it: 'VLAN · switching · policy client', en: 'VLAN · switching · client policy' }
+      },
+      {
+        x: 24,
+        y: 260,
+        width: 272,
+        label: { it: 'AP e tag', en: 'AP and tags' },
+        detail: { it: 'Policy · site · RF (assegnazioni distinte)', en: 'Policy · site · RF (separate assignments)' }
+      },
+      {
+        x: 24,
+        y: 344,
+        width: 272,
+        label: { it: 'Percorso dati client', en: 'Client data path' },
+        detail: { it: 'CAPWAP centrale oppure VLAN locale → gateway', en: 'Central CAPWAP or local VLAN → gateway' }
+      }
+    ],
+    edges: [
+      { path: 'M160 64 V90', x: 220, y: 80, label: { it: 'mappa', en: 'map' } },
+      { path: 'M160 148 V174', x: 220, y: 164, label: { it: 'applica policy', en: 'apply policy' } },
+      { path: 'M160 232 V258', x: 220, y: 248, label: { it: 'assegna tag', en: 'assign tags' } },
+      { path: 'M160 316 V342', x: 220, y: 332, label: { it: 'instrada', en: 'forward' } }
+    ]
   }
 } satisfies Record<string, ManualDiagram>;
 
