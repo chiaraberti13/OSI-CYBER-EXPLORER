@@ -5023,6 +5023,7 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
       },
       {
         id: 'pki-tls-certificate-chain',
+        diagram: 'pki-tls-chain',
         title: {
           it: 'PKI e TLS: la catena dei certificati',
           en: 'PKI and TLS: the certificate chain'

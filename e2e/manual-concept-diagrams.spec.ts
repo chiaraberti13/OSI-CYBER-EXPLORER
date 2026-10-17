@@ -6,7 +6,8 @@ const chapters = [
   ['email-human-security', 'email'],
   ['pentest-methodology', 'pentest'],
   ['osi-model', 'encapsulation'],
-  ['ip-services', 'qos']
+  ['ip-services', 'qos'],
+  ['crypto-vpn-pki-tls', 'pki-tls-chain']
 ] as const;
 
 for (const language of ['it', 'en'] as const) {

@@ -297,6 +297,50 @@ export const MANUAL_DIAGRAMS = {
       { path: 'M160 232 V258', x: 220, y: 248, label: { it: 'assegna tag', en: 'assign tags' } },
       { path: 'M160 316 V342', x: 220, y: 332, label: { it: 'instrada', en: 'forward' } }
     ]
+  },
+  'pki-tls-chain': {
+    title: { it: 'Catena di fiducia PKI/TLS', en: 'PKI/TLS chain of trust' },
+    description: {
+      it: 'La fiducia TLS è una catena: la Root CA (autofirmata, nel trust store del client) firma la Intermediate CA, che firma il certificato del server. Nell’handshake il server presenta il proprio certificato e la catena; il client la ricostruisce fino a una Root attendibile e verifica firma, validità, nome e revoca (CRL/OCSP). La freccia tratteggiata indica la verifica, che risale dal certificato server alla Root. Schema semplificato: cross-signing e pinning sono omessi.',
+      en: 'TLS trust is a chain: the Root CA (self-signed, in the client’s trust store) signs the Intermediate CA, which signs the server certificate. In the handshake the server presents its certificate and the chain; the client rebuilds it up to a trusted Root and verifies signature, validity, name and revocation (CRL/OCSP). The dashed arrow shows validation, which goes up from the server certificate to the Root. Simplified schematic: cross-signing and pinning are omitted.'
+    },
+    height: 360,
+    nodes: [
+      {
+        x: 24,
+        y: 8,
+        width: 272,
+        label: { it: 'Root CA', en: 'Root CA' },
+        detail: { it: 'Ancora di fiducia · autofirmata', en: 'Trust anchor · self-signed' }
+      },
+      {
+        x: 24,
+        y: 92,
+        width: 272,
+        label: { it: 'Intermediate CA', en: 'Intermediate CA' },
+        detail: { it: 'Firmata dalla Root', en: 'Signed by the Root' }
+      },
+      {
+        x: 24,
+        y: 176,
+        width: 272,
+        label: { it: 'Certificato server', en: 'Server certificate' },
+        detail: { it: 'Chiave pubblica + nome', en: 'Public key + name' }
+      },
+      {
+        x: 24,
+        y: 260,
+        width: 272,
+        label: { it: 'Validazione del client', en: 'Client validation' },
+        detail: { it: 'Costruisce e verifica la catena', en: 'Builds and verifies the chain' }
+      }
+    ],
+    edges: [
+      { path: 'M160 64 V90', x: 220, y: 80, label: { it: 'firma', en: 'signs' } },
+      { path: 'M160 148 V174', x: 224, y: 164, label: { it: 'poi firma', en: 'then signs' } },
+      { path: 'M160 232 V258', x: 224, y: 248, label: { it: 'presenta', en: 'presents' } },
+      { path: 'M298 288 H312 V36 H298', x: 160, y: 0, dashed: true }
+    ]
   }
 } satisfies Record<string, ManualDiagram>;
 

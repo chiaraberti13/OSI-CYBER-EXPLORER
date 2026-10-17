@@ -426,8 +426,8 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
 > Piano concreto di **contenuti da aggiungere** e **miglioramenti ai contenuti**, derivato da una
 > ricognizione reale della copertura su `main` (218 id di capitoli/argomenti/lab; `manualStats()` →
 > 29 capitoli / 97 argomenti / 77 laboratori guidati; **97/97** argomenti con `references` (CONTENT-15
-> completato e mantenuto dal guard), **6/97** con `diagram` SVG). Resta aperta la sola **VIS-13** (`[ ]`,
-> P3); CONTENT-11, CONTENT-12, CONTENT-13 e CONTENT-15 sono stati completati il 17/10/2026.
+> completato e mantenuto dal guard), **7/97** con `diagram` SVG). Resta aperta la sola **VIS-13** (`[~]`,
+> P3, ricorrente); CONTENT-11, CONTENT-12, CONTENT-13 e CONTENT-15 sono stati completati il 17/10/2026.
 > I vincoli di sempre restano: bilingue IT/EN con parità di acronimi e
 > cifre, riferimenti ATT&CK/RFC/NIST/Cisco risolti in **HTTPS**, **soli target di documentazione**,
 > **nessun nuovo capitolo eJPT** oltre ai tre fissati dai test (gli argomenti eJPT entrano nei
@@ -494,10 +494,9 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
       test di risoluzione resta verde). I riferimenti sono `{kind,id}` senza testo, quindi senza
       impatto bilingue. Report: `docs/verify/2026-10-17-content15-references.md`.
 - [~] **VIS-13 (P3) — Estendere i micro-diagrammi SVG ai concetti chiave.** Dopo gli incrementi già
-  verificati, **6/97** argomenti hanno un `diagram` bilingue. Aggiungere micro-diagrammi SVG coerenti col sistema di
+  verificati, **7/97** argomenti hanno un `diagram` bilingue. Aggiungere micro-diagrammi SVG coerenti col sistema di
   design e leggibili in tema chiaro/scuro, agli argomenti dove un disegno chiarisce più del testo
-  (candidati: incapsulamento/decapsulamento OSI, albero STP e ruoli delle porte, gerarchia QoS
-  LLQ/CBWFQ, handshake IKEv2/Child SA, catena di fiducia PKI/TLS). Uno o due per incremento.
+  (candidati restanti: albero STP e ruoli delle porte, handshake IKEv2/Child SA). Uno o due per incremento.
   **Criteri:** alternativa testuale visibile e `id` accessibili univoci (come VIS-12), contrasto
   SVG e Axe verdi nei due temi e nelle due lingue, geometria corretta a 320/1280 px; E2E dedicato
   verde; report in `docs/verify/`.
@@ -509,6 +508,17 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
         I diagrammi coperti passano da 3/96 a 5/96. E2E: 8 combinazioni lingua/tema a viewport 320 e
         1280 px, controllo Axe, contrasto, overflow e nomi/descrizioni accessibili; suite completa
         84/84. Report: `docs/verify/2026-10-17-vis13-encapsulation-qos.md`.
+  - [x] **Incremento catena di fiducia PKI/TLS (17/10/2026).** Aggiunto il diagramma SVG bilingue
+        `pki-tls-chain` al tema `pki-tls-certificate-chain` (capitolo `crypto-vpn-pki-tls`): Root CA
+        (autofirmata, nel trust store) → Intermediate CA → certificato server, con la freccia
+        tratteggiata della validazione che risale dal certificato alla Root (firma, validità, nome,
+        revoca CRL/OCSP). Riusa `MANUAL_DIAGRAMS`/`ManualConceptDiagram`; alternativa testuale
+        visibile, `id` accessibili univoci, inline senza asset remoti; schema che dichiara i limiti
+        (cross-signing e pinning omessi). Diagrammi coperti 6/97 → **7/97**. Guard del componente
+        (attacco a 1 solo tema, resa IT/EN) e guard bilingue strutturale verdi; E2E
+        `manual-concept-diagrams.spec.ts` esteso al capitolo `crypto-vpn-pki-tls`: 8/8 combinazioni
+        lingua/tema a 320 e 1280 px (overflow, contrasto ≥ 4.5, Axe WCAG 2.2 AA). Report:
+        `docs/verify/2026-10-17-vis13-pki-tls-chain.md`.
 - [ ] **I18N-10 (P1, ricorrente) — Revisione IT/EN dei nuovi contenuti.** Vedi la voce dedicata nella
       sezione del Traduttore/Revisore: ogni argomento o diagramma aggiunto da questo backlog passa la
       revisione di accuratezza e naturalezza con parità di acronimi e cifre prima della pubblicazione.
@@ -523,6 +533,14 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
 
 ## 🧾 Registro delle decisioni
 
+- **17/10/2026 — VIS-13: diagramma catena di fiducia PKI/TLS.** Dopo la sincronizzazione con il
+  lavoro concorrente (che aveva già aggiunto i diagrammi `encapsulation`, `qos` e `wlc-policy-mapping`),
+  aggiunto il diagramma bilingue `pki-tls-chain` al tema `pki-tls-certificate-chain`: Root CA →
+  Intermediate CA → certificato server con validazione (freccia tratteggiata) che risale alla Root.
+  Riuso del modello/componente VIS-12, alternativa testuale visibile, `id` univoci, inline. Diagrammi
+  7/97. Guard componente e guard bilingue strutturale verdi; E2E diagrammi 8/8 a 320/1280 px (overflow,
+  contrasto, Axe). `verify` completo verde, E2E Chromium verdi, 0 vulnerabilità. Report:
+  `docs/verify/2026-10-17-vis13-pki-tls-chain.md`.
 - **17/10/2026 — CONTENT-13: cracking offline degli hash (difensivo).** Aggiunto l'argomento
   complementare `offline-hash-cracking-defense` al capitolo eJPT `pentest-methodology`: modello di
   costo (tentativi × costo per hash), hash veloci vs KDF lente con fattore di lavoro, sale per-utente
