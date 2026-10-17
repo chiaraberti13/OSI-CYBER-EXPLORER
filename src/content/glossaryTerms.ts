@@ -920,5 +920,355 @@ export const GLOSSARY_TERMS = [
       en: 'A web flaw (also called path traversal) where relative sequences in user input climb out of the intended directory to read files elsewhere on the server, up to system files such as the password file. The root cause is unvalidated path concatenation, and blocking the literal sequence is not enough because encodings bypass it. The fix is to canonicalize the resolved path and verify it stays under the base directory, with least privilege on the process.',
       it: "Difetto web (detto anche path traversal) in cui sequenze relative nell'input dell'utente risalgono fuori dalla directory prevista per leggere file altrove sul server, fino a file di sistema come quello delle password. La causa è la concatenazione di percorso non validata, e bloccare la sequenza letterale non basta perché le codifiche la aggirano. La correzione è canonicalizzare il percorso risolto e verificare che resti sotto la directory di base, con privilegio minimo sul processo."
     }
+  },
+  {
+    term: 'CIDR',
+    definition: {
+      en: 'Classless Inter-Domain Routing - Addressing and routing that drops fixed classes and writes the prefix length explicitly (e.g. 192.0.2.0/24). It enables variable-length subnets and route summarization, so a single prefix can represent many networks in the routing table.',
+      it: 'Classless Inter-Domain Routing - Indirizzamento e routing che abbandona le classi fisse e scrive esplicitamente la lunghezza del prefisso (es. 192.0.2.0/24). Abilita subnet a lunghezza variabile e la summarization, così un solo prefisso può rappresentare molte reti nella tabella di routing.'
+    }
+  },
+  {
+    term: 'VLSM',
+    definition: {
+      en: 'Variable Length Subnet Mask - Subnetting that gives each subnet only the host bits it needs instead of one fixed mask, so a point-to-point link takes a /30 (or /31) while a user LAN takes a larger block. It avoids wasting addresses and depends on classless routing.',
+      it: 'Variable Length Subnet Mask - Subnetting che assegna a ogni subnet solo i bit host necessari invece di una maschera unica, così un collegamento punto-punto usa una /30 (o /31) mentre una LAN utenti usa un blocco più ampio. Evita lo spreco di indirizzi e dipende dal routing classless.'
+    }
+  },
+  {
+    term: 'Default Route',
+    definition: {
+      en: 'The route 0.0.0.0/0 (::/0 in IPv6) used when no more specific route matches a destination. It is the gateway of last resort, typically pointing toward the internet edge; longest-prefix match means any more specific route always wins over it.',
+      it: 'La rotta 0.0.0.0/0 (::/0 in IPv6) usata quando nessuna rotta più specifica corrisponde alla destinazione. È il gateway of last resort, tipicamente verso il confine internet; per il longest-prefix match qualunque rotta più specifica prevale su di essa.'
+    }
+  },
+  {
+    term: 'Static Route',
+    definition: {
+      en: 'A route configured manually by an administrator rather than learned from a routing protocol. It is predictable and has a low administrative distance, but does not adapt on its own when the topology changes, so it suits small or stub networks.',
+      it: 'Una rotta configurata manualmente da un amministratore anziché appresa da un protocollo di routing. È prevedibile e ha una distanza amministrativa bassa, ma non si adatta da sola quando la topologia cambia, quindi è adatta a reti piccole o stub.'
+    }
+  },
+  {
+    term: 'Multicast',
+    definition: {
+      en: 'One-to-many delivery to the hosts that joined a specific group, instead of flooding everyone (broadcast) or sending one copy each (unicast). Routing protocols (OSPF, EIGRP) and streaming use it; IGMP manages group membership on a LAN.',
+      it: 'Consegna uno-a-molti verso gli host che hanno aderito a uno specifico gruppo, invece di inondare tutti (broadcast) o inviare una copia ciascuno (unicast). La usano protocolli di routing (OSPF, EIGRP) e lo streaming; IGMP gestisce l’appartenenza ai gruppi sulla LAN.'
+    }
+  },
+  {
+    term: 'Root Bridge',
+    definition: {
+      en: 'The switch elected as the reference point of a Spanning Tree topology, chosen by the lowest bridge ID (priority then MAC). Every other switch builds its shortest loop-free path toward it; placing it deliberately on a core switch keeps the tree stable.',
+      it: 'Lo switch eletto come punto di riferimento della topologia Spanning Tree, scelto per il bridge ID più basso (priorità poi MAC). Ogni altro switch costruisce il proprio percorso senza loop più breve verso di esso; collocarlo di proposito su uno switch di core mantiene stabile l’albero.'
+    }
+  },
+  {
+    term: 'CAM Table',
+    definition: {
+      en: 'Content-Addressable Memory table - the switch MAC address table that maps a learned source MAC to the port it was seen on, so frames are forwarded only out the right port. When it overflows or is flooded the switch falls back to flooding, which MAC flooding abuses.',
+      it: 'Content-Addressable Memory table - la tabella MAC dello switch che associa un MAC sorgente appreso alla porta su cui è stato visto, così i frame sono inoltrati solo sulla porta giusta. Quando trabocca o viene inondata lo switch ripiega sul flooding, cosa che il MAC flooding sfrutta.'
+    }
+  },
+  {
+    term: 'Access Port',
+    definition: {
+      en: 'A switch port that belongs to a single VLAN and carries untagged frames to an end device. It contrasts with a trunk, which carries many VLANs tagged with 802.1Q; putting the right port in access vs trunk mode is basic segmentation hygiene.',
+      it: 'Una porta di switch che appartiene a una sola VLAN e trasporta frame non taggati verso un dispositivo finale. Si contrappone al trunk, che trasporta molte VLAN taggate con 802.1Q; mettere la porta giusta in modalità access o trunk è igiene di segmentazione di base.'
+    }
+  },
+  {
+    term: 'Inter-VLAN Routing',
+    definition: {
+      en: 'Routing traffic between different VLANs, which are separate broadcast domains and cannot talk at Layer 2. It is done with a router subinterface per VLAN (router-on-a-stick) or, more commonly, with SVIs on a Layer 3 switch.',
+      it: 'Instradamento del traffico tra VLAN diverse, che sono domini di broadcast separati e non possono dialogare a livello 2. Si realizza con una sottointerfaccia del router per VLAN (router-on-a-stick) o, più comunemente, con SVI su uno switch di livello 3.'
+    }
+  },
+  {
+    term: 'Loopback Interface',
+    definition: {
+      en: 'A virtual, always-up interface on a device, independent of any physical port. It gives a stable address used as a router ID, a management endpoint, or a protocol source that stays reachable as long as any path to the device exists.',
+      it: 'Un’interfaccia virtuale sempre attiva su un dispositivo, indipendente da qualsiasi porta fisica. Fornisce un indirizzo stabile usato come router ID, endpoint di gestione o sorgente di protocollo, che resta raggiungibile finché esiste un qualsiasi percorso verso il dispositivo.'
+    }
+  },
+  {
+    term: 'OSPF Area',
+    definition: {
+      en: 'A grouping of OSPF routers that share one detailed link-state database; areas connect through area 0 (the backbone). Dividing a domain into areas limits the scope of SPF recalculation and of flooding, which keeps large OSPF networks scalable.',
+      it: 'Un raggruppamento di router OSPF che condividono un unico database link-state dettagliato; le aree si collegano attraverso l’area 0 (la backbone). Dividere un dominio in aree limita l’ambito del ricalcolo SPF e del flooding, mantenendo scalabili le reti OSPF grandi.'
+    }
+  },
+  {
+    term: 'LSA',
+    definition: {
+      en: 'Link-State Advertisement - the unit of information OSPF routers flood to describe their links and reachable networks. Each router assembles the received LSAs into an identical link-state database and runs SPF on it to compute loop-free routes.',
+      it: 'Link-State Advertisement - l’unità di informazione che i router OSPF inondano per descrivere i propri collegamenti e le reti raggiungibili. Ogni router assembla gli LSA ricevuti in un database link-state identico e vi esegue SPF per calcolare rotte senza loop.'
+    }
+  },
+  {
+    term: 'QoS',
+    definition: {
+      en: 'Quality of Service - the set of mechanisms that classify, mark, queue and schedule traffic so delay-sensitive flows (voice, video) get priority under congestion. QoS allocates bandwidth during contention; it does not create bandwidth that is not there.',
+      it: 'Quality of Service - l’insieme di meccanismi che classificano, marcano, accodano e pianificano il traffico così che i flussi sensibili al ritardo (voce, video) abbiano priorità sotto congestione. La QoS assegna banda durante la contesa; non crea banda che non esiste.'
+    }
+  },
+  {
+    term: 'LLQ',
+    definition: {
+      en: 'Low Latency Queuing - a queuing scheme that adds a strict-priority queue (served first, up to a policed limit) on top of CBWFQ, so real-time traffic such as voice gets minimal delay while other classes keep their guaranteed bandwidth.',
+      it: 'Low Latency Queuing - uno schema di accodamento che aggiunge una coda a priorità stretta (servita per prima, fino a un limite regolato) sopra CBWFQ, così il traffico real-time come la voce ha ritardo minimo mentre le altre classi mantengono la banda garantita.'
+    }
+  },
+  {
+    term: 'Trust Boundary',
+    definition: {
+      en: 'In QoS, the point in the network where incoming markings (CoS/DSCP) start being believed; traffic from untrusted devices is re-marked at the edge so end hosts cannot claim priority they should not have. More broadly, any line separating trusted from untrusted inputs.',
+      it: 'In QoS, il punto della rete dove le marcature in ingresso (CoS/DSCP) iniziano a essere credute; il traffico da dispositivi non fidati è ri-marcato al bordo così gli host finali non possono rivendicare una priorità che non dovrebbero avere. Più in generale, ogni linea che separa input fidati da non fidati.'
+    }
+  },
+  {
+    term: 'VRF',
+    definition: {
+      en: 'Virtual Routing and Forwarding - multiple independent routing tables on one device, so overlapping or separate customer networks stay isolated without extra routers. It is the Layer 3 counterpart of VLANs and the basis of MPLS/L3VPN segmentation.',
+      it: 'Virtual Routing and Forwarding - più tabelle di routing indipendenti su un solo dispositivo, così reti clienti sovrapposte o separate restano isolate senza router aggiuntivi. È la controparte di livello 3 delle VLAN e la base della segmentazione MPLS/L3VPN.'
+    }
+  },
+  {
+    term: 'SD-WAN',
+    definition: {
+      en: 'Software-Defined WAN - a controller-based overlay that steers traffic across multiple transports (MPLS, broadband, LTE) by application policy, with centralized management and encrypted tunnels. It separates the control plane from the forwarding devices, like SDN applied to the WAN.',
+      it: 'Software-Defined WAN - un overlay basato su controller che indirizza il traffico su più trasporti (MPLS, banda larga, LTE) secondo policy applicative, con gestione centralizzata e tunnel cifrati. Separa il piano di controllo dai dispositivi di inoltro, come SDN applicato alla WAN.'
+    }
+  },
+  {
+    term: 'CoPP',
+    definition: {
+      en: 'Control Plane Policing - a QoS policy applied to traffic destined to the device CPU (routing protocols, SSH, SNMP, ARP) that rate-limits each class so a flood cannot starve the control plane. It protects device availability without filtering transit traffic.',
+      it: 'Control Plane Policing - una policy QoS applicata al traffico destinato alla CPU del dispositivo (protocolli di routing, SSH, SNMP, ARP) che limita la frequenza di ogni classe così un flood non può affamare il piano di controllo. Protegge la disponibilità del dispositivo senza filtrare il traffico di transito.'
+    }
+  },
+  {
+    term: 'Control Plane',
+    definition: {
+      en: 'The plane that builds the information a device forwards by: routing protocols, neighbor discovery, and the RIB. It is separate from the data plane (which forwards packets) and the management plane (which configures and monitors); attacks on it target reachability of the whole network.',
+      it: 'Il piano che costruisce le informazioni con cui un dispositivo inoltra: protocolli di routing, neighbor discovery e la RIB. È distinto dal data plane (che inoltra i pacchetti) e dal management plane (che configura e monitora); attaccarlo mira alla raggiungibilità dell’intera rete.'
+    }
+  },
+  {
+    term: 'Telnet',
+    definition: {
+      en: 'An early remote-terminal protocol on TCP port 23 that carries the session, including credentials, in cleartext. It must not be used for device management; SSH replaces it with an encrypted, authenticated channel.',
+      it: 'Un vecchio protocollo di terminale remoto su porta TCP 23 che trasporta la sessione, credenziali comprese, in chiaro. Non va usato per la gestione degli apparati; SSH lo sostituisce con un canale cifrato e autenticato.'
+    }
+  },
+  {
+    term: 'TFTP',
+    definition: {
+      en: 'Trivial File Transfer Protocol - a minimal UDP (port 69) file transfer with no authentication, used on the LAN to load device images and configurations. Its simplicity is also its risk, so it belongs only on a trusted management segment.',
+      it: 'Trivial File Transfer Protocol - un trasferimento file minimale su UDP (porta 69) senza autenticazione, usato in LAN per caricare immagini e configurazioni degli apparati. La sua semplicità è anche il suo rischio, quindi va solo su un segmento di gestione fidato.'
+    }
+  },
+  {
+    term: 'DNS Record',
+    definition: {
+      en: 'An entry in a DNS zone that answers a specific query type: A/AAAA map a name to an IPv4/IPv6 address, CNAME aliases one name to another, MX names the mail servers, TXT holds text used by SPF/DKIM/DMARC. Enumerating records is a common reconnaissance step.',
+      it: 'Una voce in una zona DNS che risponde a uno specifico tipo di query: A/AAAA mappano un nome a un indirizzo IPv4/IPv6, CNAME crea un alias di un nome su un altro, MX indica i mail server, TXT contiene testo usato da SPF/DKIM/DMARC. Enumerare i record è un passo comune di ricognizione.'
+    }
+  },
+  {
+    term: 'CIA Triad',
+    definition: {
+      en: 'The three core security goals: Confidentiality (only authorized parties read the data), Integrity (data is not altered undetected), and Availability (the service is usable when needed). Every control and every attack can be mapped to which of the three it protects or breaks.',
+      it: 'I tre obiettivi fondamentali della sicurezza: Riservatezza (solo le parti autorizzate leggono i dati), Integrità (i dati non sono alterati senza accorgersene) e Disponibilità (il servizio è usabile quando serve). Ogni controllo e ogni attacco si può mappare su quale dei tre protegge o viola.'
+    }
+  },
+  {
+    term: 'Defense in Depth',
+    definition: {
+      en: 'Layering independent controls so that no single failure is fatal: perimeter, segmentation, host hardening, identity, monitoring. An attacker must defeat several different mechanisms, and each layer buys detection time for the others.',
+      it: 'Stratificare controlli indipendenti così che nessun singolo fallimento sia fatale: perimetro, segmentazione, hardening degli host, identità, monitoraggio. Un attaccante deve superare più meccanismi diversi, e ogni livello guadagna tempo di rilevamento per gli altri.'
+    }
+  },
+  {
+    term: 'Zero Trust',
+    definition: {
+      en: 'A model that trusts no request by network location alone: identity and authorization are verified at every access, and segmentation plus continuous monitoring limit what a compromised host can reach. It removes the implicit trust of flat internal networks.',
+      it: 'Un modello che non si fida di nessuna richiesta solo per la posizione in rete: identità e autorizzazione sono verificate a ogni accesso, e segmentazione più monitoraggio continuo limitano ciò che un host compromesso può raggiungere. Toglie la fiducia implicita delle reti interne piatte.'
+    }
+  },
+  {
+    term: 'Least Privilege',
+    definition: {
+      en: 'Granting each user, service or process only the permissions it needs, for only as long as it needs them. It shrinks the blast radius of a compromise and is the principle behind role separation, scoped tokens, and admin tiering.',
+      it: 'Concedere a ogni utente, servizio o processo solo i permessi necessari, e solo per il tempo necessario. Riduce il raggio d’azione di una compromissione ed è il principio dietro la separazione dei ruoli, i token con scope limitato e il tiering degli amministratori.'
+    }
+  },
+  {
+    term: 'MAC Flooding',
+    definition: {
+      en: 'A Layer 2 attack that fills a switch CAM table with bogus source MACs until it overflows, forcing the switch to flood frames out all ports so the attacker can sniff traffic. Port Security, which limits learned MACs per port, is the primary defense.',
+      it: 'Un attacco di livello 2 che riempie la CAM table di uno switch con MAC sorgente falsi finché trabocca, costringendo lo switch a inondare i frame su tutte le porte così l’attaccante può intercettare il traffico. La difesa principale è Port Security, che limita i MAC appresi per porta.'
+    }
+  },
+  {
+    term: 'VLAN Hopping',
+    definition: {
+      en: 'Reaching a VLAN the port should not access, either by negotiating an unwanted trunk (DTP) or by double-tagging 802.1Q frames so the native VLAN strips the outer tag. Defenses: disable DTP, set an unused native VLAN, and do not leave ports in dynamic trunk mode.',
+      it: 'Raggiungere una VLAN a cui la porta non dovrebbe accedere, negoziando un trunk indesiderato (DTP) o con il double-tagging dei frame 802.1Q così la native VLAN rimuove il tag esterno. Difese: disabilitare DTP, impostare una native VLAN inutilizzata e non lasciare porte in modalità trunk dinamica.'
+    }
+  },
+  {
+    term: 'ARP Spoofing',
+    definition: {
+      en: 'Sending forged ARP replies so victims map the gateway IP to the attacker MAC, putting the attacker in the middle of the traffic (a man-in-the-middle on the LAN). Dynamic ARP Inspection, built on the DHCP snooping binding table, is the switch-side defense.',
+      it: 'Inviare risposte ARP falsificate così le vittime associano l’IP del gateway al MAC dell’attaccante, mettendolo in mezzo al traffico (un man-in-the-middle sulla LAN). La difesa lato switch è Dynamic ARP Inspection, basata sulla binding table del DHCP snooping.'
+    }
+  },
+  {
+    term: 'CVE',
+    definition: {
+      en: 'Common Vulnerabilities and Exposures - a public, unique identifier (e.g. CVE-2021-44228) for a specific known vulnerability, so tools, advisories and patches can refer to the same flaw. It is often paired with a CVSS score that rates severity.',
+      it: 'Common Vulnerabilities and Exposures - un identificatore pubblico e univoco (es. CVE-2021-44228) per una specifica vulnerabilità nota, così strumenti, bollettini e patch possono riferirsi allo stesso difetto. È spesso abbinato a un punteggio CVSS che ne valuta la gravità.'
+    }
+  },
+  {
+    term: 'Reconnaissance',
+    definition: {
+      en: 'The first phase of an authorized test: gathering information about the target before touching it, split into passive (public sources, OSINT, no contact) and active (direct probing). Good recon shapes everything that follows and, for a defender, reveals what is exposed.',
+      it: 'La prima fase di un test autorizzato: raccogliere informazioni sul bersaglio prima di toccarlo, divisa in passiva (fonti pubbliche, OSINT, nessun contatto) e attiva (sondaggio diretto). Una buona ricognizione orienta tutto ciò che segue e, per un difensore, rivela cosa è esposto.'
+    }
+  },
+  {
+    term: 'Footprinting',
+    definition: {
+      en: 'The reconnaissance activity of mapping an organization external attack surface: domains and subdomains, IP ranges, DNS records, exposed services and technologies. It is mostly passive and defines the scope of what is reachable from outside.',
+      it: 'L’attività di ricognizione che mappa la superficie d’attacco esterna di un’organizzazione: domini e sottodomini, range IP, record DNS, servizi e tecnologie esposti. È in gran parte passiva e definisce l’ambito di ciò che è raggiungibile dall’esterno.'
+    }
+  },
+  {
+    term: 'Banner Grabbing',
+    definition: {
+      en: 'Reading the identification string a service returns on connection (version, product, sometimes OS) to fingerprint what is running. It feeds vulnerability assessment; defenders reduce it by suppressing or genericizing banners, though a version alone never proves exploitability.',
+      it: 'Leggere la stringa di identificazione che un servizio restituisce alla connessione (versione, prodotto, a volte OS) per riconoscere cosa gira. Alimenta la valutazione delle vulnerabilità; i difensori la riducono sopprimendo o rendendo generici i banner, anche se la sola versione non prova mai la sfruttabilità.'
+    }
+  },
+  {
+    term: 'Port Scanning',
+    definition: {
+      en: 'Probing a host to learn which TCP/UDP ports are open, closed or filtered, inferring the state from the response (SYN-ACK, RST, or silence). It is the bridge from host discovery to enumeration and leaves a recognizable signature that an IDS and logs detect.',
+      it: 'Sondare un host per scoprire quali porte TCP/UDP sono aperte, chiuse o filtrate, deducendo lo stato dalla risposta (SYN-ACK, RST o silenzio). È il ponte tra host discovery ed enumerazione e lascia una firma riconoscibile che un IDS e i log rilevano.'
+    }
+  },
+  {
+    term: 'Vulnerability Assessment',
+    definition: {
+      en: 'Correlating discovered services, versions and configurations with known weaknesses to produce a prioritized, defensible list of plausible vulnerabilities. It is a hypothesis until verified: a version may be patched (backport), so findings are rated, not assumed exploitable.',
+      it: 'Correlare servizi, versioni e configurazioni scoperti con debolezze note per produrre una lista prioritizzata e difendibile di vulnerabilità plausibili. Resta un’ipotesi finché non è verificata: una versione può essere corretta (backport), quindi i risultati sono valutati, non dati per sfruttabili.'
+    }
+  },
+  {
+    term: 'Exploit',
+    definition: {
+      en: 'Code or a technique that turns a vulnerability into a concrete effect, such as code execution or access. In an authorized test it is run only within scope and after approval; the existence of an exploit is what separates a theoretical flaw from a demonstrated risk.',
+      it: 'Codice o tecnica che trasforma una vulnerabilità in un effetto concreto, come esecuzione di codice o accesso. In un test autorizzato si esegue solo nello scope e dopo approvazione; l’esistenza di un exploit è ciò che separa un difetto teorico da un rischio dimostrato.'
+    }
+  },
+  {
+    term: 'Post-Exploitation',
+    definition: {
+      en: 'Everything done after a foothold is gained, within scope: assessing access, collecting evidence, escalating privileges, and mapping reachable systems and trust relationships. Its value is showing real impact, not counting hosts; defenders counter it with least privilege and monitoring.',
+      it: 'Tutto ciò che si fa dopo aver ottenuto un punto d’appoggio, nello scope: valutare l’accesso, raccogliere evidenze, elevare i privilegi e mappare sistemi raggiungibili e relazioni di fiducia. Il suo valore è mostrare l’impatto reale, non contare host; i difensori la contrastano con privilegio minimo e monitoraggio.'
+    }
+  },
+  {
+    term: 'Lateral Movement',
+    definition: {
+      en: 'Moving from one compromised system to another inside the network, reusing valid credentials and trust relationships. It turns a single foothold into reach toward the real target; east-west segmentation, Zero Trust and internal monitoring are what contain it.',
+      it: 'Spostarsi da un sistema compromesso a un altro dentro la rete, riusando credenziali valide e relazioni di fiducia. Trasforma un singolo punto d’appoggio in raggiungibilità verso il bersaglio reale; a contenerlo sono la segmentazione est-ovest, lo Zero Trust e il monitoraggio interno.'
+    }
+  },
+  {
+    term: 'SMB',
+    definition: {
+      en: 'Server Message Block - the Windows file and printer sharing protocol (TCP 445, legacy 139). Weak configurations expose shares, users and the password policy via null or guest sessions; defenses are disabling SMBv1, enforcing signing, and denying anonymous access.',
+      it: 'Server Message Block - il protocollo Windows di condivisione file e stampanti (TCP 445, legacy 139). Configurazioni deboli espongono condivisioni, utenti e policy delle password tramite sessioni null o guest; le difese sono disabilitare SMBv1, imporre la firma e negare l’accesso anonimo.'
+    }
+  },
+  {
+    term: 'Null Session',
+    definition: {
+      en: 'An unauthenticated SMB/RPC connection that legacy Windows configurations allowed, returning shares, users, groups and the password policy with no credentials. It is a classic enumeration foothold; modern systems restrict anonymous access to close it.',
+      it: 'Una connessione SMB/RPC non autenticata che le vecchie configurazioni Windows permettevano, restituendo condivisioni, utenti, gruppi e policy delle password senza credenziali. È un classico punto di partenza per l’enumerazione; i sistemi moderni restringono l’accesso anonimo per chiuderla.'
+    }
+  },
+  {
+    term: 'LDAP',
+    definition: {
+      en: 'Lightweight Directory Access Protocol - the protocol used to query and modify a directory such as Active Directory (TCP 389, or 636 for LDAPS). Even an ordinary domain user can read users, groups and trust relationships, which makes it a prime enumeration surface.',
+      it: 'Lightweight Directory Access Protocol - il protocollo usato per interrogare e modificare una directory come Active Directory (TCP 389, o 636 per LDAPS). Anche un utente di dominio qualunque può leggere utenti, gruppi e relazioni di fiducia, il che lo rende una superficie di enumerazione primaria.'
+    }
+  },
+  {
+    term: 'Kerberos',
+    definition: {
+      en: 'The default authentication protocol of Active Directory: a trusted KDC issues a TGT after logon, and the client exchanges it for per-service tickets (TGS) without resending the password. It reduces credential exposure but shifts value onto tickets and service accounts.',
+      it: 'Il protocollo di autenticazione predefinito di Active Directory: un KDC fidato rilascia un TGT dopo il logon, e il client lo scambia per ticket di servizio (TGS) senza reinviare la password. Riduce l’esposizione delle credenziali ma sposta il valore su ticket e account di servizio.'
+    }
+  },
+  {
+    term: 'NTLM',
+    definition: {
+      en: 'An older Windows authentication protocol based on challenge-response over the password hash. Because it relies on the hash, it enables pass-the-hash and is weaker than Kerberos; hardening disables legacy NTLM where possible and monitors its use.',
+      it: 'Un vecchio protocollo di autenticazione Windows basato su challenge-response sull’hash della password. Poiché si affida all’hash, abilita il pass-the-hash ed è più debole di Kerberos; l’hardening disabilita l’NTLM legacy dove possibile e ne monitora l’uso.'
+    }
+  },
+  {
+    term: 'TGT / TGS',
+    definition: {
+      en: 'Ticket Granting Ticket / Ticket Granting Service ticket - in Kerberos the TGT is the initial proof of identity issued by the KDC at logon, and a TGS is a per-service ticket obtained by presenting the TGT. Stealing or forging tickets is how many Active Directory attacks escalate.',
+      it: 'Ticket Granting Ticket / Ticket Granting Service ticket - in Kerberos il TGT è la prova iniziale d’identità rilasciata dal KDC al logon, e un TGS è un ticket per singolo servizio ottenuto presentando il TGT. Rubare o falsificare ticket è il modo in cui molti attacchi ad Active Directory scalano.'
+    }
+  },
+  {
+    term: 'Kerberoasting',
+    definition: {
+      en: 'An Active Directory attack that requests service tickets (TGS) for accounts with an SPN and cracks them offline to recover the service account password, since the ticket is encrypted with that password hash. Defenses: long random service passwords (or gMSA) and monitoring unusual ticket requests.',
+      it: 'Un attacco ad Active Directory che richiede ticket di servizio (TGS) per account con uno SPN e li cracka offline per recuperare la password dell’account di servizio, poiché il ticket è cifrato con l’hash di quella password. Difese: password di servizio lunghe e casuali (o gMSA) e monitoraggio delle richieste di ticket anomale.'
+    }
+  },
+  {
+    term: 'Pass-the-Hash',
+    definition: {
+      en: 'Authenticating with a captured NTLM password hash instead of the cleartext password, exploiting the fact that NTLM accepts the hash directly. It drives lateral movement in Windows networks; defenses include least privilege, admin tiering, and limiting where privileged hashes are exposed.',
+      it: 'Autenticarsi con un hash NTLM della password catturato invece della password in chiaro, sfruttando il fatto che NTLM accetta direttamente l’hash. Guida il movimento laterale nelle reti Windows; le difese includono privilegio minimo, tiering degli amministratori e limitare dove gli hash privilegiati sono esposti.'
+    }
+  },
+  {
+    term: 'Active Directory',
+    definition: {
+      en: 'Microsoft directory service that organizes identities and resources of a Windows network into domains and forests, with domain controllers that hold the directory (queried over LDAP) and authenticate access (Kerberos/NTLM). In an AD environment the real objective is control of the domain.',
+      it: 'Servizio di directory Microsoft che organizza identità e risorse di una rete Windows in domini e foreste, con domain controller che custodiscono la directory (interrogata via LDAP) e autenticano gli accessi (Kerberos/NTLM). In un ambiente AD l’obiettivo reale è il controllo del dominio.'
+    }
+  },
+  {
+    term: 'Rainbow Table',
+    definition: {
+      en: 'A precomputed lookup that reverses unsalted password hashes quickly by trading storage for computation. A unique per-user salt defeats it, because the same password then hashes differently for each user and no single precomputed table applies.',
+      it: 'Una tabella precalcolata che inverte rapidamente gli hash di password senza sale scambiando memoria con calcolo. Un sale univoco per-utente la neutralizza, perché la stessa password produce allora hash diversi per ogni utente e nessuna tabella precalcolata è applicabile.'
+    }
+  },
+  {
+    term: 'Salt',
+    definition: {
+      en: 'A random, per-user value concatenated to a password before hashing. It does not slow a single hash, but it defeats precomputation (rainbow tables) and ensures two identical passwords store as different hashes, forcing an attacker to attack each hash separately.',
+      it: 'Un valore casuale e per-utente concatenato a una password prima dell’hashing. Non rallenta il singolo hash, ma neutralizza la precomputazione (rainbow table) e fa sì che due password identiche siano memorizzate come hash diversi, costringendo l’attaccante ad attaccare ogni hash separatamente.'
+    }
+  },
+  {
+    term: 'Brute Force',
+    definition: {
+      en: 'Trying every candidate until one works, whether passwords or keys. Online brute force is slow and visible (rate limiting, lockout, logs); offline, against a captured hash, only password strength and a slow salted KDF raise the cost. Spraying and dictionaries are smarter variants.',
+      it: 'Provare ogni candidato finché uno funziona, che si tratti di password o chiavi. Il brute force online è lento e visibile (rate limiting, lockout, log); offline, contro un hash catturato, solo la robustezza della password e una KDF lenta e salata alzano il costo. Spraying e dizionari ne sono varianti più intelligenti.'
+    }
   }
 ];

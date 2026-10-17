@@ -533,6 +533,17 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
 
 ## 🧾 Registro delle decisioni
 
+- **17/10/2026 — Glossario: +50 voci (CCNA + eJPT).** Su richiesta, ampliato `GLOSSARY_TERMS` da
+  **126 a 176 voci** bilingui, colmando lacune reali: lato CCNA (CIDR, VLSM, default/static route,
+  multicast, root bridge, CAM table, access port, inter-VLAN routing, loopback, OSPF area, LSA, QoS,
+  LLQ, trust boundary, VRF, SD-WAN, CoPP, control plane, Telnet, TFTP, DNS record) e fondamenti
+  (CIA triad, defense in depth, Zero Trust, least privilege, MAC flooding, VLAN hopping, ARP
+  spoofing, CVE); lato **eJPT**, vocabolario del syllabus reale (reconnaissance, footprinting, banner
+  grabbing, port scanning, vulnerability assessment, exploit, post-exploitation, lateral movement,
+  SMB, null session, LDAP, Kerberos, NTLM, TGT/TGS, Kerberoasting, pass-the-hash, Active Directory,
+  rainbow table, salt, brute force). Tutte difensive/neutre, senza tool operativi. Guard glossario
+  (unicità + definizione bilingue) e guard bilingue strutturale verdi. Report:
+  `docs/verify/2026-10-17-glossary-50-terms.md`.
 - **17/10/2026 — VIS-13: diagramma catena di fiducia PKI/TLS.** Dopo la sincronizzazione con il
   lavoro concorrente (che aveva già aggiunto i diagrammi `encapsulation`, `qos` e `wlc-policy-mapping`),
   aggiunto il diagramma bilingue `pki-tls-chain` al tema `pki-tls-certificate-chain`: Root CA →
