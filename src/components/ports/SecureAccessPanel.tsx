@@ -1,4 +1,5 @@
 import React from 'react';
+import { EAP_CONTENT } from '../../content/eapContent';
 import { AAA_CONTENT } from '../../content/aaaContent';
 import { motion, AnimatePresence } from 'motion/react';
 import { Sparkles, Lock, Layers, Server } from 'lucide-react';
@@ -67,7 +68,7 @@ export default function SecureAccessPanel({
           }`}
         >
           <Sparkles className="w-3.5 h-3.5" />
-          {language === 'en' ? 'EAP Framework (Types)' : 'Framework EAP (Tutti i Tipi)'}
+          {language === 'en' ? 'EAP methods' : 'Metodi EAP'}
         </button>
         <button
           id="subtab-aaa"
@@ -107,244 +108,51 @@ export default function SecureAccessPanel({
             exit={{ opacity: 0, y: -10 }}
             className="space-y-6"
           >
-            {/* EAP Overview */}
-            <div className="bg-white border border-slate-200/80 rounded-lg p-5 space-y-3">
-              <h3 className="font-extrabold text-slate-800 text-sm uppercase tracking-tight">
-                {language === 'en'
-                  ? 'Extensible Authentication Protocol (EAP)'
-                  : 'Extensible Authentication Protocol (EAP)'}
-              </h3>
-              <p className="text-xs text-slate-500 leading-relaxed">
-                {language === 'en'
-                  ? 'EAP is an authentication framework that supports multiple methods. In 802.1X, it carries authentication between the supplicant and the authenticator, which normally communicates with a back-end RADIUS server.'
-                  : "EAP è un framework di autenticazione che supporta metodi differenti. In 802.1X trasporta l'autenticazione tra il supplicant e l'authenticator, che normalmente comunica con un server RADIUS di back-end."}
-              </p>
-            </div>
-
-            {/* Interactive EAP Types Explorer */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
-              {/* Method Selector buttons - Left Col */}
-              <div className="md:col-span-4 space-y-2">
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
-                  {language === 'en' ? 'Select EAP Method' : 'Seleziona Metodo EAP'}
-                </span>
-                {(
-                  [
-                    { id: 'tls', name: 'EAP-TLS', full: 'EAP Transport Layer Security', desc: 'Dual-certs' },
-                    { id: 'peap', name: 'EAP-PEAP', full: 'Protected Extensible Auth Protocol', desc: 'Server cert' },
-                    { id: 'ttls', name: 'EAP-TTLS', full: 'Tunneled TLS Auth', desc: 'Flexible inner' },
-                    {
-                      id: 'fast',
-                      name: 'EAP-FAST',
-                      full: 'Flexible Auth via Secure Tunneling',
-                      desc: 'PAC key exchange'
-                    },
-                    { id: 'md5', name: 'EAP-MD5', full: 'Message Digest 5', desc: 'Insecure legacy' }
-                  ] as const
-                ).map((met) => (
-                  <button
-                    key={met.id}
-                    id={`eap-btn-${met.id}`}
-                    onClick={() => setSelectedEap(met.id)}
-                    className={`w-full text-left p-3.5 rounded-xl border text-xs transition-all flex justify-between items-center ${
-                      selectedEap === met.id
-                        ? 'bg-emerald-600 border-emerald-700 text-white shadow'
-                        : 'bg-white border-slate-200/80 text-slate-700 hover:bg-slate-50'
-                    }`}
-                  >
-                    <div>
-                      <div className="font-semibold">{met.name}</div>
-                      <div
-                        className={`text-[10px] font-normal leading-tight ${selectedEap === met.id ? 'text-emerald-100' : 'text-slate-400'}`}
-                      >
-                        {met.full}
-                      </div>
-                    </div>
-                    <span
-                      className={`text-[9px] font-bold uppercase shrink-0 px-2 py-0.5 rounded border ${
-                        selectedEap === met.id
-                          ? 'bg-emerald-500/30 border-emerald-400 text-white'
-                          : met.id === 'md5'
-                            ? 'bg-rose-50 border-rose-100 text-rose-600'
-                            : 'bg-slate-50 border-slate-200 text-slate-500'
-                      }`}
+            <div data-testid="eap-content" className="space-y-6 min-w-0 break-words">
+              <h3 className="font-bold text-slate-800">Extensible Authentication Protocol (EAP)</h3>
+              <p className="text-sm text-slate-600">{EAP_CONTENT.overview[language]}</p>
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+                <div
+                  className="md:col-span-4 min-w-0 space-y-2"
+                  role="group"
+                  aria-label={language === 'en' ? 'Select EAP method' : 'Seleziona metodo EAP'}
+                >
+                  {(['tls', 'peap', 'ttls', 'fast', 'md5'] as const).map((id) => (
+                    <button
+                      key={id}
+                      id={`eap-btn-${id}`}
+                      aria-pressed={selectedEap === id}
+                      aria-controls="eap-detail-card"
+                      onClick={() => setSelectedEap(id)}
+                      className={`w-full min-h-11 text-left p-3 rounded-xl border text-sm ${selectedEap === id ? 'bg-blue-700 text-white border-blue-800' : 'bg-white text-slate-700 border-slate-300'}`}
                     >
-                      {met.desc}
-                    </span>
-                  </button>
-                ))}
-              </div>
-
-              {/* Detail of selected method - Right Col */}
-              <div
-                id="eap-detail-card"
-                className="md:col-span-8 bg-white border border-slate-200/80 rounded-lg p-5 space-y-6"
-              >
-                {/* Detailed explanation */}
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <h4 className="font-semibold text-slate-800 text-md uppercase">
-                      {selectedEap === 'tls' && 'EAP-TLS (Certificates Verified)'}
-                      {selectedEap === 'peap' && 'EAP-PEAP (Protected EAP)'}
-                      {selectedEap === 'ttls' && 'EAP-TTLS (Tunneled TLS)'}
-                      {selectedEap === 'fast' && 'EAP-FAST (Cisco Secure)'}
-                      {selectedEap === 'md5' && 'EAP-MD5 (Vulnerable Legacy)'}
-                    </h4>
-                    <span
-                      className={`text-xs font-bold px-2.5 py-1 rounded-full ${
-                        selectedEap === 'md5'
-                          ? 'bg-red-50 text-red-600 border border-red-100'
-                          : 'bg-emerald-50 text-emerald-600 border border-emerald-100'
-                      }`}
-                    >
-                      {selectedEap === 'md5'
-                        ? language === 'en'
-                          ? 'CRITICAL RISK'
-                          : 'RISCHIO ATTO'
-                        : language === 'en'
-                          ? 'RECOMMENDED/SECURE'
-                          : 'CONSIGLIATO / SICURO'}
-                    </span>
-                  </div>
-
-                  <p className="text-[12.5px] text-slate-600 leading-relaxed">
-                    {selectedEap === 'tls' &&
-                      (language === 'en'
-                        ? 'EAP-TLS uses certificates on both the supplicant and authentication server. It removes reusable passwords from the exchange and provides strong mutual authentication, provided certificates and trust validation are managed correctly.'
-                        : 'EAP-TLS usa certificati sia sul supplicant sia sul server di autenticazione. Elimina le password riutilizzabili dallo scambio e offre una forte autenticazione reciproca, purché certificati e validazione della catena di fiducia siano gestiti correttamente.')}
-                    {selectedEap === 'peap' &&
-                      (language === 'en'
-                        ? 'EAP-PEAP simplifies deployment: only the authentication server needs a certificate. The server presents its card to establish a secure outer TLS encrypted tunnel. Inside this secure dome, the client can safely transmit standard credentials (usually using MSCHAPv2 user/pass) without danger of sniffing.'
-                        : "EAP-PEAP semplifica l'installazione aziendale: solo il server centrale richiede un certificato. Il server lo invia al client per stabilire inizialmente un tunnel TLS crittografato (involucro esterno). All'interno di questo tunnel protetto, il client autentica sé stesso inviando le classiche credenziali (di solito MSCHAPv2 user/password) in piena sicurezza.")}
-                    {selectedEap === 'ttls' &&
-                      (language === 'en'
-                        ? 'Similar to PEAP, EAP-TTLS creates a secure outer TLS tunnel first based on the server certificate. Inside the tunnel, however, TTLS allows an even wider variety of legacy inner authentication protocols (like PAP, CHAP, or MSCHAPv1) without exposing them to cleartext sniffing risks.'
-                        : "Molto simile a PEAP, EAP-TTLS genera un canale TLS esterno cifrato basandosi sul certificato del server. Al suo interno, permette tuttavia un ventaglio flessibile di vecchi protocolli interni di autenticazione (es. PAP, CHAP, MSCHAP) che non potrebbero viaggiare all'aria aperta in chiaro di default.")}
-                    {selectedEap === 'fast' &&
-                      (language === 'en'
-                        ? 'Created by Cisco as an alternative to digital certificates. Instead of heavy certificate authorities, it uses an in-band shared symmetric credential called PAC (Protected Access Credential) to establish a protective tunnel, preventing latency during access handshakes.'
-                        : 'Concepito da Cisco per aggirare la complessa infrastruttura a chiavi pubbliche (PKI). Sostituisce i certificati digitali delegando la transazione iniziale ad una credenziale simmetrica chiamata PAC (Protected Access Credential), riducendo la latenza complessiva.')}
-                    {selectedEap === 'md5' &&
-                      (language === 'en'
-                        ? 'An old legacy EAP type that transmits password hashes using MD5 without establishing any encrypted tunnel. Highly vulnerable to dictionary sniffing, offline brute force, and fake access point dirottements (Evil Twin/MitM). Deprecated and strictly forbidden in professional networks.'
-                        : 'Il tipo di EAP più antico. Trasmette gli hash delle password dei client via MD5 senza creare alcun tunnel cifrato a monte. È altamente vulnerabile a intercettazione passiva (sniffing), attacchi offline a dizionario ed Evil Twin. È fortemente sconsigliato e deprecato.')}
-                  </p>
+                      <span className="block font-bold">{EAP_CONTENT.methods[id].name}</span>
+                      <span className="block">{EAP_CONTENT.methods[id].label[language]}</span>
+                    </button>
+                  ))}
                 </div>
-
-                {/* Interactive flow map diagram of supplicant authenticator server */}
-                <div className="bg-slate-900 text-slate-300 p-4 rounded-xl font-mono text-[10.5px] border border-slate-950 space-y-3 shrink-0">
-                  <div className="border-b border-slate-800 pb-1.5 flex justify-between items-center text-slate-400 font-bold uppercase tracking-wider">
-                    <span>Autentication Protocol Interaction Map</span>
-                    <span className="text-[9px] shrink-0 text-amber-500 font-normal">
-                      Active Selection: {selectedEap.toUpperCase()}
-                    </span>
+                <section
+                  id="eap-detail-card"
+                  aria-live="polite"
+                  aria-atomic="true"
+                  className="md:col-span-8 min-w-0 bg-white border border-slate-200 rounded-lg p-5 space-y-4"
+                >
+                  <h4 className="font-bold text-slate-800">{EAP_CONTENT.methods[selectedEap].name}</h4>
+                  <p className="text-sm text-slate-600">{EAP_CONTENT.methods[selectedEap].description[language]}</p>
+                  <div className="bg-slate-900 text-slate-200 p-4 rounded-lg space-y-4">
+                    <h5 className="font-bold">
+                      {language === 'en'
+                        ? 'Conceptual authentication sequence'
+                        : 'Sequenza concettuale di autenticazione'}
+                    </h5>
+                    <p className="text-sm">{EAP_CONTENT.flowNote[language]}</p>
+                    <ol className="list-decimal pl-5 space-y-3 text-sm">
+                      {EAP_CONTENT.methods[selectedEap].steps.map((step, index) => (
+                        <li key={index}>{step[language]}</li>
+                      ))}
+                    </ol>
                   </div>
-
-                  <div className="grid grid-cols-3 text-center gap-1 font-bold text-slate-400 uppercase py-1 bg-slate-800/20 rounded">
-                    <span className="text-blue-300">Client / Supplicant</span>
-                    <span className="text-emerald-300">Switch/AP / Authenticator</span>
-                    <span className="text-pink-300">AAA Server / RADIUS</span>
-                  </div>
-
-                  {/* Interactive sequence flow based on EAP choices */}
-                  <div className="space-y-2 mt-2 leading-relaxed">
-                    {selectedEap === 'tls' && (
-                      <>
-                        <div className="flex justify-between items-center text-slate-400">
-                          <span>1. Client starts association</span>
-                          <span className="text-blue-400">EAPOL-Start ───&gt;</span>
-                          <span className="text-emerald-400">AP limits port</span>
-                        </div>
-                        <div className="flex justify-between items-center text-slate-300">
-                          <span>2. Server prompts certificate</span>
-                          <span className="text-pink-400">&lt;─── TLS Certs Exchange ───&gt;</span>
-                          <span>Supplicant &amp; Server validation</span>
-                        </div>
-                        <div className="flex justify-between items-center text-emerald-400 font-bold">
-                          <span>3. Mutual trust verified</span>
-                          <span>Certificates digital signature valid (Dual checks)</span>
-                          <span className="text-emerald-400">✓ Port Activated</span>
-                        </div>
-                      </>
-                    )}
-                    {selectedEap === 'peap' && (
-                      <>
-                        <div className="flex justify-between items-center text-slate-400">
-                          <span>1. Client seeks access</span>
-                          <span className="text-blue-400">WPA-Enterprise init ──&gt;</span>
-                          <span>Relayed to AAA Server</span>
-                        </div>
-                        <div className="flex justify-between items-center text-amber-300">
-                          <span>2. Encrypted TLS Tunnel</span>
-                          <span className="text-pink-400">&lt;═ [Outer Tunnel Established] ═&gt;</span>
-                          <span>RADIUS Cert validated by Client</span>
-                        </div>
-                        <div className="flex justify-between items-center text-emerald-400">
-                          <span>3. Inner credential check</span>
-                          <span className="text-blue-400">└─ Sends encrypted User/Pass ──&gt;</span>
-                          <span>RADIUS check against Active Directory</span>
-                        </div>
-                      </>
-                    )}
-                    {selectedEap === 'ttls' && (
-                      <>
-                        <div className="flex justify-between items-center text-slate-400">
-                          <span>1. Request connection</span>
-                          <span>802.1X link initiated</span>
-                          <span>Active bridge suspended</span>
-                        </div>
-                        <div className="flex justify-between items-center text-indigo-300">
-                          <span>2. Server tunnel setup</span>
-                          <span className="text-indigo-400">&lt;═ [Tunnel TLS Shield Active] ═&gt;</span>
-                          <span>Server authentication authenticated</span>
-                        </div>
-                        <div className="flex justify-between items-center text-emerald-400">
-                          <span>3. Safe legacy pass exchange</span>
-                          <span className="text-blue-400">└─ Internal PAP/CHAP credential ──&gt;</span>
-                          <span>✓ Decrypted and checked in server</span>
-                        </div>
-                      </>
-                    )}
-                    {selectedEap === 'fast' && (
-                      <>
-                        <div className="flex justify-between items-center text-slate-400">
-                          <span>1. Handshake request</span>
-                          <span className="text-blue-400">PAC identification key ──&gt;</span>
-                          <span>Matches PAC database lookup</span>
-                        </div>
-                        <div className="flex justify-between items-center text-emerald-300">
-                          <span>2. Rapid tunnel creation</span>
-                          <span className="text-pink-400">&lt;═ [PAC encrypted tunnel] ═&gt;</span>
-                          <span>No heavy Certificate Authorities required</span>
-                        </div>
-                        <div className="flex justify-between items-center text-emerald-400">
-                          <span>3. Access approved</span>
-                          <span>Credential matched symmetrically</span>
-                          <span>✓ Port instantly authorized</span>
-                        </div>
-                      </>
-                    )}
-                    {selectedEap === 'md5' && (
-                      <>
-                        <div className="flex justify-between items-center text-slate-400">
-                          <span>1. Client logins</span>
-                          <span className="text-blue-300">Simple identity request ──&gt;</span>
-                          <span>No tunnel wrapping available</span>
-                        </div>
-                        <div className="flex justify-between items-center text-rose-400 font-semibold animate-pulse">
-                          <span>2. Password challenge</span>
-                          <span className="text-pink-400">&lt;─── Sends raw MD5 challenge ───</span>
-                          <span>Vulnerable to dictionary brute force Sniffer</span>
-                        </div>
-                        <div className="flex justify-between items-center text-rose-500 font-bold">
-                          <span>3. CRITICAL RISK</span>
-                          <span>Password hash readable by rogue antennas</span>
-                          <span>⚠ Deauth and identity loss risk high</span>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                </div>
+                </section>
               </div>
             </div>
           </motion.div>

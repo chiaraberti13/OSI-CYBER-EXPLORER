@@ -237,6 +237,12 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
       acronimi e cifre imposta dai test. **Incremento VIS-12 (15/10/2026):** rivisti diagrammi,
       alternative testuali e correzioni DMARC in entrambe le lingue; guard bilingue superato.
       Il task resta aperto perché ricorrente; non implica revisione integrale dei dataset storici.
+  - [x] **Incremento metodi EAP (17/10/2026).** Rivisti cinque metodi e 27 coppie
+        IT/EN: validazione del server, autenticazione interna, provisioning PAC,
+        challenge-response MD5 e distinzione tra autenticazione e connettività.
+        Selettori accessibili e sequenze leggibili; guard bilingui, tastiera,
+        Axe e reflow a 320/1280 px verificati. 786 test unitari e 78 E2E superati.
+        Report: `docs/verify/2026-10-17-i18n10-eap.md`. Resta il residuo VPN P1/P2.
   - [x] **Incremento confronto AAA (17/10/2026).** Corrette e localizzate 22 coppie
         IT/EN di confronto e tracce RADIUS/TACACS+: offuscamento legacy distinto da
         TLS, autorizzazione distinta dai privilegi globali e accounting condizionale.
