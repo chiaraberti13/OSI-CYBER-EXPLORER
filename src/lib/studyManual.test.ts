@@ -101,6 +101,17 @@ describe('study manual content integrity', () => {
     }
   });
 
+  // CONTENT-15: every exam-track topic (both certification paths) must cite at
+  // least one authoritative reference. The binary track model folds the
+  // Security+/advanced extension into the CCNA path, so this covers every topic;
+  // a new topic without a reference now fails CI instead of silently shipping.
+  it('gives every topic at least one authoritative reference', () => {
+    const missing = STUDY_MANUAL.flatMap((chapter) =>
+      chapter.topics.filter((topic) => (topic.references?.length ?? 0) === 0).map((topic) => topic.id)
+    );
+    expect(missing, `topics without a reference: ${missing.join(', ')}`).toEqual([]);
+  });
+
   it('keeps full IT/EN parity across the manual', () => {
     assertBilingualParity(STUDY_MANUAL, 'STUDY_MANUAL');
   });

@@ -409,9 +409,9 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
 
 > Piano concreto di **contenuti da aggiungere** e **miglioramenti ai contenuti**, derivato da una
 > ricognizione reale della copertura su `main` (217 id di capitoli/argomenti/lab; `manualStats()` →
-> 29 capitoli / 95 argomenti / 77 laboratori guidati; **85/95** argomenti con `references`, **3/95**
-> con `diagram` SVG). Le voci ancora aperte sono `[ ]` **da iniziare** con criteri di completamento
-> verificabili; CONTENT-11 e CONTENT-12 sono stati completati il 17/10/2026.
+> 29 capitoli / 95 argomenti / 77 laboratori guidati; **95/95** argomenti con `references` (CONTENT-15
+> completato), **3/95** con `diagram` SVG). Le voci ancora aperte sono `[ ]` **da iniziare** con criteri
+> di completamento verificabili; CONTENT-11, CONTENT-12 e CONTENT-15 sono stati completati il 17/10/2026.
 > I vincoli di sempre restano: bilingue IT/EN con parità di acronimi e
 > cifre, riferimenti ATT&CK/RFC/NIST/Cisco risolti in **HTTPS**, **soli target di documentazione**,
 > **nessun nuovo capitolo eJPT** oltre ai tre fissati dai test (gli argomenti eJPT entrano nei
@@ -457,13 +457,18 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
 
 ### Miglioramenti ai contenuti esistenti
 
-- [ ] **CONTENT-15 (P2) — Completare i riferimenti mancanti.** Oggi **83/94** argomenti hanno
-      `references`: ~11 argomenti d'esame ne sono privi. Aggiungere a ciascun argomento dei due
-      percorsi almeno un riferimento autorevole risolto in HTTPS (RFC/IEEE/NIST/ATT&CK/Cisco secondo
-      il tipo `SecurityReference`). **Criteri:** un **guard** che asserisca «ogni argomento con
-      traccia d'esame (CCNA/eJPT) espone ≥1 riferimento risolto in HTTPS» diventa verde; nessuna URL
-      non-HTTPS; `studyManual.test.ts` verde; report con l'elenco esatto degli argomenti toccati
-      (derivato, non a mano).
+- [x] **CONTENT-15 (P2) — Completare i riferimenti mancanti.** **Esito (17/10/2026):** aggiunto un
+      riferimento autorevole risolto in HTTPS ai **10** argomenti (tutti fondamenti CCNA) che ne erano
+      privi, portando la copertura a **95/95**. Elenco esatto (derivato dal guard, non a mano):
+      `osi-seven-layers` (Cisco OSI reference model), `ethernet-frame-mac` (IEEE 802.3),
+      `switch-cam-learning` (IEEE 802.1D), `collision-broadcast-domains` (IEEE 802.3 + 802.1D),
+      `vlan-segmentation` (IEEE 802.1Q), `trunk-dot1q` (IEEE 802.1Q), `stp-loops` (IEEE 802.1D),
+      `routing-table-lpm` (RFC 4632 / CIDR-LPM), `static-default-routes` (RFC 1812), `dns-resolution`
+      (RFC 1035). Aggiunto il **guard** `studyManual.test.ts` «ogni argomento espone ≥1 riferimento»
+      (binario: l'estensione Security+ è piegata sul percorso CCNA, quindi copre entrambi i percorsi
+      d'esame): un nuovo argomento senza riferimento ora fallisce in CI. Nessuna URL non-HTTPS (il
+      test di risoluzione resta verde). I riferimenti sono `{kind,id}` senza testo, quindi senza
+      impatto bilingue. Report: `docs/verify/2026-10-17-content15-references.md`.
 - [ ] **VIS-13 (P3) — Estendere i micro-diagrammi SVG ai concetti chiave.** Solo **3/94** argomenti
       hanno un `diagram` (VIS-12). Aggiungere micro-diagrammi SVG bilingui, coerenti col sistema di
       design e leggibili in tema chiaro/scuro, agli argomenti dove un disegno chiarisce più del testo
@@ -478,6 +483,13 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
 
 ## 🧾 Registro delle decisioni
 
+- **17/10/2026 — CONTENT-15: riferimenti completati + guard.** Aggiunto un riferimento autorevole
+  (RFC/IEEE/Cisco) risolto in HTTPS ai 10 argomenti fondamentali CCNA che ne erano privi (copertura
+  85/95 → 95/95) e introdotto in `studyManual.test.ts` il guard «ogni argomento espone ≥1
+  riferimento», così che un nuovo argomento senza fonte fallisca in CI. Elenco derivato dal guard,
+  non a mano; nessuna URL non-HTTPS; riferimenti senza testo, nessun impatto bilingue. `verify`
+  completo verde, E2E Chromium con Axe verdi, 0 vulnerabilità. Report:
+  `docs/verify/2026-10-17-content15-references.md`.
 - **17/10/2026 — CONTENT-12: basi di Active Directory.** Completato il task successivo del backlog:
   aggiunto l'argomento eJPT `active-directory-basics` al capitolo `exploitation-post-exploitation`
   (modello AD dominio/foresta/OU/GPO/DC, Kerberos KDC/TGT/TGS vs NTLM, enumerazione LDAP e relazioni

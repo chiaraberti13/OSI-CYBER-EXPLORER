@@ -225,6 +225,7 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
           }
         ],
         lab: 'ports',
+        references: [{ kind: 'cisco', id: 'Cisco OSI reference model' }],
         guidedLabs: [
           {
             id: 'gl-osi-device-layer',
@@ -499,7 +500,8 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
             en: 'Thinking Ethernet guarantees delivery: the FCS detects errors and causes the frame to be dropped, but it does not retransmit it.'
           }
         ],
-        lab: 'fundamentals'
+        lab: 'fundamentals',
+        references: [{ kind: 'ieee', id: 'IEEE 802.3' }]
       },
       {
         id: 'switch-cam-learning',
@@ -553,6 +555,7 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
           }
         ],
         lab: 'access',
+        references: [{ kind: 'ieee', id: 'IEEE 802.1D' }],
         guidedLabs: [
           {
             id: 'gl-cam-decisions',
@@ -652,7 +655,11 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
             en: 'Still attributing collisions to an all-full-duplex switched network: there CSMA/CD does not kick in because collisions do not occur.'
           }
         ],
-        lab: 'fundamentals'
+        lab: 'fundamentals',
+        references: [
+          { kind: 'ieee', id: 'IEEE 802.3' },
+          { kind: 'ieee', id: 'IEEE 802.1D' }
+        ]
       }
     ]
   },
@@ -994,7 +1001,8 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
             en: 'Leaving user traffic on the default VLAN 1, which is also used by many management protocols: a risky security choice.'
           }
         ],
-        lab: 'access'
+        lab: 'access',
+        references: [{ kind: 'ieee', id: 'IEEE 802.1Q' }]
       },
       {
         id: 'trunk-dot1q',
@@ -1044,6 +1052,7 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
           }
         ],
         lab: 'access',
+        references: [{ kind: 'ieee', id: 'IEEE 802.1Q' }],
         guidedLabs: [
           {
             id: 'gl-vlan-trunk',
@@ -1155,6 +1164,7 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
           }
         ],
         lab: 'access',
+        references: [{ kind: 'ieee', id: 'IEEE 802.1D' }],
         guidedLabs: [
           {
             id: 'gl-stp-roles',
@@ -1283,6 +1293,7 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
           }
         ],
         lab: 'routing',
+        references: [{ kind: 'rfc', id: 'RFC 4632' }],
         guidedLabs: [
           {
             id: 'gl-route-lookup',
@@ -1382,7 +1393,8 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
             en: 'Using only the exit interface on multiaccess links (Ethernet) without a next-hop: it can cause ARP resolution issues; on point-to-point links it is natural instead.'
           }
         ],
-        lab: 'routing'
+        lab: 'routing',
+        references: [{ kind: 'rfc', id: 'RFC 1812' }]
       },
       {
         id: 'ospf-basics',
@@ -1661,7 +1673,8 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
             en: 'Confusing a CNAME with an A record: a CNAME points to another name, not directly to an address, and needs a further lookup.'
           }
         ],
-        lab: 'services'
+        lab: 'services',
+        references: [{ kind: 'rfc', id: 'RFC 1035' }]
       },
       {
         id: 'nat-pat',
