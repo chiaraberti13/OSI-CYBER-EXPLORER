@@ -64,7 +64,7 @@ test.describe('eJPT study track (QA-20)', () => {
     const chapterNav = page.getByRole('navigation', { name: 'Capitoli del manuale' });
     await expect(chapterNav).toBeVisible();
     for (const chapter of EJPT_CHAPTERS) {
-      await expect(chapterNav.getByRole('button', { name: chapter.title })).toBeVisible();
+      await expect(chapterNav.getByRole('link', { name: chapter.title })).toBeVisible();
     }
   });
 });

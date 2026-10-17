@@ -6,29 +6,20 @@ const WCAG_TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'];
 test.describe('manual accessibility (UX-24)', () => {
   test.use({ viewport: { width: 1280, height: 900 } });
 
-  test('orders chapter and topic navigation before content and announces chapter changes', async ({ page }) => {
-    await page.goto('/#/manual');
-    const chapterNav = page.getByRole('navigation', { name: 'Capitoli del manuale' });
+  test('keeps the topic rail current, moves focus on a chapter change, and stays WCAG clean', async ({ page }) => {
+    await page.goto('/#/manual/osi-model');
     const topicRail = page.getByRole('navigation', { name: 'In questa pagina' });
+    await expect(topicRail.getByRole('button').first()).toHaveAttribute('aria-current', 'location');
 
-    const activeChapter = chapterNav.getByRole('button', { name: /modello OSI/ });
-    const activeTopic = topicRail.getByRole('button').first();
-    await expect(activeChapter).toHaveAttribute('aria-current', 'page');
-    await expect(activeTopic).toHaveAttribute('aria-current', 'location');
-
-    // From the final chapter selector, Tab reaches the first topic jump before
-    // entering the article, matching the DOM and visual navigation order.
-    await chapterNav.getByRole('button').last().focus();
-    await page.keyboard.press('Tab');
-    await expect(activeTopic).toBeFocused();
-
-    const nextChapter = chapterNav.getByRole('button', { name: /Ethernet/ });
-    await nextChapter.click();
+    // Moving to the next chapter shifts focus to the new chapter title (an SR
+    // announcement point) which is programmatically focusable.
+    await page
+      .getByRole('navigation', { name: 'Capitolo precedente e successivo' })
+      .getByRole('button', { name: /Capitolo successivo/ })
+      .click();
     const newTitle = page.getByRole('heading', { level: 2, name: /Ethernet/ });
     await expect(newTitle).toBeFocused();
     await expect(newTitle).toHaveAttribute('tabindex', '-1');
-    await expect(nextChapter).toHaveAttribute('aria-current', 'page');
-    await expect(activeChapter).not.toHaveAttribute('aria-current');
 
     const axe = await new AxeBuilder({ page }).withTags(WCAG_TAGS).analyze();
     expect(axe.violations).toEqual([]);
@@ -36,7 +27,7 @@ test.describe('manual accessibility (UX-24)', () => {
 
   test('uses instant scrolling when reduced motion is requested', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
-    await page.goto('/#/manual');
+    await page.goto('/#/manual/osi-model');
     await page.evaluate(() => {
       const behaviors: string[] = [];
       Object.defineProperty(window, '__manualScrollBehaviors', { value: behaviors, configurable: true });
@@ -51,8 +42,8 @@ test.describe('manual accessibility (UX-24)', () => {
     const topicRail = page.getByRole('navigation', { name: 'In questa pagina' });
     await topicRail.getByRole('button').nth(1).click();
     await page
-      .getByRole('navigation', { name: 'Capitoli del manuale' })
-      .getByRole('button', { name: /Ethernet/ })
+      .getByRole('navigation', { name: 'Capitolo precedente e successivo' })
+      .getByRole('button', { name: /Capitolo successivo/ })
       .click();
     await expect(page.getByRole('heading', { level: 2, name: /Ethernet/ })).toBeFocused();
 
@@ -67,7 +58,7 @@ test.describe('manual accessibility on mobile (UX-24)', () => {
   test.use({ viewport: { width: 320, height: 800 } });
 
   test('keeps current location, touch targets and colored tiles accessible', async ({ page }) => {
-    await page.goto('/#/manual');
+    await page.goto('/#/manual/osi-model');
     // UX-45c: the per-topic quick jump is a native select; its value reflects the active
     // topic (the "current location") and updates when another topic is chosen.
     const contents = page.getByRole('navigation', { name: 'Navigazione mobile del manuale' });

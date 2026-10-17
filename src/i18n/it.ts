@@ -87,6 +87,7 @@ export const it = {
     chapterNav: 'Capitoli del manuale',
     chapterSelector: 'Vai a un capitolo',
     topicSelector: 'Vai a un argomento',
+    backToIndex: 'Tutti i capitoli',
     mobileChapterNav: 'Navigazione mobile del manuale',
     difficultyIntro: 'Introduttivo',
     difficultyCore: 'Fondamentale',

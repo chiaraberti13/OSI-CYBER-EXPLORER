@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { orderedChapters } from '../src/lib/studyManual';
 
 /**
  * UX-26 — the guided exercise is the primary practical action in every topic.
@@ -11,30 +12,13 @@ test.describe('manual guided exercise emphasis (UX-26)', () => {
   test.use({ viewport: { width: 1280, height: 900 } });
 
   test('surfaces a primary guided-exercise action on every guided lab', async ({ page }) => {
-    await page.goto('/#/manual');
-    // The manual view is a lazy chunk; wait for it before counting controls.
-    const chapterNav = page.getByRole('navigation', { name: 'Capitoli del manuale' });
-    await expect(chapterNav).toBeVisible();
-
-    // IA-12 — the CCNA index is organised into collapsible domain sections. Expand every
-    // one so all chapter links are reachable, then iterate the chapter links only (not the
-    // section toggles).
-    const sectionToggles = chapterNav.locator('[data-testid="manual-chapter-section"]');
-    const sectionCount = await sectionToggles.count();
-    for (let s = 0; s < sectionCount; s++) {
-      const toggle = sectionToggles.nth(s);
-      if ((await toggle.getAttribute('aria-expanded')) === 'false') await toggle.click();
-    }
-
-    const chapterButtons = chapterNav.locator('[data-testid="manual-chapter-link"]');
-    const chapterCount = await chapterButtons.count();
-    expect(chapterCount).toBeGreaterThan(1);
-
+    // IA-13 — the manual opens on a card index; open each chapter by its deep link and
+    // check its guided-lab tiles. Iterating the data (not the UI) keeps this robust.
     let totalGuidedLabs = 0;
 
-    for (let i = 0; i < chapterCount; i++) {
-      await chapterButtons.nth(i).click();
-      await expect(chapterButtons.nth(i)).toHaveAttribute('aria-current', 'page');
+    for (const chapter of orderedChapters()) {
+      await page.goto(`/#/manual/${chapter.id}`);
+      await expect(page.getByRole('heading', { level: 2, name: chapter.title.it })).toBeVisible();
 
       const tiles = page.locator('[data-manual-tile="guided-lab"]');
       const tileCount = await tiles.count();
@@ -63,8 +47,8 @@ test.describe('manual guided exercise emphasis (UX-26)', () => {
   });
 
   test('keeps "study in the lab" a clearly secondary action', async ({ page }) => {
-    await page.goto('/#/manual');
-    await expect(page.getByRole('heading', { level: 1, name: 'Manuale di studio' })).toBeVisible();
+    await page.goto('/#/manual/osi-model');
+    await expect(page.getByRole('heading', { level: 2, name: /Il modello OSI/ })).toBeVisible();
 
     // The OSI chapter offers both a guided exercise and free lab exploration.
     const studyLink = page.locator('[data-manual-action="study-lab"]').first();
