@@ -1822,6 +1822,77 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
           }
         ],
         references: [{ kind: 'rfc', id: 'RFC 5905' }]
+      },
+      {
+        id: 'ip-services-qos',
+        title: {
+          it: 'QoS: classificazione, marcatura e gestione della congestione',
+          en: 'QoS: classification, marking, and congestion handling'
+        },
+        objectives: [
+          {
+            it: 'Spiegare il comportamento per-hop (PHB) e perché la QoS conta solo quando il collegamento è congestionato.',
+            en: 'Explain per-hop behavior (PHB) and why QoS matters only when the link is congested.'
+          },
+          {
+            it: 'Distinguere la marcatura CoS (3 bit, livello 2) e DSCP (6 bit, livello 3) e dove ciascuna sopravvive.',
+            en: 'Distinguish CoS marking (3 bits, layer 2) and DSCP (6 bits, layer 3) and where each one survives.'
+          },
+          {
+            it: 'Confrontare policing e shaping e collocare il confine di fiducia (trust boundary).',
+            en: 'Compare policing and shaping and place the trust boundary.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere l’header IP, la differenza tra livello 2 e livello 3 e il tag 802.1Q (capitolo Accesso alla rete).',
+            en: 'Know the IP header, the difference between layer 2 and layer 3, and the 802.1Q tag (Network access chapter).'
+          }
+        ],
+        theory: [
+          {
+            it: 'La QoS (Quality of Service) decide quali pacchetti hanno la precedenza quando un’interfaccia è congestionata, cioè quando arriva più traffico di quanto il collegamento possa trasmettere. Su un collegamento scarico non serve: passa tutto subito. Il modello pratico è DiffServ, in cui ogni router applica, salto per salto, un comportamento per-hop (PHB) in base a come il pacchetto è marcato. La QoS non crea banda: la assegna sotto contesa, decidendo chi aspetta e chi viene scartato.',
+            en: 'QoS (Quality of Service) decides which packets get precedence when an interface is congested, that is when more traffic arrives than the link can transmit. On an idle link it does nothing: everything goes through at once. The practical model is DiffServ, where each router applies, hop by hop, a per-hop behavior (PHB) based on how the packet is marked. QoS does not create bandwidth: it allocates it under contention, deciding who waits and who is dropped.'
+          },
+          {
+            it: 'Il traffico va prima classificato (riconosciuto: voce, video, dati) e poi marcato, cioè etichettato perché gli hop successivi non debbano riclassificarlo. A livello 2, dentro il tag 802.1Q, i 3 bit di CoS (Class of Service) danno 8 valori ma valgono solo sul singolo segmento Ethernet: un router che instrada rifà l’intestazione di livello 2 e la marcatura CoS si perde. A livello 3, il campo DSCP usa 6 bit dell’ottetto ToS/DS dell’header IP (64 valori) e viaggia end-to-end con il pacchetto. Valori notevoli: EF (Expedited Forwarding, DSCP 46) per la voce, la famiglia AF (Assured Forwarding) per i dati a priorità, CS0/DSCP 0 per il best effort.',
+            en: 'Traffic is first classified (recognised: voice, video, data) and then marked, that is tagged so later hops need not reclassify it. At layer 2, inside the 802.1Q tag, the 3 CoS (Class of Service) bits give 8 values but apply only on a single Ethernet segment: a router that routes rebuilds the layer 2 header and the CoS marking is lost. At layer 3, the DSCP field uses 6 bits of the ToS/DS octet in the IP header (64 values) and travels end-to-end with the packet. Notable values: EF (Expedited Forwarding, DSCP 46) for voice, the AF (Assured Forwarding) family for prioritised data, CS0/DSCP 0 for best effort.'
+          },
+          {
+            it: 'Quando l’interfaccia è piena i pacchetti si accodano. La gestione della congestione sceglie l’ordine di uscita delle code: la LLQ (Low Latency Queuing) dà una coda a priorità stretta alla voce, così EF esce per prima e con jitter minimo, mentre CBWFQ riserva una quota di banda alle altre classi. La prevenzione della congestione, con WRED, scarta in anticipo e in modo selettivo i pacchetti a priorità più bassa prima che la coda si riempia del tutto, evitando il tail drop che colpisce tutti allo stesso modo e sincronizza i flussi TCP.',
+            en: 'When the interface is full, packets queue. Congestion management chooses the order in which queues drain: LLQ (Low Latency Queuing) gives voice a strict priority queue, so EF leaves first and with minimal jitter, while CBWFQ reserves a share of bandwidth for the other classes. Congestion avoidance, with WRED, drops lower-priority packets early and selectively before the queue fills completely, avoiding the tail drop that hits everyone equally and synchronises TCP flows.'
+          },
+          {
+            it: 'Per far rispettare un tasso concordato ci sono due strumenti. Il policing misura il traffico e, se supera il limite, scarta o ri-marca subito i pacchetti in eccesso: non introduce ritardo ma causa perdita. Lo shaping invece bufferizza l’eccesso e lo rilascia in modo regolare: non scarta ma aggiunge ritardo, utile verso un collegamento più lento. Infine il confine di fiducia (trust boundary) è il punto fino al quale le marcature altrui sono credute: di norma si marca al bordo della rete (lo switch di accesso o il telefono IP) e non ci si fida delle marcature provenienti dai PC degli utenti, che potrebbero auto-promuoversi a EF.',
+            en: 'To enforce an agreed rate there are two tools. Policing measures traffic and, if it exceeds the limit, immediately drops or re-marks the excess packets: it adds no delay but causes loss. Shaping instead buffers the excess and releases it smoothly: it does not drop but adds delay, useful toward a slower link. Finally, the trust boundary is the point up to which other devices’ markings are believed: markings are normally set at the network edge (the access switch or the IP phone), and markings coming from user PCs — which could promote themselves to EF — are not trusted.'
+          }
+        ],
+        example: {
+          it: 'Un telefono IP marca la voce come EF (DSCP 46); lo switch di accesso è il confine di fiducia e conferma quella marcatura, mentre azzera a 0 quella dei PC. Sul collegamento WAN congestionato la LLQ fa uscire per prima la voce, mentre una classe «scavenger» (CS1, DSCP 8) è la prima a essere scartata da WRED.',
+          en: 'An IP phone marks voice as EF (DSCP 46); the access switch is the trust boundary and confirms that marking, while resetting PCs’ markings to 0. On the congested WAN link, LLQ drains voice first, while a “scavenger” class (CS1, DSCP 8) is the first to be dropped by WRED.'
+        },
+        commonMistakes: [
+          {
+            it: 'Credere che la QoS aggiunga banda: ridistribuisce solo ciò che c’è quando il collegamento è congestionato; su un link scarico non cambia nulla.',
+            en: 'Believing QoS adds bandwidth: it only redistributes what is there when the link is congested; on an idle link it changes nothing.'
+          },
+          {
+            it: 'Aspettarsi che la marcatura CoS sopravviva all’instradamento: i 3 bit CoS vivono nel tag 802.1Q di livello 2 e si perdono al primo router; per un trattamento end-to-end serve il DSCP di livello 3.',
+            en: 'Expecting CoS marking to survive routing: the 3 CoS bits live in the layer 2 802.1Q tag and are lost at the first router; end-to-end treatment needs the layer 3 DSCP.'
+          },
+          {
+            it: 'Confondere policing e shaping: il policing scarta o ri-marca l’eccesso (perdita, nessun ritardo), lo shaping lo bufferizza (ritardo, nessuna perdita).',
+            en: 'Confusing policing and shaping: policing drops or re-marks the excess (loss, no delay), shaping buffers it (delay, no loss).'
+          },
+          {
+            it: 'Fidarsi delle marcature che arrivano dagli host degli utenti: senza un confine di fiducia al bordo, qualunque PC può marcarsi EF e scavalcare la voce.',
+            en: 'Trusting markings that arrive from user hosts: without a trust boundary at the edge, any PC can mark itself EF and jump ahead of voice.'
+          }
+        ],
+        references: [
+          { kind: 'rfc', id: 'RFC 2474' },
+          { kind: 'rfc', id: 'RFC 4594' }
+        ]
       }
     ]
   },

@@ -5,7 +5,7 @@
 > **Apertura Fase 3:** 14 ottobre 2026.
 > **Obiettivi di certificazione:** **CCNA 200-301** e **eJPT — INE/eLearnSecurity Junior
 > Penetration Tester**, in chiave didattica e autorizzata.
-> **Stato del manuale:** 29 capitoli / 92 argomenti / 77 laboratori guidati, bilingue IT/EN,
+> **Stato del manuale:** 29 capitoli / 93 argomenti / 77 laboratori guidati, bilingue IT/EN,
 > con il percorso eJPT completo e una sequenza di studio a doppio binario documentata.
 > **Metodo:** incrementi verticali completi e verificati (`npm run verify`, E2E Chromium con
 > Axe WCAG 2.2 AA, audit), pubblicati su `main`; ogni intervento documentato in `docs/verify/`.
@@ -388,6 +388,14 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
       bilingue IT/EN con obiettivi, teoria ed errori comuni, riferimenti ATT&CK/RFC/NIST risolti in
       HTTPS, solo target di documentazione; guard bilingue e integrità del manuale verdi; conteggi
       derivati dal dataset; report in `docs/verify/`.
+  - [x] **Incremento QoS applicata (17/10/2026).** Aggiunto l'argomento CCNA 200-301 dominio 4.7
+        `ip-services-qos` al capitolo `ip-services`: PHB/DiffServ, classificazione e marcatura
+        (CoS 3 bit di livello 2 vs DSCP 6 bit di livello 3; EF/DSCP 46, AF, CS0), gestione della
+        congestione (LLQ, CBWFQ, WRED contro il tail drop) e policing vs shaping con il confine di
+        fiducia. Contenuto difensivo/neutro, teoria-only (come NTP), riferimenti RFC 2474 e
+        RFC 4594 risolti in HTTPS. Parità IT/EN curata su acronimi e cifre. `manualStats()` →
+        29/93/77. `verify` completo verde (786 test), E2E 74/74 con Axe, budget 122,9 kB gzip,
+        `npm audit` 0 vulnerabilità. Report: `docs/verify/2026-10-17-content10-qos.md`.
 - [x] **EDU-40 (P3) — Esercizi guidati per gli argomenti aggiunti.** **Esito (16/10/2026):** aggiunti
       tre esercizi guidati ai nuovi argomenti eJPT, riusando laboratori interattivi già registrati:
       «Attacchi alle password» → `identitytrust`, «Inclusione di file e directory traversal» →
@@ -399,6 +407,12 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
 
 ## 🧾 Registro delle decisioni
 
+- **17/10/2026 — CONTENT-10: QoS applicata (CCNA 4.7).** Aggiunto l'argomento `ip-services-qos` al
+  capitolo `ip-services` (PHB/DiffServ, CoS vs DSCP, LLQ/CBWFQ/WRED, policing vs shaping, trust
+  boundary), bilingue con parità di acronimi e cifre e riferimenti RFC 2474/4594. Argomento d'esame
+  CCNA difensivo/neutro, teoria-only. Manuale 92 → 93 argomenti (conteggi derivati dal dataset).
+  `verify` completo verde (786 test), 74/74 E2E Chromium con Axe, 0 vulnerabilità.
+  Report: `docs/verify/2026-10-17-content10-qos.md`.
 - **14/10/2026 — Apertura Fase 3.** Chiusa la Fase 2 (percorso eJPT completo, sequenza a doppio
   binario, nuovo marchio). La Fase 3 completa la copertura guida↔laboratori, introduce laboratori
   interattivi per la metodologia eJPT e consolida qualità visiva, UX, i18n e documentazione. Roadmap
