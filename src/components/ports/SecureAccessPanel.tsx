@@ -1,6 +1,7 @@
 import React from 'react';
+import { AAA_CONTENT } from '../../content/aaaContent';
 import { motion, AnimatePresence } from 'motion/react';
-import { Sparkles, Activity, Lock, Layers, Server } from 'lucide-react';
+import { Sparkles, Lock, Layers, Server } from 'lucide-react';
 import type { Language } from '../../lib/portsFilter';
 import type { AaaProtocol, EapMethod, SecureSubTab, VpnMode } from './portsTypes';
 
@@ -47,8 +48,8 @@ export default function SecureAccessPanel({
           </h2>
           <p className="text-slate-300 text-[12.5px] leading-relaxed">
             {language === 'en'
-              ? 'Authentication frameworks, AAA servers, and secure overlay channels protect network boundaries. Learn how EAP, RADIUS, TACACS+, and VPN technologies establish trusted tunnels and audit administrative sessions.'
-              : 'I framework di autenticazione, i server AAA e i canali logici protetti difendono i confini delle reti. Scopri come le tecnologie EAP, RADIUS, TACACS+ e VPN creano tunnel cifrati e certificano le sessioni degli utenti.'}
+              ? 'Authentication frameworks, AAA servers, and secure overlay channels protect network boundaries. EAP supports authentication, RADIUS and TACACS+ manage access decisions and accounting, while VPN technologies provide tunnels.'
+              : 'I framework di autenticazione, i server AAA e i canali logici protetti difendono i confini delle reti. EAP supporta l’autenticazione, RADIUS e TACACS+ gestiscono decisioni di accesso e accounting, mentre le tecnologie VPN forniscono tunnel.'}
           </p>
         </div>
       </div>
@@ -57,8 +58,9 @@ export default function SecureAccessPanel({
       <div className="flex border-b border-slate-200 gap-1 overflow-x-auto pb-px select-none">
         <button
           id="subtab-eap"
+          aria-pressed={secureSubTab === 'eap'}
           onClick={() => setSecureSubTab('eap')}
-          className={`px-4 py-2 text-xs font-semibold uppercase border-b-2 transition-all flex items-center gap-2 whitespace-nowrap ${
+          className={`min-h-11 px-4 py-2 text-xs font-semibold uppercase border-b-2 transition-all flex items-center gap-2 whitespace-nowrap ${
             secureSubTab === 'eap'
               ? 'border-emerald-500 text-emerald-600 font-extrabold'
               : 'border-transparent text-slate-500 hover:text-slate-800'
@@ -69,8 +71,9 @@ export default function SecureAccessPanel({
         </button>
         <button
           id="subtab-aaa"
+          aria-pressed={secureSubTab === 'aaa'}
           onClick={() => setSecureSubTab('aaa')}
-          className={`px-4 py-2 text-xs font-semibold uppercase border-b-2 transition-all flex items-center gap-2 whitespace-nowrap ${
+          className={`min-h-11 px-4 py-2 text-xs font-semibold uppercase border-b-2 transition-all flex items-center gap-2 whitespace-nowrap ${
             secureSubTab === 'aaa'
               ? 'border-emerald-500 text-emerald-600 font-extrabold'
               : 'border-transparent text-slate-500 hover:text-slate-800'
@@ -81,8 +84,9 @@ export default function SecureAccessPanel({
         </button>
         <button
           id="subtab-vpn"
+          aria-pressed={secureSubTab === 'vpn'}
           onClick={() => setSecureSubTab('vpn')}
-          className={`px-4 py-2 text-xs font-semibold uppercase border-b-2 transition-all flex items-center gap-2 whitespace-nowrap ${
+          className={`min-h-11 px-4 py-2 text-xs font-semibold uppercase border-b-2 transition-all flex items-center gap-2 whitespace-nowrap ${
             secureSubTab === 'vpn'
               ? 'border-emerald-500 text-emerald-600 font-extrabold'
               : 'border-transparent text-slate-500 hover:text-slate-800'
@@ -354,208 +358,53 @@ export default function SecureAccessPanel({
             exit={{ opacity: 0, y: -10 }}
             className="space-y-6"
           >
-            {/* AAA Overview info */}
-            <div className="bg-white border border-slate-200/80 rounded-lg p-5 space-y-3">
-              <h3 className="font-extrabold text-slate-800 text-sm uppercase tracking-tight">
-                {language === 'en'
-                  ? 'Centralized Network Control: RADIUS vs TACACS+'
-                  : 'Controllo Centralizzato degli Accessi: RADIUS vs TACACS+'}
-              </h3>
-              <p className="text-xs text-slate-500 leading-relaxed">
-                {language === 'en'
-                  ? 'RADIUS and TACACS+ are both AAA (Authentication, Authorization, Accounting) protocols used to manage network access. However, they were built for different scopes: RADIUS is engineered for user/client access at the perimeter, while TACACS+ is crafted for fine-grained administrative access controls directly on network hardware.'
-                  : "RADIUS e TACACS+ sono i due protocolli di gestione centralizzata AAA (Autenticazione, Autorizzazione, Accounting) leader del mercato. Sebbene si somiglino negli scopi, nascono per esigenze antitetiche: RADIUS si focalizza sul controllo d'accesso degli utenti ai bordi (es. Wi-Fi aziendale), mentre TACACS+ governa la sicurezza degli amministratori di sistema direttamente sulle riga di comando di router e switch."}
-              </p>
-            </div>
-
-            {/* Comparative Grid Table */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
-              {/* RADIUS Features Card */}
-              <div className="bg-white border-t-4 border-t-blue-500 border border-slate-200 rounded-lg p-5 space-y-4">
-                <span className="text-xs font-semibold text-blue-600 font-mono tracking-wider block uppercase">
-                  RADIUS
-                </span>
-                <h4 className="font-extrabold text-slate-800 text-sm">Remote Authentication Dial-In User Service</h4>
-
-                <ul className="space-y-2.5 text-xs text-slate-600">
-                  <li className="flex items-start gap-2">
-                    <span className="p-1 bg-blue-50 text-blue-600 rounded-md shrink-0 font-mono text-[10px] font-bold">
-                      L4
-                    </span>
-                    <span>
-                      <strong>{language === 'en' ? 'Transport' : 'Trasporto'}:</strong> UDP (ports 1812 Authentication,
-                      1813 Accounting). Connectionless and fast.
-                    </span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="p-1 bg-blue-50 text-blue-600 rounded-md shrink-0 font-mono text-[10px] font-bold">
-                      SEC
-                    </span>
-                    <span>
-                      <strong>{language === 'en' ? 'Encryption' : 'Crittografia'}:</strong> Only encrypts the password
-                      field inside the packet. Usernames, attributes, and session statistics are sent in cleartext.
-                    </span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="p-1 bg-blue-50 text-blue-600 rounded-md shrink-0 font-mono text-[10px] font-bold">
-                      AAA
-                    </span>
-                    <span>
-                      <strong>{language === 'en' ? 'Separation' : 'Separazione'}:</strong> Combines Authentication and
-                      Authorization together in a single request transaction.
-                    </span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="p-1 bg-blue-50 text-blue-600 rounded-md shrink-0 font-mono text-[10px] font-bold">
-                      USE
-                    </span>
-                    <span>
-                      <strong>{language === 'en' ? 'Scope' : 'Destinazione'}:</strong> Client access and perimeter doors
-                      (secure corporate Wi-Fi, switches port locking, Dial-up/Broadband networks).
-                    </span>
-                  </li>
-                </ul>
-              </div>
-
-              {/* TACACS+ Features Card */}
-              <div className="bg-white border-t-4 border-t-emerald-500 border border-slate-200 rounded-lg p-5 space-y-4">
-                <span className="text-xs font-semibold text-emerald-600 font-mono tracking-wider block uppercase">
-                  TACACS+
-                </span>
-                <h4 className="font-extrabold text-slate-800 text-sm">
-                  Terminal Access Controller Access-Control System Plus
-                </h4>
-
-                <ul className="space-y-2.5 text-xs text-slate-600">
-                  <li className="flex items-start gap-2">
-                    <span className="p-1 bg-emerald-50 text-emerald-600 rounded-md shrink-0 font-mono text-[10px] font-bold">
-                      L4
-                    </span>
-                    <span>
-                      <strong>{language === 'en' ? 'Transport' : 'Trasporto'}:</strong> TCP (port 49). Establishes a
-                      connection-oriented stateful session, guaranteed delivery.
-                    </span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="p-1 bg-emerald-50 text-emerald-600 rounded-md shrink-0 font-mono text-[10px] font-bold">
-                      SEC
-                    </span>
-                    <span>
-                      <strong>{language === 'en' ? 'Encryption' : 'Crittografia'}:</strong> Completely encrypts the
-                      entire body payload of the packet. Only a minimal standard header is left in plaintext.
-                    </span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="p-1 bg-emerald-50 text-emerald-600 rounded-md shrink-0 font-mono text-[10px] font-bold">
-                      AAA
-                    </span>
-                    <span>
-                      <strong>{language === 'en' ? 'Separation' : 'Separazione'}:</strong> Separates Authentication,
-                      Authorization, and Accounting cleanly into autonomous queries.
-                    </span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="p-1 bg-emerald-50 text-emerald-600 rounded-md shrink-0 font-mono text-[10px] font-bold">
-                      USE
-                    </span>
-                    <span>
-                      <strong>{language === 'en' ? 'Scope' : 'Destinazione'}:</strong> Highly detailed administrative
-                      control on switches, routers, firewalls. Authorizes specific configuration commands (e.g. allow
-                      only 'show running-config' but deny 'reload').
-                    </span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-
-            {/* Interactive Diagnostic AAA Console simulator */}
-            <div className="bg-slate-900 border border-slate-950 rounded-lg p-5 text-slate-300 space-y-4">
-              <div className="flex justify-between items-center border-b border-slate-800 pb-2">
-                <h4 className="font-mono text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5 animate-pulse">
-                  <Activity className="w-4 h-4 text-emerald-400" />
-                  {language === 'en' ? 'AAA Active Protocol Logger' : 'Analizzatore Real-Time Auditing AAA'}
-                </h4>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => setSelectedAaaSim('radius')}
-                    className={`px-2 py-1 rounded text-[10px] font-bold font-mono transition-colors border ${
-                      selectedAaaSim === 'radius'
-                        ? 'bg-blue-600 text-white border-blue-700'
-                        : 'bg-slate-800 text-slate-400 border-slate-700'
-                    }`}
+            <div data-testid="aaa-content" className="space-y-6 min-w-0 break-words">
+              <h3 className="font-bold text-slate-800">RADIUS vs TACACS+ (AAA)</h3>
+              <p className="text-sm text-slate-600">{AAA_CONTENT.overview[language]}</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {Object.entries(AAA_CONTENT.protocols).map(([id, protocol]) => (
+                  <section
+                    key={id}
+                    data-aaa-protocol={id}
+                    className="min-w-0 bg-white border border-slate-200 rounded-lg p-5 space-y-4"
                   >
-                    {language === 'en' ? 'Simulate RADIUS' : 'Simula RADIUS'}
-                  </button>
-                  <button
-                    onClick={() => setSelectedAaaSim('tacacs')}
-                    className={`px-2 py-1 rounded text-[10px] font-bold font-mono transition-colors border ${
-                      selectedAaaSim === 'tacacs'
-                        ? 'bg-emerald-600 text-white border-emerald-700'
-                        : 'bg-slate-800 text-slate-400 border-slate-700'
-                    }`}
-                  >
-                    {language === 'en' ? 'Simulate TACACS+' : 'Simula TACACS+'}
-                  </button>
+                    <h4 className="font-bold text-slate-800">{protocol.name}</h4>
+                    <ul className="list-disc pl-5 space-y-3 text-sm text-slate-600">
+                      {protocol.facts.map((fact, index) => (
+                        <li key={index}>{fact[language]}</li>
+                      ))}
+                    </ul>
+                  </section>
+                ))}
+              </div>
+              <section
+                className="bg-slate-900 rounded-lg p-5 text-slate-200 space-y-4"
+                aria-label={language === 'en' ? 'Illustrative AAA trace' : 'Traccia didattica AAA'}
+              >
+                <h4 className="font-bold">{language === 'en' ? 'Illustrative AAA trace' : 'Traccia didattica AAA'}</h4>
+                <p className="text-sm">{AAA_CONTENT.disclaimer[language]}</p>
+                <div className="flex flex-wrap gap-2">
+                  {(['radius', 'tacacs'] as const).map((id) => (
+                    <button
+                      key={id}
+                      aria-pressed={selectedAaaSim === id}
+                      onClick={() => setSelectedAaaSim(id)}
+                      className={`min-h-11 px-3 py-2 rounded border text-sm font-bold ${selectedAaaSim === id ? 'bg-blue-700 text-white border-blue-400' : 'bg-slate-800 text-slate-200 border-slate-500'}`}
+                    >
+                      {language === 'en' ? 'Simulate ' : 'Simula '}
+                      {AAA_CONTENT.protocols[id].name}
+                    </button>
+                  ))}
                 </div>
-              </div>
-
-              <div className="p-4 bg-slate-950 rounded-xl font-mono text-xs space-y-2 leading-relaxed border border-slate-800">
-                {selectedAaaSim === 'radius' ? (
-                  <>
-                    <p className="text-blue-400">&gt; RADIUS CLI: Connecting Client WPA3-Enterprise supplicant...</p>
-                    <p className="text-slate-500">&gt; Packet generated: UDP Port 1812 destination, size 124 bytes.</p>
-                    <p className="text-amber-400 font-bold">
-                      &gt; [SNIFFER VIEW] Username: "employee_chiara" [PLAINTEXT]
-                    </p>
-                    <p className="text-amber-400 font-bold">
-                      &gt; [SNIFFER VIEW] Encrypted Attribute: Password hash: "ESP_hash_2026_***" [PROTECTED]
-                    </p>
-                    <p className="text-slate-400">
-                      &gt; Query dispatched to company Active Directory Server. Checking user profiles...
-                    </p>
-                    <p className="text-emerald-400 font-bold">
-                      &gt; RESPONSE RECEIVED [Access-Accept] - Combined Auth/Authz approved. User connected. Profile:
-                      "VLAN_IT_Dept" assigned.
-                    </p>
-                  </>
-                ) : (
-                  <>
-                    <p className="text-emerald-400">
-                      &gt; TACACS+ CLI: Sys-Administrator "chiara_admin" logging on Router_Core_Rome...
-                    </p>
-                    <p className="text-slate-500">
-                      &gt; Session opened: TCP Port 49 connection established. Stateful handshake completed.
-                    </p>
-                    <p className="text-emerald-500 font-bold">
-                      &gt; [SNIFFER VIEW] Entire packet body encrypted. Payload is invisible to hackers! [CRITICAL
-                      ADVANTAGE]
-                    </p>
-                    <p className="text-slate-400">&gt; Command typed: "configure terminal" (auth check requested)...</p>
-                    <p className="text-emerald-400 font-bold">
-                      &gt; COMMAND AUTHORIZATION: Approved. Server grants "Privilege Level 15" for exact conft commands.
-                    </p>
-                    <p className="text-slate-400">&gt; Logged command to security audit ledger [TACACS+ Accounting].</p>
-                  </>
-                )}
-              </div>
-
-              <div className="text-slate-400 text-[11px] leading-relaxed">
-                {selectedAaaSim === 'radius' ? (
-                  <p>
-                    <strong>💡 {language === 'en' ? 'Security Lesson' : 'Spiegazione Pratica'}:</strong>{' '}
-                    {language === 'en'
-                      ? 'Notice how RADIUS left the username visible in plaintext over the wire! Because RADIUS only encrypts the password attribute, hackers sniffing local network corridors can map all your corporate active usernames easily. Standard RADIUS should always be encapsulated inside secure IPsec tunnels or upgraded to RadSec (over TLS).'
-                      : "Nota come il pacchetto RADIUS trasmetta il nome utente in chiaro lungo la linea di transito! Poiché RADIUS cifra soltanto la password, terzi hacker in ascolto abusivo possono mappare l'identità dell'utente semplicemente spiando i pacchetti. Per questo motivo, il protocollo va protetto incapsulandolo in tunnel IPsec o migrando a RadSec (RADIUS su TLS Cifrato)."}
-                  </p>
-                ) : (
-                  <p>
-                    <strong>💡 {language === 'en' ? 'Security Lesson' : 'Spiegazione Pratica'}:</strong>{' '}
-                    {language === 'en'
-                      ? 'TACACS+ completely encrypts every packet. Sniffers only see the transport TCP layer metadata. Furthermore, TACACS+ checks every single configuration command individually. If a rogue admin types "reload" or "erase startup-config", TACACS+ can block the command instantly while keeping the engineer session active, guaranteeing professional security auditing.'
-                      : 'Il TACACS+ cifra interamente ogni pacchetto; gli sniffer vedono solo i metadati di trasporto. Inoltre, TACACS+ convalida i comandi in modo granulare: se un amministratore malevolo digita "reload" o comandi dannosi, il server può negare lo specifico comando salvando la rete, lasciando l\'utente connesso per compiere altre configurazioni.'}
-                  </p>
-                )}
-              </div>
+                <div aria-live="polite" aria-atomic="true" data-testid="aaa-trace" className="space-y-4">
+                  <ol className="list-decimal pl-5 space-y-3 text-sm font-mono">
+                    {AAA_CONTENT.protocols[selectedAaaSim].events.map((event, index) => (
+                      <li key={index}>{event[language]}</li>
+                    ))}
+                  </ol>
+                  <p className="text-sm">{AAA_CONTENT.protocols[selectedAaaSim].lesson[language]}</p>
+                </div>
+              </section>
             </div>
           </motion.div>
         )}
