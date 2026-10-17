@@ -6196,6 +6196,62 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
         ]
       },
       {
+        id: 'pentest-vulnerability-assessment',
+        title: {
+          it: 'Valutazione delle vulnerabilità',
+          en: 'Vulnerability assessment'
+        },
+        objectives: [
+          {
+            it: 'Spiegare come l’enumerazione diventa una lista di vulnerabilità plausibili, prioritizzata e difendibile, distinguendo l’ipotesi dalla verifica.',
+            en: 'Explain how enumeration becomes a prioritized, defensible list of plausible vulnerabilities, telling the hypothesis from the verification.'
+          },
+          {
+            it: 'Collegare la valutazione al lato difensivo — gestione delle patch e della configurazione, riduzione della superficie — e ai suoi limiti (falsi positivi, contesto).',
+            en: 'Link the assessment to the defensive side — patch and configuration management, surface reduction — and to its limits (false positives, context).'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere scanning ed enumerazione dei servizi (argomenti precedenti): la valutazione parte dai loro risultati.',
+            en: 'Know scanning and service enumeration (previous topics): the assessment starts from their results.'
+          }
+        ],
+        theory: [
+          {
+            it: 'La valutazione delle vulnerabilità è la fase — nella metodologia eJPT, dentro le Assessment Methodologies — che trasforma ciò che l’enumerazione ha trovato (servizi, versioni, configurazioni) in una lista di vulnerabilità plausibili. Il metodo è correlare quelle evidenze con debolezze note, tipicamente identificate da un CVE e valutate per gravità con un punteggio CVSS. Il punto chiave è che resta un’ipotesi finché non è verificata: una versione marcata «vulnerabile» può essere stata corretta con una patch retroportata, e uno scanner produce falsi positivi. Riportare una vulnerabilità come confermata senza averla verificata è l’errore classico di questa fase.',
+            en: 'Vulnerability assessment is the phase — in the eJPT methodology, within Assessment Methodologies — that turns what enumeration found (services, versions, configurations) into a list of plausible vulnerabilities. The method is to correlate that evidence with known weaknesses, typically identified by a CVE and rated for severity with a CVSS score. The key point is that it stays a hypothesis until verified: a version marked «vulnerable» may have been fixed with a backported patch, and a scanner produces false positives. Reporting a vulnerability as confirmed without verifying it is the classic mistake of this phase.'
+          },
+          {
+            it: 'La valutazione si fa con due prospettive. Una scansione non autenticata vede ciò che vede un estraneo dalla rete; una scansione autenticata, con credenziali sul sistema, legge versioni e patch effettive e riduce i falsi positivi, ma non va confusa con l’esposizione reale verso l’esterno. La prioritizzazione non può basarsi sul solo CVSS: contano anche l’esposizione (il servizio è raggiungibile da dove?), l’esistenza di un exploit praticabile e il valore dell’asset. Una vulnerabilità critica su un host isolato può pesare meno di una media su un servizio esposto e centrale.',
+            en: 'The assessment is done from two perspectives. An unauthenticated scan sees what an outsider on the network sees; an authenticated scan, with credentials on the system, reads the actual versions and patches and reduces false positives, but must not be confused with real external exposure. Prioritization cannot rest on CVSS alone: exposure also matters (reachable from where?), the existence of a practical exploit, and the value of the asset. A critical vulnerability on an isolated host can weigh less than a medium one on an exposed, central service.'
+          },
+          {
+            it: 'È la stessa attività che il difensore esegue di continuo, dall’altro lato: la gestione delle vulnerabilità è un ciclo di scoperta, prioritizzazione, rimedio (patch o mitigazione di configurazione) e verifica, non un evento una tantum. L’output utile non è l’elenco grezzo dello scanner ma una lista verificata e contestualizzata con rimedi concreti. Come ogni scansione, lascia una firma nei log ed è vincolata a scope e autorizzazione: valutare fuori dallo scope o dichiarare sfruttabile ciò che non è stato verificato sono errori di metodo, non solo di tecnica.',
+            en: 'It is the same activity the defender runs continuously, from the other side: vulnerability management is a cycle of discovery, prioritization, remediation (patching or configuration mitigation) and verification, not a one-off event. The useful output is not the scanner’s raw list but a verified, contextualized list with concrete remediation. Like any scan, it leaves a signature in the logs and is bound by scope and authorization: assessing out of scope, or declaring exploitable what was never verified, are method errors, not just technical ones.'
+          }
+        ],
+        example: {
+          it: 'Su un host in 192.0.2.0/24 uno scanner segnala la versione di un servizio come esposta a un CVE ad alto CVSS; la verifica mostra che è un falso positivo (patch retroportata), quindi l’assessor non la riporta come confermata e prioritizza invece una vulnerabilità media ma su un servizio realmente raggiungibile dall’esterno.',
+          en: 'On a host in 192.0.2.0/24 a scanner flags a service version as exposed to a high-CVSS CVE; verification shows it is a false positive (backported patch), so the assessor does not report it as confirmed and instead prioritizes a medium vulnerability on a service that is actually reachable from outside.'
+        },
+        commonMistakes: [
+          {
+            it: 'Riportare come confermata una vulnerabilità vista solo dallo scanner: falsi positivi e patch retroportate smentiscono il numero di versione.',
+            en: 'Reporting as confirmed a vulnerability seen only by the scanner: false positives and backported patches disprove the version number.'
+          },
+          {
+            it: 'Prioritizzare col solo CVSS, ignorando esposizione, exploit praticabile e valore dell’asset.',
+            en: 'Prioritizing by CVSS alone, ignoring exposure, a practical exploit, and the value of the asset.'
+          },
+          {
+            it: 'Fermarsi all’elenco grezzo dello scanner invece di produrre una lista verificata con rimedi concreti.',
+            en: 'Stopping at the scanner’s raw list instead of producing a verified list with concrete remediation.'
+          }
+        ],
+        references: [{ kind: 'nist', id: 'SP 800-115' }]
+      },
+      {
         id: 'pentest-password-attacks',
         title: {
           it: 'Attacchi alle password: brute force e spraying',

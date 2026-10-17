@@ -5,7 +5,7 @@
 > **Apertura Fase 3:** 14 ottobre 2026.
 > **Obiettivi di certificazione:** **CCNA 200-301** e **eJPT — INE/eLearnSecurity Junior
 > Penetration Tester**, in chiave didattica e autorizzata.
-> **Stato del manuale:** 29 capitoli / 97 argomenti / 77 laboratori guidati, bilingue IT/EN,
+> **Stato del manuale:** 29 capitoli / 98 argomenti / 77 laboratori guidati, bilingue IT/EN,
 > con il percorso eJPT completo e una sequenza di studio a doppio binario documentata.
 > **Metodo:** incrementi verticali completi e verificati (`npm run verify`, E2E Chromium con
 > Axe WCAG 2.2 AA, audit), pubblicati su `main`; ogni intervento documentato in `docs/verify/`.
@@ -425,7 +425,7 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
 
 > Piano concreto di **contenuti da aggiungere** e **miglioramenti ai contenuti**, derivato da una
 > ricognizione reale della copertura su `main` (218 id di capitoli/argomenti/lab; `manualStats()` →
-> 29 capitoli / 97 argomenti / 77 laboratori guidati; **97/97** argomenti con `references` (CONTENT-15
+> 29 capitoli / 98 argomenti / 77 laboratori guidati; **98/98** argomenti con `references` (CONTENT-15
 > completato e mantenuto dal guard), **7/97** con `diagram` SVG). Resta aperta la sola **VIS-13** (`[~]`,
 > P3, ricorrente); CONTENT-11, CONTENT-12, CONTENT-13 e CONTENT-15 sono stati completati il 17/10/2026.
 > I vincoli di sempre restano: bilingue IT/EN con parità di acronimi e
@@ -533,6 +533,18 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
 
 ## 🧾 Registro delle decisioni
 
+- **17/10/2026 — eJPT: argomento «Valutazione delle vulnerabilità» (syllabus reale).** Aggiunto
+  l'argomento `pentest-vulnerability-assessment` al capitolo eJPT `pentest-methodology`, dopo
+  l'enumerazione dei servizi: è una sotto-fase esplicita del dominio **Assessment Methodologies**
+  della certificazione eJPT (INE eJPTv2), finora solo implicita. Tratta la correlazione
+  servizio/versione → debolezza nota (CVE/CVSS), l'ipotesi-vs-verifica (falsi positivi, patch
+  retroportate), scansione autenticata vs non autenticata, prioritizzazione per esposizione/exploit/
+  valore dell'asset e il ciclo difensivo di vulnerability management. Difensivo/neutro, nessun tool
+  operativo, target di documentazione; riferimento NIST **SP 800-115** risolto in HTTPS. Nessun nuovo
+  capitolo eJPT (i 3 capitoli restano fissi): approfondimento come argomento. Manuale 97 → **98**
+  argomenti; aggiornato il `MANUAL_ROUTE_INDEX` in sincrono (guard). Guard integrità manuale (incluso
+  il guard dei riferimenti e dell'indice di rotta) e bilingue verdi. Report:
+  `docs/verify/2026-10-17-ejpt-vulnerability-assessment.md`.
 - **17/10/2026 — Glossario: +50 voci (CCNA + eJPT).** Su richiesta, ampliato `GLOSSARY_TERMS` da
   **126 a 176 voci** bilingui, colmando lacune reali: lato CCNA (CIDR, VLSM, default/static route,
   multicast, root bridge, CAM table, access port, inter-VLAN routing, loopback, OSPF area, LSA, QoS,

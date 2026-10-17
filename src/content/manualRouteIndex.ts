@@ -185,6 +185,7 @@ export const MANUAL_ROUTE_INDEX: readonly ManualRouteEntry[] = [
       'pentest-recon-footprinting',
       'pentest-scanning-enumeration',
       'pentest-service-enumeration',
+      'pentest-vulnerability-assessment',
       'pentest-password-attacks',
       'offline-hash-cracking-defense'
     ],
