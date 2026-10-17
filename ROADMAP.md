@@ -405,8 +405,77 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
       `selfCheck` non vuoti e punta a una vista registrata; laboratori guidati 74 → 77, conteggi
       derivati dal dataset. `studyManual.test.ts` e l'E2E QA-20 (che deriva i conteggi) restano verdi.
 
+## 📚 Contenuti pianificati (backlog, 17/10/2026)
+
+> Piano concreto di **contenuti da aggiungere** e **miglioramenti ai contenuti**, derivato da una
+> ricognizione reale della copertura su `main` (217 id di capitoli/argomenti/lab; `manualStats()` →
+> 29 capitoli / 93 argomenti / 77 laboratori guidati; **83/94** argomenti con `references`, **3/94**
+> con `diagram` SVG). Ogni voce è `[ ]` **da iniziare** con criteri di completamento verificabili;
+> nessuna è dichiarata fatta. I vincoli di sempre restano: bilingue IT/EN con parità di acronimi e
+> cifre, riferimenti ATT&CK/RFC/NIST/Cisco risolti in **HTTPS**, **soli target di documentazione**,
+> **nessun nuovo capitolo eJPT** oltre ai tre fissati dai test (gli argomenti eJPT entrano nei
+> capitoli esistenti), conteggi **derivati dal dataset** (ENG-31), guard bilingue e integrità del
+> manuale verdi, un incremento verticale per volta con report in `docs/verify/`.
+
+### Contenuti da aggiungere — nuovi argomenti ad alto valore
+
+- [ ] **CONTENT-11 (P2) — eJPT: enumerazione dei servizi di rete (SMB/SNMP/NFS).** Lacuna reale: i
+      termini `smb`, `nfs` non compaiono e l'enumerazione è oggi solo generica
+      (`pentest-scanning-enumeration`). Nuovo argomento nel capitolo eJPT `pentest-methodology` che
+      insegni, in chiave didattica e difensiva, cosa espone ciascun servizio (SMB: share, sessioni
+      null/guest, versioni; SNMP: community string di sola lettura, MIB; NFS: export e `no_root_squash`),
+      come un difensore riduce la superficie (versioni aggiornate, autenticazione, segmentazione) e
+      quale telemetria lo rivela. **Criteri:** argomento bilingue con obiettivi/teoria/errori comuni,
+      riferimenti risolti in HTTPS (es. ATT&CK T1135 _Network Share Discovery_, NIST SP 800-123), soli
+      host di documentazione, nessun comando operativo d'attacco; guard bilingue + integrità manuale
+      verdi; `manualStats()` 93 → 94; report in `docs/verify/`.
+- [ ] **CONTENT-12 (P2) — eJPT: basi di Active Directory.** Lacuna reale (`active directory`,
+      `kerberos`, `ldap` assenti). Nuovo argomento nel capitolo eJPT `pentest-methodology` o
+      `exploitation-post-exploitation`: modello AD (dominio, foresta, OU, GPO), autenticazione
+      Kerberos vs NTLM a livello concettuale, superficie tipica (enumerazione LDAP, relazioni di
+      fiducia) e **controcontromisure** (tiering degli amministratori, hardening di Kerberos,
+      monitoraggio degli eventi). Taglio concettuale/difensivo, nessuna tecnica operativa.
+      **Criteri:** come CONTENT-11; riferimenti es. ATT&CK T1087.002 _Account Discovery: Domain
+      Account_, RFC 4120 (Kerberos); `manualStats()` +1 argomento; report in `docs/verify/`.
+- [ ] **CONTENT-13 (P3) — eJPT: cracking offline degli hash in ottica difensiva.** Migliorare/estendere
+      `pentest-password-attacks`: perché un hash catturato è crackabile offline, cosa cambia tra hash
+      veloci (MD5/SHA-1 nudi) e KDF lente con sale (bcrypt/scrypt/Argon2/PBKDF2), e come la difesa
+      alza il costo (sale per-utente, pepper, lunghezza/entropia, lockout). Nessun comando di
+      cracking; focus su modello di costo e hardening. **Criteri:** bilingue, riferimenti es. NIST
+      SP 800-63B (memorized secrets), OWASP Password Storage; soli dati di documentazione; guard
+      verdi; report in `docs/verify/`.
+
+### Miglioramenti ai contenuti esistenti
+
+- [ ] **CONTENT-15 (P2) — Completare i riferimenti mancanti.** Oggi **83/94** argomenti hanno
+      `references`: ~11 argomenti d'esame ne sono privi. Aggiungere a ciascun argomento dei due
+      percorsi almeno un riferimento autorevole risolto in HTTPS (RFC/IEEE/NIST/ATT&CK/Cisco secondo
+      il tipo `SecurityReference`). **Criteri:** un **guard** che asserisca «ogni argomento con
+      traccia d'esame (CCNA/eJPT) espone ≥1 riferimento risolto in HTTPS» diventa verde; nessuna URL
+      non-HTTPS; `studyManual.test.ts` verde; report con l'elenco esatto degli argomenti toccati
+      (derivato, non a mano).
+- [ ] **VIS-13 (P3) — Estendere i micro-diagrammi SVG ai concetti chiave.** Solo **3/94** argomenti
+      hanno un `diagram` (VIS-12). Aggiungere micro-diagrammi SVG bilingui, coerenti col sistema di
+      design e leggibili in tema chiaro/scuro, agli argomenti dove un disegno chiarisce più del testo
+      (candidati: incapsulamento/decapsulamento OSI, albero STP e ruoli delle porte, gerarchia QoS
+      LLQ/CBWFQ, handshake IKEv2/Child SA, catena di fiducia PKI/TLS). Uno o due per incremento.
+      **Criteri:** alternativa testuale visibile e `id` accessibili univoci (come VIS-12), contrasto
+      SVG e Axe verdi nei due temi e nelle due lingue, geometria corretta a 320/1280 px; E2E dedicato
+      verde; report in `docs/verify/`.
+- [ ] **I18N-10 (P1, ricorrente) — Revisione IT/EN dei nuovi contenuti.** Vedi la voce dedicata nella
+      sezione del Traduttore/Revisore: ogni argomento o diagramma aggiunto da questo backlog passa la
+      revisione di accuratezza e naturalezza con parità di acronimi e cifre prima della pubblicazione.
+
 ## 🧾 Registro delle decisioni
 
+- **17/10/2026 — Pianificazione del backlog contenuti.** Dopo una ricognizione reale della copertura
+  (217 id, 83/94 argomenti con riferimenti, 3/94 con diagramma) è stata aggiunta la sezione «Contenuti
+  pianificati»: nuovi argomenti su lacune verificate (enumerazione SMB/SNMP/NFS, basi di Active
+  Directory, cracking offline difensivo degli hash — tutti dentro i capitoli eJPT esistenti) e
+  miglioramenti (completamento dei riferimenti mancanti con guard, estensione dei micro-diagrammi
+  SVG). La dorsale CCNA 200-301 risulta già coperta per argomento, quindi l'opportunità CCNA è di
+  qualità (riferimenti e diagrammi), non di nuovi argomenti. Solo documentazione (ROADMAP): nessun
+  cambio a prodotto, contenuti o test.
 - **17/10/2026 — CONTENT-10: QoS applicata (CCNA 4.7).** Aggiunto l'argomento `ip-services-qos` al
   capitolo `ip-services` (PHB/DiffServ, CoS vs DSCP, LLQ/CBWFQ/WRED, policing vs shaping, trust
   boundary), bilingue con parità di acronimi e cifre e riferimenti RFC 2474/4594. Argomento d'esame
