@@ -7042,6 +7042,65 @@ export const STUDY_MANUAL: readonly ManualChapter[] = [
         ]
       },
       {
+        id: 'active-directory-basics',
+        title: {
+          it: 'Basi di Active Directory: dominio, Kerberos e fiducia',
+          en: 'Active Directory basics: domain, Kerberos, and trust'
+        },
+        objectives: [
+          {
+            it: 'Descrivere il modello di Active Directory — dominio, foresta, unità organizzative e criteri di gruppo — e il ruolo del domain controller come directory e autorità di autenticazione.',
+            en: 'Describe the Active Directory model — domain, forest, organizational units, and group policy — and the role of the domain controller as directory and authentication authority.'
+          },
+          {
+            it: 'Distinguere Kerberos da NTLM a livello concettuale e collegare la superficie tipica (enumerazione LDAP, relazioni di fiducia) alle difese che la riducono.',
+            en: 'Tell Kerberos from NTLM at a conceptual level and link the typical surface (LDAP enumeration, trust relationships) to the defenses that reduce it.'
+          }
+        ],
+        prerequisites: [
+          {
+            it: 'Conoscere autenticazione e movimento laterale e il ruolo delle relazioni di fiducia (argomenti precedenti di questo capitolo).',
+            en: 'Know authentication and lateral movement and the role of trust relationships (the previous topics of this chapter).'
+          }
+        ],
+        theory: [
+          {
+            it: 'Active Directory (AD) è la directory che organizza identità e risorse di una rete Windows. L’unità base è il dominio, raccolto con altri domini in una foresta che ne definisce il confine di fiducia; dentro il dominio le unità organizzative (OU) raggruppano oggetti — utenti, computer, gruppi — e i criteri di gruppo (GPO) ne impongono la configurazione. Il domain controller (DC) è il cuore: tiene la directory, interrogabile via LDAP, e autentica gli accessi. Capire questa struttura è il primo passo, perché in AD l’impatto non si misura sul singolo host ma sul controllo del dominio.',
+            en: 'Active Directory (AD) is the directory that organizes the identities and resources of a Windows network. The base unit is the domain, grouped with other domains into a forest that defines its trust boundary; inside the domain the organizational units (OUs) group objects — users, computers, groups — and group policy (GPO) imposes their configuration. The domain controller (DC) is the heart: it holds the directory, queryable over LDAP, and authenticates access. Understanding this structure is the first step, because in AD impact is not measured on the single host but on control of the domain.'
+          },
+          {
+            it: 'L’autenticazione in AD usa due protocolli. NTLM è il più vecchio, basato su challenge-response e sul riuso dell’hash della password, ed è proprio quel riuso a renderlo fragile. Kerberos è il predefinito: un’autorità fidata, il KDC sul domain controller, rilascia un ticket iniziale (TGT) dopo il login, e con quello l’utente ottiene ticket di servizio (TGS) per i singoli servizi, senza ripresentare la password. Il modello riduce l’esposizione delle credenziali, ma sposta il valore sui ticket e sull’account di servizio: chi comprende questo flusso capisce perché la robustezza delle password di servizio e la protezione del DC contano più di ogni singolo host.',
+            en: 'Authentication in AD uses two protocols. NTLM is the older one, based on challenge-response and on reusing the password hash, and it is exactly that reuse that makes it fragile. Kerberos is the default: a trusted authority, the KDC on the domain controller, issues an initial ticket (TGT) after login, and with it the user obtains service tickets (TGS) for individual services, without re-presenting the password. The model reduces credential exposure, but it shifts the value onto the tickets and the service account: whoever understands this flow understands why the strength of service passwords and the protection of the DC matter more than any single host.'
+          },
+          {
+            it: 'La superficie di AD nasce dalla sua stessa natura di directory condivisa. L’enumerazione via LDAP, possibile anche a un utente di dominio qualunque, legge utenti, gruppi, computer e relazioni di fiducia: è la mappa che orienta il movimento laterale verso gli amministratori di dominio. Le relazioni di fiducia tra domini o foreste estendono quella mappa oltre il confine iniziale. La difesa è stratificata: il tiering amministrativo separa gli account che gestiscono i DC da quelli di uso quotidiano, l’hardening di Kerberos (account di servizio con password lunghe e casuali, privilegi minimi) toglie valore ai ticket catturabili, e il monitoraggio degli eventi del DC (accessi e richieste di ticket anomale) rivela l’enumerazione e l’abuso. Studiare queste basi è il modo per capire perché il controllo del dominio è l’obiettivo e la protezione del DC la priorità.',
+            en: 'The surface of AD arises from its very nature as a shared directory. Enumeration over LDAP, possible even to any ordinary domain user, reads users, groups, computers, and trust relationships: it is the map that guides lateral movement toward the domain administrators. Trust relationships between domains or forests extend that map beyond the initial boundary. The defense is layered: administrative tiering separates the accounts that manage the DCs from everyday ones, Kerberos hardening (service accounts with long, random passwords, least privilege) strips value from capturable tickets, and monitoring the DC events (anomalous logons and ticket requests) reveals enumeration and abuse. Studying these basics is the way to understand why control of the domain is the objective and protection of the DC the priority.'
+          }
+        ],
+        example: {
+          it: 'Un utente di dominio qualunque su un host in 192.0.2.0/24 interroga via LDAP il domain controller ed enumera utenti, gruppi e relazioni di fiducia, individuando il percorso verso un amministratore di dominio: il tiering amministrativo, le password robuste degli account di servizio e il monitoraggio delle richieste di ticket Kerberos sul DC avrebbero ridotto la superficie e rivelato l’attività.',
+          en: 'Any ordinary domain user on a host in 192.0.2.0/24 queries the domain controller over LDAP and enumerates users, groups, and trust relationships, finding the path toward a domain administrator: administrative tiering, strong service-account passwords, and monitoring of Kerberos ticket requests on the DC would have reduced the surface and revealed the activity.'
+        },
+        commonMistakes: [
+          {
+            it: 'Trattare il controllo di un host come l’obiettivo: in AD l’obiettivo è il dominio, e il domain controller è la priorità da proteggere.',
+            en: 'Treating control of a host as the objective: in AD the objective is the domain, and the domain controller is the priority to protect.'
+          },
+          {
+            it: 'Ritenere innocua l’enumerazione LDAP perché autenticata: un utente di dominio qualunque legge la mappa che orienta il movimento laterale.',
+            en: 'Thinking LDAP enumeration is harmless because it is authenticated: any ordinary domain user reads the map that guides lateral movement.'
+          },
+          {
+            it: 'Dimenticare gli account di servizio: password deboli e privilegi eccessivi rendono i ticket Kerberos un bersaglio di valore.',
+            en: 'Forgetting service accounts: weak passwords and excessive privileges make Kerberos tickets a valuable target.'
+          }
+        ],
+        references: [
+          { kind: 'attack', id: 'T1087.002' },
+          { kind: 'rfc', id: 'RFC 4120' }
+        ]
+      },
+      {
         id: 'exploitation-reverse-bind-shell',
         title: {
           it: 'Reverse shell e bind shell',

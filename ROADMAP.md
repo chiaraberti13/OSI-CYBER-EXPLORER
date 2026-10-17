@@ -5,7 +5,7 @@
 > **Apertura Fase 3:** 14 ottobre 2026.
 > **Obiettivi di certificazione:** **CCNA 200-301** e **eJPT — INE/eLearnSecurity Junior
 > Penetration Tester**, in chiave didattica e autorizzata.
-> **Stato del manuale:** 29 capitoli / 94 argomenti / 77 laboratori guidati, bilingue IT/EN,
+> **Stato del manuale:** 29 capitoli / 95 argomenti / 77 laboratori guidati, bilingue IT/EN,
 > con il percorso eJPT completo e una sequenza di studio a doppio binario documentata.
 > **Metodo:** incrementi verticali completi e verificati (`npm run verify`, E2E Chromium con
 > Axe WCAG 2.2 AA, audit), pubblicati su `main`; ogni intervento documentato in `docs/verify/`.
@@ -409,9 +409,9 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
 
 > Piano concreto di **contenuti da aggiungere** e **miglioramenti ai contenuti**, derivato da una
 > ricognizione reale della copertura su `main` (217 id di capitoli/argomenti/lab; `manualStats()` →
-> 29 capitoli / 94 argomenti / 77 laboratori guidati; **84/94** argomenti con `references`, **3/94**
+> 29 capitoli / 95 argomenti / 77 laboratori guidati; **85/95** argomenti con `references`, **3/95**
 > con `diagram` SVG). Le voci ancora aperte sono `[ ]` **da iniziare** con criteri di completamento
-> verificabili; nessuna è dichiarata fatta se non lo è (CONTENT-11 è stato completato il 17/10/2026).
+> verificabili; CONTENT-11 e CONTENT-12 sono stati completati il 17/10/2026.
 > I vincoli di sempre restano: bilingue IT/EN con parità di acronimi e
 > cifre, riferimenti ATT&CK/RFC/NIST/Cisco risolti in **HTTPS**, **soli target di documentazione**,
 > **nessun nuovo capitolo eJPT** oltre ai tre fissati dai test (gli argomenti eJPT entrano nei
@@ -434,14 +434,19 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
       v1/v2c/v3, SMBv1/2/3). Teoria-only (nessun laboratorio interattivo adeguato). `manualStats()`
       29 → **29/94/77**. Guard bilingue strutturale ed euristico e integrità del manuale verdi,
       typecheck pulito. Report: `docs/verify/2026-10-17-content11-service-enumeration.md`.
-- [ ] **CONTENT-12 (P2) — eJPT: basi di Active Directory.** Lacuna reale (`active directory`,
-      `kerberos`, `ldap` assenti). Nuovo argomento nel capitolo eJPT `pentest-methodology` o
-      `exploitation-post-exploitation`: modello AD (dominio, foresta, OU, GPO), autenticazione
-      Kerberos vs NTLM a livello concettuale, superficie tipica (enumerazione LDAP, relazioni di
-      fiducia) e **controcontromisure** (tiering degli amministratori, hardening di Kerberos,
-      monitoraggio degli eventi). Taglio concettuale/difensivo, nessuna tecnica operativa.
-      **Criteri:** come CONTENT-11; riferimenti es. ATT&CK T1087.002 _Account Discovery: Domain
-      Account_, RFC 4120 (Kerberos); `manualStats()` +1 argomento; report in `docs/verify/`.
+- [x] **CONTENT-12 (P2) — eJPT: basi di Active Directory.** **Esito (17/10/2026):** aggiunto
+      l'argomento `active-directory-basics` al capitolo eJPT `exploitation-post-exploitation`, dopo
+      movimento laterale e pivoting (di cui estende il modello di fiducia). Copre il modello **AD**
+      (dominio, foresta, **OU**, **GPO**, **DC** come directory LDAP e autorità di autenticazione),
+      l'autenticazione **Kerberos** (**KDC**, **TGT**, **TGS**) vs **NTLM** a livello concettuale, la
+      superficie tipica (enumerazione LDAP da utente di dominio, relazioni di fiducia tra domini/
+      foreste) e la difesa stratificata (tiering amministrativo, hardening degli account di servizio
+      Kerberos, monitoraggio degli eventi del DC). Taglio concettuale/difensivo, nessuna tecnica
+      operativa, soli target di documentazione (`192.0.2.0/24`). Riferimenti risolti in HTTPS: ATT&CK
+      **T1087.002** (Account Discovery: Domain Account) e **RFC 4120** (Kerberos V5). Parità IT/EN
+      curata su acronimi (AD/OU/GPO/DC/LDAP/KDC/TGT/TGS/NTLM/Kerberos). Teoria-only. `manualStats()`
+      94 → **29/95/77**. Guard bilingue e integrità del manuale verdi, typecheck pulito. Report:
+      `docs/verify/2026-10-17-content12-active-directory.md`.
 - [ ] **CONTENT-13 (P3) — eJPT: cracking offline degli hash in ottica difensiva.** Migliorare/estendere
       `pentest-password-attacks`: perché un hash catturato è crackabile offline, cosa cambia tra hash
       veloci (MD5/SHA-1 nudi) e KDF lente con sale (bcrypt/scrypt/Argon2/PBKDF2), e come la difesa
@@ -473,6 +478,14 @@ il gate `verify:offensive-content` e la revisione dei contenuti tecnici restano 
 
 ## 🧾 Registro delle decisioni
 
+- **17/10/2026 — CONTENT-12: basi di Active Directory.** Completato il task successivo del backlog:
+  aggiunto l'argomento eJPT `active-directory-basics` al capitolo `exploitation-post-exploitation`
+  (modello AD dominio/foresta/OU/GPO/DC, Kerberos KDC/TGT/TGS vs NTLM, enumerazione LDAP e relazioni
+  di fiducia, difesa con tiering amministrativo, hardening degli account di servizio e monitoraggio
+  del DC). Concettuale/difensivo, nessuna tecnica operativa, soli target di documentazione e
+  riferimenti ATT&CK T1087.002 / RFC 4120 risolti in HTTPS. Nessun nuovo capitolo eJPT. Manuale
+  94 → 95 argomenti (conteggi derivati dal dataset). `verify` completo verde, E2E Chromium con Axe
+  verdi, 0 vulnerabilità. Report: `docs/verify/2026-10-17-content12-active-directory.md`.
 - **17/10/2026 — CONTENT-11: enumerazione dei servizi (SMB/SNMP/NFS).** Completato il prossimo task
   del backlog: aggiunto l'argomento eJPT `pentest-service-enumeration` al capitolo
   `pentest-methodology` (SMB 445/139, SNMP UDP 161, NFS 2049) in chiave didattica e difensiva, con
