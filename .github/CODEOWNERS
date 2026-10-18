@@ -1,0 +1,78 @@
+# Repository governance and automation
+/.github/CODEOWNERS @chiaraberti13
+/.github/dependabot.yml @chiaraberti13
+/.github/security-exceptions.yml @chiaraberti13
+/.github/workflows/ @chiaraberti13
+/CHANGELOG.md @chiaraberti13
+
+# Dependency and build trust boundary
+/.npmrc @chiaraberti13
+/.nvmrc @chiaraberti13
+/package.json @chiaraberti13
+/package-lock.json @chiaraberti13
+/vitest.config.ts @chiaraberti13
+/docs/TEST_COVERAGE.md @chiaraberti13
+/src/i18n/ @chiaraberti13
+/docs/INTERNATIONALIZATION.md @chiaraberti13
+/scripts/verify-lockfile.mjs @chiaraberti13
+/scripts/verify-lockfile.test.mjs @chiaraberti13
+/scripts/release-metadata.mjs @chiaraberti13
+/scripts/release-metadata.test.mjs @chiaraberti13
+/scripts/offensive-content-review.mjs @chiaraberti13
+/scripts/offensive-content-review.test.mjs @chiaraberti13
+/scripts/technical-content-review.mjs @chiaraberti13
+/scripts/technical-content-review.test.mjs @chiaraberti13
+/scripts/documentation-targets.mjs @chiaraberti13
+/scripts/documentation-targets.test.mjs @chiaraberti13
+/performance-budgets.json @chiaraberti13
+/lighthouse-budget.json @chiaraberti13
+/lighthouserc.json @chiaraberti13
+/vite.config.ts @chiaraberti13
+/docs/PERFORMANCE_BUDGETS.md @chiaraberti13
+/docs/LIST_PERFORMANCE_PROFILE.md @chiaraberti13
+/scripts/performance-budget.mjs @chiaraberti13
+/scripts/performance-budget.test.mjs @chiaraberti13
+
+# Security policy, scanners, and deployment hardening
+/.gitleaks.toml @chiaraberti13
+/eslint.config.js @chiaraberti13
+/.editorconfig @chiaraberti13
+/.prettierignore @chiaraberti13
+/.prettierrc.json @chiaraberti13
+/CONTRIBUTING.md @chiaraberti13
+/osv-scanner.toml @chiaraberti13
+/SECURITY.md @chiaraberti13
+/docs/FRONTEND_SECURITY.md @chiaraberti13
+/docs/SECURITY_SCANNING.md @chiaraberti13
+/docs/THREAT_MODEL.md @chiaraberti13
+/docs/RELEASING.md @chiaraberti13
+/docs/REPOSITORY_POSTURE.md @chiaraberti13
+/docs/scorecard/ @chiaraberti13
+/scripts/scorecard-report.mjs @chiaraberti13
+/scripts/scorecard-report.test.mjs @chiaraberti13
+/scripts/deployment-security.mjs @chiaraberti13
+/scripts/deployment-security.test.mjs @chiaraberti13
+/docs/OFFENSIVE_CONTENT_REVIEW.md @chiaraberti13
+/docs/offensive-content-reviews.json @chiaraberti13
+/docs/TECHNICAL_CONTENT_REVIEW.md @chiaraberti13
+/docs/technical-content-reviews.json @chiaraberti13
+/docs/DOCUMENTATION_TARGETS.md @chiaraberti13
+/docs/documentation-target-allowlist.json @chiaraberti13
+/docs/NETWORKING_CONFORMANCE.md @chiaraberti13
+/src/lib/networkingConformance.test.ts @chiaraberti13
+/docs/PORT_REGISTRY.md @chiaraberti13
+/src/content/portRegistry.ts @chiaraberti13
+/src/content/portRegistry.test.ts @chiaraberti13
+/src/components/PortsExplorer.test.tsx @chiaraberti13
+/docs/STP_MODEL.md @chiaraberti13
+/src/lib/stp.ts @chiaraberti13
+/src/lib/stp.test.ts @chiaraberti13
+/src/components/StpConvergenceLab.tsx @chiaraberti13
+/src/components/StpConvergenceLab.test.tsx @chiaraberti13
+/vercel.json @chiaraberti13
+
+# Offensive and defensive educational content
+/src/content/ @chiaraberti13
+/src/components/AttackLab.tsx @chiaraberti13
+/src/components/AttackPathsLab.tsx @chiaraberti13
+/src/components/AutomationLab.tsx @chiaraberti13

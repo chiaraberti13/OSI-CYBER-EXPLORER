@@ -1,0 +1,2692 @@
+import type { Bilingual } from '../types';
+import type { SecurityPlane } from './securityTaxonomy';
+
+export type CcnaDomainId =
+  | 'network-fundamentals'
+  | 'network-access'
+  | 'ip-connectivity'
+  | 'ip-services'
+  | 'security-fundamentals'
+  | 'automation-programmability';
+
+export interface SecurityTechnique {
+  id: string;
+  familyId: string;
+  domains: CcnaDomainId[];
+  planes: SecurityPlane[];
+  name: Bilingual;
+  attack: Bilingual;
+  prevent: Bilingual;
+  detect: Bilingual;
+  respondRecover: Bilingual;
+  verify: Bilingual;
+}
+
+const b = (it: string, en: string): Bilingual => ({ it, en });
+const t = (
+  id: string,
+  familyId: string,
+  domains: CcnaDomainId[],
+  planes: SecurityPlane[],
+  name: Bilingual,
+  attack: Bilingual,
+  prevent: Bilingual,
+  detect: Bilingual,
+  respondRecover: Bilingual,
+  verify: Bilingual
+): SecurityTechnique => ({ id, familyId, domains, planes, name, attack, prevent, detect, respondRecover, verify });
+
+export const SECURITY_TECHNIQUES: SecurityTechnique[] = [
+  t(
+    'network-reconnaissance',
+    'reconnaissance',
+    ['network-fundamentals', 'security-fundamentals'],
+    ['data', 'management', 'application'],
+    b('Network reconnaissance ed enumerazione', 'Network reconnaissance and enumeration'),
+    b(
+      'Scansioni e interrogazioni raccolgono host, porte, servizi, versioni, topologia e identità per preparare azioni successive.',
+      'Scans and queries collect hosts, ports, services, versions, topology, and identities to prepare follow-on actions.'
+    ),
+    b(
+      'Riduzione della superficie esposta, ACL/firewall, segmentazione, hardening dei servizi e gestione sicura.',
+      'Reduced exposed surface, ACLs/firewalls, segmentation, service hardening, and secure management.'
+    ),
+    b(
+      'Scan distribuiti o sequenziali, errori ripetuti, query insolite e variazioni nel connection rate.',
+      'Distributed or sequential scans, repeated errors, unusual queries, and connection-rate changes.'
+    ),
+    b(
+      'Limita o blocca le sorgenti, verifica ciò che è stato enumerato e correggi le esposizioni non necessarie.',
+      'Rate-limit or block sources, determine what was enumerated, and remove unnecessary exposure.'
+    ),
+    b('Firewall/IDS logs · NetFlow · service inventory', 'Firewall/IDS logs · NetFlow · service inventory')
+  ),
+  t(
+    'physical-tapping',
+    'mitm',
+    ['network-fundamentals'],
+    ['physical', 'data'],
+    b('Intercettazione fisica e cable tapping', 'Physical interception and cable tapping'),
+    b(
+      'Un accesso a rame, fibra o porte esposte consente osservazione o inserimento del traffico.',
+      'Access to copper, fiber, or exposed ports enables traffic observation or insertion.'
+    ),
+    b(
+      'Controllo fisico, cablaggi protetti, porte inutilizzate disabilitate, cifratura end-to-end.',
+      'Physical controls, protected cabling, disabled unused ports, and end-to-end encryption.'
+    ),
+    b(
+      'Ispezioni, tamper evidence, variazioni ottiche/elettriche e inventario delle connessioni.',
+      'Inspections, tamper evidence, optical/electrical changes, and connection inventory.'
+    ),
+    b(
+      'Isola il segmento, preserva evidenze, sostituisci il tratto e ruota credenziali esposte.',
+      'Isolate the segment, preserve evidence, replace the link, and rotate exposed credentials.'
+    ),
+    b('Audit fisico · contatori interfaccia', 'Physical audit · interface counters')
+  ),
+  t(
+    'rf-jamming',
+    'wireless',
+    ['network-access'],
+    ['physical'],
+    b('Jamming e interferenza RF', 'RF jamming and interference'),
+    b(
+      'Rumore intenzionale o interferenza satura il canale e riduce la disponibilità wireless.',
+      'Intentional noise or interference saturates the channel and reduces wireless availability.'
+    ),
+    b(
+      'Progettazione RF, ridondanza di banda/canale e protezione fisica delle aree.',
+      'RF design, band/channel redundancy, and physical protection of areas.'
+    ),
+    b(
+      'Spectrum analysis, WIDS/WIPS e correlazione tra SNR, retry e disassociazioni.',
+      'Spectrum analysis, WIDS/WIPS, and correlation of SNR, retries, and disassociations.'
+    ),
+    b(
+      'Localizza la sorgente, cambia canale/banda e coinvolgi le autorità quando necessario.',
+      'Locate the source, change channel/band, and involve authorities when required.'
+    ),
+    b('WLC RF statistics · spectrum analyzer', 'WLC RF statistics · spectrum analyzer')
+  ),
+  t(
+    'rogue-device',
+    'spoofing',
+    ['network-access', 'security-fundamentals'],
+    ['physical', 'data', 'identity'],
+    b('Dispositivo rogue', 'Rogue device'),
+    b(
+      'Un apparato non autorizzato ottiene accesso e introduce bridge, AP o servizi imprevisti.',
+      'An unauthorized device gains access and introduces unexpected bridges, APs, or services.'
+    ),
+    b(
+      '802.1X/EAP-TLS, NAC, Port Security, asset inventory e porte inutilizzate shutdown.',
+      '802.1X/EAP-TLS, NAC, Port Security, asset inventory, and shutdown unused ports.'
+    ),
+    b(
+      'Profiling NAC, MAC churn, LLDP/CDP inventory e scansioni wireless.',
+      'NAC profiling, MAC churn, LLDP/CDP inventory, and wireless scanning.'
+    ),
+    b(
+      'Quarantena, identificazione del proprietario, rimozione e verifica delle credenziali.',
+      'Quarantine, owner identification, removal, and credential review.'
+    ),
+    b('show authentication sessions · inventory diff', 'show authentication sessions · inventory diff')
+  ),
+  t(
+    'mac-flooding',
+    'availability',
+    ['network-access'],
+    ['data'],
+    b('MAC flooding', 'MAC flooding'),
+    b(
+      'MAC sorgente numerosi consumano la CAM table e possono causare unknown-unicast flooding.',
+      'Numerous source MACs consume the CAM table and may cause unknown-unicast flooding.'
+    ),
+    b(
+      'Port Security, limiti MAC, sticky learning e segmentazione.',
+      'Port Security, MAC limits, sticky learning, and segmentation.'
+    ),
+    b(
+      'CAM churn, violation counter e picchi di unknown-unicast.',
+      'CAM churn, violation counters, and unknown-unicast spikes.'
+    ),
+    b(
+      'Err-disable/quarantena della porta, pulizia controllata della tabella e analisi del device.',
+      'Err-disable/quarantine the port, controlled table cleanup, and device analysis.'
+    ),
+    b('show mac address-table count · show port-security', 'show mac address-table count · show port-security')
+  ),
+  t(
+    'arp-poisoning',
+    'mitm',
+    ['network-access'],
+    ['data'],
+    b('ARP poisoning', 'ARP poisoning'),
+    b(
+      'Risposte ARP false associano IP attendibili al MAC dell’attaccante per intercettare il traffico.',
+      'Forged ARP replies associate trusted IPs with the attacker MAC to intercept traffic.'
+    ),
+    b(
+      'DHCP Snooping + DAI, ARP ACL per host statici, segmentazione e cifratura.',
+      'DHCP Snooping + DAI, ARP ACLs for static hosts, segmentation, and encryption.'
+    ),
+    b(
+      'ARP inspection counters, cambi IP–MAC e gratuitous ARP anomali.',
+      'ARP inspection counters, IP–MAC changes, and abnormal gratuitous ARP.'
+    ),
+    b(
+      'Isola la porta, ripristina binding/cache e verifica sessioni o credenziali esposte.',
+      'Isolate the port, restore bindings/caches, and review exposed sessions or credentials.'
+    ),
+    b('show ip arp inspection statistics · show ip arp', 'show ip arp inspection statistics · show ip arp')
+  ),
+  t(
+    'vlan-switch-spoofing',
+    'spoofing',
+    ['network-access'],
+    ['data'],
+    b('VLAN hopping: switch spoofing', 'VLAN hopping: switch spoofing'),
+    b(
+      'DTP viene abusato da una porta utente per negoziare un trunk.',
+      'DTP is abused from a user port to negotiate a trunk.'
+    ),
+    b(
+      'switchport mode access, nonegotiate, shutdown delle porte inutilizzate.',
+      'switchport mode access, nonegotiate, and shutdown unused ports.'
+    ),
+    b(
+      'Trunk inattesi, DTP events e allowed VLAN anomale.',
+      'Unexpected trunks, DTP events, and abnormal allowed VLANs.'
+    ),
+    b(
+      'Disabilita la porta, rimuovi il trunk e verifica movimento laterale.',
+      'Disable the port, remove the trunk, and investigate lateral movement.'
+    ),
+    b('show interfaces switchport · show interfaces trunk', 'show interfaces switchport · show interfaces trunk')
+  ),
+  t(
+    'vlan-double-tagging',
+    'spoofing',
+    ['network-access'],
+    ['data'],
+    b('VLAN hopping: double tagging', 'VLAN hopping: double tagging'),
+    b(
+      'Due tag 802.1Q abusano del traffico non taggato della native VLAN, tipicamente in una sola direzione.',
+      'Two 802.1Q tags abuse untagged native-VLAN traffic, typically in one direction.'
+    ),
+    b(
+      'Native VLAN dedicata/inutilizzata, pruning e native tagging quando supportato.',
+      'Dedicated/unused native VLAN, pruning, and native tagging where supported.'
+    ),
+    b('Packet capture e traffico tra segmenti non previsto.', 'Packet capture and unexpected inter-segment traffic.'),
+    b(
+      'Blocca la sorgente, correggi trunk/native VLAN e ricerca traffico derivato.',
+      'Block the source, correct trunk/native VLAN settings, and investigate follow-on traffic.'
+    ),
+    b('show interfaces trunk · SPAN capture', 'show interfaces trunk · SPAN capture')
+  ),
+  t(
+    'inter-vlan-policy-bypass',
+    'spoofing',
+    ['network-access', 'ip-connectivity', 'security-fundamentals'],
+    ['data'],
+    b('Bypass della policy inter-VLAN', 'Inter-VLAN policy bypass'),
+    b(
+      'ACL assenti, mal posizionate o troppo ampie consentono percorsi tra segmenti che dovrebbero avere fiducia diversa.',
+      'Missing, misplaced, or overly broad ACLs permit paths between segments that should have different trust levels.'
+    ),
+    b(
+      'Deny by default, policy per flusso, corretta direzione ACL e test da entrambe le zone.',
+      'Deny by default, per-flow policy, correct ACL direction, and testing from both zones.'
+    ),
+    b(
+      'Flussi inter-VLAN inattesi, ACE mai colpite e differenze tra intent e configurazione.',
+      'Unexpected inter-VLAN flows, never-hit ACEs, and differences between intent and configuration.'
+    ),
+    b(
+      'Contieni il percorso, correggi placement/ordine e verifica eventuale movimento laterale.',
+      'Contain the path, correct placement/order, and investigate possible lateral movement.'
+    ),
+    b('show ip interface · show access-lists · flow test', 'show ip interface · show access-lists · flow test')
+  ),
+  t(
+    'vrf-route-leak',
+    'routing',
+    ['network-fundamentals', 'ip-connectivity', 'security-fundamentals'],
+    ['control', 'data'],
+    b('Route leak tra VRF o tenant', 'Route leak across VRFs or tenants'),
+    b(
+      'Import/export, route target o static route errati rendono raggiungibili prefissi di un altro dominio.',
+      'Incorrect import/export policy, route targets, or static routes make another domain’s prefixes reachable.'
+    ),
+    b(
+      'Allowlist di prefissi, review dei route target, firewall inter-VRF e source of truth.',
+      'Prefix allowlists, route-target reviews, inter-VRF firewalls, and a source of truth.'
+    ),
+    b(
+      'Nuovi prefissi nella RIB/FIB della VRF e reachability cross-tenant non prevista.',
+      'New prefixes in a VRF RIB/FIB and unexpected cross-tenant reachability.'
+    ),
+    b(
+      'Ritira il leak, preserva i servizi essenziali e verifica route e sessioni in entrambe le direzioni.',
+      'Withdraw the leak, preserve essential services, and verify routes and sessions in both directions.'
+    ),
+    b('show ip route vrf · CEF lookup · policy diff', 'show ip route vrf · CEF lookup · policy diff')
+  ),
+  t(
+    'management-plane-exposure',
+    'reconnaissance',
+    ['ip-services', 'security-fundamentals'],
+    ['management', 'identity'],
+    b('Esposizione del management plane', 'Management-plane exposure'),
+    b(
+      'SSH, SNMP, API o AAA risultano raggiungibili da reti utente, guest o Internet e ampliano la superficie privilegiata.',
+      'SSH, SNMP, APIs, or AAA are reachable from user, guest, or Internet networks, expanding the privileged surface.'
+    ),
+    b(
+      'OOB o management VRF, ACL, jump host, AAA forte, protocolli sicuri e CoPP.',
+      'OOB or a management VRF, ACLs, a jump host, strong AAA, secure protocols, and CoPP.'
+    ),
+    b(
+      'Connessioni amministrative da zone non autorizzate, scansioni e failure AAA.',
+      'Administrative connections from unauthorized zones, scans, and AAA failures.'
+    ),
+    b(
+      'Blocca le sorgenti, limita i servizi, verifica gli accessi riusciti e ruota credenziali esposte.',
+      'Block sources, restrict services, review successful access, and rotate exposed credentials.'
+    ),
+    b(
+      'management reachability test · AAA/accounting · CoPP counters',
+      'management reachability test · AAA/accounting · CoPP counters'
+    )
+  ),
+  t(
+    'east-west-lateral-movement',
+    'session',
+    ['network-access', 'security-fundamentals'],
+    ['data', 'identity'],
+    b('Movimento laterale east–west', 'East–west lateral movement'),
+    b(
+      'Un endpoint o identità compromessi riutilizzano protocolli e fiducia interna per raggiungere altri asset.',
+      'A compromised endpoint or identity reuses internal protocols and trust to reach other assets.'
+    ),
+    b(
+      'Microsegmentazione, host firewall, NAC, least privilege e tiering amministrativo.',
+      'Microsegmentation, host firewalls, NAC, least privilege, and administrative tiering.'
+    ),
+    b(
+      'Nuovi peer interni, autenticazioni laterali, condivisioni e protocolli amministrativi anomali.',
+      'New internal peers, lateral authentications, shares, and abnormal administrative protocols.'
+    ),
+    b(
+      'Isola endpoint e identità, preserva telemetria east–west e limita i percorsi di propagazione.',
+      'Isolate endpoints and identities, preserve east–west telemetry, and limit propagation paths.'
+    ),
+    b('NetFlow · EDR · authentication logs · host firewall', 'NetFlow · EDR · authentication logs · host firewall')
+  ),
+  t(
+    'overlay-tenant-escape',
+    'automation',
+    ['network-fundamentals', 'automation-programmability', 'security-fundamentals'],
+    ['control', 'data', 'management'],
+    b('Escape di tenant nell’overlay', 'Overlay tenant escape'),
+    b(
+      'Mapping errati tra endpoint, VNI/segmenti o policy del controller collegano tenant che dovrebbero restare isolati.',
+      'Incorrect endpoint-to-VNI/segment mappings or controller policy connect tenants that should remain isolated.'
+    ),
+    b(
+      'RBAC, mapping allowlist, template versionati, approval, canary e validazione dell’intent.',
+      'RBAC, allowlisted mappings, versioned templates, approval, canaries, and intent validation.'
+    ),
+    b(
+      'Endpoint nel segmento errato, VNI inattesi e differenze tra intent e stato distribuito.',
+      'Endpoints in the wrong segment, unexpected VNIs, and differences between intent and distributed state.'
+    ),
+    b(
+      'Blocca la distribuzione, ripristina mapping/policy noti e verifica tutti i tenant coinvolti.',
+      'Stop distribution, restore known mappings/policy, and verify every affected tenant.'
+    ),
+    b(
+      'controller audit · VNI/endpoint table · overlay capture',
+      'controller audit · VNI/endpoint table · overlay capture'
+    )
+  ),
+  t(
+    'stp-manipulation',
+    'routing',
+    ['network-access'],
+    ['control', 'data'],
+    b('STP/BPDU manipulation', 'STP/BPDU manipulation'),
+    b(
+      'BPDU superiori tentano di rendere root un dispositivo ostile o provocare riconvergenze.',
+      'Superior BPDUs attempt to make a hostile device root or trigger reconvergence.'
+    ),
+    b(
+      'Root Guard, BPDU Guard sugli edge, root priority deterministica.',
+      'Root Guard, BPDU Guard on edge ports, and deterministic root priority.'
+    ),
+    b(
+      'Root change, topology-change counter e inconsistent ports.',
+      'Root changes, topology-change counters, and inconsistent ports.'
+    ),
+    b(
+      'Isola la porta, ripristina root/ruoli e verifica loop o intercettazione.',
+      'Isolate the port, restore root/roles, and check for loops or interception.'
+    ),
+    b('show spanning-tree detail · inconsistentports', 'show spanning-tree detail · inconsistentports')
+  ),
+  t(
+    'dhcp-starvation',
+    'availability',
+    ['network-access', 'ip-services'],
+    ['data', 'application'],
+    b('DHCP starvation', 'DHCP starvation'),
+    b(
+      'Richieste con identità client variabili esauriscono il pool di lease.',
+      'Requests with changing client identities exhaust the lease pool.'
+    ),
+    b(
+      'DHCP Snooping rate limit, Port Security e capacità del pool controllata.',
+      'DHCP Snooping rate limits, Port Security, and controlled pool capacity.'
+    ),
+    b('Picchi Discover, binding churn e pool utilization.', 'Discover spikes, binding churn, and pool utilization.'),
+    b(
+      'Blocca la porta, libera lease fraudolenti con cautela e ripristina il servizio.',
+      'Block the port, carefully clear fraudulent leases, and restore service.'
+    ),
+    b('show ip dhcp snooping statistics · show ip dhcp pool', 'show ip dhcp snooping statistics · show ip dhcp pool')
+  ),
+  t(
+    'rogue-dhcp',
+    'spoofing',
+    ['network-access', 'ip-services'],
+    ['data', 'application'],
+    b('Rogue DHCP', 'Rogue DHCP'),
+    b(
+      'Un server non autorizzato offre gateway o DNS controllati dall’attaccante.',
+      'An unauthorized server offers attacker-controlled gateway or DNS settings.'
+    ),
+    b(
+      'DHCP Snooping con trust solo verso il server legittimo.',
+      'DHCP Snooping with trust only toward the legitimate server.'
+    ),
+    b(
+      'Offer da porte untrusted, gateway/DNS inattesi e binding anomali.',
+      'Offers from untrusted ports, unexpected gateway/DNS, and abnormal bindings.'
+    ),
+    b(
+      'Rimuovi il server, rinnova i lease e verifica eventuale intercettazione.',
+      'Remove the server, renew leases, and investigate possible interception.'
+    ),
+    b('show ip dhcp snooping binding · packet capture', 'show ip dhcp snooping binding · packet capture')
+  ),
+  t(
+    'ipv6-ra-nd-spoofing',
+    'spoofing',
+    ['network-fundamentals', 'network-access'],
+    ['control', 'data'],
+    b('Rogue RA e ND spoofing', 'Rogue RA and ND spoofing'),
+    b(
+      'Router Advertisement o Neighbor Advertisement falsi alterano gateway e associazioni IPv6.',
+      'Forged Router or Neighbor Advertisements alter IPv6 gateways and mappings.'
+    ),
+    b(
+      'RA Guard, DHCPv6 Guard, SAVI/IPv6 Source Guard e segmentazione.',
+      'RA Guard, DHCPv6 Guard, SAVI/IPv6 Source Guard, and segmentation.'
+    ),
+    b(
+      'RA da porte client, cambi neighbor cache e prefissi inattesi.',
+      'RAs from client ports, neighbor-cache changes, and unexpected prefixes.'
+    ),
+    b(
+      'Isola la sorgente, ripristina cache/configurazione e rivalida i client.',
+      'Isolate the source, restore caches/configuration, and revalidate clients.'
+    ),
+    b('show ipv6 neighbors · RA Guard counters', 'show ipv6 neighbors · RA Guard counters')
+  ),
+  t(
+    'rogue-dhcpv6',
+    'spoofing',
+    ['network-access', 'ip-services'],
+    ['data', 'application'],
+    b('Server DHCPv6 rogue', 'Rogue DHCPv6 server'),
+    b(
+      'Un server non autorizzato distribuisce indirizzi, DNS o altre opzioni IPv6 ostili; il default gateway continua invece a provenire dagli RA.',
+      'An unauthorized server distributes hostile IPv6 addresses, DNS, or other options; the default gateway still comes from RAs.'
+    ),
+    b(
+      'DHCPv6 Guard, ruoli porta espliciti e inventario di server, relay e DUID autorizzati.',
+      'DHCPv6 Guard, explicit port roles, and an inventory of authorized servers, relays, and DUIDs.'
+    ),
+    b(
+      'Advertise/Reply da porte client, DUID sconosciuti e opzioni incoerenti.',
+      'Advertise/Reply messages from client ports, unknown DUIDs, and inconsistent options.'
+    ),
+    b(
+      'Isola la sorgente, rinnova la configurazione client e verifica DNS e lease ricevuti.',
+      'Isolate the source, renew client configuration, and verify received DNS settings and leases.'
+    ),
+    b('DHCPv6 Guard counters · packet capture', 'DHCPv6 Guard counters · packet capture')
+  ),
+  t(
+    'ipv6-neighbor-cache-exhaustion',
+    'availability',
+    ['network-fundamentals', 'network-access'],
+    ['control', 'data'],
+    b('Esaurimento della Neighbor Cache IPv6', 'IPv6 Neighbor Cache exhaustion'),
+    b(
+      'Traffico verso molti indirizzi on-link inesistenti forza risoluzioni ND e consuma stato e CPU del first-hop router.',
+      'Traffic toward many nonexistent on-link addresses forces ND resolution and consumes first-hop router state and CPU.'
+    ),
+    b(
+      'Limiti neighbor, rate limiting ND, prefissi di accesso dimensionati e protezione del control plane.',
+      'Neighbor limits, ND rate limiting, right-sized access prefixes, and control-plane protection.'
+    ),
+    b(
+      'Crescita di entry INCOMPLETE, Neighbor Solicitation e CPU.',
+      'Growth in INCOMPLETE entries, Neighbor Solicitations, and CPU use.'
+    ),
+    b(
+      'Contieni le sorgenti, preserva i neighbor legittimi e ripristina lo stato in modo controllato.',
+      'Contain sources, preserve legitimate neighbors, and restore state in a controlled manner.'
+    ),
+    b('show ipv6 neighbors · CPU/ND telemetry', 'show ipv6 neighbors · CPU/ND telemetry')
+  ),
+  t(
+    'icmpv6-filtering-abuse',
+    'availability',
+    ['network-fundamentals', 'ip-connectivity'],
+    ['control', 'data'],
+    b('Abuso o filtraggio errato di ICMPv6', 'ICMPv6 abuse or incorrect filtering'),
+    b(
+      'Messaggi falsi o eccessivi degradano i flussi; bloccare tutti gli ICMPv6 interrompe invece ND e Path MTU Discovery.',
+      'Forged or excessive messages degrade flows; blocking all ICMPv6 instead breaks ND and Path MTU Discovery.'
+    ),
+    b(
+      'Policy per tipo, ruolo e direzione, rate limit selettivo e source validation.',
+      'Policy by type, role, and direction, selective rate limiting, and source validation.'
+    ),
+    b(
+      'Packet Too Big assenti/inattesi, guasti ND e sessioni grandi in stallo.',
+      'Missing/unexpected Packet Too Big messages, ND failures, and stalled large sessions.'
+    ),
+    b(
+      'Ripristina i tipi necessari, correggi ACL/CoPP e rivalida ND e PMTUD.',
+      'Restore required types, correct ACLs/CoPP, and revalidate ND and PMTUD.'
+    ),
+    b('ICMPv6 capture · ACL/CoPP counters · PMTUD test', 'ICMPv6 capture · ACL/CoPP counters · PMTUD test')
+  ),
+  t(
+    'ipv6-extension-header-evasion',
+    'injection',
+    ['network-fundamentals', 'security-fundamentals'],
+    ['data', 'control'],
+    b('Evasione con IPv6 Extension Header', 'IPv6 extension-header evasion'),
+    b(
+      'Catene o ordine insoliti sfruttano differenze di parsing per nascondere il protocollo superiore ai controlli.',
+      'Unusual chains or ordering exploit parsing differences to hide the upper-layer protocol from controls.'
+    ),
+    b(
+      'Normalizzazione, policy esplicita e firewall/IPS aggiornati che analizzano l’intera catena.',
+      'Normalization, explicit policy, and current firewalls/IPSs that parse the full chain.'
+    ),
+    b(
+      'Catene lunghe, ordine anomalo e disaccordo tra capture, flow log e sensore.',
+      'Long chains, abnormal ordering, and disagreement among captures, flow logs, and sensors.'
+    ),
+    b(
+      'Blocca il pattern, aggiorna parser/policy e verifica traffico legittimo con header consentiti.',
+      'Block the pattern, update parsers/policy, and verify legitimate traffic with allowed headers.'
+    ),
+    b('Packet capture · firewall/IPS parsing test', 'Packet capture · firewall/IPS parsing test')
+  ),
+  t(
+    'ipv6-fragmentation-evasion',
+    'injection',
+    ['network-fundamentals', 'security-fundamentals'],
+    ['data'],
+    b('Evasione tramite frammentazione IPv6', 'IPv6 fragmentation evasion'),
+    b(
+      'Frammenti minuscoli, incompleti o ambigui separano informazioni critiche o consumano risorse di riassemblaggio.',
+      'Tiny, incomplete, or ambiguous fragments separate critical information or consume reassembly resources.'
+    ),
+    b(
+      'Riassemblaggio e normalizzazione coerenti, limiti di risorsa e policy per tiny/atomic fragment.',
+      'Consistent reassembly and normalization, resource limits, and policy for tiny/atomic fragments.'
+    ),
+    b(
+      'Fragment ID incompleti, offset anomali, timeout e mismatch tra endpoint e sensore.',
+      'Incomplete fragment IDs, abnormal offsets, timeouts, and endpoint-versus-sensor mismatches.'
+    ),
+    b(
+      'Contieni la sorgente, preserva capture e allinea la policy di riassemblaggio.',
+      'Contain the source, preserve captures, and align reassembly policy.'
+    ),
+    b('Fragment counters · reassembly logs · packet capture', 'Fragment counters · reassembly logs · packet capture')
+  ),
+  t(
+    'ipv6-transition-tunnel-bypass',
+    'injection',
+    ['network-fundamentals', 'security-fundamentals'],
+    ['data', 'management'],
+    b('Bypass con tunnel di transizione IPv6', 'IPv6 transition-tunnel bypass'),
+    b(
+      '6in4, Teredo o altri tunnel non autorizzati trasportano IPv6 oltre sensori o policy che vedono solo il traffico esterno.',
+      'Unauthorized 6in4, Teredo, or other tunnels carry IPv6 past sensors or policies that see only outer traffic.'
+    ),
+    b(
+      'Disabilita transizioni inutilizzate, autorizza i tunnel necessari e ispeziona il traffico decapsulato.',
+      'Disable unused transition mechanisms, authorize required tunnels, and inspect decapsulated traffic.'
+    ),
+    b(
+      'Protocol 41, endpoint tunnel e connettività IPv6 non inventariata.',
+      'Protocol 41, tunnel endpoints, and untracked IPv6 connectivity.'
+    ),
+    b(
+      'Isola il tunnel, identifica gli endpoint e applica controlli equivalenti al traffico nativo.',
+      'Isolate the tunnel, identify endpoints, and apply controls equivalent to native traffic.'
+    ),
+    b('Flow logs · endpoint inventory · decapsulation test', 'Flow logs · endpoint inventory · decapsulation test')
+  ),
+  t(
+    'dual-stack-policy-bypass',
+    'spoofing',
+    ['network-fundamentals', 'ip-services', 'security-fundamentals'],
+    ['data', 'management', 'application'],
+    b('Bypass per divergenza di policy dual-stack', 'Dual-stack policy-drift bypass'),
+    b(
+      'Un servizio protetto in IPv4 resta esposto via IPv6, AAAA o link-local perché ACL, firewall o telemetria non hanno parità.',
+      'A service protected over IPv4 remains exposed through IPv6, AAAA, or link-local addressing because ACL, firewall, or telemetry coverage lacks parity.'
+    ),
+    b(
+      'Inventario IPAM/DNS, policy-as-code e test identici su entrambe le famiglie.',
+      'IPAM/DNS inventory, policy-as-code, and identical testing across both address families.'
+    ),
+    b(
+      'Servizi raggiungibili solo via IPv6 e log/alert presenti soltanto per IPv4.',
+      'Services reachable only over IPv6 and logs/alerts present only for IPv4.'
+    ),
+    b(
+      'Chiudi il percorso alternativo, allinea policy e telemetria e verifica record A/AAAA.',
+      'Close the alternate path, align policy and telemetry, and verify A/AAAA records.'
+    ),
+    b(
+      'Dual-stack reachability matrix · ACL/firewall/flow logs',
+      'Dual-stack reachability matrix · ACL/firewall/flow logs'
+    )
+  ),
+  t(
+    'ip-spoofing',
+    'spoofing',
+    ['network-fundamentals', 'ip-connectivity'],
+    ['data'],
+    b('IP source spoofing', 'IP source spoofing'),
+    b(
+      'Il campo sorgente IPv4/IPv6 viene falsificato per nascondere origine o abusare della fiducia.',
+      'The IPv4/IPv6 source field is forged to hide origin or abuse trust.'
+    ),
+    b(
+      'BCP 38, ingress/egress ACL e uRPF compatibile con il routing asimmetrico.',
+      'BCP 38, ingress/egress ACLs, and uRPF compatible with asymmetric routing.'
+    ),
+    b('Sorgenti bogon/impossibili e failure uRPF.', 'Bogon/impossible sources and uRPF failures.'),
+    b(
+      'Blocca la sorgente/percorso, coordina upstream e analizza eventuali sessioni riflesse.',
+      'Block the source/path, coordinate upstream, and analyze reflected sessions.'
+    ),
+    b('show ip interface | include verify · ACL counters', 'show ip interface | include verify · ACL counters')
+  ),
+  t(
+    'ospf-injection',
+    'routing',
+    ['ip-connectivity'],
+    ['control'],
+    b('OSPF adjacency e LSA injection', 'OSPF adjacency and LSA injection'),
+    b(
+      'Un neighbor non autorizzato introduce LSA, metriche o default route false.',
+      'An unauthorized neighbor introduces forged LSAs, metrics, or default routes.'
+    ),
+    b(
+      'Autenticazione OSPF, passive-interface default, filtering di redistribuzione e CoPP.',
+      'OSPF authentication, passive-interface default, redistribution filtering, and CoPP.'
+    ),
+    b(
+      'Neighbor/LSDB churn, nuovi advertising router e prefissi critici.',
+      'Neighbor/LSDB churn, new advertising routers, and critical prefixes.'
+    ),
+    b(
+      'Rimuovi l’adiacenza, correggi policy e riconvergi dopo aver validato la LSDB.',
+      'Remove the adjacency, correct policy, and reconverge after validating the LSDB.'
+    ),
+    b('show ip ospf neighbor detail · database', 'show ip ospf neighbor detail · database')
+  ),
+  t(
+    'bgp-hijack',
+    'routing',
+    ['ip-connectivity'],
+    ['control', 'data'],
+    b('BGP prefix hijacking', 'BGP prefix hijacking'),
+    b(
+      'Un AS annuncia un prefisso non autorizzato o più specifico e dirotta il traffico.',
+      'An AS announces an unauthorized or more-specific prefix and diverts traffic.'
+    ),
+    b(
+      'RPKI origin validation, prefix/max-prefix filter, IRR e policy peer.',
+      'RPKI origin validation, prefix/max-prefix filters, IRR, and peer policy.'
+    ),
+    b(
+      'Route monitoring, origin-AS changes e annunci più specifici.',
+      'Route monitoring, origin-AS changes, and more-specific announcements.'
+    ),
+    b(
+      'Ritira/filtra l’annuncio, coordina provider e pubblica comunicazioni operative.',
+      'Withdraw/filter the announcement, coordinate providers, and publish operational communications.'
+    ),
+    b('BGP/RPKI monitoring · received-routes', 'BGP/RPKI monitoring · received-routes')
+  ),
+  t(
+    'icmp-redirect-source-route',
+    'spoofing',
+    ['ip-connectivity'],
+    ['data', 'control'],
+    b('ICMP redirect e IP source routing abuse', 'ICMP redirect and IP source-routing abuse'),
+    b(
+      'Messaggi o opzioni influenzano il next hop per aggirare il percorso previsto.',
+      'Messages or options influence the next hop to bypass the intended path.'
+    ),
+    b(
+      'no ip redirects dove inutile, no ip source-route e filtering ai confini.',
+      'no ip redirects where unnecessary, no ip source-route, and boundary filtering.'
+    ),
+    b(
+      'Redirect inattesi, pacchetti con IP options e cambi host-route.',
+      'Unexpected redirects, packets with IP options, and host-route changes.'
+    ),
+    b(
+      'Ripristina route/cache host, blocca la sorgente e verifica intercettazione.',
+      'Restore host routes/caches, block the source, and investigate interception.'
+    ),
+    b('show ip interface · packet capture', 'show ip interface · packet capture')
+  ),
+  t(
+    'syn-flood',
+    'availability',
+    ['network-fundamentals', 'security-fundamentals'],
+    ['data', 'application'],
+    b('TCP SYN flood', 'TCP SYN flood'),
+    b(
+      'Numerosi handshake incompleti consumano backlog e stato di connessione.',
+      'Numerous incomplete handshakes consume backlog and connection state.'
+    ),
+    b(
+      'SYN cookies/proxy, rate limit, firewall/DDoS protection e capacità.',
+      'SYN cookies/proxy, rate limits, firewall/DDoS protection, and capacity.'
+    ),
+    b(
+      'Rapporto SYN/SYN-ACK/ACK, half-open e backlog utilization.',
+      'SYN/SYN-ACK/ACK ratios, half-open connections, and backlog utilization.'
+    ),
+    b(
+      'Attiva mitigazione, filtra upstream e scala/ripristina il servizio.',
+      'Enable mitigation, filter upstream, and scale/restore service.'
+    ),
+    b('show tcp brief · firewall/DDoS telemetry', 'show tcp brief · firewall/DDoS telemetry')
+  ),
+  t(
+    'udp-amplification',
+    'availability',
+    ['network-fundamentals', 'ip-services'],
+    ['data', 'application'],
+    b('UDP reflection/amplification', 'UDP reflection/amplification'),
+    b(
+      'Richieste con sorgente spoofata inducono risposte amplificate verso la vittima.',
+      'Requests with spoofed sources induce amplified responses toward the victim.'
+    ),
+    b(
+      'BCP 38, servizi non esposti/open, RRL e protezione DDoS.',
+      'BCP 38, no exposed/open services, RRL, and DDoS protection.'
+    ),
+    b(
+      'Asimmetria request/response, sorgenti distribuite e saturazione link.',
+      'Request/response asymmetry, distributed sources, and link saturation.'
+    ),
+    b(
+      'Rate-limit/filter upstream, anycast/scrubbing e hardening degli amplificatori.',
+      'Rate-limit/filter upstream, anycast/scrubbing, and harden amplifiers.'
+    ),
+    b('NetFlow · interface rates · service logs', 'NetFlow · interface rates · service logs')
+  ),
+  t(
+    'session-hijack-reset',
+    'session',
+    ['network-fundamentals', 'security-fundamentals'],
+    ['data', 'application', 'identity'],
+    b('Session hijacking e forged reset', 'Session hijacking and forged reset'),
+    b(
+      'Token, tuple o sequence number vengono rubati/indovinati per impersonare o interrompere una sessione.',
+      'Tokens, tuples, or sequence numbers are stolen/guessed to impersonate or interrupt a session.'
+    ),
+    b(
+      'TLS, cookie Secure/HttpOnly/SameSite, token rotation e protezioni protocol-specifiche.',
+      'TLS, Secure/HttpOnly/SameSite cookies, token rotation, and protocol-specific protections.'
+    ),
+    b(
+      'Token reuse, geografia/device anomali e picchi RST.',
+      'Token reuse, abnormal geography/devices, and RST spikes.'
+    ),
+    b(
+      'Revoca sessioni/token, rotazione credenziali e raccolta forense.',
+      'Revoke sessions/tokens, rotate credentials, and collect forensic evidence.'
+    ),
+    b('Session logs · packet capture · IdP telemetry', 'Session logs · packet capture · IdP telemetry')
+  ),
+  t(
+    'dns-poisoning',
+    'spoofing',
+    ['ip-services'],
+    ['application', 'data'],
+    b('DNS cache poisoning', 'DNS cache poisoning'),
+    b(
+      'Risposte falsificate inseriscono record errati nella cache del resolver.',
+      'Forged responses insert incorrect records into a resolver cache.'
+    ),
+    b(
+      'DNSSEC validation, resolver aggiornati, randomizzazione e sorgenti autoritative protette.',
+      'DNSSEC validation, updated resolvers, randomization, and protected authoritative sources.'
+    ),
+    b(
+      'Mismatch DNSSEC, TTL/record anomali e cambi improvvisi di risposta.',
+      'DNSSEC mismatches, abnormal TTL/records, and sudden answer changes.'
+    ),
+    b(
+      'Flusha la cache, correggi la zona/resolver e valuta utenti dirottati.',
+      'Flush the cache, correct zone/resolver state, and assess redirected users.'
+    ),
+    b('dig +dnssec · resolver logs', 'dig +dnssec · resolver logs')
+  ),
+  t(
+    'dns-tunneling',
+    'injection',
+    ['ip-services'],
+    ['application', 'management'],
+    b('DNS tunneling', 'DNS tunneling'),
+    b(
+      'Dati o comandi vengono codificati in query e risposte DNS.',
+      'Data or commands are encoded in DNS queries and responses.'
+    ),
+    b(
+      'Resolver aziendali obbligatori, egress policy, allowlist e DNS firewall/RPZ.',
+      'Enforced enterprise resolvers, egress policy, allowlists, and DNS firewall/RPZ.'
+    ),
+    b(
+      'Entropia, lunghezza, volume, NXDOMAIN e domini rari.',
+      'Entropy, length, volume, NXDOMAIN rates, and rare domains.'
+    ),
+    b(
+      'Blocca dominio/host, isola endpoint e analizza dati potenzialmente esfiltrati.',
+      'Block domain/host, isolate endpoints, and analyze potentially exfiltrated data.'
+    ),
+    b('DNS query analytics · endpoint telemetry', 'DNS query analytics · endpoint telemetry')
+  ),
+  t(
+    'credential-attacks',
+    'credentials',
+    ['security-fundamentals'],
+    ['identity', 'management', 'application'],
+    b('Brute force, spraying e credential stuffing', 'Brute force, spraying, and credential stuffing'),
+    b(
+      'Tentativi o credenziali riutilizzate cercano accesso a identità valide.',
+      'Attempts or reused credentials seek access to valid identities.'
+    ),
+    b(
+      'MFA resistente al phishing, password uniche, rate limit e breached-password checks.',
+      'Phishing-resistant MFA, unique passwords, rate limits, and breached-password checks.'
+    ),
+    b(
+      'Failure distribuiti, impossible travel e nuovi device/ASN.',
+      'Distributed failures, impossible travel, and new devices/ASNs.'
+    ),
+    b(
+      'Blocca/revoca sessioni, reset mirato, indaga accessi e notifica gli utenti.',
+      'Block/revoke sessions, perform targeted resets, investigate access, and notify users.'
+    ),
+    b('AAA/IdP logs · login block counters', 'AAA/IdP logs · login block counters')
+  ),
+  t(
+    'replay',
+    'session',
+    ['security-fundamentals', 'automation-programmability'],
+    ['application', 'identity'],
+    b('Replay attack', 'Replay attack'),
+    b(
+      'Un messaggio o token valido viene catturato e ripresentato per ripetere un’azione.',
+      'A valid message or token is captured and resubmitted to repeat an action.'
+    ),
+    b(
+      'Nonce, timestamp, anti-replay window, token breve e idempotency key.',
+      'Nonces, timestamps, anti-replay windows, short-lived tokens, and idempotency keys.'
+    ),
+    b(
+      'Duplicate transaction ID, nonce reuse e richieste identiche ravvicinate.',
+      'Duplicate transaction IDs, nonce reuse, and closely repeated identical requests.'
+    ),
+    b(
+      'Revoca token/chiavi, annulla operazioni ove possibile e ricostruisci la timeline.',
+      'Revoke tokens/keys, reverse operations where possible, and reconstruct the timeline.'
+    ),
+    b('API gateway logs · IPsec replay counters', 'API gateway logs · IPsec replay counters')
+  ),
+  t(
+    'tls-downgrade-cert-abuse',
+    'mitm',
+    ['security-fundamentals', 'ip-services'],
+    ['application', 'identity'],
+    b('TLS downgrade e certificate abuse', 'TLS downgrade and certificate abuse'),
+    b(
+      'Il traffico viene forzato verso protezioni deboli o un certificato/CA fraudolento.',
+      'Traffic is forced toward weak protection or a fraudulent certificate/CA.'
+    ),
+    b(
+      'TLS moderno, HSTS, validazione nome/catena, lifecycle chiavi e CT monitoring.',
+      'Modern TLS, HSTS, name/chain validation, key lifecycle management, and CT monitoring.'
+    ),
+    b(
+      'Handshake legacy, certificate mismatch e nuove emissioni CT.',
+      'Legacy handshakes, certificate mismatches, and new CT issuances.'
+    ),
+    b(
+      'Revoca/sostituisci certificati e chiavi, blocca endpoint e valuta sessioni intercettate.',
+      'Revoke/replace certificates and keys, block endpoints, and assess intercepted sessions.'
+    ),
+    b('TLS scan · certificate transparency · OCSP', 'TLS scan · certificate transparency · OCSP')
+  ),
+  t(
+    'injection',
+    'injection',
+    ['security-fundamentals', 'automation-programmability'],
+    ['application', 'management'],
+    b('SQL, command e API injection', 'SQL, command, and API injection'),
+    b(
+      'Input non attendibile altera query, comandi, template o payload di automazione.',
+      'Untrusted input alters queries, commands, templates, or automation payloads.'
+    ),
+    b(
+      'Query parametrizzate, allowlist/schema, least privilege e separazione interpreter/dati.',
+      'Parameterized queries, allowlists/schemas, least privilege, and separation of interpreter/data.'
+    ),
+    b(
+      'WAF/app logs, errori parser, comandi inattesi e pattern di input.',
+      'WAF/application logs, parser errors, unexpected commands, and input patterns.'
+    ),
+    b(
+      'Isola il servizio, revoca credenziali, correggi il sink e valuta dati alterati/esfiltrati.',
+      'Isolate the service, revoke credentials, fix the sink, and assess altered/exfiltrated data.'
+    ),
+    b('SAST/DAST · WAF/API logs · DB audit', 'SAST/DAST · WAF/API logs · DB audit')
+  ),
+  t(
+    'xss-csrf',
+    'injection',
+    ['security-fundamentals'],
+    ['application', 'identity'],
+    b('XSS e CSRF', 'XSS and CSRF'),
+    b(
+      'Script o richieste cross-site abusano del browser e della sessione della vittima.',
+      'Scripts or cross-site requests abuse the victim browser and session.'
+    ),
+    b(
+      'Output encoding, CSP, sanitization, SameSite e anti-CSRF token.',
+      'Output encoding, CSP, sanitization, SameSite, and anti-CSRF tokens.'
+    ),
+    b(
+      'CSP reports, payload nei campi e azioni sensibili senza flusso previsto.',
+      'CSP reports, payloads in fields, and sensitive actions outside expected flows.'
+    ),
+    b(
+      'Revoca sessioni, rimuovi contenuti malevoli, correggi rendering/request validation.',
+      'Revoke sessions, remove malicious content, and fix rendering/request validation.'
+    ),
+    b('CSP report endpoint · application logs', 'CSP report endpoint · application logs')
+  ),
+  t(
+    'malware-ransomware',
+    'availability',
+    ['security-fundamentals'],
+    ['application', 'identity'],
+    b('Malware e ransomware', 'Malware and ransomware'),
+    b(
+      'Codice malevolo esegue persistenza, furto, cifratura o interruzione dei sistemi.',
+      'Malicious code performs persistence, theft, encryption, or system disruption.'
+    ),
+    b(
+      'Patching, EDR, application control, least privilege, segmentazione e backup isolati.',
+      'Patching, EDR, application control, least privilege, segmentation, and isolated backups.'
+    ),
+    b(
+      'Processi/comportamenti anomali, canary file, EDR e traffico C2.',
+      'Abnormal processes/behavior, canary files, EDR, and C2 traffic.'
+    ),
+    b(
+      'Isola endpoint, preserva evidenze, eradica, ripristina da backup testati e monitora recidive.',
+      'Isolate endpoints, preserve evidence, eradicate, restore tested backups, and monitor recurrence.'
+    ),
+    b(
+      'EDR timeline · backup restore test · network telemetry',
+      'EDR timeline · backup restore test · network telemetry'
+    )
+  ),
+  t(
+    'phishing-social-engineering',
+    'credentials',
+    ['security-fundamentals'],
+    ['identity', 'application'],
+    b('Phishing e social engineering', 'Phishing and social engineering'),
+    b(
+      'Manipolazione umana induce consegna di credenziali, esecuzione o autorizzazione fraudolenta.',
+      'Human manipulation induces credential disclosure, execution, or fraudulent authorization.'
+    ),
+    b(
+      'Awareness contestuale, MFA resistente al phishing, procedure out-of-band e mail security.',
+      'Contextual awareness, phishing-resistant MFA, out-of-band procedures, and email security.'
+    ),
+    b(
+      'User reporting, domain/lookalike monitoring e anomalie IdP/email.',
+      'User reporting, domain/lookalike monitoring, and IdP/email anomalies.'
+    ),
+    b(
+      'Blocca mittente/dominio, revoca sessioni, reset mirato e comunica l’incidente.',
+      'Block sender/domain, revoke sessions, perform targeted resets, and communicate the incident.'
+    ),
+    b('Mail gateway · IdP logs · user reports', 'Mail gateway · IdP logs · user reports')
+  ),
+  t(
+    'evil-twin-deauth',
+    'wireless',
+    ['network-access', 'security-fundamentals'],
+    ['physical', 'data', 'identity'],
+    b('Evil twin e deauthentication', 'Evil twin and deauthentication'),
+    b(
+      'AP clone e frame management falsi attirano o disconnettono i client.',
+      'Cloned APs and forged management frames attract or disconnect clients.'
+    ),
+    b(
+      'WPA3-Enterprise, EAP-TLS con server validation, PMF e WIDS/WIPS.',
+      'WPA3-Enterprise, EAP-TLS with server validation, PMF, and WIDS/WIPS.'
+    ),
+    b(
+      'BSSID/SSID duplicati, deauth spike e certificati server inattesi.',
+      'Duplicate BSSID/SSID, deauth spikes, and unexpected server certificates.'
+    ),
+    b(
+      'Localizza/rimuovi rogue AP, blocca radio/client e ruota credenziali eventualmente esposte.',
+      'Locate/remove rogue APs, block radio/clients, and rotate possibly exposed credentials.'
+    ),
+    b('WLC rogue AP · PMF status · RADIUS logs', 'WLC rogue AP · PMF status · RADIUS logs')
+  ),
+  t(
+    'api-auth-token-abuse',
+    'automation',
+    ['automation-programmability'],
+    ['management', 'application', 'identity'],
+    b('API authorization e token abuse', 'API authorization and token abuse'),
+    b(
+      'Token rubati o controlli object-level deboli consentono azioni oltre il ruolo.',
+      'Stolen tokens or weak object-level controls permit actions beyond the role.'
+    ),
+    b(
+      'Scoped short-lived token, workload identity, RBAC/ABAC server-side e secret manager.',
+      'Scoped short-lived tokens, workload identity, server-side RBAC/ABAC, and secret managers.'
+    ),
+    b(
+      'API audit, uso token da nuovi workload e accessi object-level anomali.',
+      'API auditing, token use from new workloads, and abnormal object-level access.'
+    ),
+    b(
+      'Revoca/ruota token, limita l’identità e valuta tutte le modifiche effettuate.',
+      'Revoke/rotate tokens, constrain the identity, and assess all performed changes.'
+    ),
+    b('API gateway audit · secret scanning', 'API gateway audit · secret scanning')
+  ),
+  t(
+    'controller-compromise',
+    'automation',
+    ['automation-programmability'],
+    ['management', 'control'],
+    b('Compromissione del controller', 'Controller compromise'),
+    b(
+      'Il punto centralizzato viene usato per distribuire policy o configurazioni malevole su larga scala.',
+      'The centralized point is used to distribute malicious policy or configuration at scale.'
+    ),
+    b(
+      'Management segmentation, MFA/PAM, HA, hardening, signed artifacts e least privilege.',
+      'Management segmentation, MFA/PAM, HA, hardening, signed artifacts, and least privilege.'
+    ),
+    b(
+      'Audit immutabile, config diff, comportamento southbound anomalo e integrity monitoring.',
+      'Immutable auditing, configuration diffs, abnormal southbound behavior, and integrity monitoring.'
+    ),
+    b(
+      'Isola controller/canale, passa a procedure di emergenza, ripristina backup e rivalida device.',
+      'Isolate the controller/channel, switch to emergency procedures, restore backups, and revalidate devices.'
+    ),
+    b(
+      'Controller audit · device config diff · integrity checks',
+      'Controller audit · device config diff · integrity checks'
+    )
+  ),
+  t(
+    'automation-supply-chain-drift',
+    'automation',
+    ['automation-programmability'],
+    ['management', 'application'],
+    b('Supply chain, blast radius e configuration drift', 'Supply chain, blast radius, and configuration drift'),
+    b(
+      'Moduli compromessi o errori idempotenti solo in apparenza propagano modifiche e divergono dall’intento.',
+      'Compromised modules or only apparently idempotent errors propagate changes and diverge from intent.'
+    ),
+    b(
+      'Version pinning, SBOM/firme, lint/test, dry-run, approval, canary e source of truth.',
+      'Version pinning, SBOM/signatures, lint/tests, dry runs, approvals, canaries, and a source of truth.'
+    ),
+    b(
+      'Drift detection, artifact provenance, failed convergence e change-rate anomalo.',
+      'Drift detection, artifact provenance, failed convergence, and abnormal change rates.'
+    ),
+    b(
+      'Ferma pipeline, rollback, ripristina artifact fidati e riconcilia lo stato.',
+      'Stop the pipeline, roll back, restore trusted artifacts, and reconcile state.'
+    ),
+    b('CI audit · plan/diff · signed artifact verification', 'CI audit · plan/diff · signed artifact verification')
+  ),
+  t(
+    'ai-telemetry-poisoning',
+    'automation',
+    ['automation-programmability'],
+    ['management', 'application'],
+    b('AI/telemetry poisoning e prompt injection', 'AI/telemetry poisoning and prompt injection'),
+    b(
+      'Dati o istruzioni malevoli alterano baseline, analisi o output generati.',
+      'Malicious data or instructions alter baselines, analysis, or generated output.'
+    ),
+    b(
+      'Provenienza dati, isolamento tool, input boundaries, least privilege e human approval.',
+      'Data provenance, tool isolation, input boundaries, least privilege, and human approval.'
+    ),
+    b(
+      'Model/data drift, output incoerenti, fonte anomala e tool-call fuori policy.',
+      'Model/data drift, inconsistent output, abnormal sources, and out-of-policy tool calls.'
+    ),
+    b(
+      'Disabilita automazione, rimuovi dataset/input contaminati, rivalida modello e modifiche.',
+      'Disable automation, remove contaminated datasets/inputs, and revalidate the model and changes.'
+    ),
+    b('AI audit trail · dataset lineage · policy violations', 'AI audit trail · dataset lineage · policy violations')
+  ),
+  t(
+    'cdp-lldp-enumeration',
+    'reconnaissance',
+    ['network-access'],
+    ['data', 'management'],
+    b('Enumerazione CDP e LLDP', 'CDP and LLDP enumeration'),
+    b(
+      'Informazioni di discovery esposte su porte non attendibili rivelano nomi, modelli, indirizzi di gestione e topologia.',
+      'Discovery information exposed on untrusted ports reveals names, models, management addresses, and topology.'
+    ),
+    b(
+      'Disabilita CDP/LLDP dove non necessari, limita la gestione e applica segmentazione e access control.',
+      'Disable CDP/LLDP where unnecessary, restrict management, and apply segmentation and access control.'
+    ),
+    b(
+      'Neighbor inattesi, annunci su access port e variazioni nell’inventario di topologia.',
+      'Unexpected neighbors, advertisements on access ports, and topology-inventory changes.'
+    ),
+    b(
+      'Isola la porta, valida il dispositivo e riduci le informazioni esposte.',
+      'Isolate the port, validate the device, and reduce exposed information.'
+    ),
+    b(
+      'show cdp neighbors detail · show lldp neighbors detail',
+      'show cdp neighbors detail · show lldp neighbors detail'
+    )
+  ),
+  t(
+    'ip-fragmentation-evasion',
+    'injection',
+    ['network-fundamentals', 'security-fundamentals'],
+    ['data'],
+    b('Frammentazione IP ed evasione', 'IP fragmentation and evasion'),
+    b(
+      'Frammenti sovrapposti, anomali o incompleti tentano di creare interpretazioni diverse tra sensore e destinazione o consumare risorse di riassemblaggio.',
+      'Overlapping, abnormal, or incomplete fragments attempt to create different interpretations between a sensor and destination or consume reassembly resources.'
+    ),
+    b(
+      'Normalizzazione e riassemblaggio stateful, MTU coerente, patching e filtering dei frammenti anomali.',
+      'Stateful normalization and reassembly, consistent MTU, patching, and filtering of abnormal fragments.'
+    ),
+    b(
+      'Overlap, timeout di riassemblaggio, frammenti minuscoli e mismatch tra IDS ed endpoint.',
+      'Overlaps, reassembly timeouts, tiny fragments, and IDS-to-endpoint mismatches.'
+    ),
+    b(
+      'Blocca il flusso, acquisisci i frammenti e verifica l’effettiva interpretazione del destinatario.',
+      'Block the flow, capture the fragments, and verify the destination’s actual interpretation.'
+    ),
+    b(
+      'Packet capture · firewall fragment counters · MTU path test',
+      'Packet capture · firewall fragment counters · MTU path test'
+    )
+  ),
+  t(
+    'nat-state-exhaustion',
+    'availability',
+    ['ip-services'],
+    ['data', 'application'],
+    b('Esaurimento NAT/PAT e state table', 'NAT/PAT and state-table exhaustion'),
+    b(
+      'Un numero elevato di flussi consuma traduzioni, porte o stato del firewall fino a impedire nuove sessioni legittime.',
+      'A high number of flows consumes translations, ports, or firewall state until new legitimate sessions cannot be created.'
+    ),
+    b(
+      'Limiti per host, timeout coerenti, capacità pianificata, rate limiting e protezione stateful.',
+      'Per-host limits, appropriate timeouts, capacity planning, rate limiting, and stateful protection.'
+    ),
+    b(
+      'Utilizzo e picchi della translation table, failure di allocazione e crescita delle sessioni incomplete.',
+      'Translation-table utilization and spikes, allocation failures, and growth of incomplete sessions.'
+    ),
+    b(
+      'Contieni le sorgenti, libera solo stato non valido e scala/ripristina il servizio con cautela.',
+      'Contain sources, clear only invalid state, and carefully scale or restore the service.'
+    ),
+    b('show ip nat statistics · firewall session table', 'show ip nat statistics · firewall session table')
+  ),
+  t(
+    'ntp-manipulation',
+    'spoofing',
+    ['ip-services'],
+    ['management', 'application'],
+    b('NTP spoofing e time manipulation', 'NTP spoofing and time manipulation'),
+    b(
+      'Risposte temporali false alterano log, validità dei certificati, correlazione SIEM e protocolli dipendenti dal tempo.',
+      'Forged time responses disrupt logs, certificate validity, SIEM correlation, and time-dependent protocols.'
+    ),
+    b(
+      'Server multipli attendibili, ACL, autenticazione quando supportata, NTS e soglie sull’offset.',
+      'Multiple trusted servers, ACLs, authentication where supported, NTS, and offset thresholds.'
+    ),
+    b(
+      'Offset o stratum improvvisi, cambio della sorgente e divergenza tra time source indipendenti.',
+      'Sudden offset or stratum changes, source changes, and divergence between independent time sources.'
+    ),
+    b(
+      'Isola la sorgente, ristabilisci il tempo gradualmente e rivalida log, certificati e timeline.',
+      'Isolate the source, restore time gradually, and revalidate logs, certificates, and timelines.'
+    ),
+    b('show ntp associations detail · clock comparison', 'show ntp associations detail · clock comparison')
+  ),
+  t(
+    'snmp-community-abuse',
+    'credentials',
+    ['ip-services', 'security-fundamentals'],
+    ['management', 'identity'],
+    b('Abuso SNMP e community string', 'SNMP and community-string abuse'),
+    b(
+      'Community deboli o SNMPv1/v2c consentono enumerazione e, con permessi write, modifiche non autorizzate.',
+      'Weak communities or SNMPv1/v2c allow enumeration and, with write access, unauthorized changes.'
+    ),
+    b(
+      'SNMPv3 authPriv, viste minime, credenziali uniche, ACL e rimozione del write access non necessario.',
+      'SNMPv3 authPriv, minimal views, unique credentials, ACLs, and removal of unnecessary write access.'
+    ),
+    b(
+      'Get/Walk/Set insoliti, failure di autenticazione e accessi da manager non autorizzati.',
+      'Unusual Get/Walk/Set operations, authentication failures, and access from unauthorized managers.'
+    ),
+    b(
+      'Blocca il manager, ruota le credenziali, verifica le modifiche e ricostruisci l’inventario.',
+      'Block the manager, rotate credentials, review changes, and rebuild the inventory.'
+    ),
+    b('show snmp user · SNMP audit · ACL counters', 'show snmp user · SNMP audit · ACL counters')
+  ),
+  t(
+    'syslog-manipulation',
+    'injection',
+    ['ip-services', 'security-fundamentals'],
+    ['management', 'application'],
+    b('Syslog injection e log tampering', 'Syslog injection and log tampering'),
+    b(
+      'Eventi costruiti, perdita di messaggi o cancellazione locale falsano la ricostruzione dell’incidente.',
+      'Crafted events, message loss, or local deletion distort incident reconstruction.'
+    ),
+    b(
+      'Raccolta remota centralizzata, TLS dove disponibile, storage immutabile, NTP e accesso ristretto.',
+      'Centralized remote collection, TLS where available, immutable storage, NTP, and restricted access.'
+    ),
+    b(
+      'Gap di sequenza, duplicati, hostname/severity incoerenti e differenze tra log locali e centrali.',
+      'Sequence gaps, duplicates, inconsistent hostnames/severity, and differences between local and central logs.'
+    ),
+    b(
+      'Preserva le copie remote, isola la sorgente e ricostruisci la timeline usando più fonti.',
+      'Preserve remote copies, isolate the source, and rebuild the timeline from multiple sources.'
+    ),
+    b(
+      'show logging · collector integrity · timeline correlation',
+      'show logging · collector integrity · timeline correlation'
+    )
+  ),
+  t(
+    'ssh-management-attacks',
+    'credentials',
+    ['ip-services', 'security-fundamentals'],
+    ['management', 'identity'],
+    b('Attacchi all’accesso SSH', 'SSH access attacks'),
+    b(
+      'Password guessing, chiavi rubate o algoritmi legacy mirano al piano di gestione.',
+      'Password guessing, stolen keys, or legacy algorithms target the management plane.'
+    ),
+    b(
+      'SSHv2, AAA/MFA, chiavi protette, ACL sulle VTY, management VPN/OOB e algoritmi moderni.',
+      'SSHv2, AAA/MFA, protected keys, VTY ACLs, management VPN/OOB, and modern algorithms.'
+    ),
+    b(
+      'Failure AAA, nuove fingerprint, accessi fuori finestra e comandi amministrativi anomali.',
+      'AAA failures, new fingerprints, out-of-window access, and unusual administrative commands.'
+    ),
+    b(
+      'Disabilita l’account o la chiave, termina le sessioni, ruota i segreti e verifica le configurazioni.',
+      'Disable the account or key, terminate sessions, rotate secrets, and review configurations.'
+    ),
+    b('show ssh · show users · AAA command accounting', 'show ssh · show users · AAA command accounting')
+  ),
+  t(
+    'vpn-weak-crypto',
+    'mitm',
+    ['security-fundamentals'],
+    ['data', 'identity'],
+    b('Downgrade VPN e crittografia debole', 'VPN downgrade and weak cryptography'),
+    b(
+      'Suite legacy, peer non validati o autenticazione debole consentono intercettazione, impersonificazione o accesso improprio.',
+      'Legacy suites, unvalidated peers, or weak authentication enable interception, impersonation, or improper access.'
+    ),
+    b(
+      'IKEv2, suite robuste, PFS, certificati validati, MFA e rimozione degli algoritmi legacy.',
+      'IKEv2, strong suites, PFS, validated certificates, MFA, and removal of legacy algorithms.'
+    ),
+    b(
+      'Negoziazioni legacy, peer/certificati inattesi, rekey anomali e authentication failure.',
+      'Legacy negotiations, unexpected peers/certificates, abnormal rekeys, and authentication failures.'
+    ),
+    b(
+      'Chiudi il tunnel, revoca credenziali o certificati, correggi la policy e rivalida gli endpoint.',
+      'Close the tunnel, revoke credentials or certificates, correct policy, and revalidate endpoints.'
+    ),
+    b('show crypto ikev2 sa detail · show crypto ipsec sa', 'show crypto ikev2 sa detail · show crypto ipsec sa')
+  ),
+  t(
+    'pki-trust-abuse',
+    'spoofing',
+    ['security-fundamentals'],
+    ['identity', 'management'],
+    b('Abuso PKI e compromissione della fiducia', 'PKI abuse and trust compromise'),
+    b(
+      'Certificati fraudolenti, CA improprie o chiavi private sottratte permettono impersonificazione e firme non attendibili.',
+      'Fraudulent certificates, improper CAs, or stolen private keys enable impersonation and untrusted signatures.'
+    ),
+    b(
+      'Protezione HSM/TPM, lifecycle delle chiavi, CA minimali, validazione completa e Certificate Transparency.',
+      'HSM/TPM protection, key lifecycle management, minimal CAs, full validation, and Certificate Transparency.'
+    ),
+    b(
+      'Nuove emissioni, chain inattese, mismatch nome/certificato e uso anomalo della chiave.',
+      'New issuances, unexpected chains, name/certificate mismatches, and abnormal key use.'
+    ),
+    b(
+      'Revoca e sostituisci certificato/chiave, rimuovi la trust anchor e valuta tutte le firme o sessioni coinvolte.',
+      'Revoke and replace the certificate/key, remove the trust anchor, and assess all affected signatures or sessions.'
+    ),
+    b('CRL/OCSP · CT monitoring · trust-store audit', 'CRL/OCSP · CT monitoring · trust-store audit')
+  ),
+  t(
+    'nac-posture-bypass',
+    'spoofing',
+    ['network-access', 'security-fundamentals'],
+    ['data', 'identity'],
+    b('Bypass NAC e falsificazione della postura', 'NAC bypass and posture spoofing'),
+    b(
+      'Identità di dispositivo copiate, fallback permissivi o controlli di postura deboli tentano di ottenere un’autorizzazione errata.',
+      'Copied device identities, permissive fallbacks, or weak posture checks attempt to obtain incorrect authorization.'
+    ),
+    b(
+      '802.1X/EAP-TLS, certificati per device, profiling multiplo, policy fail-closed calibrata e segmentazione dinamica.',
+      '802.1X/EAP-TLS, device certificates, multiple profiling signals, calibrated fail-closed policy, and dynamic segmentation.'
+    ),
+    b(
+      'Cambio MAC/device profile, fallback MAB insolito, posture flapping e autorizzazioni incoerenti.',
+      'MAC/device-profile changes, unusual MAB fallback, posture flapping, and inconsistent authorizations.'
+    ),
+    b(
+      'Metti in quarantena, rivalida identità e postura, correggi la policy e revoca il certificato compromesso.',
+      'Quarantine, revalidate identity and posture, correct policy, and revoke the compromised certificate.'
+    ),
+    b(
+      'show authentication sessions details · RADIUS policy logs',
+      'show authentication sessions details · RADIUS policy logs'
+    )
+  ),
+  t(
+    'aaa-protocol-abuse',
+    'credentials',
+    ['ip-services', 'security-fundamentals'],
+    ['management', 'identity'],
+    b('Abuso AAA, RADIUS e TACACS+', 'AAA, RADIUS, and TACACS+ abuse'),
+    b(
+      'Segreti condivisi deboli, fallback errati o accounting incompleto riducono autenticazione, autorizzazione e attribuzione.',
+      'Weak shared secrets, incorrect fallback, or incomplete accounting weaken authentication, authorization, and attribution.'
+    ),
+    b(
+      'Segreti unici, sorgenti autorizzate, TACACS+ per amministrazione, command authorization, MFA e fallback locale testato.',
+      'Unique secrets, authorized sources, TACACS+ for administration, command authorization, MFA, and a tested local fallback.'
+    ),
+    b(
+      'Reject o timeout anomali, uso del fallback, comandi senza accounting e cambi policy non previsti.',
+      'Abnormal rejects or timeouts, fallback use, commands without accounting, and unexpected policy changes.'
+    ),
+    b(
+      'Isola il server o client, ruota i segreti, preserva l’accounting e verifica gli accessi concessi.',
+      'Isolate the server or client, rotate secrets, preserve accounting, and review granted access.'
+    ),
+    b('show aaa servers · test aaa · accounting records', 'show aaa servers · test aaa · accounting records')
+  ),
+  t(
+    'privileged-command-abuse',
+    'credentials',
+    ['ip-services', 'security-fundamentals'],
+    ['management', 'identity'],
+    b('Abuso di comandi privilegiati', 'Privileged-command abuse'),
+    b(
+      'Un’identità o sessione valida usa privilegi eccessivi per modificare configurazione, log o controlli fuori dall’intento autorizzato.',
+      'A valid identity or session uses excessive privileges to change configuration, logs, or controls outside authorized intent.'
+    ),
+    b(
+      'Command authorization, ruoli minimi, privilegio just-in-time, approval e session timeout.',
+      'Command authorization, minimal roles, just-in-time privilege, approval, and session timeouts.'
+    ),
+    b(
+      'Comandi fuori finestra/ticket, aumento privilege e accounting incompleto.',
+      'Commands outside the approved window/ticket, privilege increases, and incomplete accounting.'
+    ),
+    b(
+      'Termina la sessione, revoca il ruolo, preserva accounting/config diff e ripristina lo stato approvato.',
+      'Terminate the session, revoke the role, preserve accounting/configuration diffs, and restore approved state.'
+    ),
+    b(
+      'AAA command accounting · session recording · config archive',
+      'AAA command accounting · session recording · config archive'
+    )
+  ),
+  t(
+    'eap-server-certificate-bypass',
+    'mitm',
+    ['network-access', 'security-fundamentals'],
+    ['data', 'identity'],
+    b('Bypass della validazione del certificato EAP', 'EAP server-certificate validation bypass'),
+    b(
+      'Un supplicant che non valida CA, nome o scopo del server accetta un’infrastruttura 802.1X rogue.',
+      'A supplicant that does not validate the server CA, name, or purpose accepts rogue 802.1X infrastructure.'
+    ),
+    b(
+      'Profili gestiti con CA/nome server vincolati, EAP-TLS e trust store minimale.',
+      'Managed profiles with pinned CA/server name, EAP-TLS, and a minimal trust store.'
+    ),
+    b(
+      'Chain o certificato RADIUS inattesi, prompt utente e cambio del server EAP.',
+      'Unexpected RADIUS chains or certificates, user prompts, and EAP server changes.'
+    ),
+    b(
+      'Blocca il profilo rogue, revoca credenziali esposte e ridistribuisci una configurazione supplicant valida.',
+      'Block the rogue profile, revoke exposed credentials, and redeploy a valid supplicant configuration.'
+    ),
+    b(
+      'supplicant logs · RADIUS certificate comparison · WLC telemetry',
+      'supplicant logs · RADIUS certificate comparison · WLC telemetry'
+    )
+  ),
+  t(
+    'certificate-enrollment-abuse',
+    'spoofing',
+    ['security-fundamentals', 'automation-programmability'],
+    ['identity', 'management'],
+    b('Abuso dell’enrollment dei certificati', 'Certificate-enrollment abuse'),
+    b(
+      'Template permissivi o workflow non autorizzati emettono un certificato utilizzabile per impersonare utenti, device o servizi.',
+      'Permissive templates or unauthorized workflows issue a certificate that can impersonate users, devices, or services.'
+    ),
+    b(
+      'Template minimi, approvazione per identità sensibili, owner, EKU vincolati e protezione delle chiavi.',
+      'Minimal templates, approval for sensitive identities, ownership, constrained EKUs, and key protection.'
+    ),
+    b(
+      'Emissioni fuori profilo, SAN/EKU inattesi e richieste da enrollment agent insoliti.',
+      'Off-profile issuance, unexpected SANs/EKUs, and requests from unusual enrollment agents.'
+    ),
+    b(
+      'Revoca certificato e chiave, correggi template/permessi e valuta autenticazioni o firme derivate.',
+      'Revoke the certificate and key, fix templates/permissions, and assess derived authentications or signatures.'
+    ),
+    b(
+      'CA audit · certificate inventory · authentication logs',
+      'CA audit · certificate inventory · authentication logs'
+    )
+  ),
+  t(
+    'mfa-fatigue-token-theft',
+    'credentials',
+    ['security-fundamentals'],
+    ['identity', 'application'],
+    b('MFA fatigue e furto di token', 'MFA fatigue and token theft'),
+    b(
+      'Push ripetuti inducono un’approvazione oppure token e sessioni vengono sottratti dopo l’autenticazione.',
+      'Repeated pushes induce approval, or tokens and sessions are stolen after authentication.'
+    ),
+    b(
+      'MFA resistente al phishing, number matching, device binding, token brevi e reauthentication adattiva.',
+      'Phishing-resistant MFA, number matching, device binding, short-lived tokens, and adaptive reauthentication.'
+    ),
+    b(
+      'Push ripetuti, nuovi device/ASN, token reuse e sessioni simultanee incompatibili.',
+      'Repeated pushes, new devices/ASNs, token reuse, and incompatible concurrent sessions.'
+    ),
+    b(
+      'Revoca token/sessioni, blocca l’identità, rivalida il device e analizza accessi successivi.',
+      'Revoke tokens/sessions, block the identity, revalidate the device, and investigate subsequent access.'
+    ),
+    b('IdP/MFA telemetry · token/session inventory', 'IdP/MFA telemetry · token/session inventory')
+  ),
+  t(
+    'vpn-split-tunnel-pivot',
+    'session',
+    ['security-fundamentals', 'ip-services'],
+    ['data', 'identity'],
+    b('Pivot tramite VPN split tunnel', 'VPN split-tunnel pivot'),
+    b(
+      'Un endpoint connesso simultaneamente a rete non fidata e VPN viene usato come ponte verso risorse interne.',
+      'An endpoint connected simultaneously to an untrusted network and the VPN is used as a bridge to internal resources.'
+    ),
+    b(
+      'Split tunnel esplicito, host firewall, posture, DNS sicuro, segmentazione e least privilege.',
+      'Explicit split tunneling, host firewalls, posture, secure DNS, segmentation, and least privilege.'
+    ),
+    b(
+      'Flussi Internet locali e interni correlati, route inattese e posture change durante la sessione.',
+      'Correlated local Internet and internal flows, unexpected routes, and posture changes during the session.'
+    ),
+    b(
+      'Termina la sessione, isola l’endpoint, preserva EDR/VPN logs e limita i percorsi interni.',
+      'Terminate the session, isolate the endpoint, preserve EDR/VPN logs, and restrict internal paths.'
+    ),
+    b(
+      'client route table · VPN gateway logs · EDR/network telemetry',
+      'client route table · VPN gateway logs · EDR/network telemetry'
+    )
+  ),
+  t(
+    'route-redistribution-abuse',
+    'routing',
+    ['ip-connectivity', 'security-fundamentals'],
+    ['control', 'data'],
+    b('Abuso della redistribuzione di route', 'Route-redistribution abuse'),
+    b(
+      'Policy ampie importano default, prefissi interni o route più specifiche tra protocolli, causando loop, black hole o deviazione.',
+      'Broad policy imports defaults, internal prefixes, or more-specific routes across protocols, causing loops, black holes, or diversion.'
+    ),
+    b(
+      'Prefix allowlist, route map, tag anti-loop, metriche deterministiche e maximum-prefix.',
+      'Prefix allowlists, route maps, anti-loop tags, deterministic metrics, and maximum-prefix controls.'
+    ),
+    b(
+      'Route external inattese, tag mancanti, default da ASBR nuovi e aumento del route count.',
+      'Unexpected external routes, missing tags, defaults from new ASBRs, and increased route counts.'
+    ),
+    b(
+      'Ferma la redistribuzione, ritira i prefissi, ripristina la policy e rivalida RIB/FIB e ritorno.',
+      'Stop redistribution, withdraw prefixes, restore policy, and revalidate the RIB/FIB and return path.'
+    ),
+    b(
+      'show ip protocols · route-map counters · external routes',
+      'show ip protocols · route-map counters · external routes'
+    )
+  ),
+  t(
+    'fhrp-gateway-takeover',
+    'routing',
+    ['network-access', 'ip-connectivity', 'ip-services'],
+    ['control', 'data'],
+    b('Takeover del gateway FHRP', 'FHRP gateway takeover'),
+    b(
+      'Messaggi HSRP/VRRP falsi o peer configurati male assumono il ruolo attivo o creano split-brain.',
+      'Forged HSRP/VRRP messages or misconfigured peers assume the active role or create split brain.'
+    ),
+    b(
+      'Autenticazione dove supportata, confine Layer 2, peer inventariati, object tracking e configurazione simmetrica.',
+      'Authentication where supported, a Layer 2 boundary, inventoried peers, object tracking, and symmetric configuration.'
+    ),
+    b(
+      'Role change inattesi, doppio Active, virtual MAC su porte diverse e tracking inefficace.',
+      'Unexpected role changes, dual Active state, the virtual MAC on different ports, and ineffective tracking.'
+    ),
+    b(
+      'Isola il peer, ristabilisci ruolo/IP/MAC virtuale e verifica upstream e policy del gateway sano.',
+      'Isolate the peer, restore the virtual role/IP/MAC, and verify the healthy gateway’s upstream path and policy.'
+    ),
+    b('show standby/vrrp brief · MAC table · client ARP', 'show standby/vrrp brief · MAC table · client ARP')
+  ),
+  t(
+    'control-plane-protocol-flood',
+    'availability',
+    ['network-fundamentals', 'ip-connectivity', 'security-fundamentals'],
+    ['control', 'management'],
+    b('Flood dei protocolli di control plane', 'Control-plane protocol flood'),
+    b(
+      'Pacchetti destinati alla CPU, eccezioni e churn di neighbor/LSA/BGP consumano risorse di controllo.',
+      'CPU-destined packets, exceptions, and neighbor/LSA/BGP churn consume control resources.'
+    ),
+    b(
+      'CoPP, infrastructure ACL, autenticazione, rate coerenti e baseline dei protocolli.',
+      'CoPP, infrastructure ACLs, authentication, appropriate rates, and protocol baselines.'
+    ),
+    b(
+      'CPU interrupt, input queue drop, classi CoPP exceed e adiacenze instabili.',
+      'Interrupt CPU, input-queue drops, CoPP class exceed events, and unstable adjacencies.'
+    ),
+    b(
+      'Limita la classe ostile senza affamare protocolli critici, isola la sorgente e verifica la convergenza.',
+      'Limit the hostile class without starving critical protocols, isolate the source, and verify convergence.'
+    ),
+    b('show policy-map control-plane · CPU · neighbor churn', 'show policy-map control-plane · CPU · neighbor churn')
+  ),
+  t(
+    'rib-fib-programming-abuse',
+    'automation',
+    ['network-fundamentals', 'ip-connectivity', 'automation-programmability'],
+    ['control', 'data', 'management'],
+    b('Manipolazione o divergenza RIB–FIB', 'RIB–FIB manipulation or divergence'),
+    b(
+      'Controller compromesso, errore software o programmazione incompleta rendono il forwarding diverso dalla route visibile.',
+      'A compromised controller, software error, or incomplete programming makes forwarding differ from the visible route.'
+    ),
+    b(
+      'Controller RBAC, immagini validate, change control, confronto RIB–FIB e telemetria indipendente.',
+      'Controller RBAC, validated images, change control, RIB-to-FIB comparison, and independent telemetry.'
+    ),
+    b(
+      'Route in RIB ma assente/drop/punt in FIB, adjacency incomplete e packet path inatteso.',
+      'A route in the RIB but absent/drop/punt in the FIB, incomplete adjacencies, and an unexpected packet path.'
+    ),
+    b(
+      'Isola controller/change, riprogramma in modo controllato e valida forwarding hardware e capture.',
+      'Isolate the controller/change, reprogram in a controlled manner, and validate hardware forwarding and captures.'
+    ),
+    b(
+      'show ip route · show ip cef exact-route · adjacency detail',
+      'show ip route · show ip cef exact-route · adjacency detail'
+    )
+  ),
+  t(
+    'wireless-rogue-bridge',
+    'wireless',
+    ['network-access', 'security-fundamentals'],
+    ['physical', 'data'],
+    b('Bridge wireless rogue verso la LAN', 'Rogue wireless bridge into the LAN'),
+    b(
+      'Un AP non autorizzato collegato alla rete cablata estende via radio un segmento interno oltre il confine di accesso previsto.',
+      'An unauthorized AP connected to the wired network extends an internal segment over radio beyond the intended access boundary.'
+    ),
+    b(
+      '802.1X sulle porte, inventario AP/BSSID, Port Security e porte inutilizzate disabilitate.',
+      '802.1X on switchports, AP/BSSID inventory, Port Security, and disabled unused ports.'
+    ),
+    b(
+      'Correlazione tra rogue WIDS, MAC table, DHCP, LLDP/CDP e sessioni NAC.',
+      'Correlation across WIDS rogue data, the MAC table, DHCP, LLDP/CDP, and NAC sessions.'
+    ),
+    b(
+      'Isola la switchport solo dopo la classificazione on-wire, rimuovi il device e verifica i client transitati.',
+      'Isolate the switchport only after on-wire classification, remove the device, and review clients that traversed it.'
+    ),
+    b(
+      'WLC rogue detail · show mac address-table · NAC session',
+      'WLC rogue detail · show mac address-table · NAC session'
+    )
+  ),
+  t(
+    'wireless-management-frame-abuse',
+    'wireless',
+    ['network-access', 'security-fundamentals'],
+    ['data'],
+    b('Abuso dei frame di management 802.11', '802.11 management-frame abuse'),
+    b(
+      'Deauthentication o disassociation falsificate interrompono i client o ne influenzano la riassociazione.',
+      'Forged deauthentication or disassociation frames disrupt clients or influence their reassociation.'
+    ),
+    b(
+      'PMF required dove compatibile, profili client gestiti e baseline delle capability.',
+      'PMF required where compatible, managed client profiles, and capability baselines.'
+    ),
+    b(
+      'Reason code anomali, disassociation spike e frame non protetti verso client PMF.',
+      'Abnormal reason codes, disassociation spikes, and unprotected frames targeting PMF clients.'
+    ),
+    b(
+      'Contieni il trasmettitore, preserva la capture e rivalida PMF, BSSID e sessioni client.',
+      'Contain the transmitter, preserve the capture, and revalidate PMF, BSSIDs, and client sessions.'
+    ),
+    b('802.11 capture · WLC client detail · PMF status', '802.11 capture · WLC client detail · PMF status')
+  ),
+  t(
+    'wireless-psk-compromise',
+    'credentials',
+    ['network-access', 'security-fundamentals'],
+    ['data', 'identity'],
+    b('Compromissione della PSK wireless', 'Wireless PSK compromise'),
+    b(
+      'Una passphrase debole, condivisa o divulgata consente tentativi offline e accessi non attribuibili a una singola identità.',
+      'A weak, shared, or disclosed passphrase enables offline guessing and access that cannot be attributed to one identity.'
+    ),
+    b(
+      'Passphrase casuali robuste, PPSK per device o 802.1X/EAP-TLS, rotazione e segmentazione.',
+      'Strong random passphrases, per-device PSKs or 802.1X/EAP-TLS, rotation, and segmentation.'
+    ),
+    b(
+      'Client non inventariati, uso dopo offboarding e associazioni incompatibili con owner e inventory.',
+      'Untracked clients, use after offboarding, and associations inconsistent with ownership and inventory.'
+    ),
+    b(
+      'Ruota o revoca la credenziale, disassocia i client non fidati e verifica i segmenti raggiunti.',
+      'Rotate or revoke the credential, disassociate untrusted clients, and review reached segments.'
+    ),
+    b('WLC client inventory · credential revocation test', 'WLC client inventory · credential revocation test')
+  ),
+  t(
+    'wireless-transition-downgrade',
+    'mitm',
+    ['network-access', 'security-fundamentals'],
+    ['data', 'identity'],
+    b('Downgrade nel transition mode WPA2/WPA3', 'WPA2/WPA3 transition-mode downgrade'),
+    b(
+      'Il percorso di compatibilità WPA2 resta disponibile e client legacy o mal configurati negoziano protezioni inferiori all’intento WPA3.',
+      'The WPA2 compatibility path remains available, and legacy or misconfigured clients negotiate protections below the WPA3 intent.'
+    ),
+    b(
+      'Inventory capability, WPA3-only per client compatibili, PMF required e scadenza del transition mode.',
+      'Capability inventory, WPA3-only for capable clients, PMF required, and an end date for transition mode.'
+    ),
+    b(
+      'AKM/cifratura negoziati per client, PMF non required e associazioni WPA2 persistenti.',
+      'Per-client negotiated AKM/cipher data, PMF not required, and persistent WPA2 associations.'
+    ),
+    b(
+      'Sposta i legacy su una WLAN isolata, rimuovi gradualmente il transition mode e verifica ogni client.',
+      'Move legacy devices to an isolated WLAN, phase out transition mode, and verify each client.'
+    ),
+    b('WLC client security detail · RSN capture', 'WLC client security detail · RSN capture')
+  ),
+  t(
+    'wireless-controller-capwap-abuse',
+    'wireless',
+    ['network-access', 'automation-programmability', 'security-fundamentals'],
+    ['control', 'management', 'data'],
+    b('Abuso del trust WLC e CAPWAP', 'WLC and CAPWAP trust abuse'),
+    b(
+      'Join verso controller non autorizzati o un WLC compromesso distribuiscono WLAN e policy ostili agli AP.',
+      'Joins to unauthorized controllers or a compromised WLC distribute hostile WLANs and policies to APs.'
+    ),
+    b(
+      'Trust AP–controller, ACL CAPWAP, management isolato, RBAC/MFA, inventory e change approval.',
+      'AP-to-controller trust, CAPWAP ACLs, isolated management, RBAC/MFA, inventory, and change approval.'
+    ),
+    b(
+      'Controller change, join failure, trust inatteso, CAPWAP da sorgenti sconosciute e config push anomali.',
+      'Controller changes, join failures, unexpected trust, CAPWAP from unknown sources, and abnormal configuration pushes.'
+    ),
+    b(
+      'Isola il controller/canale, porta gli AP su un WLC noto e rivalida configurazione e client policy.',
+      'Isolate the controller/channel, move APs to a known WLC, and revalidate configuration and client policy.'
+    ),
+    b(
+      'AP join detail · controller audit · configuration diff',
+      'AP join detail · controller audit · configuration diff'
+    )
+  ),
+  t(
+    'wireless-client-isolation-bypass',
+    'session',
+    ['network-access', 'ip-services', 'security-fundamentals'],
+    ['data', 'application'],
+    b('Bypass dell’isolamento dei client wireless', 'Wireless client-isolation bypass'),
+    b(
+      'Bridging locale, policy pre-auth ampia o controllo incompleto consente traffico peer-to-peer o accesso interno dalla WLAN guest.',
+      'Local bridging, broad pre-auth policy, or incomplete enforcement permits peer-to-peer traffic or internal access from a guest WLAN.'
+    ),
+    b(
+      'Client isolation, deny verso reti interne, pre-auth ACL minima e parità IPv4/IPv6.',
+      'Client isolation, denies toward internal networks, minimal pre-auth ACLs, and IPv4/IPv6 parity.'
+    ),
+    b(
+      'Reachability tra client, flussi verso indirizzi interni e divergenza tra stato pre/post-auth o IPv4/IPv6.',
+      'Client-to-client reachability, flows toward internal addresses, and divergence across pre/post-auth state or IPv4/IPv6.'
+    ),
+    b(
+      'Contieni la WLAN, correggi bridge/ACL e verifica matrice negativa e positiva da client distinti.',
+      'Contain the WLAN, correct bridging/ACLs, and verify negative and positive reachability from distinct clients.'
+    ),
+    b(
+      'dual-client test · firewall counters · IPv4/IPv6 flow logs',
+      'dual-client test · firewall counters · IPv4/IPv6 flow logs'
+    )
+  ),
+  t(
+    'ike-policy-downgrade',
+    'mitm',
+    ['security-fundamentals'],
+    ['control', 'identity'],
+    b('Downgrade della policy IKE', 'IKE policy downgrade'),
+    b(
+      'Proposte legacy ancora abilitate consentono di negoziare algoritmi o gruppi DH più deboli dell’intento.',
+      'Still-enabled legacy proposals allow algorithms or DH groups weaker than intended to be negotiated.'
+    ),
+    b(
+      'IKEv2, allowlist di suite robuste, ordine deterministico e rimozione delle proposte legacy.',
+      'IKEv2, a strong-suite allowlist, deterministic ordering, and removal of legacy proposals.'
+    ),
+    b(
+      'Suite effettiva fuori baseline, fallback a IKEv1 e failure seguiti da proposta debole riuscita.',
+      'An effective suite outside baseline, fallback to IKEv1, and failures followed by a successful weak proposal.'
+    ),
+    b(
+      'Chiudi o limita la SA, correggi la policy su entrambi i peer e rivalida con un canary.',
+      'Close or constrain the SA, correct policy on both peers, and revalidate with a canary.'
+    ),
+    b('show crypto ikev2 sa detail · IKE debug controllato', 'show crypto ikev2 sa detail · controlled IKE debugging')
+  ),
+  t(
+    'vpn-peer-impersonation',
+    'spoofing',
+    ['security-fundamentals'],
+    ['identity', 'control'],
+    b('Impersonificazione del peer VPN', 'VPN peer impersonation'),
+    b(
+      'PSK condivise, identity matching permissivo o certificati impropri consentono a un peer ostile di autenticarsi.',
+      'Shared PSKs, permissive identity matching, or improper certificates allow a hostile peer to authenticate.'
+    ),
+    b(
+      'Certificati unici, identity matching esplicito, trust store minimo e PSK uniche dove inevitabili.',
+      'Unique certificates, explicit identity matching, a minimal trust store, and unique PSKs where unavoidable.'
+    ),
+    b(
+      'Remote ID, issuer, seriale o fingerprint fuori inventario e peer inattesi.',
+      'A remote ID, issuer, serial number, or fingerprint outside inventory and unexpected peers.'
+    ),
+    b(
+      'Termina le SA, revoca certificato o PSK, blocca il peer e valuta i flussi autorizzati.',
+      'Terminate SAs, revoke the certificate or PSK, block the peer, and assess authorized flows.'
+    ),
+    b('IKE identity · certificate inventory · peer allowlist', 'IKE identity · certificate inventory · peer allowlist')
+  ),
+  t(
+    'vpn-traffic-selector-bypass',
+    'session',
+    ['security-fundamentals', 'ip-connectivity'],
+    ['data', 'control'],
+    b('Abuso dei traffic selector VPN', 'VPN traffic-selector abuse'),
+    b(
+      'Selector troppo ampi o asimmetrici includono traffico non autorizzato, saltano policy o creano black hole.',
+      'Overly broad or asymmetric selectors include unauthorized traffic, bypass policy, or create black holes.'
+    ),
+    b(
+      'Selector minimi e speculari, firewall post-decryption e matrice dei flussi autorizzati.',
+      'Minimal symmetric selectors, post-decryption firewalls, and an authorized-flow matrix.'
+    ),
+    b(
+      'Proxy ID/TS divergenti, SA duplicate e prefissi protetti fuori intent.',
+      'Diverging proxy IDs/traffic selectors, duplicate SAs, and protected prefixes outside intent.'
+    ),
+    b(
+      'Restringi il dominio cifrato, rinegozia le SA e verifica deny e allow nelle due direzioni.',
+      'Restrict the encryption domain, renegotiate SAs, and verify denies and allows in both directions.'
+    ),
+    b(
+      'show crypto ipsec sa · policy hits · bidirectional flow test',
+      'show crypto ipsec sa · policy hits · bidirectional flow test'
+    )
+  ),
+  t(
+    'vpn-route-policy-leak',
+    'routing',
+    ['ip-connectivity', 'security-fundamentals'],
+    ['control', 'data'],
+    b('Route leak attraverso la VPN', 'Route leak through a VPN'),
+    b(
+      'Route apprese o redistribuite via VTI espandono la reachability tra sedi, tenant o zone oltre l’intento.',
+      'Routes learned or redistributed through a VTI expand reachability across sites, tenants, or zones beyond intent.'
+    ),
+    b(
+      'Prefix allowlist, route map, VRF, firewall di zona e source of truth.',
+      'Prefix allowlists, route maps, VRFs, zone firewalls, and a source of truth.'
+    ),
+    b(
+      'Nuovi prefissi via tunnel, next hop inattesi e reachability cross-zone non prevista.',
+      'New prefixes through the tunnel, unexpected next hops, and unintended cross-zone reachability.'
+    ),
+    b(
+      'Ritira la route, limita redistribuzione e selector e verifica il percorso di ritorno.',
+      'Withdraw the route, constrain redistribution and selectors, and verify the return path.'
+    ),
+    b(
+      'show ip route · show ip protocols · tunnel flow matrix',
+      'show ip route · show ip protocols · tunnel flow matrix'
+    )
+  ),
+  t(
+    'vpn-failover-policy-drift',
+    'automation',
+    ['ip-connectivity', 'security-fundamentals', 'automation-programmability'],
+    ['control', 'data', 'management'],
+    b('Drift di policy nel failover VPN', 'VPN failover policy drift'),
+    b(
+      'Il tunnel di backup converge con route, selector o firewall diversi e introduce outage o accesso più permissivo.',
+      'The backup tunnel converges with different routes, selectors, or firewall policy, causing outages or more permissive access.'
+    ),
+    b(
+      'Template comuni, diff, canary, tracking end-to-end e test periodici di failover.',
+      'Shared templates, diffs, canaries, end-to-end tracking, and periodic failover testing.'
+    ),
+    b(
+      'Backup UP ma route assenti, selector diversi, deny mancanti o ritorno asimmetrico.',
+      'A backup that is UP but lacks routes, has different selectors, missing denies, or an asymmetric return path.'
+    ),
+    b(
+      'Ripristina la policy nota, limita il backup e rivalida SA, RIB/FIB e matrice dei flussi.',
+      'Restore known policy, constrain the backup, and revalidate SAs, the RIB/FIB, and the flow matrix.'
+    ),
+    b(
+      'config diff · failover test · route/SA/policy snapshot',
+      'configuration diff · failover test · route/SA/policy snapshot'
+    )
+  ),
+  t(
+    'vpn-dns-leak',
+    'session',
+    ['ip-services', 'security-fundamentals'],
+    ['application', 'data'],
+    b('DNS leak durante la VPN', 'DNS leakage during VPN use'),
+    b(
+      'Query per nomi interni escono verso resolver locali o pubblici, esponendo metadata e restituendo risposte errate.',
+      'Queries for internal names leave through local or public resolvers, exposing metadata and returning incorrect answers.'
+    ),
+    b(
+      'DNS policy per tunnel, resolver aziendali protetti, split DNS esplicito e host firewall.',
+      'Per-tunnel DNS policy, protected enterprise resolvers, explicit split DNS, and host firewalls.'
+    ),
+    b(
+      'Query interne su interfacce locali, resolver inattesi e risposta differente dentro/fuori VPN.',
+      'Internal queries on local interfaces, unexpected resolvers, and answers that differ inside and outside the VPN.'
+    ),
+    b(
+      'Correggi route e resolver, svuota cache non attendibili e valuta i nomi esposti.',
+      'Correct routes and resolvers, clear untrusted caches, and assess exposed names.'
+    ),
+    b('client DNS state · packet capture · resolver logs', 'client DNS state · packet capture · resolver logs')
+  ),
+  t(
+    'ipsec-replay-rekey-abuse',
+    'session',
+    ['security-fundamentals'],
+    ['data', 'control'],
+    b('Abuso anti-replay e instabilità di rekey IPsec', 'IPsec anti-replay abuse and rekey instability'),
+    b(
+      'Pacchetti duplicati o riordinati consumano la finestra anti-replay, mentre lifetime incoerenti interrompono il rinnovo delle SA.',
+      'Duplicate or reordered packets consume the anti-replay window, while mismatched lifetimes disrupt SA renewal.'
+    ),
+    b(
+      'Anti-replay abilitato, lifetime compatibili, PFS secondo policy e margine di rekey.',
+      'Anti-replay enabled, compatible lifetimes, PFS according to policy, and rekey margin.'
+    ),
+    b(
+      'Replay drop, sequence duplicate, SA sovrapposte e cadute periodiche al lifetime.',
+      'Replay drops, duplicate sequences, overlapping SAs, and periodic drops at the lifetime boundary.'
+    ),
+    b(
+      'Contieni la sorgente se ostile, correggi lifetime/percorso e rivalida un rekey senza perdita.',
+      'Contain the source if hostile, correct lifetimes/path behavior, and revalidate a lossless rekey.'
+    ),
+    b('IPsec replay counters · packet capture · SPI timeline', 'IPsec replay counters · packet capture · SPI timeline')
+  ),
+  t(
+    'link-saturation-ddos',
+    'availability',
+    ['network-fundamentals', 'security-fundamentals'],
+    ['physical', 'data'],
+    b('DDoS volumetrico e saturazione del link', 'Volumetric DDoS and link saturation'),
+    b(
+      'Traffico distribuito supera bit/s o packet/s del collegamento prima dei controlli locali.',
+      'Distributed traffic exceeds link bit/s or packet/s before local controls can enforce policy.'
+    ),
+    b(
+      'Scrubbing/anycast, mitigazione upstream, percorsi ridondanti e capacity planning.',
+      'Scrubbing/anycast, upstream mitigation, redundant paths, and capacity planning.'
+    ),
+    b(
+      'Line rate, queue/output drop, NetFlow distribuito e indisponibilità simultanea dei servizi.',
+      'Line rate, queue/output drops, distributed NetFlow, and simultaneous service unavailability.'
+    ),
+    b(
+      'Attiva mitigazione a monte, preserva flussi essenziali e riduci le regole temporanee per fasi.',
+      'Enable upstream mitigation, preserve essential flows, and phase out temporary rules.'
+    ),
+    b(
+      'provider telemetry · interface rates · synthetic availability',
+      'provider telemetry · interface rates · synthetic availability'
+    )
+  ),
+  t(
+    'l2-broadcast-storm',
+    'availability',
+    ['network-access'],
+    ['data', 'control'],
+    b('Broadcast storm Layer 2', 'Layer 2 broadcast storm'),
+    b(
+      'Loop o sorgenti anomale replicano broadcast/unknown-unicast fino a saturare segmenti, uplink e CPU.',
+      'Loops or abnormal sources replicate broadcasts/unknown unicast until segments, uplinks, and CPUs are saturated.'
+    ),
+    b(
+      'STP deterministico, BPDU/Loop Guard, storm control calibrato e domini broadcast contenuti.',
+      'Deterministic STP, BPDU/Loop Guard, calibrated storm control, and contained broadcast domains.'
+    ),
+    b(
+      'Broadcast rate, MAC flapping, topology change, queue drop e CPU endpoint.',
+      'Broadcast rate, MAC flapping, topology changes, queue drops, and endpoint CPU.'
+    ),
+    b(
+      'Isola il link minimo, preserva gestione, ripristina STP e riammetti una porta alla volta.',
+      'Isolate the smallest link, preserve management, restore STP, and readmit one port at a time.'
+    ),
+    b(
+      'show spanning-tree detail · MAC move · interface rates',
+      'show spanning-tree detail · MAC moves · interface rates'
+    )
+  ),
+  t(
+    'dns-resource-exhaustion',
+    'availability',
+    ['ip-services', 'security-fundamentals'],
+    ['application', 'data'],
+    b('Esaurimento delle risorse DNS', 'DNS resource exhaustion'),
+    b(
+      'Query random-subdomain, recursion costosa o molti outstanding evitano cache e consumano worker, socket e upstream.',
+      'Random-subdomain queries, expensive recursion, or many outstanding queries bypass caches and consume workers, sockets, and upstream capacity.'
+    ),
+    b(
+      'Recursion limitata, RRL, cache, ridondanza/anycast e capacity planning per ruolo.',
+      'Restricted recursion, RRL, caching, redundancy/anycast, and role-specific capacity planning.'
+    ),
+    b(
+      'QPS/latency, cache-hit ratio, SERVFAIL, entropy dei nomi e outstanding query.',
+      'QPS/latency, cache-hit ratio, SERVFAIL responses, name entropy, and outstanding queries.'
+    ),
+    b(
+      'Limita client o domini ostili, preserva nomi critici e scala/ripristina resolver o authoritative.',
+      'Limit hostile clients or domains, preserve critical names, and scale or restore resolvers or authoritative servers.'
+    ),
+    b('resolver metrics · query logs · cached/uncached tests', 'resolver metrics · query logs · cached/uncached tests')
+  ),
+  t(
+    'qos-starvation-abuse',
+    'availability',
+    ['ip-services', 'security-fundamentals'],
+    ['data'],
+    b('Abuso QoS e starvation delle code', 'QoS abuse and queue starvation'),
+    b(
+      'Marking improprio o burst ostili consumano priority queue o buffer e degradano altre classi.',
+      'Improper marking or hostile bursts consume priority queues or buffers and degrade other classes.'
+    ),
+    b(
+      'Trust boundary, remarking, class-map specifiche, LLQ con policer, shaping e bandwidth guarantee.',
+      'Trust boundaries, remarking, specific class maps, LLQ policing, shaping, and bandwidth guarantees.'
+    ),
+    b(
+      'Offered rate, queue depth/drop, policer exceed, DSCP inattesi e latency per classe.',
+      'Offered rate, queue depth/drops, policer exceeds, unexpected DSCP, and per-class latency.'
+    ),
+    b(
+      'Correggi marking/classificazione, limita la classe ostile e verifica servizi critici sotto congestione.',
+      'Correct marking/classification, constrain the hostile class, and verify critical services under congestion.'
+    ),
+    b(
+      'show policy-map interface · DSCP capture · latency/jitter',
+      'show policy-map interface · DSCP capture · latency/jitter'
+    )
+  ),
+  t(
+    'firewall-policy-shadowing',
+    'automation',
+    ['security-fundamentals', 'automation-programmability'],
+    ['data', 'management'],
+    b('Shadowing e drift delle policy firewall', 'Firewall policy shadowing and drift'),
+    b(
+      'Regole ampie, ordine errato o oggetti divergenti rendono inefficaci deny specifici e aprono flussi fuori intent.',
+      'Broad rules, incorrect order, or divergent objects make specific denies ineffective and open out-of-intent flows.'
+    ),
+    b(
+      'Default deny, oggetti minimi, analisi shadowing, ownership, diff e test per flusso.',
+      'Default deny, minimal objects, shadowing analysis, ownership, diffs, and per-flow tests.'
+    ),
+    b(
+      'Hit su regole generiche, regole specifiche a zero e differenze tra intent e policy installata.',
+      'Hits on generic rules, zero-hit specific rules, and differences between intent and installed policy.'
+    ),
+    b(
+      'Contieni il percorso, correggi ordine/oggetti e rivalida allow e deny in entrambe le direzioni.',
+      'Contain the path, correct order/objects, and revalidate allows and denies in both directions.'
+    ),
+    b('policy trace · rule counters · configuration diff', 'policy trace · rule counters · configuration diff')
+  ),
+  t(
+    'asymmetric-state-evasion',
+    'session',
+    ['network-fundamentals', 'ip-connectivity', 'security-fundamentals'],
+    ['data'],
+    b('Asimmetria e bypass dello stato', 'Asymmetry and state bypass'),
+    b(
+      'Forward e return path attraversano nodi diversi; eccezioni permissive per evitare drop riducono l’ispezione stateful.',
+      'Forward and return paths traverse different nodes; permissive exceptions to avoid drops weaken stateful inspection.'
+    ),
+    b(
+      'Routing simmetrico, state sync, ownership del percorso ed eccezioni stateless minime.',
+      'Symmetric routing, state synchronization, path ownership, and minimal stateless exceptions.'
+    ),
+    b(
+      'Out-of-state drop, sessioni incomplete e capture forward/return su nodi differenti.',
+      'Out-of-state drops, incomplete sessions, and forward/return captures on different nodes.'
+    ),
+    b(
+      'Ripristina percorso o state sync, rimuovi eccezioni e rivalida sessioni esistenti e nuove.',
+      'Restore the path or state sync, remove exceptions, and revalidate existing and new sessions.'
+    ),
+    b('session table · RIB/FIB · dual-node packet capture', 'session table · RIB/FIB · dual-node packet capture')
+  ),
+  t(
+    'ids-sensor-evasion',
+    'injection',
+    ['network-fundamentals', 'security-fundamentals'],
+    ['data', 'application'],
+    b('Evasione del sensore IDS/IPS', 'IDS/IPS sensor evasion'),
+    b(
+      'Frammentazione, stream gap, codifiche ambigue o parser diversi nascondono payload o producono verdict incoerenti.',
+      'Fragmentation, stream gaps, ambiguous encodings, or parser differences hide payloads or produce inconsistent verdicts.'
+    ),
+    b(
+      'Normalizzazione, riassemblaggio stateful, parser aggiornati, TAP affidabile e test dual-stack.',
+      'Normalization, stateful reassembly, current parsers, reliable TAPs, and dual-stack testing.'
+    ),
+    b(
+      'Parser error, packet drop del sensore, stream gap e mismatch tra sensore ed endpoint.',
+      'Parser errors, sensor packet drops, stream gaps, and sensor-to-endpoint mismatches.'
+    ),
+    b(
+      'Preserva capture, correggi visibilità/parser e verifica l’interpretazione finale dell’endpoint.',
+      'Preserve captures, correct visibility/parsing, and verify the endpoint’s final interpretation.'
+    ),
+    b(
+      'pre/post sensor capture · parser health · endpoint telemetry',
+      'pre/post-sensor capture · parser health · endpoint telemetry'
+    )
+  ),
+  t(
+    'encrypted-traffic-blindness',
+    'injection',
+    ['ip-services', 'security-fundamentals'],
+    ['data', 'application'],
+    b('Blind spot nel traffico cifrato', 'Encrypted-traffic blind spot'),
+    b(
+      'Payload malevoli o esfiltrazione usano TLS per ridurre la visibilità dei controlli di rete.',
+      'Malicious payloads or exfiltration use TLS to reduce network-control visibility.'
+    ),
+    b(
+      'Decryption selettiva governata, metadata analytics, DNS security ed EDR per le esclusioni.',
+      'Governed selective decryption, metadata analytics, DNS security, and EDR for exclusions.'
+    ),
+    b(
+      'Fingerprint/certificati insoliti, destinazioni rare, volume anomalo e divergenza rete-endpoint.',
+      'Unusual fingerprints/certificates, rare destinations, abnormal volume, and network-to-endpoint divergence.'
+    ),
+    b(
+      'Isola endpoint o destinazione, preserva metadata e applica decryption solo secondo policy e legge.',
+      'Isolate the endpoint or destination, preserve metadata, and decrypt only under policy and law.'
+    ),
+    b('TLS metadata · decrypt/bypass ratio · EDR correlation', 'TLS metadata · decrypt/bypass ratio · EDR correlation')
+  ),
+  t(
+    'inline-fail-open-abuse',
+    'availability',
+    ['security-fundamentals'],
+    ['data', 'control', 'management'],
+    b('Abuso del fail-open o bypass inline', 'Inline fail-open or bypass abuse'),
+    b(
+      'Overload, guasto o bypass non monitorato mantiene il traffico ma rimuove l’enforcement atteso di firewall o IPS.',
+      'Overload, failure, or unmonitored bypass preserves traffic while removing expected firewall or IPS enforcement.'
+    ),
+    b(
+      'Fail mode governato, health indipendente, capacity plan, alert sul bypass e HA testata.',
+      'Governed fail mode, independent health monitoring, capacity planning, bypass alerts, and tested HA.'
+    ),
+    b(
+      'Bypass/fail-open state, calo improvviso dei log e flussi senza policy hit.',
+      'Bypass/fail-open state, a sudden drop in logs, and flows without policy hits.'
+    ),
+    b(
+      'Ripristina enforcement o instrada su un nodo sano, limita il percorso e valuta i flussi transitati.',
+      'Restore enforcement or route through a healthy node, constrain the path, and assess traversing flows.'
+    ),
+    b('bypass state · HA health · ingress/egress validation', 'bypass state · HA health · ingress/egress validation')
+  ),
+  t(
+    'security-log-suppression',
+    'injection',
+    ['ip-services', 'security-fundamentals'],
+    ['management', 'application'],
+    b('Soppressione e perdita dei log di sicurezza', 'Security-log suppression and loss'),
+    b(
+      'Logging disabilitato, sampling, saturazione o tampering nascondono allow, deny, threat e change.',
+      'Disabled logging, sampling, saturation, or tampering hides allows, denies, threats, and changes.'
+    ),
+    b(
+      'Collector remoto, NTP, buffering, storage immutabile, audit e health check end-to-end.',
+      'Remote collectors, NTP, buffering, immutable storage, auditing, and end-to-end health checks.'
+    ),
+    b(
+      'Gap di sequenza, differenze local/remote, eventi mancanti e calo del volume non spiegato.',
+      'Sequence gaps, local/remote differences, missing events, and unexplained volume drops.'
+    ),
+    b(
+      'Preserva copie indipendenti, ripristina pipeline e ricostruisci la timeline da capture e contatori.',
+      'Preserve independent copies, restore the pipeline, and rebuild the timeline from captures and counters.'
+    ),
+    b(
+      'sample event · collector health · local/remote comparison',
+      'sample event · collector health · local/remote comparison'
+    )
+  ),
+  t(
+    'telemetry-collector-blindness',
+    'availability',
+    ['ip-services', 'security-fundamentals'],
+    ['management', 'application'],
+    b('Blind spot e perdita dei collector', 'Collector blind spots and loss'),
+    b(
+      'Sampling, queue overflow, exporter errato, parser failure o indisponibilità del collector rendono invisibili attività reali.',
+      'Sampling, queue overflow, the wrong exporter, parser failures, or collector outages make real activity invisible.'
+    ),
+    b(
+      'Mappa di copertura, fonti indipendenti, sequence/drop monitoring, ridondanza e test sintetici end-to-end.',
+      'Coverage maps, independent sources, sequence/drop monitoring, redundancy, and end-to-end synthetic tests.'
+    ),
+    b(
+      'Calo anomalo del volume, gap di sequenza, template mancanti e divergenza tra contatori, flow e log.',
+      'Abnormal volume drops, sequence gaps, missing templates, and divergence among counters, flows, and logs.'
+    ),
+    b(
+      'Ripristina l’export, preserva le fonti residue e ricostruisci la finestra cieca con evidenze indipendenti.',
+      'Restore export, preserve remaining sources, and reconstruct the blind window using independent evidence.'
+    ),
+    b(
+      'exporter health · sequence/drop counters · synthetic event',
+      'exporter health · sequence/drop counters · synthetic event'
+    )
+  ),
+  t(
+    'configuration-backup-exposure',
+    'credentials',
+    ['security-fundamentals', 'automation-programmability'],
+    ['management', 'identity'],
+    b('Esposizione o alterazione dei backup di configurazione', 'Configuration backup exposure or tampering'),
+    b(
+      'Repository leggibili o modificabili espongono secret e permettono il restore di configurazioni ostili o obsolete.',
+      'Readable or writable repositories expose secrets and enable restoration of hostile or obsolete configurations.'
+    ),
+    b(
+      'Cifratura, least privilege, versioning immutabile, firma/hash e gestione separata dei secret.',
+      'Encryption, least privilege, immutable versioning, signatures/hashes, and separate secret management.'
+    ),
+    b(
+      'Accessi o export insoliti, hash divergenti, versioni sostituite e backup fuori inventario.',
+      'Unusual access or exports, divergent hashes, replaced versions, and out-of-inventory backups.'
+    ),
+    b(
+      'Isola il repository, ruota i secret esposti, valida la provenienza e ripristina solo versioni provate.',
+      'Isolate the repository, rotate exposed secrets, validate provenance, and restore only proven versions.'
+    ),
+    b('repository audit · signature/hash · restore drill', 'repository audit · signature/hash · restore drill')
+  ),
+  t(
+    'management-api-schema-abuse',
+    'automation',
+    ['automation-programmability', 'security-fundamentals'],
+    ['management', 'application'],
+    b('Abuso di schema e scope delle API di gestione', 'Management API schema and scope abuse'),
+    b(
+      'Payload non validati, RBAC debole o target dinamici applicano modifiche oltre risorsa, datastore o device previsti.',
+      'Unvalidated payloads, weak RBAC, or dynamic targets apply changes beyond the intended resource, datastore, or device.'
+    ),
+    b(
+      'Schema YANG, RBAC server-side, target allowlist, dry-run, approval, canary e rollback.',
+      'YANG schemas, server-side RBAC, target allowlists, dry runs, approvals, canaries, and rollback.'
+    ),
+    b(
+      'RPC o metodi fuori profilo, scope inatteso, diff eccessivi e divergenza tra intent e running state.',
+      'Out-of-profile RPCs or methods, unexpected scope, excessive diffs, and divergence between intent and running state.'
+    ),
+    b(
+      'Ferma la pipeline, revoca il token, limita il target e riconcilia ogni device coinvolto.',
+      'Stop the pipeline, revoke the token, constrain the target, and reconcile every affected device.'
+    ),
+    b(
+      'API audit · schema validation · running-state read-back',
+      'API audit · schema validation · running-state read-back'
+    )
+  ),
+  t(
+    'endpoint-configuration-drift',
+    'automation',
+    ['security-fundamentals', 'automation-programmability'],
+    ['application', 'management'],
+    b('Drift della baseline endpoint', 'Endpoint baseline drift'),
+    b(
+      'Servizi, audit, protezioni o eccezioni divergono dalla baseline e aprono persistenza o blind spot.',
+      'Services, auditing, protections, or exceptions diverge from the baseline and open persistence paths or blind spots.'
+    ),
+    b(
+      'Baseline versionate per ruolo, MDM/configuration management, eccezioni con owner e scadenza.',
+      'Versioned role-based baselines, MDM/configuration management, and owned expiring exceptions.'
+    ),
+    b(
+      'Compliance delta, setting locale divergente e modifica senza change associato.',
+      'Compliance deltas, divergent local settings, and changes without an associated change record.'
+    ),
+    b(
+      'Contieni il device se necessario, ripristina la baseline e determina origine e durata del drift.',
+      'Contain the device if needed, restore the baseline, and determine the origin and duration of drift.'
+    ),
+    b('policy/effective-state diff · compliance history', 'policy/effective-state diff · compliance history')
+  ),
+  t(
+    'unpatched-endpoint-exploitation',
+    'injection',
+    ['security-fundamentals'],
+    ['application', 'data'],
+    b('Sfruttamento di endpoint non aggiornati', 'Unpatched endpoint exploitation'),
+    b(
+      'Una vulnerabilità applicabile consente esecuzione, escalation o accesso perché patch, reboot o mitigazione sono assenti.',
+      'An applicable vulnerability enables execution, escalation, or access because a patch, reboot, or mitigation is missing.'
+    ),
+    b(
+      'Inventory, prioritizzazione basata sul rischio, patching staged e mitigazioni temporanee verificate.',
+      'Inventory, risk-based prioritization, staged patching, and verified temporary mitigations.'
+    ),
+    b(
+      'Versioni vulnerabili, exploit behavior, crash o child process e scan autenticato.',
+      'Vulnerable versions, exploit behavior, crashes or child processes, and authenticated scans.'
+    ),
+    b(
+      'Isola l’asset, correggi la vulnerabilità, cerca indicatori e rivalida esposizione e funzione.',
+      'Isolate the asset, remediate the vulnerability, hunt for indicators, and revalidate exposure and function.'
+    ),
+    b(
+      'installed build · authenticated rescan · exposure test',
+      'installed build · authenticated rescan · exposure test'
+    )
+  ),
+  t(
+    'endpoint-agent-tampering',
+    'injection',
+    ['security-fundamentals'],
+    ['application', 'management'],
+    b('Tampering degli agenti endpoint', 'Endpoint agent tampering'),
+    b(
+      'Un attaccante arresta, degrada o esclude EDR, logging o gestione per operare senza telemetria o risposta.',
+      'An attacker stops, degrades, or excludes EDR, logging, or management agents to operate without telemetry or response.'
+    ),
+    b(
+      'Tamper protection, ruoli separati, health monitoring, esclusioni minime e sensor self-protection.',
+      'Tamper protection, separated roles, health monitoring, minimal exclusions, and sensor self-protection.'
+    ),
+    b(
+      'Heartbeat assente, mode/policy cambiata, nuove esclusioni e service stop non autorizzati.',
+      'Missing heartbeats, changed modes/policies, new exclusions, and unauthorized service stops.'
+    ),
+    b(
+      'Isola tramite un controllo indipendente, preserva log locali e ripristina o reinstalla da sorgente fidata.',
+      'Isolate through an independent control, preserve local logs, and restore or reinstall from a trusted source.'
+    ),
+    b(
+      'sensor health · tamper event · inventory reconciliation',
+      'sensor health · tamper event · inventory reconciliation'
+    )
+  ),
+  t(
+    'application-control-bypass',
+    'injection',
+    ['security-fundamentals'],
+    ['application', 'identity'],
+    b('Bypass dell’application control', 'Application control bypass'),
+    b(
+      'Interpreter, macro, DLL side-loading o binari attendibili eseguono contenuto non autorizzato oltre la allowlist.',
+      'Interpreters, macros, DLL side-loading, or trusted binaries execute unauthorized content beyond the allowlist.'
+    ),
+    b(
+      'Policy per publisher/hash/percorso, controllo di script e child process, code signing ed eccezioni minime.',
+      'Publisher/hash/path policy, script and child-process controls, code signing, and minimal exceptions.'
+    ),
+    b(
+      'Parent-child o command line anomali, unsigned module e allow decision fuori profilo.',
+      'Abnormal parent-child chains or command lines, unsigned modules, and out-of-profile allow decisions.'
+    ),
+    b(
+      'Blocca il processo, preserva la lineage, rimuovi la regola debole e ricerca esecuzioni correlate.',
+      'Block the process, preserve lineage, remove the weak rule, and hunt for related executions.'
+    ),
+    b(
+      'application-control event · process lineage · signature/hash',
+      'application-control event · process lineage · signature/hash'
+    )
+  ),
+  t(
+    'domain-registration-hijack',
+    'credentials',
+    ['ip-services', 'security-fundamentals'],
+    ['application', 'identity', 'management'],
+    b('Hijacking del dominio e del registrar', 'Domain and registrar hijacking'),
+    b(
+      'Un account registrar compromesso altera nameserver, delega o ownership e dirotta servizi e posta.',
+      'A compromised registrar account changes name servers, delegation, or ownership and redirects services and mail.'
+    ),
+    b(
+      'Registrar lock, MFA resistente al phishing, ruoli separati, recovery verificato e monitoring NS/DS.',
+      'Registrar locks, phishing-resistant MFA, separated roles, verified recovery, and NS/DS monitoring.'
+    ),
+    b(
+      'Modifiche NS/DS/contatti, unlock inattesi e divergenze tra parent e zona prevista.',
+      'NS/DS/contact changes, unexpected unlocks, and differences between parent data and the intended zone.'
+    ),
+    b(
+      'Blocca ulteriori change, recupera l’account, ripristina delega e rivalida DNS, TLS e mail.',
+      'Freeze further changes, recover the account, restore delegation, and revalidate DNS, TLS, and mail.'
+    ),
+    b(
+      'registrar audit · parent delegation · certificate monitoring',
+      'registrar audit · parent delegation · certificate monitoring'
+    )
+  ),
+  t(
+    'dns-rebinding',
+    'spoofing',
+    ['ip-services', 'security-fundamentals'],
+    ['application', 'data'],
+    b('DNS rebinding', 'DNS rebinding'),
+    b(
+      'Risposte con TTL breve cambiano da IP pubblico a indirizzo interno e inducono il browser a raggiungere servizi locali.',
+      'Short-TTL answers change from public to internal addresses and induce the browser to reach local services.'
+    ),
+    b(
+      'Rebinding protection, autenticazione dei servizi interni, origin validation e amministrazione segmentata.',
+      'Rebinding protection, internal-service authentication, origin validation, and segmented administration.'
+    ),
+    b(
+      'Answer che cambia verso RFC1918/link-local, TTL anomalo e richieste browser verso servizi interni.',
+      'Answers changing toward RFC1918/link-local addresses, abnormal TTLs, and browser requests to internal services.'
+    ),
+    b(
+      'Blocca il dominio, isola la sessione browser e verifica azioni o credenziali esposte sui servizi interni.',
+      'Block the domain, isolate the browser session, and review actions or credentials exposed on internal services.'
+    ),
+    b(
+      'DNS history · browser/network log · internal service audit',
+      'DNS history · browser/network logs · internal-service audit'
+    )
+  ),
+  t(
+    'http-request-smuggling',
+    'injection',
+    ['security-fundamentals'],
+    ['application', 'data'],
+    b('HTTP request smuggling e desincronizzazione', 'HTTP request smuggling and desynchronization'),
+    b(
+      'Parser differenti interpretano in modo incoerente boundary, Content-Length o Transfer-Encoding tra proxy e origin.',
+      'Different parsers inconsistently interpret boundaries, Content-Length, or Transfer-Encoding between proxies and origins.'
+    ),
+    b(
+      'Parser coerenti, rifiuto delle ambiguità, normalizzazione, patching e protocollo backend definito.',
+      'Consistent parsers, rejection of ambiguity, normalization, patching, and a defined backend protocol.'
+    ),
+    b(
+      'Response fuori ordine, request ID divergenti, connessioni desincronizzate e log edge/origin incoerenti.',
+      'Out-of-order responses, divergent request IDs, desynchronized connections, and inconsistent edge/origin logs.'
+    ),
+    b(
+      'Disabilita il riuso vulnerabile, normalizza o rifiuta le request ambigue e aggiorna ogni hop.',
+      'Disable vulnerable connection reuse, normalize or reject ambiguous requests, and update every hop.'
+    ),
+    b(
+      'edge/proxy/origin raw logs · controlled ambiguity test',
+      'edge/proxy/origin raw logs · controlled ambiguity test'
+    )
+  ),
+  t(
+    'web-session-cookie-abuse',
+    'session',
+    ['security-fundamentals'],
+    ['application', 'identity'],
+    b('Abuso di sessione e cookie web', 'Web session and cookie abuse'),
+    b(
+      'Cookie sottratti, scope ampio o revoca incompleta consentono replay e azioni con sessioni già autenticate.',
+      'Stolen cookies, broad scope, or incomplete revocation enable replay and actions through authenticated sessions.'
+    ),
+    b(
+      'Secure/HttpOnly/SameSite, scope minimo, rotazione, reauthentication e revoca server-side.',
+      'Secure/HttpOnly/SameSite, minimal scope, rotation, reauthentication, and server-side revocation.'
+    ),
+    b(
+      'Session reuse da nuovo contesto, token ID duplicati, azioni fuori profilo e sessioni valide dopo logout.',
+      'Session reuse from new contexts, duplicate token IDs, out-of-profile actions, and sessions valid after logout.'
+    ),
+    b(
+      'Revoca sessioni, ruota credenziali/token, preserva audit e verifica azioni effettuate.',
+      'Revoke sessions, rotate credentials/tokens, preserve auditing, and review performed actions.'
+    ),
+    b(
+      'session store · cookie attributes · logout/revocation test',
+      'session store · cookie attributes · logout/revocation test'
+    )
+  ),
+  t(
+    'email-authentication-spoofing',
+    'spoofing',
+    ['ip-services', 'security-fundamentals'],
+    ['application', 'identity'],
+    b('Spoofing e abuso dell’autenticazione email', 'Email authentication spoofing and abuse'),
+    b(
+      'From falsificato, allineamento assente o servizi terzi non governati permettono impersonation del dominio.',
+      'Forged From headers, missing alignment, or ungoverned third-party senders enable domain impersonation.'
+    ),
+    b(
+      'SPF, DKIM, DMARC enforcement, inventory dei sender, key rotation e domain ownership.',
+      'SPF, DKIM, DMARC enforcement, sender inventory, key rotation, and domain ownership.'
+    ),
+    b(
+      'Authentication-Results, DMARC report, sender inattesi e failure di allineamento.',
+      'Authentication-Results, DMARC reports, unexpected senders, and alignment failures.'
+    ),
+    b(
+      'Blocca la campagna, correggi sender/record, ruota chiavi compromesse e ricerca messaggi correlati.',
+      'Block the campaign, correct senders/records, rotate compromised keys, and hunt for related messages.'
+    ),
+    b('raw headers · DMARC aggregate report · DNS records', 'raw headers · DMARC aggregate reports · DNS records')
+  ),
+  t(
+    'adversary-in-the-middle-phishing',
+    'credentials',
+    ['security-fundamentals'],
+    ['identity', 'application'],
+    b('Phishing adversary-in-the-middle', 'Adversary-in-the-middle phishing'),
+    b(
+      'Un reverse proxy inoltra il login reale e intercetta password, MFA e cookie della sessione autenticata.',
+      'A reverse proxy relays the real login and intercepts passwords, MFA, and authenticated session cookies.'
+    ),
+    b(
+      'FIDO2/WebAuthn, device binding, conditional access, origin-aware password manager e session protection.',
+      'FIDO2/WebAuthn, device binding, conditional access, origin-aware password managers, and session protection.'
+    ),
+    b(
+      'Login e cookie da contesti differenti, dominio proxy, nuovo device e token replay.',
+      'Logins and cookies from different contexts, proxy domains, new devices, and token replay.'
+    ),
+    b(
+      'Revoca sessioni/token, blocca il dominio, resetta credenziali e verifica attività dell’account.',
+      'Revoke sessions/tokens, block the domain, reset credentials, and review account activity.'
+    ),
+    b('IdP sign-in · token/session audit · DNS/TLS history', 'IdP sign-ins · token/session audit · DNS/TLS history')
+  ),
+  t(
+    'business-email-compromise',
+    'credentials',
+    ['security-fundamentals'],
+    ['identity', 'application'],
+    b('Business Email Compromise', 'Business Email Compromise'),
+    b(
+      'Account reale o impersonato usa thread e contesto aziendale per frode finanziaria, dati o accessi.',
+      'A real or impersonated account uses business threads and context for financial, data, or access fraud.'
+    ),
+    b(
+      'MFA resistente al phishing, processi a doppia verifica, callback e alert su forwarding/inbox rule.',
+      'Phishing-resistant MFA, dual-verification processes, callbacks, and forwarding/inbox-rule alerts.'
+    ),
+    b(
+      'Rule o forwarding inattesi, login anomali, cambio beneficiary e richieste fuori processo.',
+      'Unexpected rules or forwarding, abnormal logins, beneficiary changes, and out-of-process requests.'
+    ),
+    b(
+      'Contieni account e sessioni, verifica transazioni, avvisa le parti e preserva mail/audit.',
+      'Contain accounts and sessions, verify transactions, notify parties, and preserve mail/auditing.'
+    ),
+    b(
+      'mailbox audit · identity log · payment/change workflow',
+      'mailbox audit · identity logs · payment/change workflow'
+    )
+  ),
+  t(
+    'malicious-oauth-consent',
+    'credentials',
+    ['security-fundamentals', 'automation-programmability'],
+    ['identity', 'application', 'management'],
+    b('OAuth consent phishing', 'OAuth consent phishing'),
+    b(
+      'Un’app malevola ottiene scope su posta, file o API tramite consenso, senza sottrarre la password.',
+      'A malicious application obtains mail, file, or API scopes through consent without stealing the password.'
+    ),
+    b(
+      'Consent limitato, admin approval, publisher verificati, scope allowlist e app governance.',
+      'Restricted consent, admin approval, verified publishers, scope allowlists, and application governance.'
+    ),
+    b(
+      'Nuovi grant/service principal, scope rischiosi, token issuance e API access fuori profilo.',
+      'New grants/service principals, risky scopes, token issuance, and out-of-profile API access.'
+    ),
+    b(
+      'Revoca grant, token e service principal, limita l’app e valuta dati o azioni esposte.',
+      'Revoke grants, tokens, and service principals, constrain the application, and assess exposed data or actions.'
+    ),
+    b(
+      'consent audit · service principal · token/API activity',
+      'consent audit · service principal · token/API activity'
+    )
+  ),
+  t(
+    'voice-vlan-device-spoofing',
+    'spoofing',
+    ['network-access', 'security-fundamentals'],
+    ['data', 'identity'],
+    b('Spoofing del device nella voice VLAN', 'Voice-VLAN device spoofing'),
+    b(
+      'Un endpoint imita profilo, OUI o discovery di un telefono per ottenere voice VLAN o policy più fidata.',
+      'An endpoint mimics a phone profile, OUI, or discovery behavior to obtain a voice VLAN or more trusted policy.'
+    ),
+    b(
+      '802.1X multi-domain, profiling correlato, policy voice minima e switchport role esplicito.',
+      'Multi-domain 802.1X, correlated profiling, minimal voice policy, and explicit switchport roles.'
+    ),
+    b(
+      'Device type incoerente, voice TLV inatteso, MAC/sessioni anomale e traffico non-voice.',
+      'Inconsistent device types, unexpected voice TLVs, abnormal MAC/sessions, and non-voice traffic.'
+    ),
+    b(
+      'Quarantena la sessione, rivalida il device e correggi profilo, VLAN e policy assegnati.',
+      'Quarantine the session, revalidate the device, and correct assigned profiles, VLANs, and policy.'
+    ),
+    b(
+      'authentication session · LLDP/CDP · DHCP/profile correlation',
+      'authentication sessions · LLDP/CDP · DHCP/profile correlation'
+    )
+  ),
+  t(
+    'dhcp-snooping-trust-abuse',
+    'spoofing',
+    ['network-access', 'ip-services'],
+    ['data', 'application'],
+    b('Abuso del trust e dei binding DHCP Snooping', 'DHCP Snooping trust and binding abuse'),
+    b(
+      'Trust sulla porta sbagliata o binding corrotti consentono risposte rogue e invalidano DAI/IP Source Guard.',
+      'Trust on the wrong port or corrupted bindings permit rogue replies and invalidate DAI/IP Source Guard.'
+    ),
+    b(
+      'Trust minimo verso server/relay, database binding protetto, Option 82 governata e review delle porte.',
+      'Minimal trust toward servers/relays, protected binding databases, governed Option 82, and port reviews.'
+    ),
+    b(
+      'Offer/ACK da porte inattese, binding fuori porta/VLAN, trust drift e database mismatch.',
+      'Offer/ACK messages from unexpected ports, off-port/VLAN bindings, trust drift, and database mismatches.'
+    ),
+    b(
+      'Rimuovi il trust errato, preserva binding/evidenze, rinnova lease controllati e rivalida DAI/IPSG.',
+      'Remove incorrect trust, preserve bindings/evidence, renew controlled leases, and revalidate DAI/IPSG.'
+    ),
+    b('snooping trust · binding database · DHCP capture', 'snooping trust · binding database · DHCP capture')
+  ),
+  t(
+    'etherchannel-member-mismatch',
+    'availability',
+    ['network-access'],
+    ['data', 'control'],
+    b('Mismatch e abuso dei member EtherChannel', 'EtherChannel member mismatch and abuse'),
+    b(
+      'Peer, protocollo, VLAN o parametri incoerenti lasciano link individuali/sospesi e creano loop o black hole.',
+      'Inconsistent peers, protocols, VLANs, or parameters leave individual/suspended links and create loops or black holes.'
+    ),
+    b(
+      'LACP, peer identity, consistency checks, min-links e configurazione sul port-channel.',
+      'LACP, peer identity, consistency checks, minimum links, and configuration on the port channel.'
+    ),
+    b(
+      'Member suspended/individual, partner inatteso, VLAN mismatch e flussi unidirezionali.',
+      'Suspended/individual members, unexpected partners, VLAN mismatches, and one-way flows.'
+    ),
+    b(
+      'Isola il member incoerente, ripristina parametri su entrambi i peer e rivalida hashing/capacità.',
+      'Isolate the inconsistent member, restore parameters on both peers, and revalidate hashing/capacity.'
+    ),
+    b(
+      'show etherchannel summary · LACP neighbor · member counters',
+      'show etherchannel summary · LACP neighbors · member counters'
+    )
+  )
+];

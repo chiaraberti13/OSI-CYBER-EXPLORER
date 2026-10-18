@@ -1,0 +1,9 @@
+title = "OSI Cyber Explorer secret-scanning policy"
+
+[extend]
+useDefault = true
+
+# Do not add broad path or regex exclusions. A narrowly scoped allowlist must
+# include its owner, reason and expiry in the description and have a matching
+# entry in .github/security-exceptions.yml.
+

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="OSI Cyber Explorer">
+  <title>OSI Cyber Explorer</title>
+  <!-- App mark: a stack of OSI layers on the brand tile; the top layer is cyan,
+       the cyber accent, the lower layers fade for depth. Bars are kept bold so the
+       mark still reads at a 16px favicon size. Mirrored in the header. -->
+  <rect x="1" y="1" width="30" height="30" rx="7.5" fill="#4f46e5" />
+  <rect x="7.5" y="8.5" width="17" height="4.2" rx="2.1" fill="#22d3ee" />
+  <rect x="7.5" y="13.9" width="17" height="4.2" rx="2.1" fill="#ffffff" />
+  <rect x="7.5" y="19.3" width="17" height="4.2" rx="2.1" fill="#ffffff" opacity="0.72" />
+</svg>

@@ -1,0 +1,5 @@
+# OSV exceptions are intentionally empty. If an advisory must be suppressed,
+# add an [[IgnoredVulns]] block with id, reason and ignoreUntil, then add the
+# same exception to .github/security-exceptions.yml. See the policy in
+# docs/SECURITY_SCANNING.md.
+

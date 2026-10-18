@@ -1,0 +1,426 @@
+@import 'tailwindcss';
+
+@theme {
+  /* Product design tokens: semantic colors are the source for app-wide surfaces,
+     copy, focus, and feedback. The darkened Tailwind shades below preserve the
+     existing utility API while keeping frequently used text readable. */
+  --color-canvas: #fafafa;
+  --color-surface: #ffffff;
+  --color-surface-subtle: #f8fafc;
+  --color-ink-primary: #0f172a;
+  --color-ink-secondary: #475569;
+  --color-ink-muted: #64748b;
+  --color-accent: #4f46e5;
+  --color-accent-strong: #4338ca;
+  --color-success: #047857;
+  --color-warning: #92400e;
+  --color-danger: #b91c1c;
+  --color-info: #0369a1;
+  --color-stroke: #e2e8f0;
+
+  /* WCAG AA-safe replacements for common small-text utility colors. */
+  --color-slate-400: var(--color-ink-secondary);
+  --color-slate-500: var(--color-ink-secondary);
+  --color-indigo-500: var(--color-accent);
+  --color-emerald-500: var(--color-success);
+  --color-emerald-600: var(--color-success);
+  --color-amber-500: var(--color-warning);
+  --color-amber-600: var(--color-warning);
+  --color-red-500: var(--color-danger);
+
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --color-zinc-950: #f8fafc;
+  --color-zinc-900: #f1f5f9;
+  --color-zinc-800: #e2e8f0;
+  --color-zinc-700: #cbd5e1;
+
+  --font-mono: 'JetBrains Mono', 'SF Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --manual-reading-measure: 72ch;
+  --manual-column-measure: 75ch;
+  --manual-body-size: 1rem;
+  --manual-body-leading: 1.75;
+  --radius-xl: 0.75rem;
+  --shadow-sm: 0 1px 2px 0 rgb(15 23 42 / 0.05);
+}
+
+body {
+  background-color: var(--color-canvas);
+  color: var(--color-ink-secondary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  margin: 0;
+}
+
+/* Lightweight shell transitions keep the eager bundle independent of Motion.
+   The media query also avoids movement for people who request reduced motion. */
+@keyframes app-view-enter-subtle {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes app-view-enter-pronounced {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes nav-panel-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.app-view-enter[data-motion-preset='subtle'] {
+  animation: app-view-enter-subtle 180ms ease-out both;
+}
+.app-view-enter[data-motion-preset='pronounced'] {
+  animation: app-view-enter-pronounced 200ms ease-out both;
+}
+.nav-panel-enter {
+  animation: nav-panel-enter 140ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-view-enter,
+  .nav-panel-enter {
+    animation: none;
+  }
+}
+
+/* UX-28: dark-theme palette for the study manual's new cards.
+   The app ships light by default; dark styling is opt-in via `data-theme="dark"`
+   on the document root, so the current light experience and the rest of the shell
+   are unchanged (a global, user-facing theme toggle across every view is tracked
+   separately). These tokens are AA-verified in both themes by the design-system
+   gate (scripts/design-system.test.mjs) and by a dark-mode Axe end-to-end run. */
+:root[data-theme='dark'] {
+  --color-dark-canvas: #0b1120;
+  --color-dark-surface: #111827;
+  --color-dark-surface-subtle: #0f172a;
+  --color-dark-stroke: #334155;
+  --color-dark-ink-primary: #f1f5f9;
+  --color-dark-ink-secondary: #e2e8f0;
+  --color-dark-ink-soft: #cbd5e1;
+  --color-dark-ink-muted: #94a3b8;
+  --color-dark-accent: #a5b4fc;
+
+  --color-dark-tile-objectives-bg: #1e1b4b;
+  --color-dark-tile-objectives-border: #3730a3;
+  --color-dark-tile-example-bg: #052e2b;
+  --color-dark-tile-example-border: #065f46;
+  --color-dark-tile-example-ink: #6ee7b7;
+  --color-dark-tile-example-body: #d1fae5;
+  --color-dark-tile-mistakes-bg: #3f2d11;
+  --color-dark-tile-mistakes-border: #92400e;
+  --color-dark-tile-mistakes-ink: #fcd34d;
+  --color-dark-tile-mistakes-body: #fde68a;
+  /* VIS-10: the eJPT certification route's rose accent for the dark manual. The ink
+     reaches 8.3:1 on the chip background and 9+:1 on the dark surfaces (AA verified). */
+  --color-dark-track-ejpt-bg: #4c0519;
+  --color-dark-track-ejpt-border: #9f1239;
+  --color-dark-track-ejpt-ink: #fda4af;
+}
+
+/* Scope every dark override to the manual region so nothing else is affected even
+   when the attribute is set globally. Unlayered rules win over Tailwind's layered
+   utilities, so these remap the raw utility colors to the dark tokens above. */
+:root[data-theme='dark'] [data-manual-root] {
+  background-color: var(--color-dark-canvas);
+  color: var(--color-dark-ink-secondary);
+}
+/* Give the text-bearing regions that sit directly on the canvas their own opaque
+   dark background. Visually identical to the canvas, it lets contrast tooling sample
+   the real dark surface instead of blending the centred panel with the light shell. */
+:root[data-theme='dark'] [data-manual-root] > header,
+:root[data-theme='dark'] [data-manual-root] > nav,
+:root[data-theme='dark'] [data-manual-root] [role='group'],
+:root[data-theme='dark'] [data-manual-root] [role='group'] .border-transparent {
+  background-color: var(--color-dark-canvas);
+}
+:root[data-theme='dark'] [data-manual-root] .bg-white,
+:root[data-theme='dark'] [data-manual-root] .bg-indigo-50 {
+  background-color: var(--color-dark-surface);
+}
+:root[data-theme='dark'] [data-manual-root] [data-testid='chapter-context'] {
+  background-color: var(--color-dark-surface);
+}
+/* Chapter-tree rows (IA-04 redesign): the hover affordance must stay theme-coherent
+   and AA, so the light slate hover surface/ink map to the dark surface and ink. */
+:root[data-theme='dark'] [data-manual-root] .hover\:bg-slate-100:hover {
+  background-color: var(--color-dark-surface);
+}
+:root[data-theme='dark'] [data-manual-root] .hover\:text-slate-900:hover {
+  color: var(--color-dark-ink-primary);
+}
+:root[data-theme='dark'] [data-manual-root] .border-slate-100,
+:root[data-theme='dark'] [data-manual-root] .border-slate-200,
+:root[data-theme='dark'] [data-manual-root] .border-slate-200\/70,
+:root[data-theme='dark'] [data-manual-root] .border-slate-200\/80,
+:root[data-theme='dark'] [data-manual-root] .border-slate-300 {
+  border-color: var(--color-dark-stroke);
+}
+:root[data-theme='dark'] [data-manual-root] .text-slate-900,
+:root[data-theme='dark'] [data-manual-root] .text-slate-800 {
+  color: var(--color-dark-ink-primary);
+}
+:root[data-theme='dark'] [data-manual-root] .text-slate-700 {
+  color: var(--color-dark-ink-secondary);
+}
+:root[data-theme='dark'] [data-manual-root] .text-slate-600 {
+  color: var(--color-dark-ink-soft);
+}
+:root[data-theme='dark'] [data-manual-root] .text-slate-500,
+:root[data-theme='dark'] [data-manual-root] .text-slate-400,
+:root[data-theme='dark'] [data-manual-root] .text-slate-300,
+:root[data-theme='dark'] [data-manual-root] .eyebrow {
+  color: var(--color-dark-ink-muted);
+}
+:root[data-theme='dark'] [data-manual-root] .text-indigo-700,
+:root[data-theme='dark'] [data-manual-root] .text-indigo-600,
+:root[data-theme='dark'] [data-manual-root] .text-indigo-800 {
+  color: var(--color-dark-accent);
+}
+
+/* Colored learning tiles: objectives (indigo), example (success), mistakes (warning). */
+:root[data-theme='dark'] [data-manual-root] [data-manual-tile='objectives'],
+:root[data-theme='dark'] [data-manual-root] [data-manual-tile='guided-lab'] {
+  background-color: var(--color-dark-tile-objectives-bg);
+  border-color: var(--color-dark-tile-objectives-border);
+}
+:root[data-theme='dark'] [data-manual-root] [data-manual-tile='example'] {
+  background-color: var(--color-dark-tile-example-bg);
+  border-color: var(--color-dark-tile-example-border);
+}
+:root[data-theme='dark'] [data-manual-root] [data-manual-tile='example'] .text-emerald-700 {
+  color: var(--color-dark-tile-example-ink);
+}
+:root[data-theme='dark'] [data-manual-root] [data-manual-tile='example'] .text-emerald-950 {
+  color: var(--color-dark-tile-example-body);
+}
+:root[data-theme='dark'] [data-manual-root] [data-manual-tile='common-mistakes'],
+:root[data-theme='dark'] [data-manual-root] .bg-amber-100 {
+  background-color: var(--color-dark-tile-mistakes-bg);
+  border-color: var(--color-dark-tile-mistakes-border);
+}
+:root[data-theme='dark'] [data-manual-root] [data-manual-tile='common-mistakes'] .text-amber-700 {
+  color: var(--color-dark-tile-mistakes-ink);
+}
+:root[data-theme='dark'] [data-manual-root] [data-manual-tile='common-mistakes'] .text-amber-950 {
+  color: var(--color-dark-tile-mistakes-body);
+}
+/* On-page rail: active topic uses the dark accent; its guide rule keeps the border. */
+:root[data-theme='dark'] [data-manual-root] .border-indigo-500 {
+  border-color: var(--color-dark-accent);
+}
+:root[data-theme='dark'] [data-manual-root] .border-indigo-100 {
+  border-color: var(--color-dark-tile-objectives-border);
+}
+:root[data-theme='dark'] [data-manual-root] .border-emerald-100,
+:root[data-theme='dark'] [data-manual-root] .border-emerald-200 {
+  border-color: var(--color-dark-tile-example-border);
+}
+:root[data-theme='dark'] [data-manual-root] .border-amber-100 {
+  border-color: var(--color-dark-tile-mistakes-border);
+}
+:root[data-theme='dark'] [data-manual-root] .text-emerald-700,
+:root[data-theme='dark'] [data-manual-root] .text-emerald-800 {
+  color: var(--color-dark-tile-example-ink);
+}
+:root[data-theme='dark'] [data-manual-root] .text-amber-700,
+:root[data-theme='dark'] [data-manual-root] .text-amber-800 {
+  color: var(--color-dark-tile-mistakes-ink);
+}
+/* VIS-10: the eJPT route's rose accent — the header chip background and its icon/text
+   ink — remapped so the distinct eJPT marker stays AA in the dark manual. */
+:root[data-theme='dark'] [data-manual-root] .bg-rose-100 {
+  background-color: var(--color-dark-track-ejpt-bg);
+  border-color: var(--color-dark-track-ejpt-border);
+}
+/* The CCNA-route chip (indigo) in the chapter header, dark-mapped like the indigo tile. */
+:root[data-theme='dark'] [data-manual-root] .bg-indigo-100 {
+  background-color: var(--color-dark-tile-objectives-bg);
+  border-color: var(--color-dark-tile-objectives-border);
+}
+:root[data-theme='dark'] [data-manual-root] .text-rose-700,
+:root[data-theme='dark'] [data-manual-root] .text-rose-800 {
+  color: var(--color-dark-track-ejpt-ink);
+}
+/* The domain-weight badge inverts to a legible chip on the dark surface. */
+:root[data-theme='dark'] [data-manual-root] .bg-slate-900 {
+  background-color: var(--color-dark-stroke);
+}
+
+/* Minimal section labels: quiet, wide-tracked eyebrows. They used to be
+   monospaced with very wide tracking, which read as a "terminal wall" when many
+   stacked up; a sans face with tighter tracking keeps the label hierarchy while
+   calming the overall page. Text is unchanged (text-transform is visual only). */
+.eyebrow {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-ink-secondary);
+}
+
+/* UX-23: long-form manual copy follows a deliberate reading rhythm rather than
+   inheriting the denser UI typography. The column leaves room for card padding,
+   while running text is capped at 72 characters and keeps a 28 px baseline. */
+.manual-reading-column {
+  max-inline-size: var(--manual-column-measure);
+}
+
+.manual-reading-copy {
+  max-inline-size: var(--manual-reading-measure);
+  font-size: var(--manual-body-size);
+  line-height: var(--manual-body-leading);
+  text-wrap: pretty;
+}
+
+.manual-support-copy {
+  max-inline-size: var(--manual-reading-measure);
+  font-size: 0.875rem;
+  line-height: 1.5rem;
+}
+
+/* UX-08: WCAG 2.2 target-size and readability floor. Native controls are the
+   primary touch surface throughout the labs; flex links are card/menu targets,
+   while inline links keep the WCAG exception for links inside running text. */
+button,
+select,
+textarea,
+input:not([type='checkbox']):not([type='radio']),
+a[href].flex,
+a[href].inline-flex {
+  min-block-size: 44px;
+  min-inline-size: 44px;
+}
+
+/* Legacy micro-labels were repeated across the educational cards. Preserve their
+   hierarchy and monospace/uppercase treatment without rendering essential text
+   below a readable 12 px floor. */
+.text-\[8px\],
+.text-\[9px\],
+.text-\[10px\],
+.text-\[11px\] {
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+
+@media (max-width: 320px) {
+  body {
+    overflow-wrap: anywhere;
+  }
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--color-stroke);
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #cbd5e1;
+}
+
+/* Cards rendered off-screen are skipped with content-visibility, which needs a
+   placeholder size. That placeholder must constrain the HEIGHT ONLY: a single
+   contain-intrinsic-size length applies to both axes, and a fixed width pushed the
+   page wider than the viewport on phones and tablets. Each card sets its own
+   expected height with [contain-intrinsic-height:auto_NNNpx]. */
+.deferred-card {
+  content-visibility: auto;
+  contain-intrinsic-width: none;
+}
+
+/* Horizontal scroll containers (e.g. the main navigation tabs) without a visible bar */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Accessibility (UX-02): skip link. The first Tab must reach a control that jumps
+   past the sticky header and navigation straight to the main content. It stays
+   focusable (not display:none) but sits just off the top edge until focused, then
+   slides into view above the header (which is z-50). position:fixed keeps it
+   anchored to the viewport regardless of scroll. The slide is covered by the
+   prefers-reduced-motion block below. */
+.skip-link {
+  position: fixed;
+  left: 12px;
+  top: -56px;
+  z-index: 100;
+  padding: 8px 16px;
+  background: var(--color-ink-primary);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: top 0.15s ease;
+}
+.skip-link:focus {
+  top: 12px;
+}
+
+/* The main landmark is programmatically focusable (tabindex=-1) so activating the
+   skip link lands focus there. The user deliberately triggered the jump, so the
+   large container itself needs no ring; the next Tab focuses the first control
+   inside it, which does show the focus-visible outline below. */
+#main-content:focus,
+#main-content:focus-visible {
+  outline: none;
+}
+
+/* Accessibility: clear, consistent keyboard focus outline for interactive elements.
+   Uses :focus-visible so the ring only appears for keyboard users, not on mouse click. */
+a:focus-visible,
+button:focus-visible,
+select:focus-visible,
+input:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Accessibility: respect the user's OS-level "reduce motion" setting.
+   Learners prone to motion sickness / vestibular issues get a calm, static UI
+   while the didactic content stays fully usable. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -1,0 +1,117 @@
+import AxeBuilder from '@axe-core/playwright';
+import { expect, test } from '@playwright/test';
+import { chaptersByCertificationTrack, chaptersForCertificationTrack, manualStats } from '../src/lib/studyManual';
+
+// ENG-31 — derive the chapter-count expectations from the manual dataset so a new
+// chapter never forces a hand-edit here, and so these assertions prove the rendered
+// navigation mirrors the data rather than a literal matching itself.
+const TOTAL_CHAPTERS = manualStats().chapters;
+// Two-route IA: the index groups by study route (Percorso CCNA, eJPT).
+const ROUTE_GROUP_COUNT = chaptersByCertificationTrack().length;
+const CCNA_CHAPTERS = chaptersForCertificationTrack('ccna').length;
+// Progress label after exactly one completed chapter, mirroring the view's rounding.
+const ONE_OF_ALL_PERCENT = Math.round((1 / TOTAL_CHAPTERS) * 100);
+
+test.describe('manual mobile navigation (UX-25)', () => {
+  test.use({ viewport: { width: 320, height: 800 } });
+  test.beforeEach(async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+  });
+
+  test('keeps chapter, progress and topic navigation compact and reachable', async ({ page }) => {
+    await page.goto('/#/manual/osi-model');
+
+    const desktopNav = page.getByRole('navigation', { name: 'Capitoli del manuale' });
+    const mobileNav = page.getByRole('navigation', { name: 'Navigazione mobile del manuale' });
+    const chapterSelect = mobileNav.getByRole('combobox', { name: 'Vai a un capitolo' });
+    const topicSelect = mobileNav.getByRole('combobox', { name: 'Vai a un argomento' });
+
+    await expect(desktopNav).toBeHidden();
+    await expect(mobileNav).toBeVisible();
+    await expect(chapterSelect.locator('option')).toHaveCount(TOTAL_CHAPTERS);
+    await expect(chapterSelect.locator('optgroup')).toHaveCount(ROUTE_GROUP_COUNT);
+    expect((await mobileNav.boundingBox())?.height).toBeLessThanOrEqual(112);
+
+    await chapterSelect.selectOption('ethernet-switching');
+    const ethernetTitle = page.getByRole('heading', { level: 2, name: /Ethernet/ });
+    await expect(ethernetTitle).toBeFocused();
+    await expect(chapterSelect).toHaveValue('ethernet-switching');
+
+    await page.getByRole('button', { name: 'Segna come completato' }).click();
+    const progressLabel = `Progresso capitoli: 1/${TOTAL_CHAPTERS} (${ONE_OF_ALL_PERCENT}%)`;
+    await expect(mobileNav.getByLabel(progressLabel)).toBeVisible();
+
+    // UX-45c: the per-topic quick jump is a native select (no horizontal scrolling);
+    // choosing a topic anchors it below the sticky toolbar.
+    await topicSelect.selectOption('switch-cam-learning');
+    await expect(topicSelect).toHaveValue('switch-cam-learning');
+    const toolbarBox = await mobileNav.boundingBox();
+    await expect(mobileNav.getByLabel(progressLabel)).toBeInViewport();
+
+    const selectedTopic = page.locator('[data-manual-topic="switch-cam-learning"]');
+    const selectedTopicBox = await selectedTopic.boundingBox();
+    expect(selectedTopicBox?.y).toBeGreaterThanOrEqual((toolbarBox?.y ?? 0) + (toolbarBox?.height ?? 0) - 2);
+
+    await page.evaluate(() => window.scrollBy({ top: 500, behavior: 'instant' }));
+    const stickyToolbarBox = await mobileNav.boundingBox();
+    // IA-13: the sticky region starts at the single 56 px top bar; its border and 8 px
+    // padding put the navigation itself at ~65 px.
+    expect(stickyToolbarBox?.y).toBeGreaterThanOrEqual(56);
+    expect(stickyToolbarBox?.y).toBeLessThanOrEqual(66);
+    await expect(mobileNav.getByLabel(progressLabel)).toBeInViewport();
+
+    const widths = await page.evaluate(() => ({
+      viewport: document.documentElement.clientWidth,
+      content: document.documentElement.scrollWidth
+    }));
+    expect(widths.content).toBeLessThanOrEqual(widths.viewport);
+
+    const axe = await new AxeBuilder({ page })
+      .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
+      .analyze();
+    expect(axe.violations).toEqual([]);
+  });
+
+  test('keeps previous and next chapter actions usable at 320 px', async ({ page }) => {
+    await page.goto('/#/manual/osi-model');
+    const mobileNav = page.getByRole('navigation', { name: 'Navigazione mobile del manuale' });
+    await mobileNav.getByRole('combobox', { name: 'Vai a un capitolo' }).selectOption('ethernet-switching');
+
+    const stepNav = page.getByRole('navigation', { name: 'Capitolo precedente e successivo' });
+    await stepNav.scrollIntoViewIfNeeded();
+    const buttons = stepNav.getByRole('button');
+    await expect(buttons).toHaveCount(2);
+    for (const button of await buttons.all()) {
+      const box = await button.boundingBox();
+      expect(box?.width).toBeGreaterThanOrEqual(44);
+      expect(box?.height).toBeGreaterThanOrEqual(44);
+      await expect(button).toBeInViewport();
+    }
+
+    await stepNav.getByRole('button', { name: /Capitolo successivo/ }).click();
+    await expect(page.getByRole('heading', { level: 2, name: /Indirizzamento IPv4/ })).toBeFocused();
+    await expect(mobileNav.getByRole('combobox', { name: 'Vai a un capitolo' })).toHaveValue('ipv4-subnetting');
+  });
+
+  test('localises the compact navigation and keeps its controls at least 44 px', async ({ page }) => {
+    await page.goto('/#/manual/osi-model');
+    await page.getByRole('button', { name: 'English', exact: true }).click();
+    const mobileNav = page.getByRole('navigation', { name: 'Mobile manual navigation' });
+    const selector = mobileNav.getByRole('combobox', { name: 'Jump to a chapter' });
+    await expect(selector.locator(`optgroup[label="CCNA path · 0/${CCNA_CHAPTERS}"]`)).toHaveCount(1);
+    const targets = await mobileNav.locator('button, select').evaluateAll((controls) =>
+      controls.map((control) => {
+        const box = control.getBoundingClientRect();
+        return { width: Math.round(box.width * 100) / 100, height: Math.round(box.height * 100) / 100 };
+      })
+    );
+    for (const target of targets) {
+      expect(target.width).toBeGreaterThanOrEqual(44);
+      expect(target.height).toBeGreaterThanOrEqual(44);
+    }
+    const axe = await new AxeBuilder({ page })
+      .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
+      .analyze();
+    expect(axe.violations).toEqual([]);
+  });
+});

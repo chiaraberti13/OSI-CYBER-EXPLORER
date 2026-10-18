@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "baseline": {
+    "measuredOn": "2026-10-11",
+    "commit": "57a2910e5e9eec866fda32d97044321e412857cf",
+    "initialJsGzipBytes": 119567,
+    "largestRoute": "src/components/StudyManualView.tsx",
+    "largestRouteGzipBytes": 56117
+  },
+  "budgets": {
+    "initialJsGzipBytes": 125000,
+    "routeChunkGzipBytes": 75000
+  }
+}

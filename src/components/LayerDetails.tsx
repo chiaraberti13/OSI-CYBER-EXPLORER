@@ -1,0 +1,1034 @@
+import { useState, Fragment } from 'react';
+import { OSI_LAYERS } from '../content/osiLayers';
+import { ATTACK_SCENARIOS } from '../content/attackScenarios';
+import { useStore } from '../store';
+import { useShallow } from 'zustand/react/shallow';
+import { SCENARIO_FEEDBACK } from '../content/scenarioFeedback';
+import HeaderSpecificationSummary from './HeaderSpecificationSummary';
+import { Attack, Defense, Severity } from '../types';
+import { motion, AnimatePresence } from 'motion/react';
+import {
+  Network,
+  Box,
+  ShieldAlert,
+  ShieldCheck,
+  Skull,
+  Zap,
+  ChevronDown,
+  ChevronUp,
+  Lightbulb,
+  BookOpen,
+  Search
+} from 'lucide-react';
+
+const severityConfig: Record<Severity, { label: string; color: string; bg: string; border: string }> = {
+  low: { label: 'LOW', color: '#64748b', bg: 'bg-slate-50', border: 'border-slate-200' },
+  medium: { label: 'MEDIUM', color: '#b45309', bg: 'bg-amber-50', border: 'border-amber-200' },
+  high: { label: 'HIGH', color: '#c2410c', bg: 'bg-orange-50', border: 'border-orange-200' },
+  critical: { label: 'CRITICAL', color: '#b91c1c', bg: 'bg-red-50', border: 'border-red-200' }
+};
+
+const TUTOR_CORNER: Record<
+  number,
+  {
+    analogy: { en: string; it: string };
+    commands: { description: string; code: string }[];
+  }
+> = {
+  7: {
+    analogy: {
+      en: "Like reading the actual content and requests inside a letter (e.g., 'Deliver 1 hot coffee' or 'Query room 42 balance').",
+      it: "Come leggere il contenuto reale e le richieste scritte in una lettera (es. 'Consegna 1 caffè caldo' o 'Richiedi il saldo della stanza 42')."
+    },
+    commands: [
+      { description: 'Inspect HTTP headers in an authorized lab', code: 'curl -Iv https://web.lab.example.test/' },
+      { description: 'Resolve DNS record diagnostic fields', code: 'dig +short A dns.lab.example.test' }
+    ]
+  },
+  6: {
+    analogy: {
+      en: 'Translating words into a common language (English/Italian) or encrypting/compressing the letter inside a safe before sealing it.',
+      it: 'Tradurre le parole in una lingua comune (inglese/italiano) o crittografare/comprimere la lettera in una cassaforte prima di spedirla.'
+    },
+    commands: [
+      {
+        description: 'Check a lab TLS handshake & certificate chain',
+        code: 'openssl s_client -connect tls.lab.example.test:443'
+      },
+      { description: 'Verify payload JSON content-type parsing', code: "curl -H 'Content-Type: application/json'" }
+    ]
+  },
+  5: {
+    analogy: {
+      en: 'Setting up a phone call session, verifying identities with badges, keeping the line open, and cleanly logging off when finished.',
+      it: 'Stabilire una chiamata telefonica attiva, verificare le identità, tenere aperta la linea e riagganciare in modo ordinato al termine.'
+    },
+    commands: [
+      { description: 'Check current active state authentication cookies', code: 'document.cookie' },
+      { description: 'List established RPC sessions & database handles', code: 'netstat -an | grep 5432' }
+    ]
+  },
+  4: {
+    analogy: {
+      en: 'Registered Mail (TCP) guaranteeing order & receipt verification, OR quick Postcards (UDP) sent without delivery guarantees or retries.',
+      it: 'Posta Raccomandata (TCP) con ricevuta che garantisce ordine e recapito, OPPURE una cartolina veloce (UDP) spedita senza tracciamento.'
+    },
+    commands: [
+      { description: 'Check if an authorized lab service port is open', code: 'nc -zv 192.0.2.10 443' },
+      { description: 'Display all active local network ports & sockets', code: 'ss -tulnp' }
+    ]
+  },
+  3: {
+    analogy: {
+      en: 'Sorting packages globally at the national post office using Postal ZIP codes / IP addresses to route packages from country to country.',
+      it: 'Smistare i pacchi su scala mondiale scrivendo gli indirizzi IP / Codici Postali per instradare le lettere da nazione a nazione.'
+    },
+    commands: [
+      { description: 'Trace a route to a documentation-only target', code: 'traceroute 203.0.113.8' },
+      { description: 'Check reachability to a documentation-only target', code: 'ping -c 4 203.0.113.8' },
+      { description: 'Examine system network gateway routing tables', code: 'ip route show' }
+    ]
+  },
+  2: {
+    analogy: {
+      en: 'Handing an envelope by hand to a specific office room number (MAC address) on the exact same floor of your current building.',
+      it: "Consegnare a mano la busta a un numero di stanza specifico (indirizzo MAC) situato sullo stesso piano dell'edificio locale."
+    },
+    commands: [
+      { description: 'Inspect the local IP-to-MAC hardware resolution map', code: 'arp -a' },
+      { description: 'See current interface Layer-2 hardware MAC details', code: 'ip link show' }
+    ]
+  },
+  1: {
+    analogy: {
+      en: 'The copper wires, physical optical fibers, radio frequency sparks, or connectors carrying simple raw electrical/light binary pulses (0 and 1).',
+      it: 'I cavi in rame, i filamenti di fibra ottica, le onde radio o le tensioni elettriche che trasmettono impulsi di bit binari (0 e 1).'
+    },
+    commands: [
+      {
+        description: 'Inspect physical link speed, auto-negotiation, and cable light indicators',
+        code: 'ethtool eth0'
+      },
+      { description: 'Check physical cable carrier & transceiver drops', code: 'cat /sys/class/net/eth0/carrier' }
+    ]
+  }
+};
+
+function AttackCard({ attack }: { attack: Attack }) {
+  const [expanded, setExpanded] = useState(true);
+  const sev = severityConfig[attack.severity];
+
+  return (
+    <motion.div layout className={`rounded-lg border ${sev.border} ${sev.bg} overflow-hidden`}>
+      <button onClick={() => setExpanded(!expanded)} className="w-full flex items-start gap-3 p-4 text-left group">
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 flex-wrap mb-1">
+            <span
+              className="text-[9px] font-semibold px-1.5 py-0.5 rounded border"
+              style={{ color: sev.color, borderColor: sev.color + '50', backgroundColor: sev.color + '15' }}
+            >
+              {sev.label}
+            </span>
+            <h4 className="text-[11px] font-bold text-slate-800 uppercase tracking-tight">{attack.name}</h4>
+          </div>
+          <p className="text-[10px] text-slate-500 leading-snug">{attack.description}</p>
+        </div>
+        <div className="flex-shrink-0 mt-0.5 text-slate-400 group-hover:text-slate-600 transition-colors">
+          {expanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+        </div>
+      </button>
+
+      <AnimatePresence>
+        {expanded && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="overflow-hidden"
+          >
+            <div className="px-4 pb-4 space-y-3 border-t border-slate-200/50 pt-3">
+              {/* How it works */}
+              <div>
+                <div className="flex items-center gap-1.5 mb-2">
+                  <Zap className="w-3 h-3 text-amber-600" />
+                  <span className="text-[10px] font-semibold text-amber-600 uppercase tracking-wider">
+                    Come funziona / How it works
+                  </span>
+                </div>
+                <div className="bg-white rounded-lg border border-slate-200 p-3">
+                  <pre className="text-[9px] text-slate-600 leading-relaxed whitespace-pre-wrap font-mono">
+                    {attack.howItWorks}
+                  </pre>
+                </div>
+              </div>
+
+              {/* Impact */}
+              <div>
+                <span className="text-[10px] font-semibold text-red-600 uppercase tracking-wider block mb-1">
+                  Impatto / Impact
+                </span>
+                <p className="text-[10px] text-red-700/80 leading-snug">{attack.impact}</p>
+              </div>
+
+              {/* Mitigation */}
+              <div className="pt-2 border-t border-slate-200/40">
+                <div className="flex items-center gap-1.5 mb-1.5">
+                  <ShieldCheck className="w-3 h-3 text-emerald-600" />
+                  <span className="text-[10px] font-semibold text-emerald-600 uppercase tracking-wider">
+                    Mitigazione
+                  </span>
+                </div>
+                <p className="text-[10px] text-emerald-700/70 leading-snug italic">{attack.mitigation_strategy}</p>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  );
+}
+
+function DefenseCard({ defense }: { defense: Defense }) {
+  return (
+    <div className="p-4 bg-emerald-50 border border-emerald-100 rounded-lg space-y-2">
+      <div className="flex items-start gap-2">
+        <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0 mt-0.5" />
+        <div className="flex-1 min-w-0">
+          <h4 className="text-[11px] font-bold text-slate-800 uppercase tracking-tight mb-1">{defense.name}</h4>
+          <p className="text-[10px] text-slate-500 leading-snug mb-2">{defense.description}</p>
+          <div className="bg-white rounded-lg border border-emerald-100 p-2">
+            <span className="text-[10px] font-semibold text-emerald-800 uppercase tracking-wider block mb-1">
+              Metodo / Method
+            </span>
+            <p className="text-[9px] text-emerald-900/70 font-mono leading-relaxed">{defense.method}</p>
+          </div>
+          {defense.counters && defense.counters.length > 0 && (
+            <div className="mt-2">
+              <span className="text-[10px] font-semibold text-emerald-600/60 uppercase tracking-wider block mb-1.5">
+                Contrastare / Counters
+              </span>
+              <div className="flex flex-wrap gap-1">
+                {defense.counters.map((c) => (
+                  <span
+                    key={c}
+                    className="text-[10px] px-1.5 py-0.5 bg-red-50 border border-red-100 text-red-600 rounded font-mono uppercase"
+                  >
+                    {c}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function LayerDetails() {
+  const {
+    selectedLayerId,
+    language,
+    viewMode,
+    setViewMode,
+    packetHeaders,
+    selectedProtocol,
+    simulationState,
+    activeAttack,
+    activeScenarioId,
+    detailTab,
+    setDetailTab,
+    hasSimulated,
+    defenseEnabled
+  } = useStore(
+    useShallow((state) => ({
+      selectedLayerId: state.selectedLayerId,
+      language: state.language,
+      viewMode: state.viewMode,
+      setViewMode: state.setViewMode,
+      packetHeaders: state.packetHeaders,
+      selectedProtocol: state.selectedProtocol,
+      simulationState: state.simulationState,
+      activeAttack: state.activeAttack,
+      activeScenarioId: state.activeScenarioId,
+      detailTab: state.detailTab,
+      setDetailTab: state.setDetailTab,
+      hasSimulated: state.hasSimulated,
+      defenseEnabled: state.defenseEnabled
+    }))
+  );
+
+  const layer = OSI_LAYERS.find((l) => l.id === selectedLayerId);
+
+  if (!layer && viewMode === 'theory') {
+    return (
+      <div className="h-full flex flex-col items-center justify-center text-slate-400 border border-dashed border-slate-200 rounded-lg p-8 text-center uppercase tracking-wider text-xs bg-white">
+        <Network className="w-12 h-12 mb-4 opacity-20" />
+        {language === 'en' ? 'Select a layer to inspect' : 'Seleziona un livello da ispezionare'}
+      </div>
+    );
+  }
+
+  const info = layer?.translations[language];
+
+  // Filter attacks based on simulation state AND selected protocol
+  const attacksForView =
+    info?.attacks?.filter((a) => {
+      // If an attack has protocols defined, it must match the selected one
+      const protocolMatches = !a.protocols || a.protocols.includes(selectedProtocol);
+
+      // If simulation is active, only show the attack being simulated
+      if (hasSimulated && activeAttack !== 'none') {
+        return a.type === activeAttack && protocolMatches;
+      }
+
+      // If no simulation, show all attacks matching the protocol
+      return protocolMatches;
+    }) ?? [];
+
+  // Filter defenses that counter the active attack AND match protocol
+  const defensesForView =
+    info?.defenses?.filter((d) => {
+      // Protocol match
+      const protocolMatches = !d.protocols || d.protocols.includes(selectedProtocol);
+
+      if (hasSimulated && activeAttack !== 'none') {
+        // Check if any of the counters strings contain the attack name or parts of it
+        return (
+          protocolMatches &&
+          d.counters?.some(
+            (c) =>
+              c.toLowerCase().includes(activeAttack.toLowerCase()) ||
+              (attacksForView.length > 0 && c.toLowerCase().includes(attacksForView[0].name.toLowerCase()))
+          )
+        );
+      }
+
+      return protocolMatches;
+    }) ?? [];
+
+  // General protocol-specific attacks and defenses (ignoring is-simulating filter) for overall security stats
+  const protocolAttacks = info?.attacks?.filter((a) => !a.protocols || a.protocols.includes(selectedProtocol)) ?? [];
+  const protocolDefenses = info?.defenses?.filter((d) => !d.protocols || d.protocols.includes(selectedProtocol)) ?? [];
+
+  const tabs = [
+    { id: 'overview' as const, label: language === 'en' ? 'Overview' : 'Panoramica', icon: BookOpen },
+    {
+      id: 'attacks' as const,
+      label: language === 'en' ? 'Attacks' : 'Attacchi',
+      icon: Skull,
+      count: attacksForView.length
+    },
+    {
+      id: 'defenses' as const,
+      label: language === 'en' ? 'Defenses' : 'Difese',
+      icon: ShieldCheck,
+      count: defensesForView.length
+    },
+    { id: 'security' as const, label: language === 'en' ? 'Analysis' : 'Analisi', icon: Search }
+  ];
+
+  return (
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={viewMode === 'packet' ? 'packet-view' : layer?.id || 'none'}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="h-full bg-white border border-slate-200/70 rounded-lg flex flex-col overflow-hidden"
+      >
+        {viewMode === 'packet' ? (
+          <>
+            <div className="flex items-center justify-between border-b border-slate-100 p-4 bg-slate-50/30">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-md flex items-center justify-center border border-slate-200 bg-white">
+                  <Box className="w-4 h-4 text-slate-500" />
+                </div>
+                <div>
+                  <h2 className="text-[13px] font-medium text-slate-900">Packet inspect</h2>
+                  <p className="text-[10px] text-slate-400 font-mono mt-0.5">
+                    proto:{selectedProtocol.toLowerCase()} · active
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setViewMode('theory')}
+                className="text-[11px] font-medium text-slate-400 hover:text-slate-700 px-2.5 py-1 bg-white rounded-md border border-slate-200 transition-all"
+              >
+                {language === 'it' ? 'Chiudi' : 'Close'}
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-5 custom-scrollbar space-y-6 bg-white">
+              <section className="p-4 bg-slate-50 border border-slate-100 rounded-lg">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: layer?.color }} />
+                  <h3 className="eyebrow">Layer_Mission</h3>
+                </div>
+                <p className="text-[11px] text-slate-700 leading-relaxed">{info?.description}</p>
+              </section>
+
+              {simulationState === 'interrupted' && (
+                <motion.div
+                  initial={{ scale: 0.9, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  className="p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-4"
+                >
+                  <div className="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center flex-shrink-0 animate-pulse">
+                    <ShieldAlert className="w-4 h-4 text-white" />
+                  </div>
+                  <div>
+                    <h4 className="text-[10px] font-semibold text-red-600 uppercase tracking-wider">
+                      Security_Violation_Detected
+                    </h4>
+                    <p className="text-[10px] text-red-700/70 font-mono mt-1 italic">
+                      {activeAttack === 'mitm'
+                        ? 'Man-in-the-Middle detected at Data Link / Network bridge.'
+                        : activeAttack === 'dos'
+                          ? 'Resource exhaustion detected. Network stack saturated.'
+                          : activeAttack === 'replay'
+                            ? 'Replay attack: old session tokens being reused.'
+                            : activeAttack === 'eavesdropping'
+                              ? 'Passive sniffing detected on physical medium.'
+                              : 'Identity spoofing detected in L3 source headers.'}
+                    </p>
+                  </div>
+                </motion.div>
+              )}
+
+              <section>
+                <h3 className="eyebrow mb-3">Runtime Payload</h3>
+                <div className="p-3 bg-slate-900 rounded-lg border border-black/5 font-mono text-[10px] text-slate-200 break-all leading-relaxed">
+                  {'{ "msg": "NetLab_Simulator", "proto": "' +
+                    selectedProtocol +
+                    '", "bytes": 1500, "payload": "Secure" }'}
+                </div>
+              </section>
+
+              <section>
+                <h3 className="eyebrow mb-3">Protocol Header Breakdown</h3>
+                <div className="space-y-4">
+                  {[...packetHeaders].reverse().map((h, idx) => {
+                    const l = OSI_LAYERS.find((layer) => layer.id === h.layer);
+                    const headerFields: { key: string; value: string }[] =
+                      h.fields && h.fields.length > 0
+                        ? h.fields
+                        : {
+                            7: [
+                              { key: 'Method', value: 'GET' },
+                              { key: 'Path', value: '/api/v1' },
+                              { key: 'Agent', value: 'Lab_Core' }
+                            ],
+                            6: [
+                              { key: 'Encoding', value: 'Base64' },
+                              { key: 'Crypto', value: 'TLSv1.3' },
+                              { key: 'Type', value: 'JSON' }
+                            ],
+                            5: [
+                              { key: 'SID', value: 'SESS_9821' },
+                              { key: 'Auth', value: 'Verified' },
+                              { key: 'Sync', value: 'ACK' }
+                            ],
+                            4: [
+                              { key: 'SrcPort', value: '54321' },
+                              { key: 'DstPort', value: selectedProtocol === 'HTTP' ? '80' : '7' },
+                              { key: 'Seq', value: '1024' }
+                            ],
+                            3: [
+                              { key: 'SrcIP', value: '192.168.1.10' },
+                              { key: 'DstIP', value: '203.0.113.8' },
+                              { key: 'TTL', value: '64' }
+                            ],
+                            2: [
+                              { key: 'SrcMAC', value: '00:0C:29:...' },
+                              { key: 'DstMAC', value: '00:50:56:...' },
+                              { key: 'Type', value: '0x0800' }
+                            ],
+                            1: [
+                              { key: 'Signal', value: '0/1' },
+                              { key: 'Media', value: 'Ethernet' },
+                              { key: 'Clock', value: '1Gbps' }
+                            ]
+                          }[h.layer as 1 | 2 | 3 | 4 | 5 | 6 | 7] || [];
+
+                    return (
+                      <div
+                        key={`${h.layer}-${idx}`}
+                        className="p-3 rounded-md border border-slate-200/70 bg-white group transition-all"
+                      >
+                        <div className="flex justify-between items-center mb-3">
+                          <span className="text-[11px] font-medium flex items-center gap-2 text-slate-600">
+                            <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: l?.color }} />L{h.layer}{' '}
+                            {l?.translations[language].name}
+                          </span>
+                          <div className="flex items-center gap-2">
+                            <span className="text-[9px] font-mono text-slate-400 px-1 py-0.5 rounded border border-slate-200">
+                              {h.pduName}
+                            </span>
+                            <span className="text-[9px] text-slate-500 font-mono px-1.5 py-0.5 rounded border border-slate-200">
+                              {h.protocol}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-3 gap-2 mb-3">
+                          {headerFields.map((f) => (
+                            <div
+                              key={f.key}
+                              className={`p-1.5 border rounded transition-colors ${simulationState !== 'idle' && h.layer === selectedLayerId ? 'bg-emerald-50 border-emerald-200' : 'bg-slate-50/50 border-slate-100'}`}
+                            >
+                              <div className="flex items-center justify-between mb-1">
+                                <span className="text-[10px] font-mono text-slate-400 leading-none truncate">
+                                  {f.key}
+                                </span>
+                                {simulationState !== 'idle' && h.layer === selectedLayerId && (
+                                  <div className="w-1 h-1 bg-emerald-500 rounded-full" />
+                                )}
+                              </div>
+                              <span
+                                className={`text-[9px] font-mono truncate block ${simulationState !== 'idle' && h.layer === selectedLayerId ? 'text-emerald-600' : 'text-slate-700'}`}
+                              >
+                                {f.value}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                        {h.layer >= 2 && h.layer <= 4 && (
+                          <div className="mb-3">
+                            <HeaderSpecificationSummary
+                              language={language}
+                              layer={h.layer as 2 | 3 | 4}
+                              testId={`layer-details-header-specifications-l${h.layer}`}
+                            />
+                          </div>
+                        )}
+                        <p className="text-[9px] text-slate-400 font-mono leading-relaxed">{h.details}</p>
+                      </div>
+                    );
+                  })}
+                  {packetHeaders.length === 0 && (
+                    <div className="text-center py-12 flex flex-col items-center gap-3 border border-dashed border-slate-200 rounded-lg bg-slate-50/30">
+                      <span className="text-[10px] text-slate-400 font-mono">awaiting transmission…</span>
+                    </div>
+                  )}
+                </div>
+              </section>
+
+              <section className="bg-slate-50/50 border border-slate-200/70 p-4 rounded-lg">
+                <h4 className="eyebrow mb-2">
+                  {language === 'it' ? 'Logica di incapsulamento' : 'Encapsulation logic'}
+                </h4>
+                <p className="text-[10px] text-slate-500 leading-relaxed italic">
+                  {language === 'it'
+                    ? 'Per ogni livello dello stack, viene aggiunto un header specifico che contiene le istruzioni per il livello corrispondente sul destinatario. Solo il livello fisico (L1) trasmette segnali elettrici/ottici.'
+                    : 'For each stack layer, a specific header is added containing instructions for the matching layer at the destination. Only the physical layer (L1) transmits electrical/optical signals.'}
+                </p>
+              </section>
+            </div>
+          </>
+        ) : (
+          <>
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-slate-100 p-4 flex-shrink-0 bg-slate-50/20">
+              <div className="flex items-center gap-3">
+                <div
+                  className="w-8 h-8 rounded-md flex items-center justify-center font-mono font-medium text-sm border"
+                  style={{
+                    color: layer?.color,
+                    borderColor: (layer?.color ?? '#64748b') + '40',
+                    backgroundColor: (layer?.color ?? '#64748b') + '0d'
+                  }}
+                >
+                  {layer?.id}
+                </div>
+                <div>
+                  <h2 className="text-[13px] font-medium text-slate-900">{info?.name}</h2>
+                  <p className="text-[10px] text-slate-400 font-mono mt-0.5">
+                    pdu:{layer?.pdu.toLowerCase()} · L{layer?.id}
+                  </p>
+                </div>
+              </div>
+              <Network className="w-4 h-4 text-slate-200" />
+            </div>
+
+            {/* Tab Bar */}
+            <div className="flex border-b border-slate-100 flex-shrink-0 px-2 gap-0.5 bg-white overflow-x-auto no-scrollbar">
+              {tabs.map((tab) => {
+                const Icon = tab.icon;
+                const isActive = detailTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setDetailTab(tab.id)}
+                    className={`flex items-center gap-1 px-1.5 py-2.5 text-[11px] font-medium transition-all border-b-2 -mb-px sm:gap-1.5 sm:px-2.5 ${
+                      isActive
+                        ? tab.id === 'attacks'
+                          ? 'border-red-500 text-red-600'
+                          : tab.id === 'defenses'
+                            ? 'border-emerald-500 text-emerald-600'
+                            : 'border-slate-900 text-slate-900'
+                        : 'border-transparent text-slate-400 hover:text-slate-600'
+                    }`}
+                  >
+                    <Icon className="w-3.5 h-3.5" />
+                    {tab.label}
+                    {tab.count !== undefined && (
+                      <span
+                        className={`ml-0.5 px-1 rounded text-[10px] font-mono ${
+                          isActive && tab.id === 'attacks'
+                            ? 'text-red-500'
+                            : isActive && tab.id === 'defenses'
+                              ? 'text-emerald-500'
+                              : 'text-slate-400'
+                        }`}
+                      >
+                        {tab.count}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Tab Content */}
+            <div className="flex-1 overflow-y-auto custom-scrollbar bg-white">
+              <AnimatePresence mode="wait">
+                {detailTab === 'overview' && (
+                  <motion.div
+                    key="overview"
+                    initial={{ opacity: 0, y: 4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -4 }}
+                    className="p-5 space-y-6"
+                  >
+                    {/* Simulation Result / Insight Section */}
+                    {hasSimulated && activeAttack !== 'none' && (
+                      <section
+                        className={`p-4 rounded-lg border animate-in fade-in slide-in-from-bottom-4 duration-500 ${simulationState === 'interrupted' && !defenseEnabled ? 'bg-red-50 border-red-200' : 'bg-emerald-50 border-emerald-200'}`}
+                      >
+                        <div className="flex items-center gap-2 mb-3">
+                          {simulationState === 'interrupted' && !defenseEnabled ? (
+                            <Skull className="w-4 h-4 text-red-600" />
+                          ) : (
+                            <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                          )}
+                          <h4 className="text-[10px] font-semibold uppercase tracking-wider text-slate-900">
+                            {language === 'it' ? 'Esecuzione Analisi L' : 'Execution Insight L'}
+                            {selectedLayerId}
+                          </h4>
+                        </div>
+
+                        <div className="space-y-3">
+                          <p className="text-[10px] text-slate-700 leading-relaxed font-semibold">
+                            {simulationState === 'interrupted' && !defenseEnabled
+                              ? activeScenarioId && SCENARIO_FEEDBACK[activeScenarioId]
+                                ? SCENARIO_FEEDBACK[activeScenarioId].attack[language]
+                                : language === 'it'
+                                  ? `ATTACCO RILEVATO: Il livello ${selectedLayerId} è stato compromesso da ${activeAttack.toUpperCase()}. Il pacchetto è stato intercettato o alterato.`
+                                  : `ATTACK DETECTED: Layer ${selectedLayerId} has been compromised by ${activeAttack.toUpperCase()}. The packet was intercepted or altered.`
+                              : activeScenarioId && SCENARIO_FEEDBACK[activeScenarioId]
+                                ? SCENARIO_FEEDBACK[activeScenarioId].defense[language]
+                                : language === 'it'
+                                  ? `CONTROMISURA ATTIVA: Le protezioni del livello ${selectedLayerId} hanno rilevato e mitigato la minaccia ${activeAttack.toUpperCase()}.`
+                                  : `COUNTERMEASURE ACTIVE: Layer ${selectedLayerId} protections detected and mitigated the ${activeAttack.toUpperCase()} threat.`}
+                          </p>
+
+                          <div className="bg-white/50 p-2.5 rounded-lg border border-slate-200/50 text-[9px] font-mono text-slate-600 leading-normal">
+                            <span className="font-bold text-slate-700">
+                              {language === 'it' ? 'Dettagli Diagnostica:' : 'Diagnostic Details:'}
+                            </span>{' '}
+                            {attacksForView.length > 0
+                              ? activeScenarioId && ATTACK_SCENARIOS.find((s) => s.id === activeScenarioId)
+                                ? `${ATTACK_SCENARIOS.find((s) => s.id === activeScenarioId)?.description[language]}`
+                                : activeAttack === 'mitm'
+                                  ? language === 'it'
+                                    ? "L'indirizzo MAC di destinazione è stato corrotto. Il frame viene deviato verso l'attaccante invece del gateway."
+                                    : 'The destination MAC address has been corrupted. The frame is redirected to the attacker instead of the gateway.'
+                                  : activeAttack === 'dos'
+                                    ? language === 'it'
+                                      ? 'Il buffer di ricezione TCP è saturo. Il sistema non può processare nuove richieste legittime.'
+                                      : 'The TCP reception buffer is saturated. The system cannot process new legitimate requests.'
+                                    : activeAttack === 'injection'
+                                      ? language === 'it'
+                                        ? 'Il payload applicativo contiene metacaratteri SQL. La query al database verrà alterata a runtime.'
+                                        : 'The application payload contains SQL metacharacters. The database query will be altered at runtime.'
+                                      : activeAttack === 'spoofing'
+                                        ? language === 'it'
+                                          ? "L'header IP contiene un indirizzo sorgente non verificato che bypassa i controlli di accesso."
+                                          : 'The IP header contains an unverified source address that bypasses access controls.'
+                                        : language === 'it'
+                                          ? 'Anomalia rilevata nel flusso dei bit o della sessione.'
+                                          : 'Anomaly detected in bit stream or session flow.'
+                              : language === 'it'
+                                ? 'Livello di transito: Questo livello sta incapsulando o inoltrando il pacchetto nel flusso senza ispezionarlo direttamente.'
+                                : 'Transit layer: This layer is encapsulating or forwarding the packet down the stream without direct payload inspection.'}
+                          </div>
+                        </div>
+                      </section>
+                    )}
+
+                    <section>
+                      <h3 className="eyebrow mb-3">{language === 'it' ? 'Descrizione' : 'Description'}</h3>
+                      <p className="text-xs text-slate-700 leading-relaxed">{info?.description}</p>
+                    </section>
+
+                    {info?.responsibilities && info.responsibilities.length > 0 && (
+                      <section>
+                        <h3 className="eyebrow mb-3">
+                          {language === 'it' ? 'Responsabilità Primarie' : 'Primary Responsibilities'}
+                        </h3>
+                        <div className="space-y-2">
+                          {info.responsibilities.map((resp, i) => (
+                            <div key={i} className="flex items-start gap-2 group">
+                              <div className="w-1 h-1 rounded-full bg-slate-300 mt-1.5 flex-shrink-0 group-hover:bg-slate-900 transition-colors" />
+                              <p className="text-[10px] text-slate-600 leading-relaxed">{resp}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </section>
+                    )}
+
+                    {info?.useCases && info.useCases.length > 0 && (
+                      <section>
+                        <h3 className="eyebrow mb-3">{language === 'it' ? "Casi d'Uso Comuni" : 'Common Use Cases'}</h3>
+                        <div className="grid grid-cols-1 gap-2">
+                          {info.useCases.map((useCase, i) => (
+                            <div
+                              key={i}
+                              className="px-3 py-2 bg-slate-50 border border-slate-100 rounded-lg flex items-center gap-2"
+                            >
+                              <div className="w-1.5 h-1.5 rounded-full bg-slate-900/10 flex items-center justify-center text-[10px] font-bold text-slate-400">
+                                {i + 1}
+                              </div>
+                              <p className="text-[10px] text-slate-700 font-medium">{useCase}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </section>
+                    )}
+
+                    {info?.keyFacts && info.keyFacts.length > 0 && (
+                      <section>
+                        <div className="flex items-center gap-2 mb-3">
+                          <Lightbulb className="w-3.5 h-3.5 text-amber-500" />
+                          <h3 className="text-[9px] font-bold text-amber-600 uppercase tracking-wider">
+                            {language === 'it' ? 'Fatti Chiave' : 'Key Facts'}
+                          </h3>
+                        </div>
+                        <div className="space-y-2">
+                          {info.keyFacts.map((fact, i) => (
+                            <div key={i} className="flex gap-3 p-3 bg-amber-50 border border-amber-100 rounded-lg">
+                              <span className="text-[10px] font-semibold text-amber-600 mt-0.5 flex-shrink-0">
+                                0{i + 1}
+                              </span>
+                              <p className="text-[10px] text-slate-700 leading-relaxed">{fact}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </section>
+                    )}
+
+                    <section>
+                      <h3 className="eyebrow mb-3">
+                        {language === 'it' ? 'Protocolli Standard' : 'Standard Protocols'}
+                      </h3>
+                      <div className="flex flex-wrap gap-1.5">
+                        {info?.protocols?.map((p) => (
+                          <span
+                            key={p}
+                            className="px-2 py-1 bg-white border border-slate-200 text-slate-700 rounded-md text-[9px] font-mono"
+                          >
+                            {p}
+                          </span>
+                        ))}
+                      </div>
+                    </section>
+
+                    <section>
+                      <h3 className="eyebrow mb-3">
+                        {language === 'it' ? 'Statistiche di Sicurezza' : 'Security Stats'}
+                      </h3>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="p-3 bg-red-50 border border-red-100 rounded-lg text-center">
+                          <span className="block text-2xl font-semibold text-red-600">{protocolAttacks.length}</span>
+                          <span className="text-[10px] text-slate-500 uppercase tracking-wider">
+                            {language === 'it' ? 'Attacchi Noti' : 'Known Attacks'}
+                          </span>
+                        </div>
+                        <div className="p-3 bg-emerald-50 border border-emerald-100 rounded-lg text-center">
+                          <span className="block text-2xl font-semibold text-emerald-600">
+                            {protocolDefenses.length}
+                          </span>
+                          <span className="text-[10px] text-slate-500 uppercase tracking-wider">
+                            {language === 'it' ? 'Contromisure' : 'Countermeasures'}
+                          </span>
+                        </div>
+                      </div>
+                    </section>
+
+                    {selectedLayerId && TUTOR_CORNER[selectedLayerId] && (
+                      <section className="p-4 bg-indigo-50/30 border border-indigo-100 rounded-lg space-y-4 animate-in fade-in duration-300">
+                        <div className="flex items-center gap-2">
+                          <div className="w-6 h-6 rounded-full bg-indigo-600 text-white font-mono text-[10px] font-semibold flex items-center justify-center shadow-indigo-100">
+                            T
+                          </div>
+                          <h4 className="text-[10px] font-semibold text-indigo-700 uppercase tracking-wider">
+                            {language === 'it' ? "L'Angolo del Tutor" : "Tutor's Corner"}
+                          </h4>
+                        </div>
+
+                        <div className="space-y-1">
+                          <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">
+                            {language === 'it' ? 'Analogia Pratica' : 'Practical Analogy'}
+                          </span>
+                          <p className="text-[11px] text-slate-600 leading-relaxed italic pr-2">
+                            "{TUTOR_CORNER[selectedLayerId].analogy[language]}"
+                          </p>
+                        </div>
+
+                        <div className="space-y-2 border-t border-indigo-100/40 pt-3">
+                          <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">
+                            {language === 'it'
+                              ? 'Diagnostica Reale / Comandi Consigliati'
+                              : 'Field Diagnostics / CLI Commands'}
+                          </span>
+                          <div className="space-y-2">
+                            {TUTOR_CORNER[selectedLayerId].commands.map((cmd, i) => (
+                              <div key={i} className="space-y-1">
+                                <span className="text-[9px] text-slate-500 font-semibold block">{cmd.description}</span>
+                                <div className="p-2.5 bg-slate-900 border border-slate-950 rounded-lg text-indigo-300 font-mono text-[10px] select-all break-all">
+                                  {cmd.code}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </section>
+                    )}
+                  </motion.div>
+                )}
+
+                {detailTab === 'attacks' && (
+                  <motion.div
+                    key="attacks"
+                    initial={{ opacity: 0, y: 4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -4 }}
+                    className="p-5 space-y-3"
+                  >
+                    {!hasSimulated ? (
+                      <div className="text-center py-12 flex flex-col items-center gap-4 border border-dashed border-slate-200 rounded-lg bg-slate-50/30">
+                        <Box className="w-8 h-8 text-slate-200" />
+                        <div className="space-y-1 px-6">
+                          <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
+                            Modulo_Bloccato
+                          </p>
+                          <p className="text-[10px] text-slate-400 leading-relaxed italic">
+                            {language === 'it'
+                              ? 'Esegui una simulazione per identificare le minacce specifiche a questo livello.'
+                              : 'Run a simulation to identify specific threats at this layer.'}
+                          </p>
+                        </div>
+                      </div>
+                    ) : attacksForView.length === 0 ? (
+                      <div className="text-center py-12 flex flex-col items-center gap-4 border border-dashed border-slate-200 rounded-lg bg-slate-50/30">
+                        <ShieldCheck className="w-8 h-8 text-emerald-200" />
+                        <div className="space-y-1 px-6">
+                          <p className="text-[10px] font-semibold text-emerald-600 uppercase tracking-wider">
+                            Nessuna Minaccia Attiva
+                          </p>
+                          <p className="text-[10px] text-slate-400 leading-relaxed italic">
+                            {language === 'it'
+                              ? "L'attacco selezionato non colpisce questo livello direttamente."
+                              : 'The selected attack does not target this layer directly.'}
+                          </p>
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="flex items-center gap-2 mb-2">
+                          <Skull className="w-3.5 h-3.5 text-red-400" />
+                          <p className="text-[9px] text-slate-500">
+                            {language === 'it'
+                              ? 'Analisi della minaccia rilevata durante la simulazione.'
+                              : 'Analysis of the threat detected during simulation.'}
+                          </p>
+                        </div>
+                        {attacksForView.map((attack) => (
+                          <Fragment key={attack.name}>
+                            <AttackCard attack={attack} />
+                          </Fragment>
+                        ))}
+                      </>
+                    )}
+                  </motion.div>
+                )}
+
+                {detailTab === 'defenses' && (
+                  <motion.div
+                    key="defenses"
+                    initial={{ opacity: 0, y: 4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -4 }}
+                    className="p-5 space-y-3"
+                  >
+                    {!hasSimulated ? (
+                      <div className="text-center py-12 flex flex-col items-center gap-4 border border-dashed border-slate-200 rounded-lg bg-slate-50/30">
+                        <Box className="w-8 h-8 text-slate-200" />
+                        <div className="space-y-1 px-6">
+                          <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
+                            Modulo_Bloccato
+                          </p>
+                          <p className="text-[10px] text-slate-400 leading-relaxed italic">
+                            {language === 'it'
+                              ? 'Esegui una simulazione per scoprire le contromisure appropriate.'
+                              : 'Run a simulation to discover appropriate countermeasures.'}
+                          </p>
+                        </div>
+                      </div>
+                    ) : defensesForView.length === 0 ? (
+                      <div className="text-center py-12 flex flex-col items-center gap-4 border border-dashed border-slate-200 rounded-lg bg-slate-50/30">
+                        <Box className="w-8 h-8 text-slate-200" />
+                        <div className="space-y-1 px-6">
+                          <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
+                            Nessuna Difesa Rilevante
+                          </p>
+                          <p className="text-[10px] text-slate-400 leading-relaxed italic">
+                            {language === 'it'
+                              ? "Non ci sono difese attive necessarie per l'attuale scenario su questo livello."
+                              : 'No active defenses required for the current scenario at this layer.'}
+                          </p>
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="flex items-center gap-2 mb-2">
+                          <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
+                          <p className="text-[9px] text-slate-500">
+                            {language === 'it'
+                              ? "Meccanismi di protezione che hanno mitigato o potrebbero mitigare l'attacco."
+                              : 'Protection mechanisms that mitigated or could mitigate the attack.'}
+                          </p>
+                        </div>
+                        {defensesForView.map((defense) => (
+                          <Fragment key={defense.name}>
+                            <DefenseCard defense={defense} />
+                          </Fragment>
+                        ))}
+                      </>
+                    )}
+                  </motion.div>
+                )}
+                {detailTab === 'security' && (
+                  <motion.div
+                    key="security"
+                    initial={{ opacity: 0, y: 4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -4 }}
+                    className="p-5 space-y-6"
+                  >
+                    {!hasSimulated ? (
+                      <div className="text-center py-12 flex flex-col items-center gap-4 border border-dashed border-slate-200 rounded-lg bg-slate-50/30">
+                        <Search className="w-8 h-8 text-slate-200" />
+                        <div className="space-y-1 px-6">
+                          <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
+                            Analisi Disattiva
+                          </p>
+                          <p className="text-[10px] text-slate-400 leading-relaxed italic">
+                            {language === 'it'
+                              ? 'Attiva una simulazione per analizzare la vulnerabilità di questo livello.'
+                              : 'Activate a simulation to analyze the vulnerability of this layer.'}
+                          </p>
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <section className="bg-slate-900 rounded-lg p-6 text-white overflow-hidden relative">
+                          <div className="absolute top-0 right-0 p-4 opacity-10">
+                            <Zap className="w-20 h-20" />
+                          </div>
+                          <h4 className="text-[10px] font-semibold text-indigo-400 uppercase tracking-wider mb-4">
+                            Expert_Technical_Insight
+                          </h4>
+
+                          <div className="space-y-4 relative z-10">
+                            <div>
+                              <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em] block mb-1">
+                                Vulnerability Vector
+                              </span>
+                              <p className="text-xs font-mono text-indigo-100">
+                                {selectedLayerId === 7
+                                  ? 'APP_LOGIC_EXPLOIT'
+                                  : selectedLayerId === 4
+                                    ? 'PROTOCOL_HANDSHAKE_SATURATION'
+                                    : selectedLayerId === 3
+                                      ? 'ROUTING_TABLE_CORRUPTION'
+                                      : 'UNAUTHENTICATED_CHANNEL_ACCESS'}
+                              </p>
+                            </div>
+
+                            <div className="h-px bg-white/10" />
+
+                            <div>
+                              <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em] block mb-2">
+                                Recommended Controls
+                              </span>
+                              <ul className="space-y-2">
+                                {[
+                                  language === 'en'
+                                    ? 'Implement strict input validation'
+                                    : 'Implementa validazione input severa',
+                                  language === 'en'
+                                    ? 'Rotate session keys frequently'
+                                    : 'Ruota le chiavi di sessione frequentemente',
+                                  language === 'en' ? 'Enforce mutual TLS (mTLS)' : 'Applica mutual TLS (mTLS)'
+                                ].map((item, i) => (
+                                  <li key={i} className="flex items-center gap-2 text-[10px] text-slate-300">
+                                    <div className="w-1 h-1 bg-indigo-500 rounded-full" />
+                                    {item}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          </div>
+                        </section>
+
+                        <section className="space-y-4">
+                          <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                            Hardening Roadmap
+                          </h4>
+                          <div className="grid gap-3">
+                            <div className="p-3 bg-white border border-slate-100 rounded-lg">
+                              <span className="text-[10px] font-semibold text-indigo-600 uppercase tracking-wider block mb-1">
+                                Short Term
+                              </span>
+                              <p className="text-[10px] text-slate-600">
+                                {language === 'en'
+                                  ? 'Configure IDS signatures for common attack patterns at this layer.'
+                                  : 'Configura le firme IDS per i pattern di attacco comuni a questo livello.'}
+                              </p>
+                            </div>
+                            <div className="p-3 bg-white border border-slate-100 rounded-lg">
+                              <span className="text-[10px] font-semibold text-indigo-600 uppercase tracking-wider block mb-1">
+                                Infrastructure
+                              </span>
+                              <p className="text-[10px] text-slate-600">
+                                {language === 'en'
+                                  ? 'Migrate to automated orchestration with Zero Trust network policies.'
+                                  : "Migra verso un'orchestrazione automatizzata con policy di rete Zero Trust."}
+                              </p>
+                            </div>
+                          </div>
+                        </section>
+                      </>
+                    )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </>
+        )}
+      </motion.div>
+    </AnimatePresence>
+  );
+}

@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "reservedDomainSuffixes": ["example.com", "example.org", "example.net", "example.test", "test", "localhost"],
+  "externalDomainExceptions": [
+    {
+      "domain": "attack.mitre.org",
+      "file": "src/content/securityReferences.ts",
+      "purpose": "Official MITRE ATT&CK citation authority; never used as a lab target"
+    },
+    {
+      "domain": "csrc.nist.gov",
+      "file": "src/content/securityReferences.ts",
+      "purpose": "Official NIST publication citation authority; never used as a lab target"
+    },
+    {
+      "domain": "datatracker.ietf.org",
+      "file": "src/content/securityReferences.ts",
+      "purpose": "Official IETF RFC citation authority; never used as a lab target"
+    },
+    {
+      "domain": "standards.ieee.org",
+      "file": "src/content/securityReferences.ts",
+      "purpose": "Official IEEE standard citation authority; never used as a lab target"
+    },
+    {
+      "domain": "www.cisco.com",
+      "file": "src/content/securityReferences.ts",
+      "purpose": "Official Cisco reference search authority; never used as a lab target"
+    },
+    {
+      "domain": "learningnetwork.cisco.com",
+      "file": "src/components/CurriculumView.tsx",
+      "purpose": "Official CCNA curriculum reference; never used as a lab target"
+    },
+    {
+      "domain": "learningcontent.cisco.com",
+      "file": "src/content/ccnaBlueprint.ts",
+      "purpose": "Official Cisco CCNA 200-301 v1.1 blueprint PDF; never used as a lab target"
+    },
+    {
+      "domain": "learningcontent.cisco.com",
+      "file": "src/content/certificationCoverage.ts",
+      "purpose": "Official Cisco CCNA 200-301 v1.1 blueprint citation; never used as a lab target"
+    },
+    {
+      "domain": "ine.com",
+      "file": "src/content/certificationCoverage.ts",
+      "purpose": "Official INE eJPT syllabus citation; never used as a lab target"
+    }
+  ],
+  "ipv4LiteralExceptions": [
+    {
+      "address": "1.1.1.1",
+      "files": [
+        "src/content/ospfTopology.ts",
+        "src/content/ipConnectivityLab.ts",
+        "src/components/IpConnectivityLab.tsx"
+      ],
+      "purpose": "Conventional OSPF router ID, not a traffic destination"
+    },
+    {
+      "address": "2.2.2.2",
+      "files": ["src/content/ospfTopology.ts", "src/components/IpConnectivityLab.tsx"],
+      "purpose": "Conventional OSPF router ID, not a traffic destination"
+    },
+    {
+      "address": "3.3.3.3",
+      "files": ["src/content/ospfTopology.ts", "src/components/IpConnectivityLab.tsx"],
+      "purpose": "Conventional OSPF router ID, not a traffic destination"
+    },
+    {
+      "address": "4.4.4.4",
+      "files": ["src/content/ospfTopology.ts", "src/components/IpConnectivityLab.tsx"],
+      "purpose": "Conventional OSPF router ID, not a traffic destination"
+    },
+    {
+      "address": "5.5.5.5",
+      "files": ["src/content/ospfTopology.ts"],
+      "purpose": "Conventional OSPF router ID, not a traffic destination"
+    }
+  ]
+}
