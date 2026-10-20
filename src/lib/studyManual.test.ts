@@ -23,7 +23,8 @@ import {
   chaptersForLab,
   findChapter,
   manualStats,
-  orderedChapters
+  orderedChapters,
+  topicCompletion
 } from './studyManual';
 import type { AppView } from '../store';
 
@@ -236,6 +237,24 @@ describe('study manual selectors', () => {
       percent: 50
     });
     expect(chapterCompletion([], ['unknown'])).toEqual({ completed: 0, total: 0, percent: 0 });
+  });
+
+  it('aggregates per-topic completion for a chapter without counting unknown ids', () => {
+    const chapter = findChapter('osi-model');
+    expect(chapter).toBeDefined();
+    if (!chapter) return;
+    const [first, second] = chapter.topics;
+    // One real topic plus a duplicate and an unknown id: only the real one counts.
+    const result = topicCompletion(chapter, [first.id, first.id, 'not-a-topic']);
+    expect(result).toEqual({
+      completed: 1,
+      total: chapter.topics.length,
+      percent: Math.round((1 / chapter.topics.length) * 100)
+    });
+    // Marking two distinct topics advances the count by two.
+    expect(topicCompletion(chapter, [first.id, second.id]).completed).toBe(2);
+    // No studied topics reports zero without dividing by zero elsewhere.
+    expect(topicCompletion(chapter, []).completed).toBe(0);
   });
 
   it('reports counts consistent with the dataset', () => {

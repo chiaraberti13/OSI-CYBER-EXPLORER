@@ -1,8 +1,8 @@
 import type { Language } from '../types';
-import { MANUAL_ROUTE_INDEX } from '../content/manualRouteIndex';
+import { MANUAL_ROUTE_INDEX, MANUAL_TOPIC_IDS } from '../content/manualRouteIndex';
 
 export const PREFERENCES_STORAGE_KEY = 'osi-lab-preferences';
-export const PREFERENCES_STORAGE_VERSION = 3;
+export const PREFERENCES_STORAGE_VERSION = 4;
 export const SIMULATION_SPEEDS = [0.5, 1, 2] as const;
 
 export type SimulationSpeed = (typeof SIMULATION_SPEEDS)[number];
@@ -14,6 +14,7 @@ export interface PersistedPreferences {
   hasSeenGuide: boolean;
   hasDismissedManualHelp: boolean;
   completedChapterIds: string[];
+  completedTopicIds: string[];
 }
 
 export const DEFAULT_PREFERENCES: Readonly<PersistedPreferences> = Object.freeze({
@@ -22,7 +23,8 @@ export const DEFAULT_PREFERENCES: Readonly<PersistedPreferences> = Object.freeze
   simSpeed: 1,
   hasSeenGuide: false,
   hasDismissedManualHelp: false,
-  completedChapterIds: []
+  completedChapterIds: [],
+  completedTopicIds: []
 });
 
 const MANUAL_CHAPTER_IDS = new Set(MANUAL_ROUTE_INDEX.map((chapter) => chapter.id));
@@ -38,6 +40,11 @@ export function isSimulationSpeed(value: unknown): value is SimulationSpeed {
 function sanitizeCompletedChapterIds(value: unknown): string[] {
   if (!Array.isArray(value)) return [];
   return [...new Set(value.filter((id): id is string => typeof id === 'string' && MANUAL_CHAPTER_IDS.has(id)))];
+}
+
+function sanitizeCompletedTopicIds(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  return [...new Set(value.filter((id): id is string => typeof id === 'string' && MANUAL_TOPIC_IDS.has(id)))];
 }
 
 /**
@@ -58,15 +65,19 @@ export function sanitizePreferences(value: unknown): PersistedPreferences {
       typeof value.hasDismissedManualHelp === 'boolean'
         ? value.hasDismissedManualHelp
         : DEFAULT_PREFERENCES.hasDismissedManualHelp,
-    completedChapterIds: sanitizeCompletedChapterIds(value.completedChapterIds)
+    completedChapterIds: sanitizeCompletedChapterIds(value.completedChapterIds),
+    completedTopicIds: sanitizeCompletedTopicIds(value.completedTopicIds)
   };
 }
 
 /**
- * Versions 0 and 1 predate chapter progress; version 2 predates manual help.
- * Retain valid preferences and progress, with safe defaults for missing fields.
- * Unknown schemas are not guessed.
+ * Versions 0 and 1 predate chapter progress; version 2 predates manual help;
+ * version 3 predates per-topic progress (EDU-PROG). Each retained schema is
+ * re-sanitized, so a missing `completedTopicIds` simply defaults to empty and
+ * earlier chapter progress is preserved. Unknown schemas are not guessed.
  */
 export function migratePreferences(value: unknown, version: number): PersistedPreferences {
-  return version === 0 || version === 1 || version === 2 ? sanitizePreferences(value) : { ...DEFAULT_PREFERENCES };
+  return version === 0 || version === 1 || version === 2 || version === 3
+    ? sanitizePreferences(value)
+    : { ...DEFAULT_PREFERENCES };
 }

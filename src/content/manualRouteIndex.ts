@@ -316,6 +316,17 @@ export function findManualRoute(chapterId: string): ManualRouteEntry | undefined
   return MANUAL_ROUTE_INDEX.find((chapter) => chapter.id === chapterId);
 }
 
+/**
+ * Every topic id across the manual, used as the single source of truth for validating
+ * persisted per-topic progress (EDU-PROG) and for guarding store mutations. A topic id
+ * that no longer exists can never enter application state.
+ */
+export const MANUAL_TOPIC_IDS: ReadonlySet<string> = new Set(MANUAL_ROUTE_INDEX.flatMap((chapter) => chapter.topicIds));
+
+export function isManualTopicId(topicId: string): boolean {
+  return MANUAL_TOPIC_IDS.has(topicId);
+}
+
 export function manualChaptersForLab(lab: AppView): Pick<ManualRouteEntry, 'id' | 'title'>[] {
   return MANUAL_ROUTE_INDEX.filter((chapter) => chapter.labs.includes(lab));
 }

@@ -75,7 +75,7 @@ Il menu in alto ha due voci: **Manuale** e un unico dropdown **Laboratori**, org
 
 Ogni schermata è disponibile in **italiano e inglese**, commutabile con un click. Le preferenze (lingua, audio, velocità) vengono ricordate tra una sessione e l'altra.
 
-Apri la **Guida** globale in testata per le istruzioni dell’applicazione. Il manuale offre due percorsi (CCNA ed eJPT), sezioni di dominio CCNA collassabili su desktop e un selettore compatto su mobile. Il progresso dei capitoli resta nel browser corrente. Vedi [istruzioni del manuale e persistenza](docs/STUDY_MANUAL_HELP.md#italiano).
+Apri la **Guida** globale in testata per le istruzioni dell’applicazione. Il manuale offre due percorsi (CCNA ed eJPT), sezioni di dominio CCNA collassabili su desktop e un selettore compatto su mobile. Ogni argomento ha anche un **interruttore “studiato”** di tipo formativo che alimenta un conteggio «argomenti studiati» per capitolo: è il resoconto personale di ciò che lo studente ha già affrontato, non un punteggio, una soluzione o la simulazione di un esame. Il progresso di capitoli e argomenti resta nel browser corrente e condivide un unico azzeramento. Vedi [istruzioni del manuale e persistenza](docs/STUDY_MANUAL_HELP.md#italiano).
 
 Studi per entrambe le certificazioni? Il **[percorso di studio](docs/STUDY_PATH.md#italiano)** ordina il manuale verso **CCNA 200-301** ed **eJPT**, con i prerequisiti espliciti che legano la metodologia offensiva alle fondamenta di networking.
 

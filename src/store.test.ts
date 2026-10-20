@@ -35,7 +35,7 @@ describe('persisted preference rehydration', () => {
 
     expect(store.getState()).toMatchObject(previousPreferences);
     expect(JSON.parse(localStorage.getItem(PREFERENCES_STORAGE_KEY) ?? '{}')).toEqual({
-      state: { ...previousPreferences, hasDismissedManualHelp: false, completedChapterIds: [] },
+      state: { ...previousPreferences, hasDismissedManualHelp: false, completedChapterIds: [], completedTopicIds: [] },
       version: PREFERENCES_STORAGE_VERSION
     });
   });
@@ -146,6 +146,30 @@ describe('persisted preference rehydration', () => {
     ]);
 
     store.getState().resetChapterProgress();
+    expect(store.getState().completedChapterIds).toEqual([]);
+  });
+
+  it('persists per-topic progress, rejects unknown topics, and resets alongside chapters', async () => {
+    const store = await loadFreshStore();
+
+    store.getState().toggleTopicCompleted('osi-why-layers');
+    store.getState().toggleTopicCompleted('not-a-real-topic');
+    store.getState().toggleChapterCompleted('osi-model');
+
+    expect(store.getState().completedTopicIds).toEqual(['osi-why-layers']);
+    expect(JSON.parse(localStorage.getItem(PREFERENCES_STORAGE_KEY) ?? '{}').state.completedTopicIds).toEqual([
+      'osi-why-layers'
+    ]);
+
+    // Toggling again clears the single studied topic without affecting chapter progress.
+    store.getState().toggleTopicCompleted('osi-why-layers');
+    expect(store.getState().completedTopicIds).toEqual([]);
+    expect(store.getState().completedChapterIds).toEqual(['osi-model']);
+
+    // The single reset control clears both chapter and topic progress.
+    store.getState().toggleTopicCompleted('osi-why-layers');
+    store.getState().resetChapterProgress();
+    expect(store.getState().completedTopicIds).toEqual([]);
     expect(store.getState().completedChapterIds).toEqual([]);
   });
 

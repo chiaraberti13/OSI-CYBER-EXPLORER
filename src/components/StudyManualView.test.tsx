@@ -26,6 +26,7 @@ afterEach(() => {
   useStore.setState({
     language: 'it',
     completedChapterIds: [],
+    completedTopicIds: [],
     activeChapterId: null,
     activeTopicId: null
   });
@@ -119,6 +120,44 @@ describe('StudyManualView reader (EDU-01)', () => {
     await user.click(screen.getByRole('button', { name: 'Azzera progresso' }));
     expect(screen.getByRole('button', { name: 'Segna come completato' }).getAttribute('aria-pressed')).toBe('false');
     expect(screen.queryByRole('button', { name: 'Azzera progresso' })).toBeNull();
+  });
+
+  it('marks a single topic as studied and tracks the chapter topics-studied tally (EDU-PROG)', async () => {
+    const user = userEvent.setup();
+    const { container } = renderReader();
+
+    // The OSI chapter has four topics; none studied yet, so no tally is shown until one is.
+    const topicToggles = container.querySelectorAll<HTMLButtonElement>('[data-testid^="topic-studied-"]');
+    expect(topicToggles).toHaveLength(4);
+    const firstToggle = screen.getByTestId('topic-studied-osi-why-layers');
+    expect(firstToggle.getAttribute('aria-pressed')).toBe('false');
+    expect(firstToggle.getAttribute('aria-label')).toBe('Segna argomento come studiato');
+
+    await user.click(firstToggle);
+
+    // The toggle reflects the studied state and the store records exactly that topic.
+    expect(screen.getByTestId('topic-studied-osi-why-layers').getAttribute('aria-pressed')).toBe('true');
+    expect(useStore.getState().completedTopicIds).toEqual(['osi-why-layers']);
+    // The chapter's topics-studied tally reads 1 of 4 without marking the whole chapter.
+    expect(screen.getByTestId('chapter-topic-progress').textContent).toContain('1/4');
+    expect(screen.getByRole('button', { name: 'Segna come completato' }).getAttribute('aria-pressed')).toBe('false');
+
+    // The single reset control clears topic progress along with chapters.
+    await user.click(screen.getByTestId('topic-studied-osi-why-layers'));
+    expect(useStore.getState().completedTopicIds).toEqual([]);
+  });
+
+  it('localises the topic studied control to English (EDU-PROG)', async () => {
+    const user = userEvent.setup();
+    useStore.setState({ language: 'en' });
+    renderReader();
+    const toggle = screen.getByTestId('topic-studied-osi-why-layers');
+    expect(toggle.getAttribute('aria-label')).toBe('Mark topic as studied');
+    await user.click(toggle);
+    expect(screen.getByTestId('topic-studied-osi-why-layers').getAttribute('aria-label')).toBe(
+      'Mark topic as not studied'
+    );
+    expect(screen.getByTestId('chapter-topic-progress').textContent).toContain('Topics studied: 1/4');
   });
 
   it('offers an "on this page" rail listing the chapter topics', () => {
