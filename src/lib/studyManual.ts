@@ -115,6 +115,39 @@ export function topicCompletion(chapter: ManualChapter, completedTopicIds: reado
 }
 
 /**
+ * Topics studied across a collection of chapters (EDU-PROG). Powers the resume summary,
+ * where "studied" is aggregated over a whole study route rather than one chapter. Unknown
+ * stored ids never count, so the total tracks the dataset and the completed sum cannot
+ * exceed it.
+ */
+export function overallTopicCompletion(
+  chapters: readonly ManualChapter[],
+  completedTopicIds: readonly string[]
+): ChapterCompletion {
+  const completedIds = new Set(completedTopicIds);
+  let completed = 0;
+  let total = 0;
+  for (const chapter of chapters) {
+    total += chapter.topics.length;
+    completed += chapter.topics.filter((topic) => completedIds.has(topic.id)).length;
+  }
+  return { completed, total, percent: total === 0 ? 0 : Math.round((completed / total) * 100) };
+}
+
+/**
+ * The chapter to resume at: the first chapter, in study order, not yet marked complete.
+ * A learner who studied some topics of a chapter without completing it resumes there.
+ * Returns undefined only when every chapter in the collection is complete.
+ */
+export function nextChapterToStudy(
+  chapters: readonly ManualChapter[],
+  completedChapterIds: readonly string[]
+): ManualChapter | undefined {
+  const completedIds = new Set(completedChapterIds);
+  return chapters.find((chapter) => !completedIds.has(chapter.id));
+}
+
+/**
  * Chapters grouped by CCNA domain for the manual's domain → chapter navigation. CCNA
  * domains come first in official number order, each with its chapters in study order;
  * the declared extensions follow in a final `extension` group. Empty groups are dropped.

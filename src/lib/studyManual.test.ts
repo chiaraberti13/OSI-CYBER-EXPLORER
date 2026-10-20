@@ -23,7 +23,9 @@ import {
   chaptersForLab,
   findChapter,
   manualStats,
+  nextChapterToStudy,
   orderedChapters,
+  overallTopicCompletion,
   topicCompletion
 } from './studyManual';
 import type { AppView } from '../store';
@@ -255,6 +257,38 @@ describe('study manual selectors', () => {
     expect(topicCompletion(chapter, [first.id, second.id]).completed).toBe(2);
     // No studied topics reports zero without dividing by zero elsewhere.
     expect(topicCompletion(chapter, []).completed).toBe(0);
+  });
+
+  it('aggregates topics studied across a chapter collection for the resume summary', () => {
+    const first = orderedChapters()[0];
+    const second = orderedChapters()[1];
+    const studied = [first.topics[0].id, second.topics[0].id, 'not-a-topic'];
+    const result = overallTopicCompletion([first, second], studied);
+    const expectedTotal = first.topics.length + second.topics.length;
+    expect(result).toEqual({
+      completed: 2,
+      total: expectedTotal,
+      percent: Math.round((2 / expectedTotal) * 100)
+    });
+    // An empty collection is safe and does not divide by zero.
+    expect(overallTopicCompletion([], ['x'])).toEqual({ completed: 0, total: 0, percent: 0 });
+  });
+
+  it('resumes at the first chapter not yet completed, or nothing when all are complete', () => {
+    const ordered = orderedChapters();
+    // With no progress, resume at the very first chapter.
+    expect(nextChapterToStudy(ordered, [])?.id).toBe(ordered[0].id);
+    // Completing the first chapter advances the resume target to the second.
+    expect(nextChapterToStudy(ordered, [ordered[0].id])?.id).toBe(ordered[1].id);
+    // A studied-but-not-completed first chapter still resumes there (completion is the signal).
+    expect(nextChapterToStudy(ordered, [ordered[1].id])?.id).toBe(ordered[0].id);
+    // Every chapter complete leaves nothing to resume.
+    expect(
+      nextChapterToStudy(
+        ordered,
+        ordered.map((chapter) => chapter.id)
+      )
+    ).toBeUndefined();
   });
 
   it('reports counts consistent with the dataset', () => {

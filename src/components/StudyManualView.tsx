@@ -14,6 +14,7 @@ import {
   Crosshair,
   ExternalLink,
   FlaskConical,
+  History,
   ListChecks,
   RotateCcw,
   Route,
@@ -30,7 +31,9 @@ import {
   chaptersForCertificationTrack,
   findChapter,
   manualStats,
+  nextChapterToStudy,
   orderedChapters,
+  overallTopicCompletion,
   topicCompletion
 } from '../lib/studyManual';
 import { MANUAL_CERTIFICATION_TRACKS } from '../content/studyManual';
@@ -160,6 +163,11 @@ export default function StudyManualView() {
   const chapter = (activeChapterId ? findChapter(activeChapterId) : undefined) ?? chapters[0];
   const stats = manualStats();
   const overallCompletion = chapterCompletion(chapters, completedChapterIds);
+  // EDU-PROG — resume summary on the card index: topics studied across the whole manual,
+  // the chapter to pick back up (first not completed), and whether any progress exists.
+  const overallTopics = overallTopicCompletion(chapters, completedTopicIds);
+  const resumeChapter = nextChapterToStudy(chapters, completedChapterIds);
+  const hasAnyProgress = completedChapterIds.length > 0 || completedTopicIds.length > 0;
   // UX-33 — progress broken out per certification route (Percorso CCNA, eJPT) beside the
   // overall total, so a learner on a single objective sees that objective advance.
   const routeProgress = MANUAL_CERTIFICATION_TRACKS.map((route) => ({
@@ -950,6 +958,49 @@ export default function StudyManualView() {
                 trackLabels={trackShort}
               />
             </div>
+          ) : null}
+          {/* EDU-PROG resume summary: shown only once the learner has some progress, so a
+              first-time visitor sees the plain chapter chooser. It aggregates chapters
+              completed and topics studied and links straight back to the chapter to resume.
+              It is a navigation aid over existing progress, not a score or exam simulation. */}
+          {hasAnyProgress ? (
+            <section
+              data-testid="resume-summary"
+              aria-label={t.resumeStudying}
+              className="mb-6 rounded-2xl border border-indigo-100 bg-indigo-50/50 p-5"
+            >
+              <h2 className="flex items-center gap-1.5 text-sm font-semibold text-indigo-800">
+                <History aria-hidden="true" className="h-4 w-4" />
+                {t.resumeStudying}
+              </h2>
+              {/* Chapter progress is already shown in the header meta row and the route
+                  group headers, so the summary adds only the topics-studied aggregate. */}
+              <p
+                className="mt-2 text-[13px] text-slate-600"
+                aria-label={`${t.topicProgress}: ${overallTopics.completed}/${overallTopics.total}`}
+              >
+                {t.topicProgress}: {overallTopics.completed}/{overallTopics.total}
+              </p>
+              {resumeChapter ? (
+                <ViewLink
+                  view="manual"
+                  chapterId={resumeChapter.id}
+                  data-testid="resume-link"
+                  onClick={() => {
+                    focusChapterTitleAfterChange.current = true;
+                  }}
+                  className="mt-3 inline-flex min-h-11 items-center gap-1.5 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-indigo-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2"
+                >
+                  {t.resume}: {resumeChapter.order}. {resumeChapter.title[language]}
+                  <ArrowRight aria-hidden="true" className="h-3.5 w-3.5" />
+                </ViewLink>
+              ) : (
+                <p className="mt-3 inline-flex items-center gap-1.5 text-[13px] font-medium text-emerald-700">
+                  <CircleCheck aria-hidden="true" className="h-4 w-4" />
+                  {t.allChaptersComplete}
+                </p>
+              )}
+            </section>
           ) : null}
           <nav aria-label={t.chapterNav} className="space-y-10">
             {chapterGroups.map((group) => {

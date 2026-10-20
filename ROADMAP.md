@@ -23,12 +23,14 @@ Stato verificato alla revisione tecnica del 2026-10-10
   rete, access/switching, routing/OSPF, servizi IP, sicurezza di rete,
   automazione, catalogo Attacco–Difesa, laboratori Security+ e workbench eJPT).
   Prova: `src/content/viewRegistry.ts` e i test per-vista in `src/components`.
-- **Progresso di studio** — completamento per capitolo, progresso per percorso e,
-  **da questa release, un interruttore “studiato” formativo per argomento** con
-  conteggio «argomenti studiati» per capitolo. Persistenza locale con sanitizzazione
-  allowlist e migrazione di schema (v4). Prova: `src/store.ts`,
-  `src/lib/preferences.ts`, `src/lib/studyManual.ts` (`topicCompletion`),
-  `e2e/manual-topic-progress.spec.ts`.
+- **Progresso di studio** — completamento per capitolo, progresso per percorso, un
+  interruttore “studiato” formativo per argomento con conteggio «argomenti studiati»
+  per capitolo e un **riepilogo «riprendi lo studio»** sull'indice che somma gli
+  argomenti studiati e collega al primo capitolo non completato. Persistenza locale
+  con sanitizzazione allowlist e migrazione di schema (v4). Prova: `src/store.ts`,
+  `src/lib/preferences.ts`, `src/lib/studyManual.ts` (`topicCompletion`,
+  `overallTopicCompletion`, `nextChapterToStudy`), `e2e/manual-topic-progress.spec.ts`,
+  `e2e/manual-resume-summary.spec.ts`.
 - **Qualità** — 101 file di test unitari/integrazione (vitest), E2E Playwright con
   verifica Axe WCAG 2.2 AA, lint, type-check, build, budget di performance,
   audit delle dipendenze e gate di revisione contenuti (tecnici e offensivi).
@@ -41,30 +43,24 @@ fuori programma restano distinti nella mappa di copertura e nel manuale.
 Ogni voce indica dipendenze, criteri di completamento e fonti da aggiornare.
 Nessuna di queste va presentata come già disponibile finché non è verificata.
 
-1. **Progresso di studio riepilogativo**
-   - Dipende da: interruttore “studiato” per argomento (fatto in questa release).
-   - Obiettivo: una vista di riepilogo che aggreghi argomenti studiati per percorso
-     e capitolo, per aiutare la ripresa dello studio.
-   - Completamento: test unitari sull'aggregazione e E2E sulla navigazione; parità IT/EN.
-
-2. **Manutenzione dei blueprint delle certificazioni**
+1. **Manutenzione dei blueprint delle certificazioni**
    - Dipende da: fonti ufficiali (Cisco 200-301, INE eJPT, CompTIA SY0-701) e
      ciclo di revisione a 180 giorni.
    - Fonti da aggiornare: `CERTIFICATION_SOURCES`, `docs/technical-content-reviews.json`,
      matrice di copertura e date di revisione.
    - Completamento: revisione firmata, prove collegate, nessun record scaduto in CI.
 
-3. **Nuovi laboratori e diagrammi mirati**
+2. **Nuovi laboratori e diagrammi mirati**
    - Criterio: aggiungere un laboratorio o un diagramma solo quando un supporto
      visivo chiarisce meglio del testo e il contenuto è collegato a un obiettivo.
    - Completamento: simulazione deterministica, parità IT/EN, test dedicati,
      distinzione esplicita tra simulazione didattica e sistema reale.
 
-4. **Revisione continua di parità e naturalezza IT/EN**
+3. **Revisione continua di parità e naturalezza IT/EN**
    - Prova: `src/i18n/catalog.test.ts`, `src/content/bilingual.test.ts`,
      specifiche E2E `*-bilingual.spec.ts`.
 
-5. **Monitoraggio di performance, accessibilità e sicurezza**
+4. **Monitoraggio di performance, accessibilità e sicurezza**
    - Prova: budget di performance, Lighthouse CI, gate accessibilità,
      audit/osv-scanner delle dipendenze.
 

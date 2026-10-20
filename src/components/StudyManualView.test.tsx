@@ -9,7 +9,12 @@ import { act, cleanup, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import StudyManualView from './StudyManualView';
 import { scrollBehaviorForReducedMotion } from '../lib/motion';
-import { chaptersByCertificationTrack, chaptersForCertificationTrack, manualStats } from '../lib/studyManual';
+import {
+  chaptersByCertificationTrack,
+  chaptersForCertificationTrack,
+  manualStats,
+  orderedChapters
+} from '../lib/studyManual';
 import { useStore } from '../store';
 
 // ENG-31 — derive the chapter-count expectations from the manual dataset (the single
@@ -312,6 +317,36 @@ describe('StudyManualView card index (IA-13)', () => {
     const chapterHeading = screen.getByRole('heading', { level: 2, name: /Ethernet/ });
     expect(document.activeElement).toBe(chapterHeading);
     expect(useStore.getState().activeChapterId).toBe('ethernet-switching');
+  });
+
+  it('hides the resume summary until there is progress (EDU-PROG)', () => {
+    render(<StudyManualView />);
+    expect(screen.queryByTestId('resume-summary')).toBeNull();
+  });
+
+  it('shows a resume summary that aggregates progress and links to the next chapter (EDU-PROG)', async () => {
+    const user = userEvent.setup();
+    vi.spyOn(window, 'scrollTo').mockImplementation(() => undefined);
+    // One chapter complete plus one topic studied in another chapter.
+    useStore.setState({ completedChapterIds: ['osi-model'], completedTopicIds: ['ethernet-frame-mac'] });
+    render(<StudyManualView />);
+
+    const summary = screen.getByTestId('resume-summary');
+    expect(within(summary).getByText(/Argomenti studiati: 1\/\d+/)).toBeTruthy();
+
+    // osi-model is complete, so the resume target is the next chapter in study order.
+    const resume = screen.getByTestId('resume-link');
+    expect(resume.getAttribute('href')).toBe('#/manual/ethernet-switching');
+    await user.click(resume);
+    expect(useStore.getState().activeChapterId).toBe('ethernet-switching');
+  });
+
+  it('reports completion in the resume summary when every chapter is done (EDU-PROG)', () => {
+    useStore.setState({ completedChapterIds: orderedChapters().map((chapter) => chapter.id) });
+    render(<StudyManualView />);
+    const summary = screen.getByTestId('resume-summary');
+    expect(within(summary).getByText('Hai completato tutti i capitoli.')).toBeTruthy();
+    expect(screen.queryByTestId('resume-link')).toBeNull();
   });
 
   it('groups the chapter index by the two study routes', () => {
