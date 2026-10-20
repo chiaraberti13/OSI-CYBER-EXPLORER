@@ -11,7 +11,7 @@ import {
   sanitizePreferences
 } from './lib/preferences';
 import type { SimulationSpeed } from './lib/preferences';
-import { findManualRoute } from './content/manualRouteIndex';
+import { findManualRoute, isManualTopicId } from './content/manualRouteIndex';
 
 export type AppView =
   | 'manual'
@@ -72,6 +72,10 @@ export interface PreferencesSlice {
 export interface ProgressSlice {
   completedChapterIds: string[];
   toggleChapterCompleted: (id: string) => void;
+  /** Topic-level progress (EDU-PROG): a finer unit than a whole chapter. */
+  completedTopicIds: string[];
+  toggleTopicCompleted: (id: string) => void;
+  /** Clears both chapter and topic progress in one action for the single reset control. */
   resetChapterProgress: () => void;
 }
 
@@ -188,7 +192,17 @@ const createProgressSlice: Slice<ProgressSlice> = (set) => ({
         : [...state.completedChapterIds, id]
     }));
   },
-  resetChapterProgress: () => set({ completedChapterIds: [] })
+  completedTopicIds: DEFAULT_PREFERENCES.completedTopicIds,
+  toggleTopicCompleted: (id) => {
+    // An unknown topic id (stale deep link, tampered state) can never be marked.
+    if (!isManualTopicId(id)) return;
+    set((state) => ({
+      completedTopicIds: state.completedTopicIds.includes(id)
+        ? state.completedTopicIds.filter((topicId) => topicId !== id)
+        : [...state.completedTopicIds, id]
+    }));
+  },
+  resetChapterProgress: () => set({ completedChapterIds: [], completedTopicIds: [] })
 });
 
 const createSimulationSlice: Slice<SimulationSlice> = (set) => ({
@@ -289,7 +303,8 @@ export const useStore = create<AppState>()(
         simSpeed: state.simSpeed,
         hasSeenGuide: state.hasSeenGuide,
         hasDismissedManualHelp: state.hasDismissedManualHelp,
-        completedChapterIds: state.completedChapterIds
+        completedChapterIds: state.completedChapterIds,
+        completedTopicIds: state.completedTopicIds
       })
     }
   )

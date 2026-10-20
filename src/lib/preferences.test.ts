@@ -17,7 +17,8 @@ describe('preference schema', () => {
         simSpeed: 2,
         hasSeenGuide: true,
         hasDismissedManualHelp: true,
-        completedChapterIds: ['osi-model', 'osi-model', 'not-a-chapter']
+        completedChapterIds: ['osi-model', 'osi-model', 'not-a-chapter'],
+        completedTopicIds: ['osi-why-layers', 'osi-why-layers', 'not-a-topic']
       })
     ).toEqual({
       language: 'en',
@@ -25,7 +26,8 @@ describe('preference schema', () => {
       simSpeed: 2,
       hasSeenGuide: true,
       hasDismissedManualHelp: true,
-      completedChapterIds: ['osi-model']
+      completedChapterIds: ['osi-model'],
+      completedTopicIds: ['osi-why-layers']
     });
   });
 
@@ -55,7 +57,8 @@ describe('preference schema', () => {
         audioEnabled: 'yes',
         simSpeed: 0.5,
         hasSeenGuide: false,
-        completedChapterIds: ['ethernet-switching']
+        completedChapterIds: ['ethernet-switching'],
+        completedTopicIds: ['ethernet-frame-mac', 'not-a-topic']
       })
     ).toEqual({
       language: 'en',
@@ -63,7 +66,8 @@ describe('preference schema', () => {
       simSpeed: 0.5,
       hasSeenGuide: false,
       hasDismissedManualHelp: false,
-      completedChapterIds: ['ethernet-switching']
+      completedChapterIds: ['ethernet-switching'],
+      completedTopicIds: ['ethernet-frame-mac']
     });
   });
 
@@ -95,7 +99,8 @@ describe('preference schema', () => {
       simSpeed: 2,
       hasSeenGuide: true,
       hasDismissedManualHelp: false,
-      completedChapterIds: []
+      completedChapterIds: [],
+      completedTopicIds: []
     });
   });
 
@@ -116,7 +121,8 @@ describe('preference schema', () => {
       simSpeed: 1,
       hasSeenGuide: false,
       hasDismissedManualHelp: false,
-      completedChapterIds: []
+      completedChapterIds: [],
+      completedTopicIds: []
     });
   });
 
@@ -138,8 +144,45 @@ describe('preference schema', () => {
       simSpeed: 2,
       hasSeenGuide: true,
       hasDismissedManualHelp: false,
-      completedChapterIds: ['osi-model']
+      completedChapterIds: ['osi-model'],
+      completedTopicIds: []
     });
+  });
+
+  it('migrates version 3 without losing chapter progress and defaults topic progress to empty', () => {
+    expect(
+      migratePreferences(
+        {
+          language: 'it',
+          audioEnabled: true,
+          simSpeed: 1,
+          hasSeenGuide: true,
+          hasDismissedManualHelp: true,
+          completedChapterIds: ['osi-model']
+        },
+        3
+      )
+    ).toEqual({
+      language: 'it',
+      audioEnabled: true,
+      simSpeed: 1,
+      hasSeenGuide: true,
+      hasDismissedManualHelp: true,
+      completedChapterIds: ['osi-model'],
+      completedTopicIds: []
+    });
+  });
+
+  it('preserves and sanitizes per-topic progress when migrating the version 3 schema', () => {
+    expect(
+      migratePreferences(
+        {
+          ...DEFAULT_PREFERENCES,
+          completedTopicIds: ['osi-why-layers', 'unknown-topic', 'osi-why-layers', 'ipv4-vlsm']
+        },
+        3
+      ).completedTopicIds
+    ).toEqual(['osi-why-layers', 'ipv4-vlsm']);
   });
 
   it.each([null, 'false', 1, [], { dismissed: true }])('rejects malformed manual-help flags: %j', (value) => {

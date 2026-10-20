@@ -103,6 +103,18 @@ export function chapterCompletion(
 }
 
 /**
+ * Per-topic completion for a single chapter (EDU-PROG). The same shape as
+ * `ChapterCompletion` so the UI reuses one progress widget. Unknown stored ids never
+ * count, so a topic removed from a chapter can never inflate its total or completed sum.
+ */
+export function topicCompletion(chapter: ManualChapter, completedTopicIds: readonly string[]): ChapterCompletion {
+  const completedIds = new Set(completedTopicIds);
+  const completed = chapter.topics.filter((topic) => completedIds.has(topic.id)).length;
+  const total = chapter.topics.length;
+  return { completed, total, percent: total === 0 ? 0 : Math.round((completed / total) * 100) };
+}
+
+/**
  * Chapters grouped by CCNA domain for the manual's domain → chapter navigation. CCNA
  * domains come first in official number order, each with its chapters in study order;
  * the declared extensions follow in a final `extension` group. Empty groups are dropped.

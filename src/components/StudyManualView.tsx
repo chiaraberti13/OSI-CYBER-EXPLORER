@@ -30,7 +30,8 @@ import {
   chaptersForCertificationTrack,
   findChapter,
   manualStats,
-  orderedChapters
+  orderedChapters,
+  topicCompletion
 } from '../lib/studyManual';
 import { MANUAL_CERTIFICATION_TRACKS } from '../content/studyManual';
 import type { GuidedLab, ManualCert, ManualCertificationTrack, ManualDifficulty } from '../content/studyManual';
@@ -132,6 +133,8 @@ export default function StudyManualView() {
   const language = useStore((state) => state.language);
   const completedChapterIds = useStore((state) => state.completedChapterIds);
   const toggleChapterCompleted = useStore((state) => state.toggleChapterCompleted);
+  const completedTopicIds = useStore((state) => state.completedTopicIds);
+  const toggleTopicCompleted = useStore((state) => state.toggleTopicCompleted);
   const resetChapterProgress = useStore((state) => state.resetChapterProgress);
   const t = uiMessages(language).manual;
   const chapters = orderedChapters();
@@ -198,6 +201,10 @@ export default function StudyManualView() {
       ? `CCNA ${chapterDomain.number}.0 · ${chapterDomain.title[language]}`
       : certLabel[chapter.cert];
   const currentChapterCompleted = completedChapterIds.includes(chapter.id);
+  // EDU-PROG — per-topic progress for the open chapter, so a learner can record each
+  // argument as studied and see how much of the chapter remains without marking the
+  // whole chapter complete at once.
+  const chapterTopicCompletion = topicCompletion(chapter, completedTopicIds);
 
   // Linear study flow: the chapters immediately before and after the active one.
   const chapterIndex = chapters.findIndex((entry) => entry.id === chapter.id);
@@ -478,7 +485,9 @@ export default function StudyManualView() {
               </li>
             ))}
           </ul>
-          {overallCompletion.completed > 0 ? (
+          {/* The reset control clears chapter and topic progress, so it appears whenever
+              either exists — not only after a whole chapter is marked complete. */}
+          {overallCompletion.completed > 0 || completedTopicIds.length > 0 ? (
             <button
               type="button"
               onClick={resetChapterProgress}
@@ -703,19 +712,33 @@ export default function StudyManualView() {
                 </div>
                 <p className="manual-reading-copy mt-3 text-slate-600">{chapter.summary[language]}</p>
 
-                <button
-                  type="button"
-                  aria-pressed={currentChapterCompleted}
-                  onClick={() => toggleChapterCompleted(chapter.id)}
-                  className={`mt-4 inline-flex min-h-11 items-center gap-2 rounded-lg border px-3 py-2 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 ${
-                    currentChapterCompleted
-                      ? 'border-emerald-200 bg-emerald-50 text-emerald-800 hover:bg-emerald-100'
-                      : 'border-indigo-200 bg-indigo-50 text-indigo-800 hover:bg-indigo-100'
-                  }`}
-                >
-                  <CircleCheck aria-hidden="true" className="h-4 w-4" />
-                  {currentChapterCompleted ? t.markChapterIncomplete : t.markChapterComplete}
-                </button>
+                <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2">
+                  <button
+                    type="button"
+                    aria-pressed={currentChapterCompleted}
+                    onClick={() => toggleChapterCompleted(chapter.id)}
+                    className={`inline-flex min-h-11 items-center gap-2 rounded-lg border px-3 py-2 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 ${
+                      currentChapterCompleted
+                        ? 'border-emerald-200 bg-emerald-50 text-emerald-800 hover:bg-emerald-100'
+                        : 'border-indigo-200 bg-indigo-50 text-indigo-800 hover:bg-indigo-100'
+                    }`}
+                  >
+                    <CircleCheck aria-hidden="true" className="h-4 w-4" />
+                    {currentChapterCompleted ? t.markChapterIncomplete : t.markChapterComplete}
+                  </button>
+                  {/* EDU-PROG: topics-studied tally for this chapter, shown once the
+                      learner marks a first topic so untouched chapters stay uncluttered. */}
+                  {chapterTopicCompletion.completed > 0 ? (
+                    <span
+                      data-testid="chapter-topic-progress"
+                      className="inline-flex items-center gap-1.5 text-[12px] font-medium text-slate-500"
+                      aria-label={`${t.topicProgress}: ${chapterTopicCompletion.completed}/${chapterTopicCompletion.total}`}
+                    >
+                      <ListChecks aria-hidden="true" className="h-3.5 w-3.5 text-emerald-600" />
+                      {t.topicProgress}: {chapterTopicCompletion.completed}/{chapterTopicCompletion.total}
+                    </span>
+                  ) : null}
+                </div>
               </div>
 
               {/* One card per topic so each is a bounded, scannable chunk. */}
@@ -727,9 +750,34 @@ export default function StudyManualView() {
                   data-manual-topic={topic.id}
                   className="scroll-mt-[13.5rem] rounded-2xl border border-slate-200/70 bg-white p-5 shadow-sm md:p-6 lg:scroll-mt-40"
                 >
-                  <h3 id={`topic-h-${topic.id}`} className="text-lg font-semibold leading-7 text-slate-900">
-                    {idx + 1}. {topic.title[language]}
-                  </h3>
+                  <div className="flex items-start justify-between gap-3">
+                    <h3 id={`topic-h-${topic.id}`} className="text-lg font-semibold leading-7 text-slate-900">
+                      {idx + 1}. {topic.title[language]}
+                    </h3>
+                    {/* EDU-PROG: a formative "studied" toggle per topic — not a score or
+                        exam answer, just the learner's own record of what they have worked
+                        through. It feeds the chapter's topics-studied tally above. */}
+                    {(() => {
+                      const studied = completedTopicIds.includes(topic.id);
+                      return (
+                        <button
+                          type="button"
+                          data-testid={`topic-studied-${topic.id}`}
+                          aria-pressed={studied}
+                          aria-label={studied ? t.markTopicNotStudied : t.markTopicStudied}
+                          onClick={() => toggleTopicCompleted(topic.id)}
+                          className={`inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-[12px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 ${
+                            studied
+                              ? 'border-emerald-200 bg-emerald-50 text-emerald-800 hover:bg-emerald-100'
+                              : 'border-slate-200 bg-white text-slate-500 hover:border-slate-300 hover:text-slate-800'
+                          }`}
+                        >
+                          <Check aria-hidden="true" className="h-3.5 w-3.5" />
+                          {studied ? t.topicStudied : t.markTopicStudied}
+                        </button>
+                      );
+                    })()}
+                  </div>
 
                   <div
                     data-manual-tile="objectives"

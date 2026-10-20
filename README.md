@@ -79,7 +79,7 @@ The top menu has two entries: **Manual** and a single **Labs** dropdown, with la
 
 Every screen is available in **Italian and English**, switchable with one click. UI preferences (language, audio, speed) persist across reloads.
 
-Open the global **Guide** in the header for application help. The manual has two study routes (CCNA and eJPT), collapsible CCNA domain sections on desktop and a compact chapter selector on mobile. Chapter progress stays in the current browser. See [manual help and persistence](docs/STUDY_MANUAL_HELP.md#english).
+Open the global **Guide** in the header for application help. The manual has two study routes (CCNA and eJPT), collapsible CCNA domain sections on desktop and a compact chapter selector on mobile. Each topic also has a formative **“studied” toggle** that feeds a per-chapter topics-studied tally — a learner’s own record of what they have worked through, not a score, answer key or exam simulation. Chapter and topic progress stay in the current browser and share one reset. See [manual help and persistence](docs/STUDY_MANUAL_HELP.md#english).
 
 Studying for both certifications? The **[study path](docs/STUDY_PATH.md#english)** sequences the manual toward **CCNA 200-301** and **eJPT**, with the explicit prerequisites that tie the offensive methodology back to the networking foundation.
 

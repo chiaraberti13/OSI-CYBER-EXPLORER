@@ -1,6 +1,6 @@
 # Study manual help · Istruzioni del manuale
 
-Updated / aggiornato: 2026-10-15 (IA-10–12, VIS-12).
+Updated / aggiornato: 2026-10-20 (IA-10–12, VIS-12, EDU-PROG).
 
 ## English
 
@@ -15,22 +15,26 @@ The active chapter's section opens automatically. The route filter only narrows
 the index: it does not change the open chapter or its deep link.
 
 On mobile, a compact sticky toolbar provides a native chapter selector grouped by
-study route, progress and a horizontally scrollable topic index. Previous/next
+study route, progress and a native per-topic selector. Previous/next
 actions remain at the chapter end. Chapter changes focus the chapter heading.
 
 Attempt each guided lab before revealing its solution; use its self-checks and
-mark the chapter complete when ready. Total progress and progress per route are
-stored locally. If browser storage is blocked, progress remains usable in memory
-for the current session. No progress is sent to a server. The legacy
-`hasDismissedManualHelp` preference remains compatible with saved data but no
-longer controls a visible panel.
+mark the chapter complete when ready. Each topic additionally carries a formative
+**“studied” toggle** (`aria-pressed`): it records the learner's own progress through
+the chapter — it is not a score, an answer key, or an exam simulation — and feeds a
+per-chapter topics-studied tally. Total progress, progress per route and per-topic
+progress are stored locally and cleared together by the single **reset** control.
+If browser storage is blocked, progress remains usable in memory for the current
+session. No progress is sent to a server. The legacy `hasDismissedManualHelp`
+preference remains compatible with saved data but no longer controls a visible panel.
 
 Selected topics include bilingual concept diagrams with visible text alternatives:
 internal/perimeter traffic, email delivery and penetration-test phases. They are
 schematics, not live networks, and introduce no additional controls or tab stops.
 
 Regression coverage: `e2e/app-shell.spec.ts`, `e2e/manual-mobile-sticky.spec.ts`,
-`e2e/manual-track-filter.spec.ts`, `e2e/manual-concept-diagrams.spec.ts` and the
+`e2e/manual-track-filter.spec.ts`, `e2e/manual-concept-diagrams.spec.ts`,
+`e2e/manual-route-progress.spec.ts`, `e2e/manual-topic-progress.spec.ts` and the
 manual component tests. Automated Axe checks do not replace a screen-reader audit.
 
 ## Italiano
@@ -46,14 +50,18 @@ sezione del capitolo attivo si apre automaticamente. Il filtro per percorso
 restringe soltanto l’indice: non cambia il capitolo aperto o il suo deep-link.
 
 Su mobile, una toolbar sticky compatta offre il selettore nativo dei capitoli
-raggruppati per percorso, il progresso e l’indice degli argomenti scorrevole
-orizzontalmente. Precedente/Successivo restano a fine capitolo. Il cambio capitolo
-porta il focus sul titolo.
+raggruppati per percorso, il progresso e un selettore nativo degli argomenti.
+Precedente/Successivo restano a fine capitolo. Il cambio capitolo porta il focus
+sul titolo.
 
 Prova ogni laboratorio guidato prima di rivelarne la soluzione; usa i criteri di
-autoverifica e segna il capitolo come completato quando sei pronta/o. Il progresso
-totale e per percorso viene salvato localmente. Se lo storage è bloccato, resta
-utilizzabile in memoria per la sessione corrente. Nessun progresso viene inviato
+autoverifica e segna il capitolo come completato quando sei pronta/o. Ogni argomento
+ha inoltre un **interruttore “studiato”** formativo (`aria-pressed`): registra il
+progresso personale dello studente nel capitolo — non è un punteggio, una soluzione
+né la simulazione di un esame — e alimenta un conteggio «argomenti studiati» per
+capitolo. Il progresso totale, per percorso e per argomento viene salvato localmente
+e azzerato insieme dall’unico controllo di **azzeramento**. Se lo storage è bloccato,
+resta utilizzabile in memoria per la sessione corrente. Nessun progresso viene inviato
 a un server. La preferenza storica `hasDismissedManualHelp` resta compatibile con
 i dati salvati, ma non controlla più un pannello visibile.
 
@@ -62,5 +70,6 @@ visibili: traffico interno/perimetrale, consegna email e fasi del penetration te
 Sono schemi, non reti operative; non aggiungono controlli o tappe di tabulazione.
 
 Copertura delle regressioni: `e2e/app-shell.spec.ts`, `e2e/manual-mobile-sticky.spec.ts`,
-`e2e/manual-track-filter.spec.ts`, `e2e/manual-concept-diagrams.spec.ts` e test del
+`e2e/manual-track-filter.spec.ts`, `e2e/manual-concept-diagrams.spec.ts`,
+`e2e/manual-route-progress.spec.ts`, `e2e/manual-topic-progress.spec.ts` e test del
 componente manuale. I controlli Axe non sostituiscono un audit con screen reader.
