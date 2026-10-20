@@ -26,6 +26,24 @@ technical-content review in [`technical-content-reviews.json`](technical-content
   the official structure fails CI — the previous sum-to-100 check alone could not
   catch two compensating wrong weights.
 
+### 2026-10-20 — eJPT domain-structure cross-reference (third-party)
+
+- **Source.** A maintainer-provided **community notes repository** (`KaulikMakwana/EJPT-Notes`
+  on GitHub). This is **not an official INE source**; it is correlated study material.
+- **Method.** Compared the repository's documented structure to the app's
+  `EJPT_COVERAGE_DOMAINS` in [`src/content/certificationCoverage.ts`](../src/content/certificationCoverage.ts).
+- **Result — domain structure corroborated.** The repository organises its labs and PDFs
+  under the same four eJPT domains the app uses: _Assessment Methodologies_, _Host &
+  Network Penetration Testing_, _Host & Networking Auditing_, and _Web Application
+  Penetration Testing_. No contradictory structure was found.
+- **What this source could _not_ verify.** The repository publishes **no exam weightings and
+  no granular objective list**, so the app's domain weights (35 / 25 / 25 / 15) and its 22
+  ordered objectives could **not** be confirmed from it. Those remain pinned by
+  `certificationCoverage.test.ts` and sourced from INE's published objectives; an
+  authoritative re-check still requires INE's official exam page (`ine.com`).
+- **Outcome.** Corroboration only; **no change** to the official eJPT mapping is warranted
+  from a third-party source.
+
 ### Scope and limitations
 
 - This is an **evidence cross-check, not a signed human review**. It does not modify
@@ -62,6 +80,26 @@ technical-content review in [`technical-content-reviews.json`](technical-content
   pesi e i conteggi esatti per dominio: una futura modifica che si discosta dalla
   struttura ufficiale fa fallire la CI — il solo controllo "somma = 100" non coglieva
   due pesi errati che si compensano.
+
+### 2026-10-20 — Riferimento incrociato della struttura dei domini eJPT (terze parti)
+
+- **Fonte.** Un **repository di note della community** fornito dal manutentore
+  (`KaulikMakwana/EJPT-Notes` su GitHub). **Non è una fonte ufficiale INE**: è materiale di
+  studio correlato.
+- **Metodo.** Confronto della struttura documentata del repository con
+  `EJPT_COVERAGE_DOMAINS` in [`src/content/certificationCoverage.ts`](../src/content/certificationCoverage.ts).
+- **Esito — struttura dei domini corroborata.** Il repository organizza laboratori e PDF
+  sotto gli stessi quattro domini eJPT usati dall'app: _Assessment Methodologies_, _Host &
+  Network Penetration Testing_, _Host & Networking Auditing_ e _Web Application Penetration
+  Testing_. Nessuna struttura contraddittoria.
+- **Ciò che questa fonte _non_ ha potuto verificare.** Il repository **non pubblica pesi
+  d'esame né l'elenco granulare degli obiettivi**, quindi i pesi dei domini dell'app
+  (35 / 25 / 25 / 15) e i suoi 22 obiettivi ordinati **non** sono confermabili da esso.
+  Restano fissati da `certificationCoverage.test.ts` e basati sugli obiettivi pubblicati da
+  INE; una ri-verifica autorevole richiede comunque la pagina d'esame ufficiale INE
+  (`ine.com`).
+- **Conclusione.** Solo corroborazione; **nessuna modifica** alla mappatura ufficiale eJPT è
+  giustificata da una fonte di terze parti.
 
 ### Ambito e limiti
 
