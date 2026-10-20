@@ -49,6 +49,10 @@ Nessuna di queste va presentata come già disponibile finché non è verificata.
    - Fonti da aggiornare: `CERTIFICATION_SOURCES`, `docs/technical-content-reviews.json`,
      matrice di copertura e date di revisione.
    - Completamento: revisione firmata, prove collegate, nessun record scaduto in CI.
+   - Stato: verifica incrociata del blueprint CCNA v1.1 contro il PDF ufficiale Cisco
+     eseguita il 2026-10-20 (piena corrispondenza, nessuna deriva) — vedi
+     `docs/CERTIFICATION_SOURCE_VERIFICATION.md`. La prossima revisione umana firmata
+     resta prevista entro il 2027-04-08.
 
 2. **Nuovi laboratori e diagrammi mirati**
    - Criterio: aggiungere un laboratorio o un diagramma solo quando un supporto

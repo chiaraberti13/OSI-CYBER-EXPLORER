@@ -13,6 +13,30 @@ describe('CCNA 200-301 blueprint coverage', () => {
     expect(CCNA_BLUEPRINT_DOMAINS.reduce((sum, domain) => sum + domain.weight, 0)).toBe(100);
   });
 
+  it('pins the exact official v1.1 domain weights and per-domain objective counts', () => {
+    // Transcribed directly from the official Cisco "CCNA Exam v1.1 (200-301)" exam-topics
+    // document (2024 Cisco Public), cross-checked against the maintainer-provided PDF on
+    // 2026-10-20. These authoritative weights and counts guard against a class of drift the
+    // sum-to-100 check cannot catch: two compensating wrong weights still sum to 100.
+    const OFFICIAL_V1_1: Readonly<Record<number, { weight: number; objectives: number }>> = {
+      1: { weight: 20, objectives: 13 },
+      2: { weight: 20, objectives: 9 },
+      3: { weight: 25, objectives: 5 },
+      4: { weight: 10, objectives: 9 },
+      5: { weight: 15, objectives: 10 },
+      6: { weight: 10, objectives: 7 }
+    };
+    expect(CCNA_BLUEPRINT_DOMAINS.map((domain) => domain.number)).toEqual([1, 2, 3, 4, 5, 6]);
+    for (const domain of CCNA_BLUEPRINT_DOMAINS) {
+      const official = OFFICIAL_V1_1[domain.number];
+      expect(official, `unexpected domain ${domain.number}`).toBeDefined();
+      expect(domain.weight, `domain ${domain.number} weight`).toBe(official.weight);
+      expect(domain.topics.length, `domain ${domain.number} objective count`).toBe(official.objectives);
+    }
+    // 53 published parent objectives in total (13 + 9 + 5 + 9 + 10 + 7).
+    expect(CCNA_BLUEPRINT_TOPICS).toHaveLength(53);
+  });
+
   it('matches every declared curriculum objective in domain order', () => {
     expect(CCNA_BLUEPRINT_DOMAINS.map((domain) => domain.number)).toEqual(CCNA_DOMAINS.map((domain) => domain.number));
 
