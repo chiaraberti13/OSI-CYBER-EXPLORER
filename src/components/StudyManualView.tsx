@@ -338,6 +338,11 @@ export default function StudyManualView() {
   const renderChapterCard = (entry: (typeof chapters)[number]) => {
     const isCompleted = completedChapterIds.includes(entry.id);
     const entryDomain = ccnaDomainForChapter(entry);
+    // EDU-PROG — surface in-progress topic study on the card itself: a chapter the learner
+    // started but has not finished shows its studied count, so the index mirrors the resume
+    // summary. A completed chapter already shows "Completed", so the tally is redundant there.
+    const entryTopics = topicCompletion(entry, completedTopicIds);
+    const showTopicTally = !isCompleted && entryTopics.completed > 0;
     return (
       <li key={entry.id}>
         <ViewLink
@@ -376,6 +381,17 @@ export default function StudyManualView() {
           <div className="flex items-center gap-1.5 text-[12px] font-medium text-slate-400">
             <BookOpen aria-hidden="true" className="h-3.5 w-3.5" />
             {entry.topics.length} {t.topics}
+            {showTopicTally ? (
+              <span
+                className="inline-flex items-center gap-1 text-emerald-600"
+                data-testid={`card-topic-progress-${entry.id}`}
+                aria-label={`${t.topicProgress}: ${entryTopics.completed}/${entryTopics.total}`}
+              >
+                <span aria-hidden="true">·</span>
+                <Check aria-hidden="true" className="h-3 w-3" />
+                {entryTopics.completed}/{entryTopics.total}
+              </span>
+            ) : null}
             {isCompleted ? <span className="text-emerald-600"> · {t.completedChapter}</span> : null}
           </div>
         </ViewLink>

@@ -29,5 +29,13 @@ test.describe('resume-studying summary (EDU-PROG)', () => {
     await expect(resume).toHaveAttribute('href', '#/manual/ethernet-switching');
     await resume.click();
     await expect(page.getByRole('heading', { level: 2, name: /Ethernet/ })).toBeVisible();
+
+    // Study one topic of this chapter (without completing it), then return to the index:
+    // the chapter card now shows its in-progress topic tally (EDU-PROG).
+    await page.getByTestId('topic-studied-ethernet-frame-mac').click();
+    await page.getByRole('link', { name: 'Tutti i capitoli' }).click();
+    await expect(page.getByTestId('card-topic-progress-ethernet-switching')).toContainText('1/3');
+    // The completed first chapter shows no card tally (it already reads "Completed").
+    await expect(page.getByTestId('card-topic-progress-osi-model')).toHaveCount(0);
   });
 });

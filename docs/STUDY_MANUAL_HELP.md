@@ -24,7 +24,9 @@ mark the chapter complete when ready. Each topic additionally carries a formativ
 the chapter — it is not a score, an answer key, or an exam simulation — and feeds a
 per-chapter topics-studied tally. Once any progress exists, the chapter index shows a
 **resume-studying summary** that aggregates topics studied and links to the first
-chapter not yet completed; it is hidden for a first-time visitor. Total progress,
+chapter not yet completed; it is hidden for a first-time visitor. Each chapter card
+also shows an in-progress topic tally for a chapter the learner has started but not
+completed. Total progress,
 progress per route and per-topic progress are stored locally and cleared together by
 the single **reset** control. If browser storage is blocked, progress remains usable
 in memory for the current session. No progress is sent to a server. The legacy
@@ -65,7 +67,9 @@ progresso personale dello studente nel capitolo — non è un punteggio, una sol
 né la simulazione di un esame — e alimenta un conteggio «argomenti studiati» per
 capitolo. Quando esiste del progresso, l’indice dei capitoli mostra un **riepilogo
 «riprendi lo studio»** che somma gli argomenti studiati e porta al primo capitolo non
-ancora completato; è nascosto alla prima visita. Il progresso totale, per percorso e
+ancora completato; è nascosto alla prima visita. Anche ogni card di capitolo mostra il
+conteggio degli argomenti studiati per un capitolo iniziato ma non completato. Il
+progresso totale, per percorso e
 per argomento viene salvato localmente e azzerato insieme dall’unico controllo di
 **azzeramento**. Se lo storage è bloccato,
 resta utilizzabile in memoria per la sessione corrente. Nessun progresso viene inviato

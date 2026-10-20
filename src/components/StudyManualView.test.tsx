@@ -349,6 +349,22 @@ describe('StudyManualView card index (IA-13)', () => {
     expect(screen.queryByTestId('resume-link')).toBeNull();
   });
 
+  it('shows an in-progress topic tally on a started-but-unfinished chapter card (EDU-PROG)', () => {
+    // One topic studied in ethernet-switching (3 topics), chapter not completed.
+    useStore.setState({ completedTopicIds: ['ethernet-frame-mac'] });
+    render(<StudyManualView />);
+    const tally = screen.getByTestId('card-topic-progress-ethernet-switching');
+    expect(tally.textContent).toContain('1/3');
+    expect(tally.getAttribute('aria-label')).toBe('Argomenti studiati: 1/3');
+  });
+
+  it('omits the card topic tally once the chapter is completed (EDU-PROG)', () => {
+    // A completed chapter already reads "Completed"; the tally would be redundant.
+    useStore.setState({ completedChapterIds: ['osi-model'], completedTopicIds: ['osi-why-layers'] });
+    render(<StudyManualView />);
+    expect(screen.queryByTestId('card-topic-progress-osi-model')).toBeNull();
+  });
+
   it('groups the chapter index by the two study routes', () => {
     render(<StudyManualView />);
     const nav = screen.getByRole('navigation', { name: 'Capitoli del manuale' });
