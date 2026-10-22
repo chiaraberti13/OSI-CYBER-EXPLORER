@@ -1,22 +1,61 @@
 @import 'tailwindcss';
 
 @theme {
-  /* Product design tokens: semantic colors are the source for app-wide surfaces,
-     copy, focus, and feedback. The darkened Tailwind shades below preserve the
-     existing utility API while keeping frequently used text readable. */
-  --color-canvas: #fafafa;
+  /* Product design tokens — approved "OSI Cyber Explorer v2" visual system.
+     Semantic colors are the single source for app-wide surfaces, copy, focus and
+     feedback. The darkened Tailwind shades below preserve the existing utility API
+     while keeping frequently used text AA-readable. All text/feedback pairings are
+     verified against the three light surfaces by scripts/design-system.test.mjs. */
+  --color-canvas: #f5f6f8;
   --color-surface: #ffffff;
-  --color-surface-subtle: #f8fafc;
-  --color-ink-primary: #0f172a;
-  --color-ink-secondary: #475569;
-  --color-ink-muted: #64748b;
+  --color-surface-subtle: #f0f2f5;
+  --color-ink-primary: #0d1220;
+  --color-ink-secondary: #353c4a;
+  --color-ink-muted: #5b6474;
   --color-accent: #4f46e5;
-  --color-accent-strong: #4338ca;
-  --color-success: #047857;
-  --color-warning: #92400e;
-  --color-danger: #b91c1c;
+  --color-accent-strong: #3f37c9;
+  --color-accent-soft: #eef0fe;
+  --color-success: #0f7a4f;
+  --color-success-soft: #e8f6ef;
+  --color-warning: #8f5300;
+  --color-warning-soft: #fdf4e3;
+  --color-danger: #b4232a;
+  --color-danger-soft: #fdeeee;
   --color-info: #0369a1;
-  --color-stroke: #e2e8f0;
+  --color-cyan: #0b7a93;
+  --color-cyan-soft: #e3f5f9;
+  --color-stroke: #e3e6eb;
+  --color-stroke-strong: #cfd4dc;
+
+  /* Terminal / inline-code surfaces (always dark, in both themes). */
+  --color-code-bg: #111622;
+  --color-code-ink: #d9def0;
+  --color-code-dim: #8790a6;
+
+  /* Per-OSI-layer palette: base swatch, AA ink-on-light, and a pale tint fill.
+     Gives each of the seven layers a consistent identity across the stack,
+     inspector and layer chrome without hard-coding hex values in components. */
+  --color-layer-7: #e5484d;
+  --color-layer-7-ink: #c2252b;
+  --color-layer-7-tint: #fdecec;
+  --color-layer-6: #ec7a2e;
+  --color-layer-6-ink: #b14f0c;
+  --color-layer-6-tint: #fdf0e6;
+  --color-layer-5: #c99a06;
+  --color-layer-5-ink: #856600;
+  --color-layer-5-tint: #fbf5dc;
+  --color-layer-4: #2f9e5e;
+  --color-layer-4-ink: #1b7543;
+  --color-layer-4-tint: #e6f5ec;
+  --color-layer-3: #3b7ddd;
+  --color-layer-3-ink: #2457b5;
+  --color-layer-3-tint: #e8f0fc;
+  --color-layer-2: #8a5cf0;
+  --color-layer-2-ink: #6a3fd0;
+  --color-layer-2-tint: #f0ebfe;
+  --color-layer-1: #d6409f;
+  --color-layer-1-ink: #a8287a;
+  --color-layer-1-tint: #fcebf5;
 
   /* WCAG AA-safe replacements for common small-text utility colors. */
   --color-slate-400: var(--color-ink-secondary);
@@ -28,7 +67,10 @@
   --color-amber-600: var(--color-warning);
   --color-red-500: var(--color-danger);
 
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  /* Instrument Sans is the approved UI face (loaded in index.html); the chain
+     keeps the previous Inter/system fallbacks so copy stays readable if the web
+     font is blocked or still loading. */
+  --font-sans: 'Instrument Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --color-zinc-950: #f8fafc;
   --color-zinc-900: #f1f5f9;
   --color-zinc-800: #e2e8f0;
@@ -41,6 +83,9 @@
   --manual-body-leading: 1.75;
   --radius-xl: 0.75rem;
   --shadow-sm: 0 1px 2px 0 rgb(15 23 42 / 0.05);
+  /* Restrained card/panel elevation from the approved design (soft, low-contrast).
+     Reserved for raised surfaces; overlays keep their own larger shadow. */
+  --shadow-card: 0 1px 2px rgb(13 18 32 / 0.04), 0 8px 24px -12px rgb(13 18 32 / 0.12);
 }
 
 body {
