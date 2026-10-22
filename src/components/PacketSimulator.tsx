@@ -158,7 +158,7 @@ export default function PacketSimulator() {
   const threatBg = activeAttack === 'none' ? 'bg-emerald-500' : defenseEnabled ? 'bg-orange-500' : 'bg-red-500';
 
   return (
-    <div className="bg-white border border-slate-200/70 rounded-lg flex flex-col gap-0 overflow-hidden relative">
+    <div className="bg-surface border border-stroke rounded-2xl shadow-card flex flex-col gap-0 overflow-hidden relative">
       {/* Visual Feedback Background Overlay */}
       <AnimatePresence>
         {activeAttack !== 'none' && !defenseEnabled && (
@@ -258,7 +258,7 @@ export default function PacketSimulator() {
             <button
               onClick={handleStart}
               aria-describedby={feedbackId}
-              className="flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-3.5 py-2 rounded-md font-medium text-xs transition-all active:scale-95"
+              className="flex items-center gap-2 bg-accent hover:bg-accent-strong text-white px-3.5 py-2 rounded-xl font-medium text-xs transition-all active:scale-95"
             >
               <Play className="w-3.5 h-3.5 fill-white" />
               {labels.start}

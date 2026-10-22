@@ -32,9 +32,9 @@ export function LabsList({ onNavigate }: { onNavigate?: () => void }) {
                       view={entry.view}
                       onClick={onNavigate}
                       aria-current={isActive ? 'page' : undefined}
-                      className={`flex min-h-10 items-center gap-2.5 rounded-lg px-2 py-1.5 text-[13px] ${
+                      className={`flex min-h-10 items-center gap-2.5 rounded-xl px-2 py-1.5 text-[13px] ${
                         isActive
-                          ? 'bg-indigo-50 font-semibold text-indigo-800'
+                          ? 'bg-accent-soft font-semibold text-accent-strong'
                           : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
                       }`}
                     >

@@ -139,19 +139,19 @@ export default function Topbar() {
   };
 
   const navItemClass = (active: boolean) =>
-    `flex min-h-10 items-center gap-1.5 whitespace-nowrap rounded-lg px-2.5 text-[13px] font-medium transition-colors ${
-      active ? 'bg-indigo-50 text-indigo-800' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+    `flex min-h-10 items-center gap-1.5 whitespace-nowrap rounded-xl px-2.5 text-[13px] font-medium transition-colors ${
+      active ? 'bg-accent-soft text-accent-strong' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
     }`;
 
   return (
-    <header ref={barRef} className="sticky top-0 z-40 border-b border-slate-200/60 bg-canvas/75 backdrop-blur-xl">
-      <div className="relative flex h-14 items-center gap-2 px-3 sm:px-5">
+    <header ref={barRef} className="sticky top-0 z-40 border-b border-stroke bg-canvas/80 backdrop-blur-xl">
+      <div className="relative flex h-16 items-center gap-2 px-4 sm:px-6">
         {/* Mobile menu button opens the navigation drawer. */}
         <button
           type="button"
           onClick={() => setIsNavOpen(true)}
           aria-label={labels.menu}
-          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-700 lg:hidden"
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-stroke bg-surface text-slate-700 lg:hidden"
         >
           <Menu className="h-5 w-5" aria-hidden="true" />
         </button>
@@ -180,7 +180,7 @@ export default function Topbar() {
                   className={navItemClass(isActive)}
                 >
                   <Icon
-                    className={`h-4 w-4 shrink-0 ${isActive ? 'text-indigo-600' : 'text-slate-400'}`}
+                    className={`h-4 w-4 shrink-0 ${isActive ? 'text-accent-strong' : 'text-slate-400'}`}
                     aria-hidden="true"
                   />
                   {short}
@@ -203,7 +203,7 @@ export default function Topbar() {
                 className={navItemClass(labsHoldsActive || labsOpen)}
               >
                 <Icon
-                  className={`h-4 w-4 shrink-0 ${labsHoldsActive || labsOpen ? 'text-indigo-600' : 'text-slate-400'}`}
+                  className={`h-4 w-4 shrink-0 ${labsHoldsActive || labsOpen ? 'text-accent-strong' : 'text-slate-400'}`}
                   aria-hidden="true"
                 />
                 {short}
@@ -226,7 +226,7 @@ export default function Topbar() {
           }}
           aria-expanded={isSearchOpen}
           aria-label={labels.search}
-          className="flex min-h-11 shrink-0 items-center gap-2 rounded-lg border border-slate-200/70 bg-white px-2.5 text-[13px] font-medium text-slate-500 transition-colors hover:text-slate-800 sm:px-3"
+          className="flex min-h-11 shrink-0 items-center gap-2 rounded-xl border border-stroke bg-surface px-2.5 text-[13px] font-medium text-slate-500 transition-colors hover:border-stroke-strong hover:text-slate-800 sm:px-3"
         >
           <Search className="h-4 w-4 shrink-0" aria-hidden="true" />
           <span className="hidden sm:inline">{labels.search}</span>
@@ -239,7 +239,7 @@ export default function Topbar() {
           onClick={copyCurrentLink}
           aria-label={labels.copyLink}
           title={labels.copyLink}
-          className="hidden min-h-11 min-w-11 shrink-0 items-center justify-center rounded-lg border border-slate-200/70 bg-white text-slate-500 transition-colors hover:text-slate-800 sm:flex"
+          className="hidden min-h-11 min-w-11 shrink-0 items-center justify-center rounded-xl border border-stroke bg-surface text-slate-500 transition-colors hover:border-stroke-strong hover:text-slate-800 sm:flex"
         >
           {linkCopied ? (
             <Check className="h-4 w-4 text-emerald-600" aria-hidden="true" />
@@ -248,7 +248,11 @@ export default function Topbar() {
           )}
         </button>
 
-        <div className="flex shrink-0 rounded-lg bg-slate-100 p-0.5" role="group" aria-label={header.language}>
+        <div
+          className="flex shrink-0 rounded-xl border border-stroke bg-surface-subtle p-0.5"
+          role="group"
+          aria-label={header.language}
+        >
           <button
             type="button"
             onClick={() => setLanguage('it')}
@@ -279,7 +283,7 @@ export default function Topbar() {
           aria-haspopup="dialog"
           aria-label={header.openGuide}
           title={header.guide}
-          className="flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-1.5 rounded-lg px-2 text-[13px] font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900"
+          className="flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-1.5 rounded-xl px-2 text-[13px] font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900"
         >
           <LifeBuoy className="h-5 w-5 shrink-0 text-slate-500" aria-hidden="true" />
           <span className="hidden sm:inline">{header.guide}</span>
@@ -294,7 +298,7 @@ export default function Topbar() {
       {labsOpen ? (
         <div
           id={LABS_MENU_ID}
-          className="nav-panel-enter absolute left-3 top-full z-50 mt-1 max-h-[70vh] w-72 overflow-y-auto rounded-xl border border-slate-200 bg-white p-2 shadow-lg custom-scrollbar sm:left-5"
+          className="nav-panel-enter absolute left-4 top-full z-50 mt-1 max-h-[70vh] w-72 overflow-y-auto rounded-2xl border border-stroke bg-surface p-2 shadow-lg custom-scrollbar sm:left-6"
         >
           <LabsList onNavigate={() => setLabsOpen(false)} />
         </div>
@@ -305,7 +309,7 @@ export default function Topbar() {
           role="dialog"
           aria-modal="false"
           aria-label={labels.search}
-          className="nav-panel-enter absolute inset-x-3 top-full z-50 mt-1 rounded-xl border border-slate-200 bg-white shadow-lg sm:inset-x-5 sm:left-auto sm:right-5 sm:w-[28rem]"
+          className="nav-panel-enter absolute inset-x-4 top-full z-50 mt-1 rounded-2xl border border-stroke bg-surface shadow-lg sm:inset-x-6 sm:left-auto sm:right-6 sm:w-[28rem]"
         >
           <div className="flex min-h-11 items-center gap-2 border-b border-slate-100 px-3">
             <Search className="h-4 w-4 shrink-0 text-slate-400" aria-hidden="true" />
