@@ -7,7 +7,7 @@ import { existsSync } from 'node:fs';
  * The suite runs against the production build served by `vite preview`, so it
  * exercises the same lazy chunks, hash routing and CSP-safe assets that ship to
  * users, not a dev-server approximation. Only Chromium runs for now; Firefox and
- * WebKit are added once the suite has proven stable in CI (see ROADMAP ENG-12).
+ * WebKit are added once the suite has proven stable in CI.
  */
 
 const HOST = '127.0.0.1';
