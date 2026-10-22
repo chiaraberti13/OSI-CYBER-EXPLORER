@@ -38,18 +38,28 @@ export default function Terminal() {
     }
   }[language];
 
+  // Approved v2 "Console": a dark terminal surface (always dark in both themes).
+  // Log colours use the design's dark-tuned, AA-legible hues so severity reads
+  // clearly on the near-black background.
+  const logColor: Record<string, string> = {
+    info: 'var(--color-code-ink)',
+    warning: '#f1bb5a',
+    danger: '#ff8a8a',
+    success: '#5fd39b'
+  };
+
   return (
-    <div className="bg-white border border-slate-200/70 rounded-lg overflow-hidden flex flex-col h-full font-mono text-[10px]">
-      <div className="px-3 py-2 flex justify-between items-center border-b border-slate-100">
+    <div className="bg-code-bg border border-stroke rounded-2xl overflow-hidden flex flex-col h-full font-mono text-[13px] shadow-card">
+      <div className="flex items-center justify-between border-b border-white/10 px-4 py-2.5">
         <div className="flex items-center gap-2.5">
-          <span className="text-slate-300 font-mono text-xs select-none">$_</span>
-          <span className="text-slate-500 font-medium font-sans text-xs">{labels.terminal}</span>
+          <span className="select-none font-mono text-xs text-code-dim">$_</span>
+          <span className="font-sans text-sm font-semibold text-[#eef1f6]">{labels.terminal}</span>
         </div>
         <button
           onClick={clearLogs}
           disabled={logs.length === 0}
           aria-label={labels.clear}
-          className="text-slate-400 hover:text-slate-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors font-medium font-sans text-xs"
+          className="font-sans text-xs font-medium text-code-ink transition-opacity hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-30"
         >
           {labels.clear}
         </button>
@@ -58,18 +68,18 @@ export default function Terminal() {
       <div
         ref={scrollRef}
         aria-live="polite"
-        className="flex-1 overflow-y-auto p-4 space-y-1.5 custom-scrollbar bg-slate-50/20"
+        className="flex-1 overflow-y-auto p-4 space-y-1.5 custom-scrollbar leading-relaxed"
       >
         {logs.length === 0 && (
-          <div className="h-full flex flex-col items-center justify-center text-center px-4 select-none">
-            <div className="w-8 h-8 rounded-md border border-slate-200 flex items-center justify-center mb-3">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+          <div className="flex h-full select-none flex-col items-center justify-center px-4 text-center">
+            <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-xl border border-white/10">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#5fd39b]" />
             </div>
-            <p className="text-xs font-semibold text-slate-500 mb-1.5 not-italic font-sans">{labels.emptyTitle}</p>
-            <p className="text-[10px] text-slate-400 leading-relaxed max-w-[220px] normal-case tracking-normal font-sans mb-3">
+            <p className="mb-1.5 font-sans text-sm font-semibold not-italic text-[#eef1f6]">{labels.emptyTitle}</p>
+            <p className="mb-3 max-w-[240px] font-sans text-[13px] normal-case leading-relaxed tracking-normal text-code-ink">
               {labels.emptyBody}
             </p>
-            <p className="text-[9px] text-amber-600 leading-relaxed max-w-[220px] normal-case tracking-normal font-sans">
+            <p className="max-w-[240px] font-sans text-[13px] normal-case leading-relaxed tracking-normal text-[#f1bb5a]">
               {labels.emptyHint}
             </p>
           </div>
@@ -82,15 +92,10 @@ export default function Terminal() {
               animate={{ opacity: 1, x: 0 }}
               className="flex gap-3 leading-relaxed"
             >
-              <span className="text-slate-400 shrink-0 font-bold opacity-80">[{log.timestamp}]</span>
+              <span className="shrink-0 text-code-dim">[{log.timestamp}]</span>
               <span
-                className={`
-                ${log.type === 'info' ? 'text-slate-700' : ''}
-                ${log.type === 'warning' ? 'text-amber-600' : ''}
-                ${log.type === 'danger' ? 'text-red-600 font-bold' : ''}
-                ${log.type === 'success' ? 'text-emerald-600 font-bold' : ''}
-                break-words
-              `}
+                className={`break-words ${log.type === 'danger' || log.type === 'success' ? 'font-semibold' : ''}`}
+                style={{ color: logColor[log.type] ?? 'var(--color-code-ink)' }}
               >
                 {log.message}
               </span>

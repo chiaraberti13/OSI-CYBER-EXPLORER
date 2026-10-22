@@ -35,7 +35,7 @@ export default function PacketInspector() {
   }[language];
 
   return (
-    <div className="bg-white border border-slate-200/70 rounded-lg overflow-hidden flex flex-col">
+    <div className="bg-surface border border-stroke rounded-2xl shadow-card overflow-hidden flex flex-col">
       <div className="px-3 py-2 flex justify-between items-center border-b border-slate-100">
         <div className="flex items-center gap-2">
           <Layers className="w-3.5 h-3.5 text-slate-400" />

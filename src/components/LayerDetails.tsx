@@ -336,7 +336,7 @@ export default function LayerDetails() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="h-full bg-white border border-slate-200/70 rounded-lg flex flex-col overflow-hidden"
+        className="h-full bg-surface border border-stroke rounded-2xl shadow-card flex flex-col overflow-hidden"
       >
         {viewMode === 'packet' ? (
           <>
