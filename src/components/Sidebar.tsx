@@ -42,12 +42,12 @@ function DrawerNav({ onNavigate }: { onNavigate: () => void }) {
               view={item.view}
               onClick={onNavigate}
               aria-current={isActive ? 'page' : undefined}
-              className={`flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium ${
-                isActive ? 'bg-indigo-50 text-indigo-800' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+              className={`flex min-h-11 items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium ${
+                isActive ? 'bg-accent-soft text-accent-strong' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
               }`}
             >
               <Icon
-                className={`h-5 w-5 shrink-0 ${isActive ? 'text-indigo-600' : 'text-slate-400'}`}
+                className={`h-5 w-5 shrink-0 ${isActive ? 'text-accent-strong' : 'text-slate-400'}`}
                 aria-hidden="true"
               />
               <span className="min-w-0">{item[language]}</span>
@@ -62,14 +62,14 @@ function DrawerNav({ onNavigate }: { onNavigate: () => void }) {
               aria-expanded={labsOpen}
               aria-current={labsHoldsActive ? 'true' : undefined}
               aria-label={item[language]}
-              className={`flex min-h-11 w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium ${
+              className={`flex min-h-11 w-full items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium ${
                 labsHoldsActive
-                  ? 'bg-indigo-50 text-indigo-800'
+                  ? 'bg-accent-soft text-accent-strong'
                   : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
               }`}
             >
               <Icon
-                className={`h-5 w-5 shrink-0 ${labsHoldsActive ? 'text-indigo-600' : 'text-slate-400'}`}
+                className={`h-5 w-5 shrink-0 ${labsHoldsActive ? 'text-accent-strong' : 'text-slate-400'}`}
                 aria-hidden="true"
               />
               <span className="min-w-0 flex-1 text-left">{item[language]}</span>
