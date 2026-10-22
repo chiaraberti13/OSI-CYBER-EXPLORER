@@ -43,7 +43,9 @@ function DrawerNav({ onNavigate }: { onNavigate: () => void }) {
               onClick={onNavigate}
               aria-current={isActive ? 'page' : undefined}
               className={`flex min-h-11 items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium ${
-                isActive ? 'bg-accent-soft text-accent-strong' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                isActive
+                  ? 'bg-accent-soft text-accent-strong'
+                  : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
               }`}
             >
               <Icon
