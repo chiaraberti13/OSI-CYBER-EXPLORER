@@ -22,7 +22,9 @@
   --color-danger: #b4232a;
   --color-danger-soft: #fdeeee;
   --color-info: #0369a1;
-  --color-cyan: #0b7a93;
+  /* Cyan marks the in-flight "transforming" state; nudged one step darker than the
+     source design so it also clears AA (4.5:1) as small text on the subtle surface. */
+  --color-cyan: #0a7489;
   --color-cyan-soft: #e3f5f9;
   --color-stroke: #e3e6eb;
   --color-stroke-strong: #cfd4dc;

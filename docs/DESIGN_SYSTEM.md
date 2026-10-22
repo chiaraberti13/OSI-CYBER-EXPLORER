@@ -1,30 +1,41 @@
 # Design system
 
-The interface uses a light, low-distraction canvas with slate text, indigo
-navigation and focus, and named feedback colors. `src/index.css` is the single
-source for shared color, type, radius, and elevation tokens. Prefer these tokens
-or the semantic Tailwind aliases below when adding or changing interface styles;
-avoid new one-off hex colors for application chrome or text.
+The interface uses the approved "OSI Cyber Explorer v2" visual system: a light,
+low-distraction canvas with near-black ink, indigo navigation and focus, a cyan
+in-flight accent and named feedback colors. `src/index.css` is the single source
+for shared color, type, radius, and elevation tokens. Prefer these tokens or the
+semantic Tailwind aliases below when adding or changing interface styles; avoid
+new one-off hex colors for application chrome or text.
 
 ## Tokens
 
-| Purpose        | Token                    | Value     |  Contrast on canvas |
-| -------------- | ------------------------ | --------- | ------------------: |
-| Page canvas    | `--color-canvas`         | `#fafafa` |                   — |
-| Surface        | `--color-surface`        | `#ffffff` |                   — |
-| Subtle surface | `--color-surface-subtle` | `#f8fafc` |                   — |
-| Primary text   | `--color-ink-primary`    | `#0f172a` |             17.10:1 |
-| Secondary text | `--color-ink-secondary`  | `#475569` |              7.26:1 |
-| Muted text     | `--color-ink-muted`      | `#64748b` |              4.56:1 |
-| Accent / focus | `--color-accent`         | `#4f46e5` |              6.02:1 |
-| Strong accent  | `--color-accent-strong`  | `#4338ca` |              7.57:1 |
-| Success        | `--color-success`        | `#047857` |              5.25:1 |
-| Warning        | `--color-warning`        | `#92400e` |              6.79:1 |
-| Error / danger | `--color-danger`         | `#b91c1c` |              6.20:1 |
-| Informational  | `--color-info`           | `#0369a1` |              5.68:1 |
-| Default border | `--color-stroke`         | `#e2e8f0` | Non-text decoration |
+| Purpose             | Token                    | Value     |  Contrast on canvas |
+| ------------------- | ------------------------ | --------- | ------------------: |
+| Page canvas         | `--color-canvas`         | `#f5f6f8` |                   — |
+| Surface             | `--color-surface`        | `#ffffff` |                   — |
+| Subtle surface      | `--color-surface-subtle` | `#f0f2f5` |                   — |
+| Primary text        | `--color-ink-primary`    | `#0d1220` |             17.27:1 |
+| Secondary text      | `--color-ink-secondary`  | `#353c4a` |             10.24:1 |
+| Muted text          | `--color-ink-muted`      | `#5b6474` |              5.52:1 |
+| Accent / focus      | `--color-accent`         | `#4f46e5` |              5.81:1 |
+| Strong accent       | `--color-accent-strong`  | `#3f37c9` |              7.47:1 |
+| Success             | `--color-success`        | `#0f7a4f` |              4.96:1 |
+| Warning             | `--color-warning`        | `#8f5300` |              5.70:1 |
+| Error / danger      | `--color-danger`         | `#b4232a` |              6.04:1 |
+| Informational       | `--color-info`           | `#0369a1` |              5.49:1 |
+| Transforming (cyan) | `--color-cyan`           | `#0a7489` |              5.02:1 |
+| Default border      | `--color-stroke`         | `#e3e6eb` | Non-text decoration |
+| Strong border       | `--color-stroke-strong`  | `#cfd4dc` | Non-text decoration |
 
-Ratios use the WCAG relative-luminance formula against `#fafafa`. Normal text
+Each feedback color also ships a pale background tint for cards and chips —
+`--color-accent-soft`, `--color-success-soft`, `--color-warning-soft`,
+`--color-danger-soft` and `--color-cyan-soft` — which are decorative fills, not
+text. The always-dark console/terminal uses `--color-code-bg`, `--color-code-ink`
+and `--color-code-dim`. Each OSI layer has a three-part palette
+(`--color-layer-<1..7>`, plus `-ink` for AA text-on-light and `-tint` for a pale
+fill) so the stack, inspector and layer chrome keep a consistent per-layer identity.
+
+Ratios use the WCAG relative-luminance formula against `#f5f6f8`. Normal text
 and text-sized feedback colors must reach 4.5:1. The values are also checked on
 the white and subtle-surface tokens by `npm run verify:design-system`. Color
 never carries a state by itself: feedback uses text and/or an icon as well.
@@ -37,8 +48,10 @@ feedback should use `text-success`, `text-warning`, `text-danger`, or `text-info
 
 ## Typography and shape
 
-- Sans-serif UI text uses the shared `--font-sans` stack; code and network
-  values use `--font-mono`.
+- Sans-serif UI text uses the shared `--font-sans` stack — Instrument Sans, the
+  approved interface face, with Inter and the system stack as fallbacks; code and
+  network values use `--font-mono` (JetBrains Mono). Both web fonts are loaded in
+  `index.html` with `display=swap` so fallbacks render immediately.
 - Long-form manual theory uses `--manual-body-size` (16 px),
   `--manual-body-leading` (1.75 / 28 px) and a `--manual-reading-measure` cap of
   72 characters. Its card column is capped at 75 characters so 24 px desktop
@@ -46,9 +59,10 @@ feedback should use `text-success`, `text-warning`, `text-danger`, or `text-info
   consistent 14/24 px rhythm.
 - Tailwind's 4 px spacing scale remains the spacing grid. Use its existing
   utilities consistently rather than adding arbitrary pixel spacing.
-- `--radius-xl` is the shared 12 px card/panel radius. `--shadow-sm` is the
-  restrained default elevation; larger elevation should be reserved for
-  overlays and floating controls.
+- `--radius-xl` is the shared 12 px radius for controls and menus; primary
+  panels use Tailwind's `rounded-2xl` (16 px). `--shadow-sm` is the restrained
+  default elevation and `--shadow-card` the soft card elevation; larger elevation
+  is reserved for overlays and floating controls.
 - Keyboard focus uses the 2 px `--color-accent` outline with an offset. Reduced
   motion, the 44 px interactive target floor, and inline-link exceptions are
   documented beside their global rules in `src/index.css`.
@@ -67,17 +81,24 @@ low-contrast utility aliases, and guards the global body and focus styles. Run
 
 ## Italiano
 
-L'interfaccia usa uno sfondo chiaro e poco distraente, testo slate, navigazione e
-focus indigo, e colori di feedback con nomi semantici. `src/index.css` è la fonte
-unica per i token condivisi di colore, tipografia, raggio e ombra. Quando aggiungi
-o modifichi stili, preferisci questi token o le utility semantiche di Tailwind
-descritte sopra; evita nuovi colori esadecimali isolati per testi e cornice
-dell'applicazione.
+L'interfaccia adotta il sistema visivo approvato «OSI Cyber Explorer v2»: sfondo
+chiaro e poco distraente, inchiostro quasi nero, navigazione e focus indigo, un
+accento cyan per lo stato «in trasformazione» e colori di feedback con nomi
+semantici. `src/index.css` è la fonte unica per i token condivisi di colore,
+tipografia, raggio e ombra (i valori e la tabella completa sono nella sezione
+inglese sopra). Quando aggiungi o modifichi stili, preferisci questi token o le
+utility semantiche di Tailwind descritte sopra; evita nuovi colori esadecimali
+isolati per testi e cornice dell'applicazione. Ogni livello OSI ha una palette in
+tre parti (`--color-layer-<1..7>`, con `-ink` e `-tint`), e la console scura usa
+`--color-code-bg/ink/dim`.
 
 ### Tipografia e forma
 
-- Il testo dell'interfaccia sans-serif usa lo stack condiviso `--font-sans`; il
-  codice e i valori di rete usano `--font-mono`.
+- Il testo dell'interfaccia sans-serif usa lo stack condiviso `--font-sans` —
+  Instrument Sans, il carattere d'interfaccia approvato, con Inter e lo stack di
+  sistema come fallback; il codice e i valori di rete usano `--font-mono`
+  (JetBrains Mono). Entrambi i web font sono caricati in `index.html` con
+  `display=swap`, così i fallback compaiono subito.
 - La teoria estesa del Manuale usa `--manual-body-size` (16 px),
   `--manual-body-leading` (1,75 / 28 px) e una misura massima di 72 caratteri
   (`--manual-reading-measure`). La colonna delle card è limitata a 75 caratteri,
@@ -85,9 +106,10 @@ dell'applicazione.
   di supporto condividono il ritmo 14/24 px.
 - La scala Tailwind da 4 px resta la griglia delle spaziature. Riusa le utility
   esistenti anziché introdurre spaziature arbitrarie in pixel.
-- `--radius-xl` è il raggio condiviso di 12 px per schede e pannelli. `--shadow-sm`
-  definisce l'ombra discreta predefinita; usa elevazioni maggiori per overlay e
-  controlli flottanti.
+- `--radius-xl` è il raggio condiviso di 12 px per controlli e menu; i pannelli
+  principali usano `rounded-2xl` di Tailwind (16 px). `--shadow-sm` è l'ombra
+  discreta predefinita e `--shadow-card` l'ombra morbida delle schede; usa
+  elevazioni maggiori per overlay e controlli flottanti.
 - Il focus da tastiera usa il contorno da 2 px `--color-accent` con offset. Le
   regole globali in `src/index.css` documentano anche movimento ridotto, target
   interattivi da 44 px ed eccezione per i link nel testo.
