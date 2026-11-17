@@ -162,3 +162,12 @@ Released under the [GNU GPL-3.0 License](LICENSE). You may use, study, modify an
 redistribute the project while preserving the copyright and licence notice.
 
 ---
+
+## Comunità e collaborazione
+
+- [Come contribuire](CONTRIBUTING.md)
+- [Codice di condotta](CODE_OF_CONDUCT.md)
+- [Segnalazioni di sicurezza](SECURITY.md)
+- [Accessibilità e limiti delle verifiche](ACCESSIBILITY.md)
+- [Segnalare un problema o proporre un miglioramento](https://github.com/chiaraberti13/OSI-CYBER-EXPLORER/issues/new/choose)
+- [Licenza del progetto](LICENSE)

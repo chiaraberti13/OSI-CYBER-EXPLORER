@@ -119,3 +119,13 @@ Prima di aprire una pull request, verifica che:
 - [ ] accesso da tastiera, focus visibile, semantica, contrasto e layout responsive siano preservati;
 - [ ] `npm run verify`, gli E2E pertinenti ed entrambi gli audit delle dipendenze siano verdi;
 - [ ] documentazione, changelog e roadmap descrivano il risultato reale.
+
+## Segnalazioni e verifica dei contributi
+
+Laboratorio bilingue su livelli OSI, reti e relazioni tra attacchi e difese.
+
+Usa i [modelli di segnalazione](https://github.com/chiaraberti13/OSI-CYBER-EXPLORER/issues/new/choose) per bug, miglioramenti e barriere di accessibilità. Prima di aprire una nuova segnalazione verifica se ne esiste già una equivalente. Contesto utile: Browser, lingua, laboratorio, scenario e passaggi per riprodurre il problema.
+
+Per le modifiche, compila il modello di pull request e indica verifiche eseguite, esito e verifiche non eseguite con il motivo. Mantieni le istruzioni specifiche di questo progetto e la parità delle lingue già disponibili. Non allegare dati di produzione, credenziali o dati personali; usa esempi sintetici.
+
+Consulta [il codice di condotta](CODE_OF_CONDUCT.md), [la policy di sicurezza](SECURITY.md) e [le indicazioni di accessibilità](ACCESSIBILITY.md). Le vulnerabilità seguono esclusivamente il percorso descritto nella policy di sicurezza.
