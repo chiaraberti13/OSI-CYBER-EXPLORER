@@ -1,28 +1,28 @@
 name: Correzione di contenuti
 description: Segnala un errore tecnico o una traduzione da correggere.
 body:
-- type: markdown
-  attributes:
-    value: Segnalazione per OSI-CYBER-EXPLORER. Non inserire dati personali o segreti. Per vulnerabilità
-      consulta https://github.com/chiaraberti13/OSI-CYBER-EXPLORER/security/policy.
-- type: textarea
-  id: location
-  attributes:
-    label: Contenuto interessato
-    description: Indica laboratorio, sezione e lingua.
-  validations:
-    required: true
-- type: textarea
-  id: correction
-  attributes:
-    label: Errore e correzione
-    description: Riporta il passaggio e spiega la correzione proposta.
-  validations:
-    required: true
-- type: textarea
-  id: source
-  attributes:
-    label: Fonte
-    description: Indica una fonte tecnica ufficiale e la data di consultazione.
-  validations:
-    required: true
+  - type: markdown
+    attributes:
+      value: Segnalazione per OSI-CYBER-EXPLORER. Non inserire dati personali o segreti. Per vulnerabilità
+        consulta https://github.com/chiaraberti13/OSI-CYBER-EXPLORER/security/policy.
+  - type: textarea
+    id: location
+    attributes:
+      label: Contenuto interessato
+      description: Indica laboratorio, sezione e lingua.
+    validations:
+      required: true
+  - type: textarea
+    id: correction
+    attributes:
+      label: Errore e correzione
+      description: Riporta il passaggio e spiega la correzione proposta.
+    validations:
+      required: true
+  - type: textarea
+    id: source
+    attributes:
+      label: Fonte
+      description: Indica una fonte tecnica ufficiale e la data di consultazione.
+    validations:
+      required: true
